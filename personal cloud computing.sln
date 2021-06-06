@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Agent", "Agent\Agent.vcxpro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Signalling", "Signalling\Signalling.csproj", "{C7A2968D-2F46-4701-BAE9-B879777C810F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host", "Host\Host.csproj", "{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,18 @@ Global
 		{C7A2968D-2F46-4701-BAE9-B879777C810F}.Release|x64.Build.0 = Release|Any CPU
 		{C7A2968D-2F46-4701-BAE9-B879777C810F}.Release|x86.ActiveCfg = Release|Any CPU
 		{C7A2968D-2F46-4701-BAE9-B879777C810F}.Release|x86.Build.0 = Release|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Debug|x64.Build.0 = Debug|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Debug|x86.Build.0 = Debug|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Release|x64.ActiveCfg = Release|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Release|x64.Build.0 = Release|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Release|x86.ActiveCfg = Release|Any CPU
+		{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

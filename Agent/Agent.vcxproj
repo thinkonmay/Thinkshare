@@ -116,6 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:/gstreamer/1.0/msvc_x86_64/include/libsoup-2.4;C:/gstreamer/1.0/msvc_x86_64/include/libxml2;C:/gstreamer/1.0/msvc_x86_64/include/glib-2.0;C:/gstreamer/1.0/msvc_x86_64/include/gstreamer-1.0;C:/gstreamer/1.0/msvc_x86_64/lib/glib-2.0/include;C:/gstreamer/1.0/msvc_x86_64/include/json-glib-1.0;C:/gstreamer/1.0/msvc_x86_64/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
