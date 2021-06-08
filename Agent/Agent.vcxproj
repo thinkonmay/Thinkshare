@@ -143,7 +143,8 @@
     <ClCompile Include="AgenPipeSrc.cpp" />
     <ClCompile Include="AgentSocket.cpp" />
     <ClCompile Include="Device information.cpp" />
-    <ClCompile Include="program.cpp" />
+    <ClCompile Include="Namedpipe-connection.c" />
+    <ClCompile Include="Program.cpp" />
     <ClCompile Include="Session initialization.cpp" />
     <ClCompile Include="Session termination.cpp" />
   </ItemGroup>
@@ -152,9 +153,13 @@
     <ClInclude Include="AgentSocket.h" />
     <ClInclude Include="Device Information.h" />
     <ClInclude Include="Framework.h" />
+    <ClInclude Include="Namedpipe-connection.h" />
     <ClInclude Include="Session initialization.h" />
     <ClInclude Include="Session termination.h" />
     <ClInclude Include="Variable.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

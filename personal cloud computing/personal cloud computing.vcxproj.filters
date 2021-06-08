@@ -30,7 +30,7 @@
     <ClCompile Include="Handle pipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Signaling handling.cpp">
+    <ClCompile Include="Signalling handling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

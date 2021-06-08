@@ -53,5 +53,4 @@ core_pipe_sink_handle()
         FILE_SHARE_WRITE,
         NULL,
         OPEN_EXISTING, 0, NULL);
-
 }

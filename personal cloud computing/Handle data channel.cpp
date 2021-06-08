@@ -6,6 +6,9 @@
 #include "CorePipeSink.h"
 #include "Signalling handling.h"
 
+
+using namespace msgpack;
+
 void
 unknown_message(GObject* dc, gpointer user_data)
 {
@@ -47,7 +50,33 @@ data_channel_on_message_string(GObject* dc,
     gchar* message,
     gpointer user_data)
 {
+    /*unpack message using messagepack and assign to tmp tuple*/
+    type::tuple<int, int> tmp;
 
+    unpack(message, strlen(message)).get().convert(tmp);
+
+   
+    switch (std::get<0>(tmp))
+    {
+    case    CHANGE_MEDIA_MODE:
+        if (std::get<1>(tmp) == 1)
+        {
+            mode = VIDEO_PIORITY;
+        }
+        else
+        {
+            mode = AUDIO_PIORITY;
+        }
+    case    COMPOSE_BITRATE:
+        set_dynamic_bitrate(std::get<1>(tmp));
+    case    TOGGLE_CURSOR:
+        g_print("toggled cursor");
+        toggle_cursor = TRUE;
+    case    CHANGE_RESOLUTION:
+        
+    case    CHANGE_FRAMERATE:
+        framerate = std::get<1>(tmp);
+    }
 }
 
 
@@ -81,6 +110,7 @@ connect_data_channel_signals(GObject* data_channel , const gchar* channel_type)
         g_signal_connect(data_channel, "on-message-data",
             G_CALLBACK(pipe_string), NULL);
     }
+
 }
 
 

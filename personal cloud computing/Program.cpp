@@ -13,12 +13,12 @@ static GOptionEntry entries[] = {
     "height of the video stream (pixels)","screen width"},
   {"framerate",0,0, G_OPTION_ARG_INT, &framerate,
     "frame rate of the video stream (frame per second)","frame rate"},
-  {"peer-id", 0, 0, G_OPTION_ARG_STRING, &peer_id,
+  {"SessionSlaveID", 0, 0, G_OPTION_ARG_STRING, &peer_id,
       "String ID of the peer to connect to", "ID"},
-  {"server", 0, 0, G_OPTION_ARG_STRING, &server_url,
+  {"SignallingServer", 0, 0, G_OPTION_ARG_STRING, &server_url,
       "Signalling server to connect to", "URL"},
   {"disable-ssl", 0, 0, G_OPTION_ARG_NONE, &disable_ssl, "Disable ssl", NULL},
-  {"remote-offerer", 0, 0, G_OPTION_ARG_NONE, &remote_is_offerer,
+  {"Client-send-offer", 0, 0, G_OPTION_ARG_NONE, &Client_send_offer_first,
       "Request that the peer generate the offer and we'll answer", NULL},
   {NULL},
 };
@@ -32,7 +32,7 @@ main(int argc, char* argv[])
     GError* error = NULL;
 
     /*context stuff*/
-    context = g_option_context_new("- gstreamer screen streaming webrtc remotely-plugin");
+    context = g_option_context_new("- personal cloud computing");
     g_option_context_add_main_entries(context, entries, NULL);
     g_option_context_add_group(context, gst_init_get_option_group());
     if (!g_option_context_parse(context, &argc, &argv, &error)) {
@@ -42,7 +42,7 @@ main(int argc, char* argv[])
     core_pipe_sink_handle();
 
     loop = g_main_loop_new(NULL, FALSE);
-    
+   
 
     connect_to_websocket_server_async();
 

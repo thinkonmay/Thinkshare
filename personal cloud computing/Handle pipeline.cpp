@@ -43,6 +43,7 @@ cleanup_and_quit_loop(const gchar* msg, enum AppState state)
     if (state > 0)
         app_state = state;
 
+    /*close websocket to signalling server*/
     if (ws_conn) {
         if (soup_websocket_connection_get_state(ws_conn) ==
             SOUP_WEBSOCKET_STATE_OPEN)
@@ -52,8 +53,8 @@ cleanup_and_quit_loop(const gchar* msg, enum AppState state)
             g_object_unref(ws_conn);
     }
 
-    if (loop)
-    {
+    /*clost main event loop*/
+    if (loop){
         g_main_loop_quit(loop);
         loop = NULL;
     }
@@ -147,8 +148,8 @@ handle_media_stream(gint screen_width,
         /**/
         g_object_set(gpu_encode, "zerolatency", TRUE, NULL);
 
-        /**/
-        g_object_set(gpu_encode, "const_quality", vbitrate, NULL);
+        /*handle dynamic controllable bitrate*/
+        attach_bitrate_control(GST_OBJECT(gpu_encode), video_controller);
 
         /*create capability for encoder sink pad*/
         cap_gpu_encode_sink = gst_caps_new_simple
@@ -205,19 +206,22 @@ handle_media_stream(gint screen_width,
     ("audio/x-raw",
         "format", "S16LE",
         "layout", "interleaved",
-        "rate", abitrate,
+        ///"rate", abitrate,
         "channel", "2", NULL);
 
 
     /*create sound encoder*/
     soundencode = gst_element_factory_make("opusenc", NULL);
 
+    /*handle dynamic control bitrate*/
+    attach_bitrate_control(GST_OBJECT(soundencode), video_controller);
+
     /**/
     GstCaps* cap_sound_encoder_source = gst_caps_new_simple
     ("audio/x-raw"
         "format", "S16LE"
         "layout", "interleaved"
-        "rate", abitrate,
+        ///"rate", abitrate,
         "channel", "2", NULL);
 
     /*create rtp packetizer forr audio stream*/

@@ -106,14 +106,14 @@ on_negotiation_needed(GstElement* element, gpointer user_data)
 {
     app_state = PEER_CALL_NEGOTIATING;
 
-    if (remote_is_offerer) {
-        gchar* msg = g_strdup_printf("OFFER_REQUEST");
+    if (Client_send_offer_first) {
+        gchar* msg = g_strdup_printf("WAITING_CLIENT");
         soup_websocket_connection_send_text(ws_conn, msg);
         g_free(msg);
     }
     else {
         GstPromise* promise =
-            gst_promise_new_with_change_func(on_offer_created, user_data, NULL);
+        gst_promise_new_with_change_func(on_offer_created, user_data, NULL);
 
         g_signal_emit_by_name(webrtcbin, "create-offer", NULL, promise);
     }
@@ -145,26 +145,6 @@ on_ice_gathering_state_notify(GstElement* webrtcbin,
 }
 
 gboolean
-setup_call(void)
-{
-    gchar* msg;
-
-    if (soup_websocket_connection_get_state(ws_conn) !=
-        SOUP_WEBSOCKET_STATE_OPEN)
-        return FALSE;
-
-    if (!peer_id)
-        return FALSE;
-
-    g_print("Setting up signalling server call with %s\n", peer_id);
-    app_state = PEER_CONNECTING;
-    msg = g_strdup_printf("SESSION %s", peer_id);
-    soup_websocket_connection_send_text(ws_conn, msg);
-    g_free(msg);
-    return TRUE;
-}
-
-gboolean
 register_with_server(void)
 {
     gchar* hello;
@@ -173,12 +153,12 @@ register_with_server(void)
         SOUP_WEBSOCKET_STATE_OPEN)
         return FALSE;
 
-    g_print("Registering id %i with server\n", our_id);
+    g_print("Registering ID with signalling server\n");
     app_state = SERVER_REGISTERING;
 
     /* Register with the server with a random integer id. Reply will be received
      * by on_server_message() */
-    hello = g_strdup_printf("HELLO %i", our_id);
+    hello = g_strdup_printf("SLAVEREQUEST %i", SessionSlaveID);
     soup_websocket_connection_send_text(ws_conn, hello);
     g_free(hello);
 
@@ -324,21 +304,27 @@ on_server_message(SoupWebsocketConnection* conn,
         g_assert_not_reached();
     }
 
-    /* Server has accepted our registration, we are ready to send commands */
-    if (g_strcmp0(text, "HELLO") == 0) {
+    if (g_strcmp0(text, "SESSION_ACCEPTED") == 0) 
+    {
         if (app_state != SERVER_REGISTERING) {
-            cleanup_and_quit_loop("ERROR: Received HELLO when not registering",
+            cleanup_and_quit_loop("ERROR: Received SESSION_ACCEPTED signal when not registering",
                 APP_STATE_ERROR);
             goto out;
         }
         app_state = SERVER_REGISTERED;
-        g_print("Registered with server\n");
-        /* Ask signalling server to connect us with a specific peer */
-        if (!setup_call()) {
-            cleanup_and_quit_loop("ERROR: Failed to setup call", PEER_CALL_ERROR);
+        g_print("Remote control accepted\n");
+        /* Call has been setup by the server, now we can start negotiation */
+    }
+    else if (g_strcmp0(text, "SESSION_DENIED") == 0)
+    {
+        if (app_state != SERVER_REGISTERING) 
+        {
+            cleanup_and_quit_loop("ERROR: Received SESSION_DENIED signal when not registering",
+                SESSION_DENIED);
             goto out;
         }
-        /* Call has been setup by the server, now we can start negotiation */
+        cleanup_and_quit_loop("SessionID pair not found, session denied",
+            SESSION_DENIED);
     }
     else if (g_strcmp0(text, "SESSION_OK") == 0) {
         if (app_state != PEER_CONNECTING) {
@@ -413,12 +399,6 @@ on_server_message(SoupWebsocketConnection* conn,
             }
 
             sdptype = json_object_get_string_member(child, "type");
-            /* In this example, we create the offer and receive one answer by default,
-             * but it's possible to comment out the offer creation and wait for an offer
-             * instead, so we handle either here.
-             *
-             * See tests/examples/webrtcbidirectional.c in gst-plugins-bad for another
-             * example how to handle offers from peers and reply with answers using webrtcbin. */
             text = json_object_get_string_member(child, "sdp");
             ret = gst_sdp_message_new(&sdp);
             g_assert_cmphex(ret, == , GST_SDP_OK);
@@ -471,7 +451,7 @@ on_server_message(SoupWebsocketConnection* conn,
     }
 
 out:
-    //g_free(text);
+    g_free(text);
     return;
 }
 
@@ -499,7 +479,10 @@ on_server_connected(SoupSession* session,
     g_signal_connect(ws_conn, "message", G_CALLBACK(on_server_message), NULL);
 
     /* Register with the server so it knows about us and can accept commands */
-    register_with_server();
+    if (!register_with_server())
+    {
+        cleanup_and_quit_loop("Failed to register with server", SERVER_CONNECTION_ERROR);
+    }
 }
 
 

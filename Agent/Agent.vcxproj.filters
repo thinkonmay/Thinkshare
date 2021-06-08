@@ -13,9 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="namedpipe">
+      <UniqueIdentifier>{10a3c0bb-ac73-460d-8c1f-5aae906456f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="program.cpp">
+    <ClCompile Include="Program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AgenPipeSrc.cpp">
@@ -32,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="Session termination.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Namedpipe-connection.c">
+      <Filter>namedpipe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,5 +62,11 @@
     <ClInclude Include="Session termination.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Namedpipe-connection.h">
+      <Filter>namedpipe</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -11,10 +11,10 @@
 #define OUR_ID 205
 
 
-#define BYTE_PIPE_NAME L"\\\\.\\pipe\\byte"
-#define STR_PIPE_NAME L"\\\\.\\pipe\\str"
+#define BYTE_PIPE_NAME L"\\\\.\\pipe\\byte_loader"
+#define STR_PIPE_NAME L"\\\\.\\pipe\\str_loader"
 
-static HANDLE file_handle_byte, file_handle_string;
+
 
 /*Define app_state in order to track state of application*/
 enum AppState
@@ -36,22 +36,41 @@ enum AppState
     PEER_CALL_STOPPING,
     PEER_CALL_STOPPED,
     PEER_CALL_ERROR,
+    SESSION_DENIED
+};
+enum Media_mode
+{
+    AUDIO_PIORITY,
+    VIDEO_PIORITY
 };
 
+static enum Media_mode mode;
+
+enum Message_type 
+{
+    CHANGE_MEDIA_MODE,
+    COMPOSE_BITRATE,
+    TOGGLE_CURSOR,
+    CHANGE_RESOLUTION,
+    CHANGE_FRAMERATE,
+};
 
 static gint screen_width, screen_height, framerate;
 
 static GMainLoop* loop;
 static GstElement* pipeline, * webrtcbin;
+
 static SoupWebsocketConnection* ws_conn = NULL;
 static const gchar* peer_id = NULL;
 static const gchar* server_url = "fill here";
 static gboolean disable_ssl = FALSE;
-static gboolean remote_is_offerer = FALSE;
-static gint abitrate, vbitrate;
+static gboolean Client_send_offer_first = TRUE;
 static GObject* SessionLoader, * SessionCore;
-static gchar* message_from_client;
 
 static const gchar* stun_server = STUN_SERVER;
 
-static gint our_id = OUR_ID;
+static gint SessionSlaveID = OUR_ID;
+
+static gboolean toggle_cursor;
+
+static HANDLE file_handle_byte, file_handle_string;
