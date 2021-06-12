@@ -1,8 +1,18 @@
 #pragma once
 #include "Namedpipe-connection.h"
+#include <gio/giotypes.h>
 
-G_DEFINE_TYPE_WITH_PRIVATE (NamedpipeConnection, namedpipe_connection, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE(NamedpipeConnection, namedpipe_connection, G_TYPE_OBJECT)
 
+typedef enum {
+	NAMEDPIPE_INT,
+	NAMEDPIPE_STRING,
+	NAMEDPIPE_JSON,
+	NAMEDPIPE_BYTE,
+	NAMEDPIPE_FILE,
+
+	NAMEDPIPE_END
+} NamedpipeDataType;
 
 enum
 {
@@ -11,6 +21,7 @@ enum
 	SIGNAL_SEND_MESSAGE_STRING,
 	SIGNAL_SEND_MESSAGE_BYTES,
 	SIGNAL_READ_ERROR,
+
 	NUM_SIGNALS
 };
 static guint signals[NUM_SIGNALS] = { 0, };
@@ -21,14 +32,13 @@ enum
 	PROP_PIPE_NAME_BYTE_IN,
 	PROP_PIPE_NAME_BYTE_OUT,
 	PROP_MAX_BUFFER_SIZE,
+
 	LAST_PROP
 };
 static GParamSpec* namedpipe_connection_properties[LAST_PROP] = { NULL, };
 
 typedef struct
 {
-	GSource* input_pipe;
-	GSource* output_pipe;
 
 	GBytes* buffer_bytes_in;
 	gchar* buffer_string_in;
@@ -48,6 +58,13 @@ typedef struct
 	HANDLE file_handler_byte_out;
 
 } NamedpipeConnectionPrivate;
+
+typedef struct
+{
+	NamedpipeConnectionPrivate *pipe;
+
+	GTask* task;
+} NamedpipeQueue;
 
 static void
 namedpipe_connection_get_property(GObject *gobject,
@@ -178,7 +195,7 @@ namedpipe_connection_class_init(NamedpipeConnectionClass* klass)
 
 	/*create signal for object*/
 	signals[SIGNAL_RECEIVED_MESSAGE_BYTES] =
-		g_signal_new("on-message-byte",
+		g_signal_new("on-message-byte", NAMEDPIPE_TYPE_CONNECTION,
 			G_SIGNAL_RUN_FIRST,
 			0,
 			NULL, NULL, NULL,
@@ -186,7 +203,7 @@ namedpipe_connection_class_init(NamedpipeConnectionClass* klass)
 
 
 	signals[SIGNAL_RECEIVED_MESSAGE_STRING] =
-		g_signal_new("on-message-byte",
+		g_signal_new("on-message-byte", NAMEDPIPE_TYPE_CONNECTION,
 			G_SIGNAL_RUN_FIRST,
 			0,
 			NULL, NULL, NULL,
@@ -194,7 +211,7 @@ namedpipe_connection_class_init(NamedpipeConnectionClass* klass)
 
 
 	signals[SIGNAL_SEND_MESSAGE_BYTES] =
-		g_signal_new("send-message-byte",
+		g_signal_new("send-message-byte", NAMEDPIPE_TYPE_CONNECTION,
 			G_SIGNAL_RUN_FIRST,
 			0,
 			NULL, NULL, NULL,
@@ -202,14 +219,14 @@ namedpipe_connection_class_init(NamedpipeConnectionClass* klass)
 
 
 	signals[SIGNAL_SEND_MESSAGE_STRING] =
-		g_signal_new("send-message-byte",
+		g_signal_new("send-message-byte", NAMEDPIPE_TYPE_CONNECTION,
 			G_SIGNAL_RUN_FIRST,
 			0,
 			NULL, NULL, NULL,
 			G_TYPE_NONE, 1, G_TYPE_STRING);
 
 	signals[SIGNAL_READ_ERROR] =
-		g_signal_new("read-error",
+		g_signal_new("read-error", NAMEDPIPE_TYPE_CONNECTION,
 			G_SIGNAL_RUN_FIRST,
 			0,
 			NULL, NULL, NULL,
@@ -246,18 +263,9 @@ namedpipe_connection_finalize(GObject* gobject)
 	g_free(priv->buffer_bytes_out);
 	g_free(priv->buffer_string_in);
 	g_free(priv->buffer_string_out);
-	g_free(priv->output_pipe);
-	g_free(priv->input_pipe);
 }
 
-struct _Namedpipeconnection
-{
-	GObject parent_instance;
 
-
-
-	/* Other members, including private data. */
-};
 
 NamedpipeConnection* 
 namedpipe_connection_new(GType message_data_type)
@@ -268,15 +276,54 @@ namedpipe_connection_new(GType message_data_type)
 		NULL
 	);
 }
+void 
+namedpipe_connection_send_message(NamedpipeConnection* self, NamedpipeDataType type, GBytes *message)
+{
+	gconstpointer data;
+	gsize *length;
+	g_return_if_fail(message != NULL);
+
+	data = g_bytes_get_data(message, length);
+	
+	send_message(self, (int) type, data, length);
+
+}
+
+void
+send_message(NamedpipeConnection* self, NamedpipeDataType data_type, gconstpointer data, gsize *length)
+{
+	NamedpipeConnectionPrivate* priv = namedpipe_connection_get_instance_private(self);
+
+	switch (data_type)
+	{
+	case(NAMEDPIPE_BYTE):
+
+
+	}
+}
+
+void
+namedpipe_connection_send_data_async(NamedpipeConnection *self,
+									gconstpointer data,
+									gsize *length,
+									GCancellable *cancellable,
+									GAsyncReadyCallback *callback,
+									gpointer usr_data)
+{
+	NamedpipeConnectionPrivate* priv = namedpipe_connection_get_instance_private(self);
+	gsize* written_bytes;
+
+	WriteFile(priv->file_handler_byte_out, data, *length, written_bytes, NULL);
+}
+
+
 static void
 namedpipe_connection_constructed(GObject* object)
 {
 	NamedpipeConnection* self = NAMEDPIPE_CONNECTION(object);
 	NamedpipeConnectionPrivate* priv = namedpipe_connection_get_instace_private(self);
 	G_OBJECT_CLASS(namedpipe_connection_parent_class)->constructed(object);
-
-
-
+	namedpipe_connection_setup_file_handler(self);
 }
 
 

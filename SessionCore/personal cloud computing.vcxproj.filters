@@ -15,22 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Program.cpp">
+    <ClCompile Include="Program.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CorePipeSink.cpp">
+    <ClCompile Include="CorePipeSink.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Handle data channel.cpp">
+    <ClCompile Include="Handle data channel.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RC config.cpp">
+    <ClCompile Include="RC config.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Handle pipeline.cpp">
+    <ClCompile Include="Handle pipeline.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Signalling handling.cpp">
+    <ClCompile Include="Signalling handling.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

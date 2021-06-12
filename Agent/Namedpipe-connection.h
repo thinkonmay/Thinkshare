@@ -19,9 +19,17 @@ G_BEGIN_DECLS
  * Type declaration.
  */
 #define NAMEDPIPE_TYPE_CONNECTION (namedpipe_connection_get_type ())
+
 G_DECLARE_FINAL_TYPE (NamedpipeConnection, namedpipe_connection, NAMEDPIPE, CONNECTION, GObject)
 
-NamedpipeConnection* namedpipe_connection_new(GType message_data_type);
+NamedpipeConnection* 
+namedpipe_connection_new(GType message_data_type);
+
+void 
+namedpipe_connection_send_message(NamedpipeConnection* self, NamedpipeDataType type, GBytes* message);
+
+
+
 
 G_END_DECLS
 
