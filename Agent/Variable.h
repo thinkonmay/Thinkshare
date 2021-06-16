@@ -4,7 +4,6 @@
 #include "Session termination.h"
 #include "Variable.h"
 #include "Device Information.h"
-#include "AgentPipeSrc.h"
 #include "AgentSocket.h"
 
 #define AGENT_PIPE_NAME L"\\\\.\\pipe\\str_agent"

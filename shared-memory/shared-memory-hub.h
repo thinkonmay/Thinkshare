@@ -30,6 +30,11 @@ struct _SharedMemoryHubClass
 SharedMemoryHub*
 shared_memory_hub_new_default(gint hub_id);
 
+SharedMemoryHub*
+shared_memory_hub_new(gint hub_id,
+	gint max_link,
+	gboolean is_master);
+
 void
 shared_memory_hub_link_with_option_async(SharedMemoryHub* self,
 	MemoryBlock* mem_block,
@@ -47,12 +52,14 @@ shared_memory_hub_link_finish(SharedMemoryHub* self,
 	GError **error);
 
 
-
-
-
-
-
-
+void
+shared_memory_hub_link_many_async(SharedMemoryHub* self,
+	gint* peer_hub_id_array,
+	gint block_size,
+	gint pipe_size,
+	GCancellable* cancellable,
+	GAsyncReadyCallback callback,
+	gpointer user_data);
 
 
 
@@ -63,14 +70,19 @@ new_empty_block(gsize block_size);
 Pipe*
 new_empty_pipe(gsize buffer_size);
 
+
+
 void
 shared_memory_hub_link_default_async(SharedMemoryHub* self,
 	gint peer_hub_id,
+	gint block_size,
+	gint pipe_size,
 	GCancellable* cancellable,
 	GAsyncReadyCallback callback,
 	gpointer user_data);
 
-void
+
+gboolean
 shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
 	SharedMemoryLink* link,
 	PacketLite* pkg,

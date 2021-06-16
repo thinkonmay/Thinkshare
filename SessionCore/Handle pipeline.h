@@ -1,24 +1,18 @@
 #include "Framework.h"
-#include "Variable.h"
+#include "Session.h"
+#include "session-core.h"
 
 
 gboolean
 check_plugins();
 
-gboolean
-cleanup_and_quit_loop(const gchar* msg, enum AppState state);
+void
+connect_WebRTCHub_handler(SessionCore* core);
 
-gboolean
-start_pipeline();
 
 void
-handle_media_stream(gint screen_width,
-    gint screen_height,
-    gint framerate,
-    const gchar* encoder);
+session_core_setup_pipeline(SessionCore* core,
+	gpointer user_data);
 
-
-
-
-
-
+gboolean
+session_core_start_pipeline(SessionCore* core)

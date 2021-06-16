@@ -17,6 +17,7 @@ enum
 {
 	SIGNAL_LINKED,
 	SIGNAL_PEER_TRANSFER,
+	SIGNAL_LINK_MANY_COMPLETE,
 
 	SIGNAL_LAST
 };
@@ -116,6 +117,12 @@ shared_memory_hub_class_init(SharedMemoryHubClass* klass)
 			G_SIGNAL_RUN_FIRST,
 			0, NULL, NULL, NULL,
 			G_TYPE_NONE, 0);
+	signals[SIGNAL_LINK_MANY_COMPLETE] =
+		g_signal_new("link-many",
+			SHARED_MEMORY_TYPE_HUB,
+			G_SIGNAL_RUN_FIRST,
+			0, NULL, NULL, NULL,
+			G_TYPE_POINTER, 1,G_TYPE_POINTER);
 
 
 	properties[PROP_MAX_LINK] =
@@ -174,6 +181,8 @@ shared_memory_hub_finalize(GObject* object)
 void
 shared_memory_hub_link_default_async(SharedMemoryHub* self,
 	gint peer_hub_id,
+	gint block_size,
+	gint pipe_size,
 	GCancellable* cancellable,
 	GAsyncReadyCallback callback,
 	gpointer user_data)
@@ -185,9 +194,9 @@ shared_memory_hub_link_default_async(SharedMemoryHub* self,
 	SharedMemoryLink* link = g_object_new(SHARED_MEMORY_TYPE_LINK, NULL);
 
 	InitData* init_data;
-	init_data->mem_block = klass->atomic_create_block(self);
-	init_data->send_pipe = klass->atomic_create_pipe(self);
-	init_data->receive_pipe = klass->atomic_create_pipe(self);
+	init_data->mem_block = klass->atomic_create_block(block_size);
+	init_data->send_pipe = klass->atomic_create_pipe(pipe_size);
+	init_data->receive_pipe = klass->atomic_create_pipe(pipe_size);
 	init_data->is_master = priv->is_master;
 	init_data->link_id = g_random_int();
 	init_data->owned_hub = self;
@@ -253,6 +262,59 @@ new_empty_pipe(gsize buffer_size)
 }
 
 
+
+
+
+
+
+SharedMemoryLink* link_array[];
+gint link_number;
+void
+shared_memory_hub_link_many_async(SharedMemoryHub* self,
+	gint* peer_hub_id_array,
+	gint block_size,
+	gint pipe_size,
+	GCancellable* cancellable,
+	GAsyncReadyCallback callback,
+	gpointer user_data)
+{
+	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(self);
+
+	gint link_num = sizeof(peer_hub_id_array) / sizeof(gint);
+	*link_array = malloc(link_num * sizeof(gpointer));
+	link_number = link_num;
+
+	for (int i = 0; i < link_number; i++)
+	{
+		shared_memory_hub_link_default_async(self, peer_hub_id_array[i],
+			block_size,
+			pipe_size, 
+			cancellable, 
+			linked_single, 
+			user_data);
+	}
+}
+
+
+
+
+gint count = 0;
+void
+linked_single(SharedMemoryHub* source_object,
+	GAsyncResult* result,
+	gpointer user_data)
+{
+	
+	link_array[count] = shared_memory_hub_link_default_finish(source_object, result, user_data);
+	count++;
+
+	if (count == link_number - 1)
+	{
+		g_signal_emit(source_object, signals[SIGNAL_LINK_MANY_COMPLETE], 0, link_array);
+	}
+}
+
+
 gboolean
 shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
 	SharedMemoryLink* link,
@@ -263,7 +325,7 @@ shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
 	SharedMemoryLinkClass* klass = SHARED_MEMORY_LINK_GET_CLASS(link);
 	MemoryBlock* block = new_empty_block(pkg->data);
 
-	g_signal_emit(hub, signals[],0)
+	g_signal_emit(hub, signals[], 0);
 
 	for (gint i = 0; i < priv->max_link; i++)
 	{

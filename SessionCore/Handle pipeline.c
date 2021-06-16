@@ -1,15 +1,14 @@
 #include "Framework.h"
-#include "Variable.h"
 #include "Handle data channel.h"
 #include "Handle pipeline.h"
 #include "RC config.h"
-#include "CorePipeSink.h"
 #include "Signalling handling.h"
+#include "Session.h"
+#include "session-core.c"
 
 gboolean
 check_plugins()
 {
-    int i;
     gboolean ret;
     GstPlugin* plugin;
     GstRegistry* registry;
@@ -22,10 +21,11 @@ check_plugins()
     ret = TRUE;
 
 
-    for (i = 0; i < g_strv_length((gchar**)needed); i++) {
+    for (int i = 0; i < g_strv_length((gchar**)needed); i++) {
         plugin = gst_registry_find_plugin(registry, needed[i]);
 
-        if (!plugin) {
+        if (!plugin) 
+{
             g_print("Required gstreamer plugin '%s' not found\n", needed[i]);
             ret = FALSE;
             continue;
@@ -35,136 +35,117 @@ check_plugins()
     return ret;
 }
 
-gboolean
-cleanup_and_quit_loop(const gchar* msg, enum AppState state)
-{
-    if (msg)
-        g_printerr("%s\n", msg);
-    if (state > 0)
-        app_state = state;
 
-    /*close websocket to signalling server*/
-    if (ws_conn) {
-        if (soup_websocket_connection_get_state(ws_conn) ==
-            SOUP_WEBSOCKET_STATE_OPEN)
-            /* This will call us again */
-            soup_websocket_connection_close(ws_conn, 1000, "");
-        else
-            g_object_unref(ws_conn);
-    }
-
-    /*clost main event loop*/
-    if (loop){
-        g_main_loop_quit(loop);
-        loop = NULL;
-    }
-
-    /* To allow usage as a GSourceFunc */
-    return FALSE;
-}
 
 
 /*handle all media stream include both audio and video:
 add both audio and video pipe into webrtcbin, all webrtc bin signal handle will be connected at start_pipeline()
 */
 void
-handle_media_stream(gint screen_width,
-    gint screen_height,
-    gint framerate,
-    const gchar* encoder = "nvh264enc")
+session_core_setup_pipeline(SessionCore* core, 
+    gpointer user_data)
+
 {
-    if (!check_plugins())
+    Pipeline* pipe = session_core_get_pipeline(core);
+    WebRTCHub* hub = session_core_get_rtc_hub(core);
+    SessionQoE* qoe = session_core_get_qoe(core);
+    CoreState state;
+    g_object_get_property(core, "core-state", &state);
+
+    if (state != SERVER_REGISTERED)
     {
-        cleanup_and_quit_loop("plugin not found", APP_STATE_ERROR);
+        g_print("Wating for server to connect");
+        sleep(1);
     }
 
+    if (!check_plugins())
+    {
+        session_core_end("plugin not found",core, APP_STATE_ERROR);
+    }                                                                                                                                                                                                                   
     /*
     Adds the webrtcbin elments to the pipeline.
     The video and audio pipelines are linked to
     this in the build_video_pipline() and build_audio_pipeline() methods.
     */
-    static GstElement
-        * soundcapture, * soundencode, * rtp_sound, * rtp_sound_queue,
-        * rtp_sound_cap, * screencapture, * videoupload,
-        * videoconvert, * gpu_encode, * rtp_packetize;
+    
 
-    webrtcbin = gst_element_factory_make("webrtcbin", NULL);
+    pipe->webrtcbin = gst_element_factory_make("webrtcbin", NULL);
 
     /*set policy-bundle*/
-    g_object_set(webrtcbin, "bundle-policy", GST_WEBRTC_BUNDLE_POLICY_MAX_COMPAT);
+    g_object_set(pipe->webrtcbin, "bundle-policy", GST_WEBRTC_BUNDLE_POLICY_MAX_COMPAT);
     /* Add stun server */
-    g_object_set(webrtcbin, "stun-server", stun_server, NULL);
+    g_object_set(pipe->webrtcbin, "stun-server", hub->stun_server, NULL);
 
     /*Generate widnow screen capture element based */
-    screencapture = gst_element_factory_make("dx9screencapsrc", NULL);
+    pipe->screencapture = gst_element_factory_make("dx9screencapsrc", NULL);
 
     /*create cappabilities for screen capture*/
     GstCaps* cap_screen_capture_src = gst_caps_new_simple
     ("video/x-raw",
         "format", "BGR",
-        "width", screen_width,
-        "height", screen_height,
-        "framerate", framerate, 1, NULL);
+        "width", qoe->screen_width,
+        "height", qoe->screen_height,
+        "framerate", qoe->framerate, 1, NULL);
 
     /*turn off screeen cursor*/
-    g_object_set(screencapture, "cursor", FALSE, NULL);
+    g_object_set(pipe->screencapture, "cursor", FALSE, NULL);
 
     /*monitor to display*/
-    g_object_set(screencapture, "monitor", 0, NULL);
+    g_object_set(pipe->screencapture, "monitor", 0, NULL);
 
     /*cuda upload responsible for upload memory from main memory to gpu memory*/
-    videoupload = gst_element_factory_make("cudaupload", NULL);
+    pipe->videoupload = gst_element_factory_make("cudaupload", NULL);
 
 
     GstCaps* cap_video_upload_src = gst_caps_new_simple
     ("video/x-raw", NULL);
 
     /*convert BGR color space to I420 color space*/
-    videoconvert = gst_element_factory_make("cuda-convert", NULL);
+    pipe->videoconvert = gst_element_factory_make("cuda-convert", NULL);
 
-    GstCaps* cap_gpu_encode_sink{};
-    GstCaps* cap_gpu_encode_src{};
-    GstCaps* cap_rtp_packetize_src{};
+    GstCaps* cap_gpu_encode_sink;
+    GstCaps* cap_gpu_encode_src;
+    GstCaps* cap_rtp_packetize_src;
 
 
 
-    if (g_strcmp0(encoder, "nvh264enc"))
+    if (g_strcmp0(qoe->video_encoder, "nvh264enc"))
     {
         /*
          ___________________________________________________________________
         gpu side
         */
-        gpu_encode = gst_element_factory_make("nvh264enc", NULL);
+        pipe->gpu_encode = gst_element_factory_make("nvh264enc", NULL);
 
         /*variable bitrate mode*/
-        g_object_set(gpu_encode, "rc-mode", "vbr", NULL);
+        g_object_set(pipe->gpu_encode, "rc-mode", "vbr", NULL);
 
         /*low latency preset*/
-        g_object_set(gpu_encode, "preset", "low-latency", NULL);
+        g_object_set(pipe->gpu_encode, "preset", "low-latency", NULL);
 
         /*set b-frame numbers property*/
-        g_object_set(gpu_encode, "bframes", 0, NULL);
+        g_object_set(pipe->gpu_encode, "bframes", 0, NULL);
 
         /**/
-        g_object_set(gpu_encode, "zerolatency", TRUE, NULL);
+        g_object_set(pipe->gpu_encode, "zerolatency", TRUE, NULL);
 
         /*handle dynamic controllable bitrate*/
-        attach_bitrate_control(GST_OBJECT(gpu_encode), video_controller);
+        attach_bitrate_control(GST_OBJECT(pipe->gpu_encode), qoe->video_controller);
 
         /*create capability for encoder sink pad*/
         cap_gpu_encode_sink = gst_caps_new_simple
         ("video/x-raw",
             "format", "I420",
-            "width", screen_width,
-            "height", screen_height,
-            "framerate", framerate, 1, "progressive", NULL);
+            "width", qoe->screen_width,
+            "height",qoe->screen_height,
+            "framerate", qoe->framerate, 1, "progressive", NULL);
 
         /*create capability for encoder source pad*/
         cap_gpu_encode_src = gst_caps_new_simple
         ("video/x-h264",
-            "width", screen_width,
-            "height", screen_height,
-            "framerate", framerate,
+            "width", qoe->screen_width,
+            "height", qoe->screen_height,
+            "framerate", qoe->framerate,
             "stream-format", "byte-stream",
             "alignment", "au",
             "profile", "high", NULL);
@@ -172,7 +153,7 @@ handle_media_stream(gint screen_width,
         ///gst_video_encoder_get_latency() future realease 
 
         /*packetize video encoded byte-stream*/
-        rtp_packetize = gst_element_factory_make("rtph264pay", NULL);
+        pipe->rtp_packetize = gst_element_factory_make("rtph264pay", NULL);
 
         cap_rtp_packetize_src = gst_caps_new_simple
         ("application/x-rtp",
@@ -183,9 +164,9 @@ handle_media_stream(gint screen_width,
 
 
         /*set zero latency aggregate mode*/
-        g_object_set(rtp_packetize, "aggregate-mote", "zero-latency", NULL);
+        g_object_set(pipe->rtp_packetize, "aggregate-mote", "zero-latency", NULL);
     }
-    if (g_strcmp0(encoder, "nvh265enc"))
+    if (g_strcmp0(qoe->video_encoder, "nvh265enc"))
     {
         g_print("nvh265");
     }
@@ -200,7 +181,7 @@ handle_media_stream(gint screen_width,
     */
 
     /*create and assign element named soundcapture*/
-    soundcapture = gst_element_factory_make("pulsesrc", NULL);
+    pipe->soundcapture = gst_element_factory_make("pulsesrc", NULL);
 
     GstCaps* cap_sound_source = gst_caps_new_simple
     ("audio/x-raw",
@@ -211,10 +192,10 @@ handle_media_stream(gint screen_width,
 
 
     /*create sound encoder*/
-    soundencode = gst_element_factory_make("opusenc", NULL);
+    pipe->soundencode = gst_element_factory_make("opusenc", NULL);
 
     /*handle dynamic control bitrate*/
-    attach_bitrate_control(GST_OBJECT(soundencode), video_controller);
+    attach_bitrate_control(GST_OBJECT(pipe->soundencode), qoe->video_controller);
 
     /**/
     GstCaps* cap_sound_encoder_source = gst_caps_new_simple
@@ -225,7 +206,7 @@ handle_media_stream(gint screen_width,
         "channel", "2", NULL);
 
     /*create rtp packetizer forr audio stream*/
-    rtp_sound = gst_element_factory_make("rtpopuspay", NULL);
+    pipe->rtp_sound = gst_element_factory_make("rtpopuspay", NULL);
 
     GstCaps* cap_rtp_opuspay_source = gst_caps_new_simple
     ("application/x-rtp",
@@ -234,7 +215,7 @@ handle_media_stream(gint screen_width,
         "encoding-name", "OPUS", NULL);
 
     /*insert queue*/
-    rtp_sound_queue = gst_element_factory_make("rtprtxqueue", NULL);
+    pipe->rtp_sound_queue = gst_element_factory_make("rtprtxqueue", NULL);
 
     GstCaps* cap_rtp_queue_source = gst_caps_new_simple
     ("application/x-rtp", NULL);
@@ -246,11 +227,11 @@ handle_media_stream(gint screen_width,
     # will be dropped.
     # This helps buffer out latency in the audio source.
     */
-    g_object_set(rtp_sound_queue, "max-size-time", 16000000, NULL);
+    g_object_set(pipe->rtp_sound_queue, "max-size-time", 16000000, NULL);
 
     /*
     Set the other queue sizes to 0 to make it only time-based.*/
-    g_object_set(rtp_sound_queue, "max-size-packet", 0, NULL);
+    g_object_set(pipe->rtp_sound_queue, "max-size-packet", 0, NULL);
 
     /*capability for rtp sound payloader*/
     GstCaps* rtp_sound_pay_caps = gst_caps_new_simple(
@@ -267,121 +248,117 @@ handle_media_stream(gint screen_width,
 
 
     /*link sound pipeline*/
-    gst_bin_add_many(GST_BIN(pipeline), screencapture, videoupload, videoconvert, gpu_encode, rtp_packetize, webrtcbin,
-        soundcapture, soundencode, rtp_sound, rtp_sound_queue, rtp_sound_cap);
-    gst_element_sync_state_with_parent(screencapture);
-    gst_element_sync_state_with_parent(videoupload);
-    gst_element_sync_state_with_parent(videoconvert);
-    gst_element_sync_state_with_parent(gpu_encode);
-    gst_element_sync_state_with_parent(rtp_packetize);
-    gst_element_sync_state_with_parent(webrtcbin);
-    gst_element_sync_state_with_parent(soundcapture);
-    gst_element_sync_state_with_parent(soundencode);
-    gst_element_sync_state_with_parent(rtp_sound);
-    gst_element_sync_state_with_parent(rtp_sound_queue);
-    gst_element_sync_state_with_parent(rtp_sound_cap);
+    gst_bin_add_many(GST_BIN(core->pipe->pipeline), 
+        pipe->screencapture,
+        pipe->videoupload,
+        pipe->videoconvert,
+        pipe->gpu_encode,
+        pipe->rtp_packetize,
+        pipe->webrtcbin,
+        pipe->soundcapture,
+        pipe->soundencode,
+        pipe->rtp_sound,
+        pipe->rtp_sound_queue,
+        pipe->rtp_sound_cap);
+    gst_element_sync_state_with_parent(pipe->screencapture);
+    gst_element_sync_state_with_parent(pipe->videoupload);
+    gst_element_sync_state_with_parent(pipe->videoconvert);
+    gst_element_sync_state_with_parent(pipe->gpu_encode);
+    gst_element_sync_state_with_parent(pipe->rtp_packetize);
+    gst_element_sync_state_with_parent(pipe->webrtcbin);
+    gst_element_sync_state_with_parent(pipe->soundcapture);
+    gst_element_sync_state_with_parent(pipe->soundencode);
+    gst_element_sync_state_with_parent(pipe->rtp_sound);
+    gst_element_sync_state_with_parent(pipe->rtp_sound_queue);
+    gst_element_sync_state_with_parent(pipe->rtp_sound_cap);
 
     /*link sound pipeline to webrtcbin*/
 
-    if (!gst_element_link_filtered(screencapture, videoupload, cap_screen_capture_src)) {
+    if (!gst_element_link_filtered(pipe->screencapture, pipe->videoupload, cap_screen_capture_src)) {
         g_printerr("cannot link ??and??");
         return;
     }
-    if (!gst_element_link_filtered(videoupload, videoconvert, cap_video_upload_src)) {
+    if (!gst_element_link_filtered(pipe->videoupload, pipe->videoconvert, cap_video_upload_src)) {
         g_printerr("cannot link ??and??");
         return;
     }
-    if (!gst_element_link_filtered(videoconvert, gpu_encode, cap_gpu_encode_sink)) {
+    if (!gst_element_link_filtered(pipe->videoconvert, pipe->gpu_encode, cap_gpu_encode_sink)) {
         g_printerr("cannot link ??and??");
         return;
     }
-    if (!gst_element_link_filtered(gpu_encode, rtp_packetize, cap_gpu_encode_src)) {
+    if (!gst_element_link_filtered(pipe->gpu_encode, pipe->rtp_packetize, cap_gpu_encode_src)) {
         g_printerr("cannot link ??and??");
         return;
     }
-    if (!gst_element_link_filtered(rtp_packetize, webrtcbin, cap_rtp_packetize_src)) {
+    if (!gst_element_link_filtered(pipe->rtp_packetize, pipe->webrtcbin, cap_rtp_packetize_src)) {
         g_printerr("cannot link ??and??");
         return;
     }
-    if (!gst_element_link_filtered(soundcapture, soundencode, cap_sound_source)) {
+    if (!gst_element_link_filtered(pipe->soundcapture, pipe->soundencode, cap_sound_source)) {
         g_printerr("cannot link ??and??");
         return;
     }
-    if (!gst_element_link_filtered(soundencode, rtp_sound, cap_sound_encoder_source)) {
+    if (!gst_element_link_filtered(pipe->soundencode, pipe->rtp_sound, cap_sound_encoder_source)) {
         g_printerr("cannot link ??and??");
         return;
     }
-    if (!gst_element_link_filtered(rtp_sound, rtp_sound_queue, cap_rtp_opuspay_source)) {
+    if (!gst_element_link_filtered(pipe->rtp_sound, pipe->rtp_sound_queue, cap_rtp_opuspay_source)) {
         g_printerr("cannot link ??and??");
         return;
     }
-    if (!gst_element_link_filtered(rtp_sound_queue, webrtcbin, cap_rtp_queue_source)) {
+    if (!gst_element_link_filtered(pipe->rtp_sound_queue, pipe->webrtcbin, cap_rtp_queue_source)) {
         g_printerr("cannot link ??and??");
         return;
     }
+
+    g_object_set_property(core, "core-state", PIPELINE_SETUP_DONE);
+    
+    g_signal_emit_by_name(core, "pipeline-ready", NULL);
 }
 
-gboolean
-start_pipeline()
-{
-    GstStateChangeReturn ret;
+void
+connect_WebRTCHub_handler(SessionCore* core)
 
-    /*initialize global pipeline with paticular resolution and framerate and encoder*/
-    handle_media_stream(screen_width, screen_height, framerate, "nvh264enc");
+{
+    Pipeline* pipe = session_core_get_pipeline(core);
+    CoreState state;
+
+    g_object_get_property(core, "core-state", &state);
+
+    if (state != PIPELINE_SETUP_DONE)
+    {
+        g_print("waiting for pipeline to setup");
+        sleep(1);
+    }
 
     /* This is the gstwebrtc entry point where we create the offer and so on. It
      * will be called when the pipeline goes to PLAYING. */
-    g_signal_connect(webrtcbin, "on-negotiation-needed",
-        G_CALLBACK(on_negotiation_needed), NULL);
+    g_signal_connect(pipe->webrtcbin, "on-negotiation-needed",
+        G_CALLBACK(on_negotiation_needed), core);
+    g_signal_connect(pipe->webrtcbin, "on-ice-candidate",
+        G_CALLBACK(send_ice_candidate_message), core);
+    g_signal_connect(pipe->webrtcbin, "notify::ice-gathering-state",
+        G_CALLBACK(on_ice_gathering_state_notify), core);
 
-    /* We need to transmit this ICE candidate to the browser via the websockets
-     * signalling server. Incoming ice candidates from the browser need to be
-     * added by us too, see on_server_message() */
-    g_signal_connect(webrtcbin, "on-ice-candidate",
-        G_CALLBACK(send_ice_candidate_message), NULL);
-    g_signal_connect(webrtcbin, "notify::ice-gathering-state",
-        G_CALLBACK(on_ice_gathering_state_notify), NULL);
-
-    gst_element_set_state(pipeline, GST_STATE_READY);
-
-    g_signal_emit_by_name(webrtcbin, "create-data-channel", "SessionCore", NULL,
-        &SessionCore);
-    g_signal_emit_by_name(webrtcbin, "create-data-channel", "SessionLoader", NULL,
-        &SessionLoader);
-
-    if (SessionCore && SessionLoader)
-    {
-        g_print("Created two data channels\n");
-        connect_data_channel_signals(SessionCore,  "SessionCore");
-        connect_data_channel_signals(SessionLoader, "SessionLoader");
-    }
-    else {
-        g_print("Could not create  data channel!\n");
-        goto err;
-    }
-
-    g_signal_connect(webrtcbin, "on-data-channel", G_CALLBACK(on_data_channel), NULL);
-
-    /* Lifetime is the same as the pipeline itself */
-    gst_object_unref(webrtcbin);
-
-    g_print("Starting pipeline\n");
-    ret = gst_element_set_state(GST_ELEMENT(pipeline), GST_STATE_PLAYING);
-    if (ret == GST_STATE_CHANGE_FAILURE)
-    {
-        goto err;
-        g_printerr("pipeline cannot failure state");
-    }
-    return TRUE;
-
-err:
-    if (pipeline)
-        g_clear_object(&pipeline);
-    if (webrtcbin)
-    {
-        webrtcbin = NULL;
-    }
-    cleanup_and_quit_loop("ERROR: failed to start pipeline", PEER_CALL_ERROR);
-    return FALSE;
+    g_object_set_property(core, "core-state", HANDSHAKE_SIGNAL_CONNECTED);
+    g_signal_emit_by_name(core, "handshake-signal-connected", NULL);
 }
 
+
+gboolean
+session_core_start_pipeline(SessionCore* core)
+{
+    GstStateChangeReturn ret;
+    Pipeline* pipe = session_core_get_pipeline(core);
+
+    gst_element_set_state(pipe->pipeline, GST_STATE_READY);
+
+    g_print("Starting pipeline\n");
+    ret = gst_element_set_state(GST_ELEMENT(pipe->pipeline), GST_STATE_PLAYING);
+
+    if (ret == GST_STATE_CHANGE_FAILURE)
+    {
+        return FALSE;
+    }
+    return TRUE;
+}

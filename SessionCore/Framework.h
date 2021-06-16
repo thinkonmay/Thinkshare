@@ -15,7 +15,9 @@
 #include <gst/controller/gstdirectcontrolbinding.h>
 /*END GLIB BASED LIBRARY*/
 
-#include <msgpack.hpp>
+#include "msgpack.h"
+#include <shared-memory-hub.h>
+#include <shared-memory-link.h>
 
 #include <Windows.h>
 #include <iostream>

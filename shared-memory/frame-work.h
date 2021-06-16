@@ -2,6 +2,8 @@
 #include <glib.h>
 #include <glib-2.0/glib-object.h>
 #include <glib-2.0/gio/gio.h>
+#include "Framework.h"
+
 
 
 ///do not change this definition
