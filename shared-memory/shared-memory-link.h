@@ -1,9 +1,20 @@
+#if defined __cplusplus
+extern "C"
+{
+#endif
+
+
 #ifndef  __SHARED_MEMORY_LINK_H__
 #define  __SHARED_MEMORY_LINK_H__
 #include "frame-work.h"
 #include "shared-memory-hub.h"
+#include "type-def.h"
 
 G_BEGIN_DECLS
+
+
+
+
 
 #define SHARED_MEMORY_TYPE_LINK shared_memory_link_get_type()
 G_DECLARE_DERIVABLE_TYPE(SharedMemoryLink, shared_memory_link, SHARED_MEMORY, LINK, GObject)
@@ -20,7 +31,7 @@ struct _SharedMemoryLinkClass
 
 	gpointer
 	(*atomic_mem_read)(SharedMemoryLink* self,
-			MemoryBlock* block);
+		MemoryBlock* block);
 
 	gboolean
 	(*atomic_pipe_send)(SharedMemoryLink* self,
@@ -51,16 +62,18 @@ establish_link(GTask* task,
 /*NECESSARY FUNCTION FOR APPLICATION DEVELOPMENT*/
 gboolean
 shared_memory_link_send_message(SharedMemoryLink* self,
-	gint destination,
-	gpointer data,
-	gsize data_size);
+	Message* msg);
 
 gboolean
 shared_memory_link_send_message_lite(SharedMemoryLink* self,
-	gint opcode,
-	gint destination,
+	Opcode opcode,
 	gpointer data);
 
 
 G_END_DECLS
-#endif   __SHARED_MEMORY_LINK_H__
+#endif 
+
+
+#if defined __cplusplus
+}
+#endif

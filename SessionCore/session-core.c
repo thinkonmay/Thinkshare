@@ -104,7 +104,7 @@ session_core_constructed(GObject* object)
 	g_signal_connect(self, "data-channel-connected", NULL, NULL);
 	g_signal_connect(self, "pipeline-started", NULL, NULL);
 
-	g_signal_connect(self->ipc->link, "on-message",NULL)
+	g_signal_connect(self->ipc->link, "on-message", NULL);
 }
 
 static void

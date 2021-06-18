@@ -22,7 +22,10 @@ session_core_end(const gchar* msg,
 void
 session_core_link_shared_memory_hub(GObject* object);
 
-
+struct _SessionCoreClass
+{
+	GObject parent_class;
+};
 
 
 

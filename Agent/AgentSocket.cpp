@@ -3,7 +3,6 @@
 #include "Session termination.h"
 #include "Variable.h"
 #include "Device Information.h"
-#include "AgentPipeSrc.h"
 #include "AgentSocket.h"
 
 

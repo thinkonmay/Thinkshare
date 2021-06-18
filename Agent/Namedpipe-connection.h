@@ -18,7 +18,7 @@ G_BEGIN_DECLS
 /*
  * Type declaration.
  */
-#define NAMEDPIPE_TYPE_CONNECTION (namedpipe_connection_get_type ())
+#define NAMEDPIPE_TYPE_CONNECTION namedpipe_connection_get_type ()
 
 G_DECLARE_FINAL_TYPE (NamedpipeConnection, namedpipe_connection, NAMEDPIPE, CONNECTION, GObject)
 

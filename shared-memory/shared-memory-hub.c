@@ -1,8 +1,12 @@
+#pragma once
 #include "frame-work.h"
 #include "shared-memory-hub.h"
 #include "shared-memory-link.h"
+#include "type-def.h"
 
-
+/// <summary>
+/// private struct 
+/// </summary>
 typedef struct
 {
 	SharedMemoryLink** link_array;
@@ -17,7 +21,6 @@ enum
 {
 	SIGNAL_LINKED,
 	SIGNAL_PEER_TRANSFER,
-	SIGNAL_LINK_MANY_COMPLETE,
 
 	SIGNAL_LAST
 };
@@ -27,28 +30,67 @@ enum
 	PROP_ID,
 	PROP_MAX_LINK,
 	PROP_HUB_ID,
+	PROP_IS_MASTER,
 
 	PROP_LAST
 };
+
+
+
+
+
+/// <summary>
+/// function declaration stufff
+/// </summary>
+/// <param name="object"></param>
+static void
+shared_memory_hub_constructed(GObject* object);
+static void
+shared_memory_hub_get_property(GObject* object, guint prop_id,
+	const GValue* value, GParamSpec* pspec);
+static void
+shared_memory_hub_set_property(GObject* object, guint prop_id,
+	const GValue* value, GParamSpec* pspec);
+static void
+shared_memory_hub_dispose(GObject * object);
+static void
+shared_memory_hub_finalize(GObject * object);
+static void
+init_data_free(InitData* data);
+
 
 static guint signals[SIGNAL_LAST] = { 0, };
 static guint properties[PROP_LAST] = { 0, };
 
 G_DEFINE_TYPE_WITH_PRIVATE(SharedMemoryHub,shared_memory_hub,G_TYPE_OBJECT)
 
+
+
+/// <summary>
+/// create new simple shared memory hub with hub id, maximum number of link
+/// and authority of hub
+/// </summary>
+/// <param name="hub_id"></param>
+/// <param name="max_link"></param>
+/// <param name="is_master"></param>
+/// <returns></returns>
 SharedMemoryHub* 
 shared_memory_hub_new(gint hub_id,
 	gint max_link,
 	gboolean is_master)
 {
-	SharedMemoryHub* self = g_object_new(SHARED_MEMORY_TYPE_HUB, 
-		"hub-id", hub_id,
+	return g_object_new(SHARED_MEMORY_TYPE_HUB,
 		"max-link", max_link,
-		"is-master", is_master);
-
-	return self;
+		"hub-id", hub_id,
+		"is-master", is_master, NULL);
 }
 
+
+/// <summary>
+/// create default slave hub with hub id and default 8 maximum link
+/// </summary>
+/// <param name="hub_id"></param>
+/// <returns></returns>
 SharedMemoryHub* 
 shared_memory_hub_new_default(gint hub_id)
 {
@@ -60,50 +102,25 @@ shared_memory_hub_new_default(gint hub_id)
 	return self;
 }
 
-void 
-shared_memory_hub_link_with_option_async(SharedMemoryHub* self, 
-	MemoryBlock* mem_block, 
-	Pipe* send_pipe, 
-	Pipe* receive_pipe, 
-	gboolean is_master,
-	gint destination_id,
-	GCancellable* cancellable, 
-	GAsyncReadyCallback callback, 
-	gpointer user_data)
-{
-	g_object_new(SHARED_MEMORY_TYPE_HUB, "link-id");
-	SharedMemoryHubClass* klass = SHARED_MEMORY_HUB_GET_CLASS(self);
-	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(self);
-
-	SharedMemoryLink* link = g_object_new(SHARED_MEMORY_TYPE_LINK, NULL);
-
-	InitData *init_data;
-	init_data->mem_block = mem_block;
-	init_data->send_pipe = send_pipe;
-	init_data->receive_pipe = receive_pipe;
-	init_data->is_master = is_master;
-	init_data->destination_id = destination_id;
 
 
-	GTask *task= g_task_new(self,cancellable,callback,user_data);
-	g_task_set_task_data(task, init_data, (GDestroyNotify)init_data_free);
-
-	g_task_run_in_thread(task, establish_link);
-	g_object_unref(task);
-}
-
+/// <summary>
+/// class initialization:
+/// override base gobject class method,
+/// declare signal and properties
+/// </summary>
+/// <param name="klass"></param>
 static void
 shared_memory_hub_class_init(SharedMemoryHubClass* klass)
 {
 	GObjectClass* object_class = G_OBJECT_GET_CLASS(klass);
 
 	object_class->constructed =  shared_memory_hub_constructed;
-	object_class->get_property = shared_memory_hub_get_property;
+	object_class->set_property = shared_memory_hub_set_property;
 	object_class->dispose =      shared_memory_hub_dispose;
 	object_class->finalize =     shared_memory_hub_finalize;
 
-	klass->atomic_create_block = new_empty_block;
-	klass->atomic_create_pipe = new_empty_pipe;
+
 
 	signals[SIGNAL_LINKED] =
 		g_signal_new("connected",
@@ -117,27 +134,46 @@ shared_memory_hub_class_init(SharedMemoryHubClass* klass)
 			G_SIGNAL_RUN_FIRST,
 			0, NULL, NULL, NULL,
 			G_TYPE_NONE, 0);
-	signals[SIGNAL_LINK_MANY_COMPLETE] =
-		g_signal_new("link-many",
-			SHARED_MEMORY_TYPE_HUB,
-			G_SIGNAL_RUN_FIRST,
-			0, NULL, NULL, NULL,
-			G_TYPE_POINTER, 1,G_TYPE_POINTER);
 
 
 	properties[PROP_MAX_LINK] =
 		g_param_spec_int("max-link",
 			"MaxLink",
 			"mximum number of link",
-			0, G_MAXINT, 2, G_PARAM_READWRITE);
+			2, G_MAXINT, 2, G_PARAM_READWRITE);
 	properties[PROP_HUB_ID] =
 		g_param_spec_int("hub-id",
 			"hubid",
 			"hub id",
 			0, G_MAXINT, 0, G_PARAM_READWRITE);
+	properties[PROP_IS_MASTER] =
+		g_param_spec_boolean("is-master",
+			"is master",
+			"ismaster", FALSE, G_PARAM_READWRITE);
+
+	g_object_class_install_properties(object_class, PROP_LAST, properties);
 
 }
 
+/// <summary>
+/// instance initialization:
+/// register shared memory class method
+/// </summary>
+/// <param name="self"></param>
+static void
+shared_memory_hub_init(SharedMemoryHub* self)
+{
+	SharedMemoryHubClass* klass = SHARED_MEMORY_HUB_GET_CLASS(self);
+
+	klass->atomic_create_block = new_empty_block;
+	klass->atomic_create_pipe = new_empty_pipe;
+}
+
+
+/// <summary>
+/// constructed method used by base class, process after initialization process is done
+/// </summary>
+/// <param name="object"></param>
 static void
 shared_memory_hub_constructed(GObject* object)
 {
@@ -145,15 +181,37 @@ shared_memory_hub_constructed(GObject* object)
 	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(self);
 
 	priv->link_array = malloc(priv->max_link * sizeof(gpointer));
-	memset(priv->link_array, NULL, priv->max_link);
+	memset(priv->link_array, 123456, priv->max_link);
 }
 
+/// <summary>
+/// set properties of object
+/// </summary>
+/// <param name="object"></param>
+/// <param name="prop_id"></param>
+/// <param name="value"></param>
+/// <param name="pspec"></param>
 static void
-shared_memory_hub_get_property(GObject* object)
+shared_memory_hub_set_property(GObject* object, guint prop_id,
+ GValue *value, GParamSpec* pspec)
 {
 	SharedMemoryHub* self = (SharedMemoryHub*)object;
 	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(self);
+
+	switch (prop_id)
+	{
+	case PROP_HUB_ID:
+		priv->hub_id = g_value_get_int(value);
+		break;
+	case PROP_IS_MASTER:
+		priv->is_master = g_value_get_boolean(value);
+		break;
+	case PROP_MAX_LINK:
+		priv->max_link = g_value_get_int(value);
+		break;
+	}
 }
+
 
 static void
 shared_memory_hub_dispose(GObject* object)
@@ -162,7 +220,7 @@ shared_memory_hub_dispose(GObject* object)
 	SharedMemoryHub* self = (SharedMemoryHub*)object;
 	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(self);
 
-	for (int i; i < priv->max_link; i++)
+	for (int i = 0; i < priv->max_link; i++)
 	{
 		g_free(priv->link_array[i]);
 	}
@@ -178,6 +236,41 @@ shared_memory_hub_finalize(GObject* object)
 	g_free(object);
 }
 
+
+
+static void
+shared_memory_hub_get_property(GObject* object, guint prop_id,
+	GValue* value, GParamSpec* pspec)
+{
+	SharedMemoryHub* self = SHARED_MEMORY_HUB(object);
+	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(self);
+
+	switch (prop_id)
+	{
+	case PROP_HUB_ID:
+		g_value_set_int(value, priv->hub_id);
+		break;
+	case PROP_IS_MASTER:
+		g_value_set_boolean(value, priv->is_master);
+		break;
+	case PROP_MAX_LINK:
+		g_value_set_int(value, priv->max_link);
+		break;
+	}
+}
+
+
+/// <summary>
+/// asynchronous method used to create link between two shared memory hub,
+/// used g_task to run establish link function in separate thread.
+/// </summary>
+/// <param name="self"></param>
+/// <param name="peer_hub_id"></param>
+/// <param name="block_size"></param>
+/// <param name="pipe_size"></param>
+/// <param name="cancellable"></param>
+/// <param name="callback"></param>
+/// <param name="user_data"></param>
 void
 shared_memory_hub_link_default_async(SharedMemoryHub* self,
 	gint peer_hub_id,
@@ -187,21 +280,37 @@ shared_memory_hub_link_default_async(SharedMemoryHub* self,
 	GAsyncReadyCallback callback,
 	gpointer user_data)
 {
-	g_object_new(SHARED_MEMORY_TYPE_HUB, NULL);
 	SharedMemoryHubClass* klass = SHARED_MEMORY_HUB_GET_CLASS(self);
 	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(self);
 
 	SharedMemoryLink* link = g_object_new(SHARED_MEMORY_TYPE_LINK, NULL);
 
-	InitData* init_data;
-	init_data->mem_block = klass->atomic_create_block(block_size);
-	init_data->send_pipe = klass->atomic_create_pipe(pipe_size);
-	init_data->receive_pipe = klass->atomic_create_pipe(pipe_size);
-	init_data->is_master = priv->is_master;
-	init_data->link_id = g_random_int();
-	init_data->owned_hub = self;
-	init_data->owned_hub_id = priv->hub_id;
-	init_data->peer_hub_id = peer_hub_id;
+	InitData* init_data = malloc(sizeof(InitData));
+
+	/*algorithm summation:
+	*atomic_create_block and atomic_create_pipe function is a function 
+	*which take the first parameter as a seed for an name and id generate algorithm
+	* 
+	* in hand shaking process, if hub is master, algorithm will take peer hub id as a seed
+	* when slave take its own id as a seed , it will got the same id and name  
+	*/
+	if (priv->is_master == TRUE)
+	{
+		init_data->mem_block = klass->atomic_create_block(peer_hub_id, block_size);
+		init_data->send_pipe = klass->atomic_create_pipe(peer_hub_id, pipe_size);
+		init_data->receive_pipe = klass->atomic_create_pipe(peer_hub_id, pipe_size);
+	}
+	else
+	{
+
+		init_data->mem_block = klass->atomic_create_block(priv->hub_id, block_size);
+		init_data->send_pipe = klass->atomic_create_pipe(priv->hub_id, pipe_size);
+		init_data->receive_pipe = klass->atomic_create_pipe(priv->hub_id, pipe_size);
+	}
+	init_data->is_master =		priv->is_master;
+	init_data->owned_hub =		self; 
+	init_data->owned_hub_id =	priv->hub_id;
+	init_data->peer_hub_id =	peer_hub_id;
 
 
 	GTask* task = g_task_new(self, cancellable, callback, user_data);
@@ -211,7 +320,10 @@ shared_memory_hub_link_default_async(SharedMemoryHub* self,
 	g_object_unref(task);
 }
 
-
+/// <summary>
+/// free link initialization data used by asynchronous function
+/// </summary>
+/// <param name="data"></param>
 static void
 init_data_free(InitData* data)
 {
@@ -221,6 +333,13 @@ init_data_free(InitData* data)
 	g_free(data);
 }
 
+/// <summary>
+/// link_finish function used to catch data from asynchronous function
+/// </summary>
+/// <param name="self"></param>
+/// <param name="result"></param>
+/// <param name="error"></param>
+/// <returns></returns>
 SharedMemoryLink* 
 shared_memory_hub_link_finish(SharedMemoryHub* self, 
 	GAsyncResult* result, 
@@ -234,14 +353,26 @@ shared_memory_hub_link_finish(SharedMemoryHub* self,
 	return g_task_propagate_pointer(G_TASK(result),error);
 }
 
+
+/// <summary>
+/// new empty block used as shared memory between two shared memory hub
+/// </summary>
+/// <param name="id"></param>
+/// <param name="block_size"></param>
+/// <returns></returns>
 MemoryBlock* 
-new_empty_block(gsize block_size)
+new_empty_block(gint id, gsize block_size)
 {
 	MemoryBlock* ret = malloc(sizeof(MemoryBlock));
+
 	ret->state = UN_OWN;
 	ret->size = block_size;
-	ret->id = g_random_int();
-	ret->name = g_random_int();
+	ret->id = g_random_int_range(100,1000000);
+	char prefix[256] = "\\\\.\\pipe\\";
+	char ending[7];
+
+	_itoa_s(ret->id, ending,7, 7);
+	ret->name = strcat_s(prefix, 256, ending);
 	ret->handle = NULL;
 	ret->pointer = NULL;
 	ret->context = NULL;
@@ -249,13 +380,14 @@ new_empty_block(gsize block_size)
 	return ret;
 }
 
-Pipe* 
-new_empty_pipe(gsize buffer_size)
+NamedPipe* 
+new_empty_pipe(gint id,gsize buffer_size)
 {
-	Pipe* ret = malloc(sizeof(Pipe));
+	NamedPipe* ret = sizeof(NamedPipe);
+
 	ret->size = buffer_size;
 	ret->id = g_random_int();
-	ret->name = g_random_int();
+	ret->name = strcat_s("Global\\",8, (gchar*)ret->id);
 	ret->handle = NULL;
 	ret->context = NULL;
 	return ret;
@@ -264,68 +396,21 @@ new_empty_pipe(gsize buffer_size)
 
 
 
-
-
-
-SharedMemoryLink* link_array[];
-gint link_number;
-void
-shared_memory_hub_link_many_async(SharedMemoryHub* self,
-	gint* peer_hub_id_array,
-	gint block_size,
-	gint pipe_size,
-	GCancellable* cancellable,
-	GAsyncReadyCallback callback,
-	gpointer user_data)
-{
-	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(self);
-
-	gint link_num = sizeof(peer_hub_id_array) / sizeof(gint);
-	*link_array = malloc(link_num * sizeof(gpointer));
-	link_number = link_num;
-
-	for (int i = 0; i < link_number; i++)
-	{
-		shared_memory_hub_link_default_async(self, peer_hub_id_array[i],
-			block_size,
-			pipe_size, 
-			cancellable, 
-			linked_single, 
-			user_data);
-	}
-}
-
-
-
-
-gint count = 0;
-void
-linked_single(SharedMemoryHub* source_object,
-	GAsyncResult* result,
-	gpointer user_data)
-{
-	
-	link_array[count] = shared_memory_hub_link_default_finish(source_object, result, user_data);
-	count++;
-
-	if (count == link_number - 1)
-	{
-		g_signal_emit(source_object, signals[SIGNAL_LINK_MANY_COMPLETE], 0, link_array);
-	}
-}
-
-
+/// <summary>
+/// Master hub process peer memory block transfer between two slave hub
+/// </summary>
+/// <param name="hub"></param>
+/// <param name="msg"></param>
+/// <param name="destination"></param>
+/// <returns></returns>
 gboolean
 shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
-	SharedMemoryLink* link,
-	PacketLite* pkg,
+	Message* msg,
 	gint destination)
 {
 	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(hub);
-	SharedMemoryLinkClass* klass = SHARED_MEMORY_LINK_GET_CLASS(link);
-	MemoryBlock* block = new_empty_block(pkg->data);
 
-	g_signal_emit(hub, signals[], 0);
+	
 
 	for (gint i = 0; i < priv->max_link; i++)
 	{
@@ -334,19 +419,17 @@ shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
 		if (z == destination)
 		{
 			g_free(z);
-			if (!shared_memory_link_send_message_lite(link,
-				PEER_TRANSFER_REQUEST,
-				pkg->from,
-				pkg->to,block))
+			if (!shared_memory_link_send_message_lite(priv->link_array[i],
+				PEER_TRANSFER_REQUEST,msg))
 			{
 				return FALSE;
 			}
-			return TRUE;
 		}
 	}
 
-	g_free(block);
+	g_signal_emit(hub, signals[SIGNAL_PEER_TRANSFER], 0);
+	g_free(msg);
 
-
+	return TRUE;
 }
 
