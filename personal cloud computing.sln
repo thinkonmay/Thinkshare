@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Signalling", "Signalling\Si
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host", "Host\Host.csproj", "{B1D2411C-F14C-49D3-8CF1-E0BEDC6341A3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared-memory", "..\..\shared-memory\shared-memory\shared-memory.vcxproj", "{14EB1520-FF1F-4DF6-9F70-8D6D4A8979CD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared-memory", "shared-memory\shared-memory.vcxproj", "{14EB1520-FF1F-4DF6-9F70-8D6D4A8979CD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SessionCore", "SessionCore\personal cloud computing.vcxproj", "{3DB67F17-6841-4468-BFB2-14D93977AEFC}"
 EndProject

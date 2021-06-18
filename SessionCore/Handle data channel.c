@@ -1,148 +1,162 @@
 #include "Framework.h"
-#include "Variable.h"
 #include "Handle data channel.h"
-#include "Handle pipeline.h"
-#include "RC config.h"
-#include "CorePipeSink.h"
-#include "Signalling handling.h"
+#include "session-core.h"
+#include "Session.h"
 
 
-using namespace msgpack;
+
 
 void
-unknown_message(GObject* dc, gpointer user_data)
+control_channel_on_message_data(GObject* datachannel,
+    GBytes* byte,
+    SessionCore* core)
+{
+    gpointer data = g_bytes_get_data(byte,sizeof(byte));
+
+
+
+
+}
+
+void
+control_channel_on_message_string(GObject* dc,
+    gchar* message,
+    SessionCore* core)
 {
     g_printerr("unknown messsage");
 }
 void
-data_channel_on_error(GObject* dc, gpointer user_data)
+control_channel_on_error(GObject* dc,
+    SessionCore* core)
 {
 
-    cleanup_and_quit_loop("Data channel error", APP_STATE_ERROR);
+    session_core_end("Data channel error",core, APP_STATE_ERROR);
 }
 
 void
-data_channel_on_close(GObject* dc,
-    gpointer user_data)
+control_channel_on_close(GObject* dc,
+    SessionCore* core)
 {
-    cleanup_and_quit_loop("Data channel closed", APP_STATE_UNKNOWN);
+    session_core_end("Data channel closed",core, APP_STATE_UNKNOWN);
 }
 
 void
-data_channel_on_open(GObject* dc,
-    gpointer user_data)
+control_channel_on_open(GObject* dc,
+    SessionCore* core)
 {
     g_print("data channel opened\n");
     g_signal_emit_by_name(dc, "send-string", "Connect data channel confirmed");
 }
 
+
+
+
+
+
+
+
 void
-data_channel_on_message_data(GObject* dc,
-    GBytes* message,
-    gpointer user_data)
+hid_channel_on_message_data(GObject* datachannel,
+    GBytes* data,
+    SessionCore* core)
 {
+    gint size = g_bytes_get_size(data);
+    gpointer buffer = g_bytes_get_data(data,size);
+
+    
+
 
 }
 
-/*IPC here*/
 void
-data_channel_on_message_string(GObject* dc,
+hid_channel_on_message_string(GObject* dc,
     gchar* message,
-    gpointer user_data)
+    SessionCore* core)
 {
-    /*unpack message using messagepack and assign to tmp tuple*/
-    type::tuple<int, int> tmp;
-
-    unpack(message, strlen(message)).get().convert(tmp);
-
-   
-    switch (std::get<0>(tmp))
-    {
-    case    CHANGE_MEDIA_MODE:
-        if (std::get<1>(tmp) == 1)
-        {
-            mode = VIDEO_PIORITY;
-        }
-        else
-        {
-            mode = AUDIO_PIORITY;
-        }
-    case    COMPOSE_BITRATE:
-        set_dynamic_bitrate(std::get<1>(tmp));
-    case    TOGGLE_CURSOR:
-        g_print("toggled cursor");
-        toggle_cursor = TRUE;
-    case    CHANGE_RESOLUTION:
-        
-    case    CHANGE_FRAMERATE:
-        framerate = std::get<1>(tmp);
-    }
+    g_printerr("unknown messsage");
 }
+void
+hid_channel_on_error(GObject* dc, 
+    SessionCore* core)
+{
 
+    session_core_end("Data channel error",core, APP_STATE_ERROR);
+}
 
 void
-connect_data_channel_signals(GObject* data_channel , const gchar* channel_type)
+hid_channel_on_close(GObject* dc,
+    SessionCore* core)
 {
-
-    if (g_strcmp0(channel_type, "SessionCore"))
-    {
-        g_signal_connect(data_channel, "on-error",
-            G_CALLBACK(data_channel_on_error), NULL);
-        g_signal_connect(data_channel, "on-open",
-            G_CALLBACK(data_channel_on_open), NULL);
-        g_signal_connect(data_channel, "on-close",
-            G_CALLBACK(data_channel_on_close), NULL);
-        g_signal_connect(data_channel, "on-message-string",
-            G_CALLBACK(data_channel_on_message_string), NULL);
-        g_signal_connect(data_channel, "on-message-data",
-            G_CALLBACK(data_channel_on_message_data), NULL);
-    }
-    if (g_strcmp0(channel_type, "SessionLoader"))
-    {
-        g_signal_connect(data_channel, "on-error",
-            G_CALLBACK(unknown_message), NULL);
-        g_signal_connect(data_channel, "on-open",
-            G_CALLBACK(unknown_message), NULL);
-        g_signal_connect(data_channel, "on-close",
-            G_CALLBACK(unknown_message), NULL);
-        g_signal_connect(data_channel, "on-message-string",
-            G_CALLBACK(pipe_byte), NULL);
-        g_signal_connect(data_channel, "on-message-data",
-            G_CALLBACK(pipe_string), NULL);
-    }
-
+    session_core_end("Data channel closed",core, APP_STATE_UNKNOWN);
 }
-
-
-
 
 void
-on_data_channel(GstElement* webrtc,
-    GObject* data_channel,
-    gpointer user_data)
+hid_channel_on_open(GObject* dc,
+    SessionCore* core)
 {
-    char* dc_name;
-    g_object_get(data_channel, "label", &dc_name);
-    if (g_strcmp0(dc_name, "SessionCore") || g_strcmp0(dc_name, "SessionLoader"))
-    {
-        connect_data_channel_signals(data_channel, dc_name);
-    }
-    else
-    {
-        g_printerr("unknown data channel");
-    }
-
+    g_print("data channel opened\n");
+    g_signal_emit_by_name(dc, "send-string", "Connect data channel confirmed");
 }
 
-void pipe_byte(GObject* dc,
-    GBytes* message,
+
+
+
+
+
+gboolean
+session_core_connect_data_channel_signals(SessionCore* core,
     gpointer user_data)
 {
-    send_byte(file_handle_byte, message);
-}
-void pipe_string(GObject* dc,
-    gchar* message,
-    gpointer user_data)
-{
-    send_string(file_handle_byte, message);
+    /* We need to transmit this ICE candidate to the browser via the websockets
+ * signalling server. Incoming ice candidates from the browser need to be
+ * added by us too, see on_server_message() */
+
+    WebRTCHub* hub = session_core_get_rtc_hub(core);
+    Pipeline* pipe = session_core_get_pipeline(core);
+
+    CoreState state;
+
+    g_object_get_property(core, "core-state", &state);
+    if (state != HANDSHAKE_SIGNAL_CONNECTED)
+    {
+        g_print("waiting for handshake connected signal");
+        sleep(1);
+    }
+
+    g_signal_emit_by_name(pipe->webrtcbin, "create-data-channel", "HID", NULL,
+        &hub->hid);
+    g_signal_emit_by_name(pipe->webrtcbin, "create-data-channel", "Control", NULL,
+        &hub->control);
+
+    if (hub->control && hub->hid)
+    {
+        g_print("Created two data channels\n");
+
+        g_signal_connect(hub->control, "on-error",
+            G_CALLBACK(control_channel_on_error), core);
+        g_signal_connect(hub->control, "on-open",
+            G_CALLBACK(control_channel_on_open), core);
+        g_signal_connect(hub->control, "on-close",
+            G_CALLBACK(control_channel_on_close), core);
+        g_signal_connect(hub->control, "on-message-string",
+            G_CALLBACK(control_channel_on_message_string), core);
+        g_signal_connect(hub->control, "on-message-data",
+            G_CALLBACK(control_channel_on_message_data), core);
+
+        g_signal_connect(hub->hid, "on-error",
+            G_CALLBACK(hid_channel_on_error), core);
+        g_signal_connect(hub->hid, "on-open",
+            G_CALLBACK(hid_channel_on_open), core);
+        g_signal_connect(hub->hid, "on-close",
+            G_CALLBACK(hid_channel_on_close), core);
+        g_signal_connect(hub->hid, "on-message-string",
+            G_CALLBACK(hid_channel_on_message_string), core);
+        g_signal_connect(hub->hid, "on-message-data",
+            G_CALLBACK(hid_channel_on_message_data), core);
+    }
+    else {
+        g_print("Could not create  data channel!\n");
+        return FALSE;
+    }
+    return TRUE;
 }

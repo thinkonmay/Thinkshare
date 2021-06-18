@@ -89,7 +89,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:/gstreamer/1.0/msvc_x86_64/include/libsoup-2.4;C:/gstreamer/1.0/msvc_x86_64/include/libxml2;C:/gstreamer/1.0/msvc_x86_64/include/glib-2.0;C:/gstreamer/1.0/msvc_x86_64/include/gstreamer-1.0;C:/gstreamer/1.0/msvc_x86_64/lib/glib-2.0/include;C:/gstreamer/1.0/msvc_x86_64/include/json-glib-1.0;C:/gstreamer/1.0/msvc_x86_64/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>W:\msgpack-c-cpp_master\include;W:\personal cloud computing\personal cloud computing\shared-memory;C:/gstreamer/1.0/msvc_x86_64/include/libsoup-2.4;C:/gstreamer/1.0/msvc_x86_64/include/libxml2;C:/gstreamer/1.0/msvc_x86_64/include/glib-2.0;C:/gstreamer/1.0/msvc_x86_64/include/gstreamer-1.0;C:/gstreamer/1.0/msvc_x86_64/lib/glib-2.0/include;C:/gstreamer/1.0/msvc_x86_64/include/json-glib-1.0;C:/gstreamer/1.0/msvc_x86_64/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
@@ -121,6 +121,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Program Files\boost_1_76_0\boost;C:\Program Files\msgpack-c-cpp_master\include;C:\gstreamer\1.0\msvc_x86_64\lib\gstreamer-1.0\include;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include;C:\Program Files\boost_1_76_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,30 +138,36 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>E:\msgpack-c-c_master\msgpack-c-c_master\include;E:\msgpack-c-c_master\msgpack-c-c_master\include\msgpack;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\msgpack-c-c_master\msgpack-c-c_master\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>msgpackc.lib;msgpackc_import.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CorePipeSink.c" />
     <ClCompile Include="Handle data channel.c" />
     <ClCompile Include="Handle pipeline.c" />
     <ClCompile Include="Program.c" />
     <ClCompile Include="RC config.c" />
+    <ClCompile Include="session-core.c" />
     <ClCompile Include="Signalling handling.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CorePipeSink.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Handle data channel.h" />
     <ClInclude Include="Handle pipeline.h" />
     <ClInclude Include="RC config.h" />
+    <ClInclude Include="session-core.h" />
+    <ClInclude Include="Session.h" />
     <ClInclude Include="Signalling handling.h" />
-    <ClInclude Include="Variable.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

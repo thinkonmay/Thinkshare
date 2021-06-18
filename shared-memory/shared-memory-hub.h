@@ -1,26 +1,36 @@
 
-
+#pragma once
 
 #ifndef  __SHARED_MEMORY_HUB_H__
 #define  __SHARED_MEMORY_HUB_H__
 #include "frame-work.h"
 #include "shared-memory-link.h"
+#include "type-def.h"
 
 
 G_BEGIN_DECLS
 
+
+
+
+
+
+
+
 #define SHARED_MEMORY_TYPE_HUB shared_memory_hub_get_type()
 G_DECLARE_DERIVABLE_TYPE (SharedMemoryHub, shared_memory_hub, SHARED_MEMORY, HUB, GObject)
 
+
+
 struct _SharedMemoryHubClass
 {
-	GObject parent_class;
+	GObjectClass parent_class;
 
-	gboolean
-	(*atomic_create_pipe)(SharedMemoryHub* self);
+	NamedPipe*
+	(*atomic_create_pipe)(gint id, gsize pipe_size);
 
-	gboolean
-	(*atomic_create_block)(SharedMemoryHub* self);
+	MemoryBlock*
+	(*atomic_create_block)(gint id, gsize block_size);
 };
 
 
@@ -30,54 +40,42 @@ struct _SharedMemoryHubClass
 SharedMemoryHub*
 shared_memory_hub_new_default(gint hub_id);
 
-void
-shared_memory_hub_link_with_option_async(SharedMemoryHub* self,
-	MemoryBlock* mem_block,
-	Pipe* send_pipe,
-	Pipe* receive_pipe,
-	gboolean is_master,
-	gint destination_id,
-	GCancellable *cancellable,
-	GAsyncReadyCallback	callback,
-	gpointer user_data);
-
-SharedMemoryLink*
-shared_memory_hub_link_finish(SharedMemoryHub* self,
-	GAsyncResult* result,
-	GError **error);
-
-
-
-
-
-
-
+SharedMemoryHub*
+shared_memory_hub_new(gint hub_id,
+	gint max_link,
+	gboolean is_master);
 
 
 
 
 /*USED BY SHARED-MEMORY-LINK FILE*/
 MemoryBlock*
-new_empty_block(gsize block_size);
+new_empty_block( gint id,gsize block_size);
 
-Pipe*
-new_empty_pipe(gsize buffer_size);
+NamedPipe*
+new_empty_pipe( gint id,gsize buffer_size);
+
+
 
 void
 shared_memory_hub_link_default_async(SharedMemoryHub* self,
 	gint peer_hub_id,
+	gint block_size,
+	gint pipe_size,
 	GCancellable* cancellable,
 	GAsyncReadyCallback callback,
 	gpointer user_data);
 
-void
+SharedMemoryLink*
+shared_memory_hub_link_finish(SharedMemoryHub* self,
+	GAsyncResult* result,
+	GError** error);
+
+gboolean
 shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
-	SharedMemoryLink* link,
-	PacketLite* pkg,
+	MemoryBlock* block,
 	gint destination);
 
 
-
-
 G_END_DECLS
-#endif   __SHARED_MEMORY_HUB_H__
+#endif   

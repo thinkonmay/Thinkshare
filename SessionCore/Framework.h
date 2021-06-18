@@ -15,7 +15,7 @@
 #include <gst/controller/gstdirectcontrolbinding.h>
 /*END GLIB BASED LIBRARY*/
 
-#include <msgpack.hpp>
+#include <E:\msgpack-c-c_master\msgpack-c-c_master\include\msgpack.h>
 
 #include <Windows.h>
 #include <iostream>

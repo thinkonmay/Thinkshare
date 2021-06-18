@@ -1,33 +1,46 @@
 #include "Framework.h"
-#include "Variable.h"
+#include "Session.h"
+#include "session-core.h"
+
+
 
 
 void
-data_channel_on_error(GObject* dc, gpointer user_data);
+hid_channel_on_error(GObject* dc,
+    SessionCore* core);
 
 void
-data_channel_on_open(GObject* dc, gpointer user_data);
+hid_channel_on_open(GObject* dc, 
+    SessionCore* core);
 
 void
-data_channel_on_close(GObject* dc, gpointer user_data);
+hid_channel_on_close(GObject* dc, 
+    SessionCore* core);
 
 void
-data_channel_on_message_string(GObject* dc,
-                               gchar* str,
-                               gpointer user_data);
+hid_channel_on_message_string(GObject* dc,
+    gchar* str,
+    SessionCore* core);
 
 void
-connect_data_channel_signals(GObject* data_channel, const gchar* channel_type);
+control_channel_on_error(GObject* dc, 
+    SessionCore* core);
 
 void
-on_data_channel(GstElement* webrtc,
-                GObject* data_channel,
-                gpointer user_data);
+control_channel_on_open(GObject* dc, 
+    SessionCore* core);
 
-void pipe_byte(GObject* dc,
-    GBytes* message,
-    gpointer user_data);
+void
+control_channel_on_close(GObject* dc, 
+    SessionCore* core);
 
-void pipe_string(GObject* dc,
-    gchar* message,
-    gpointer user_data);
+void
+control_channel_on_message_string(GObject* dc,
+    gchar* str,
+    SessionCore* core);
+
+gboolean
+session_core_connect_data_channel_signals(SessionCore* core);
+
+
+

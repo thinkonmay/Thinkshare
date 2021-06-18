@@ -140,7 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AgenPipeSrc.cpp" />
     <ClCompile Include="AgentSocket.cpp" />
     <ClCompile Include="Device information.cpp" />
     <ClCompile Include="Namedpipe-connection.c" />
@@ -149,7 +148,6 @@
     <ClCompile Include="Session termination.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AgentPipeSrc.h" />
     <ClInclude Include="AgentSocket.h" />
     <ClInclude Include="Device Information.h" />
     <ClInclude Include="Framework.h" />
