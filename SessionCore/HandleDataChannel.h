@@ -1,10 +1,10 @@
 #include "Framework.h"
-#include "Session.h"
+#include "Object.h"
 #include "session-core.h"
 
 
 
-
+/*hid channel signal handler*/
 void
 hid_channel_on_error(GObject* dc,
     SessionCore* core);
@@ -22,6 +22,8 @@ hid_channel_on_message_string(GObject* dc,
     gchar* str,
     SessionCore* core);
 
+
+/*control channel handler*/
 void
 control_channel_on_error(GObject* dc, 
     SessionCore* core);
@@ -39,8 +41,16 @@ control_channel_on_message_string(GObject* dc,
     gchar* str,
     SessionCore* core);
 
+
+/// <summary>
+/// Connect data channel (derived type of gobject) to corresponding signal handler 
+/// </summary>
+/// <param name="core"></param>
+/// <param name="user_data"></param>
+/// <returns></returns>
 gboolean
-session_core_connect_data_channel_signals(SessionCore* core);
+connect_data_channel_signals(SessionCore* core, 
+    gpointer user_data);
 
 
 

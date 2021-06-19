@@ -18,19 +18,22 @@
     <ClCompile Include="Program.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Handle data channel.c">
+    <ClCompile Include="HandleDataChannel.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RC config.c">
+    <ClCompile Include="RcConfig.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Handle pipeline.c">
+    <ClCompile Include="HandlePipeline.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Signalling handling.c">
+    <ClCompile Include="SignallingHandling.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="session-core.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemory.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,22 +41,25 @@
     <ClInclude Include="Framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RC config.h">
+    <ClInclude Include="RcConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Handle data channel.h">
+    <ClInclude Include="HandleDataChannel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Handle pipeline.h">
+    <ClInclude Include="HandlePipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Signalling handling.h">
+    <ClInclude Include="SignallingHandling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="session-core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Session.h">
+    <ClInclude Include="Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

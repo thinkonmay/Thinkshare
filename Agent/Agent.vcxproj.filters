@@ -13,54 +13,48 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="namedpipe">
-      <UniqueIdentifier>{10a3c0bb-ac73-460d-8c1f-5aae906456f4}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Program.cpp">
+    <ClCompile Include="Program.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Session initialization.cpp">
+    <ClCompile Include="DeviceInformation.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Device information.cpp">
+    <ClCompile Include="Socket.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AgentSocket.cpp">
+    <ClCompile Include="agent-object.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Session termination.cpp">
+    <ClCompile Include="Cmd.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Namedpipe-connection.c">
-      <Filter>namedpipe</Filter>
+    <ClCompile Include="SharedMemory.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Variable.h">
+    <ClInclude Include="Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Session initialization.h">
+    <ClInclude Include="DeviceInformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Device Information.h">
+    <ClInclude Include="Cmd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AgentSocket.h">
+    <ClInclude Include="Socket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Session termination.h">
+    <ClInclude Include="SharedMemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Namedpipe-connection.h">
-      <Filter>namedpipe</Filter>
+    <ClInclude Include="agent-object.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

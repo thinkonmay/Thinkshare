@@ -1,20 +1,58 @@
-#include "Framework.h"
-#include "Handle data channel.h"
-#include "session-core.h"
-#include "Session.h"
+#include "SharedMemory.h"
+#include "HandleDataChannel.h"
 
 
 
-
+/// <summary>
+/// handle data message from client,
+/// if destination is not session core, forward it using shared memory
+/// </summary>
+/// <param name="datachannel"></param>
+/// <param name="byte"></param>
+/// <param name="core"></param>
 void
 control_channel_on_message_data(GObject* datachannel,
     GBytes* byte,
     SessionCore* core)
 {
-    gpointer data = g_bytes_get_data(byte,sizeof(byte));
+    IPC* ipc = session_core_get_ipc(core);
+    gpointer message = g_bytes_get_data(byte,sizeof(byte));
+    
+
+    gpointer data;
+    Opcode opcode;
+    Location location;
 
 
 
+    
+ 
+   
+    if (message->to == ipc->core_id)
+    {
+        switch (message->opcode)
+        {
+
+        }
+    } 
+    else if (message->to == ipc->agent_id )
+    {
+        if (!send_message_through_shared_memory(core, AGENT, opcode, data))
+        {
+            g_printerr("error send data through link");
+        }
+    }
+    else if (message->to == ipc->loader_id)
+    {
+        if (!send_message_through_shared_memory(core, LOADER, opcode, data))
+        {
+            g_printerr("error send data through link");
+        }
+    }
+    else
+    {
+        g_printerr("unknown message");
+    }
 
 }
 
@@ -54,7 +92,13 @@ control_channel_on_open(GObject* dc,
 
 
 
-
+/// <summary>
+/// handle data from hid byte data channel,
+/// this channel only responsible for parsing HID device 
+/// </summary>
+/// <param name="datachannel"></param>
+/// <param name="data"></param>
+/// <param name="core"></param>
 void
 hid_channel_on_message_data(GObject* datachannel,
     GBytes* data,
@@ -104,7 +148,7 @@ hid_channel_on_open(GObject* dc,
 
 
 gboolean
-session_core_connect_data_channel_signals(SessionCore* core,
+connect_data_channel_signals(SessionCore* core,
     gpointer user_data)
 {
     /* We need to transmit this ICE candidate to the browser via the websockets

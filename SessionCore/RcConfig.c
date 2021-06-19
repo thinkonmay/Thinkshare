@@ -1,10 +1,4 @@
-#include "Framework.h"
-#include "Handle data channel.h"
-#include "Handle pipeline.h"
-#include "RC config.h"
-#include "Session.h"
-#include "Signalling handling.h"
-
+#include "RcConfig.h"
 
 
 /*perform adaptive bitrate here*/

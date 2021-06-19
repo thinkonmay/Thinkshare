@@ -1,18 +1,15 @@
-#include "Framework.h"
-#include "Session.h"
-#include "Signalling handling.h"
-#include "RC config.h"
-#include "Handle data channel.h"
-#include "Handle pipeline.h"
+#include "SignallingHandling.h"
+#include "RcConfig.h"
+#include "HandleDataChannel.h"
+#include "HandlePipeline.h"
 #include "session-core.h"
-#include "Session.h"
+#include "SharedMemory.h"
 
 
 
 
 
-
-struct _SessionCore
+typedef struct 
 {
 
 	GObject* parent_instance;
@@ -28,7 +25,7 @@ struct _SessionCore
 	CoreState state;
 
 	IPC* ipc;
-};
+}SessionCorePrivate;
 
 enum
 {
@@ -51,18 +48,32 @@ enum
 
 static guint signals[SIGNAL_LAST] = { 0, };
 
-
-G_DEFINE_TYPE(SessionCore, session_core, G_TYPE_OBJECT)
+/*define type with private struct*/
+G_DEFINE_TYPE_WITH_PRIVATE(SessionCore, session_core, G_TYPE_OBJECT)
 
 static void
 session_core_class_init(SessionCoreClass* klass)
 {
+
+	/*Override gobject base class virtual method and define session core virtual method*/
 	GObjectClass* object_class = G_OBJECT_GET_CLASS(klass);
-	object_class->constructed = session_core_constructed;
-	object_class->get_property = session_core_get_property;
-	object_class->get_property = session_core_set_property;
-	object_class->dispose = session_core_dispose;
-	object_class->finalize = session_core_finalize;
+	object_class->constructed =		session_core_constructed;
+	object_class->get_property =	session_core_get_property;
+	object_class->get_property =	session_core_set_property;
+	object_class->dispose =			session_core_dispose;
+	object_class->finalize =		session_core_finalize;
+
+	klass->connect_shared_memory_hub =	link_shared_memory_hub;
+	klass->connect_signalling_server =	connect_to_websocket_signalling_server_async;
+	klass->setup_pipeline =				setup_pipeline;
+	klass->setup_webrtc_signalling =	connect_WebRTCHub_handler;
+	klass->setup_data_channel =			connect_data_channel_signals;
+	klass->start_pipeline =				start_pipeline;
+	klass->stop_pipeline =				stop_pipeline;
+
+
+	/*signal registering
+	*/
 
 	signals[SIGNAL_SESSION_READY] =
 		g_signal_new("session-ready",
@@ -77,10 +88,11 @@ session_core_class_init(SessionCoreClass* klass)
 			G_SIGNAL_RUN_FIRST,
 			0,
 			NULL, NULL, NULL, G_TYPE_NONE, 0);
+	
 
 
-
-
+	/*properties registering
+	*/
 	properties[PROP_CORE_STATE] =
 		g_param_spec_int("core-state",
 			"State of session core",
@@ -93,18 +105,19 @@ static void
 session_core_constructed(GObject* object)
 {
 	SessionCore* self = (SessionCore*)object;
+	SessionCorePrivate* priv = session_core_get_instance_private(self);
+
 	SessionCoreClass* klass = SESSION_CORE_GET_CLASS(self);
 	/*connect necessary signal*/
 
-	g_signal_connect(self, "session-ready", connect_to_websocket_signalling_server_async, NULL);
-	g_signal_connect(self, "on-message", NULL, NULL);
-	g_signal_connect(self, "signalling-server-connected", NULL, NULL);
-	g_signal_connect(self, "pipeline-ready", NULL, NULL);
-	g_signal_connect(self, "handshake-signal-connected", NULL, NULL);
-	g_signal_connect(self, "data-channel-connected", NULL, NULL);
-	g_signal_connect(self, "pipeline-started", NULL, NULL);
-
-	g_signal_connect(self->ipc->link, "on-message", NULL);
+	g_signal_connect(priv, "session-ready", NULL, NULL);
+	g_signal_connect(priv, "on-message", NULL, NULL);
+	g_signal_connect(priv, "signalling-server-connected", NULL, NULL);
+	g_signal_connect(priv, "pipeline-ready", NULL, NULL);
+	g_signal_connect(priv, "handshake-signal-connected", NULL, NULL);
+	g_signal_connect(priv, "data-channel-connected", NULL, NULL);
+	g_signal_connect(priv, "pipeline-started", NULL, NULL);
+	g_signal_connect(priv->ipc->link, "on-message",NULL,NULL,NULL, NULL);
 }
 
 static void
@@ -114,11 +127,11 @@ session_core_get_property(GObject* object,
 	GParamSpec* pspec)
 {
 	SessionCore* self = SESSION_CORE(object);
-
+	SessionCorePrivate* priv = session_core_get_instance_private(self);
 	switch (prop_id)
 	{
 	case PROP_CORE_STATE:
-		g_value_set_int(value, self->state);
+		g_value_set_int(value, priv->state);
 	}
 }
 
@@ -127,11 +140,12 @@ session_core_set_property(GObject* object, guint prop_id,
 	const GValue *value, GParamSpec* pspec)
 {
 	SessionCore* self = SESSION_CORE(object);
+	SessionCorePrivate* priv = session_core_get_instance_private(self);
 
 	switch (prop_id)
 	{
 	case PROP_CORE_STATE:
-		self->state = g_value_get_int(value);
+		priv->state = g_value_get_int(value);
 	}
 }
 
@@ -141,27 +155,28 @@ static void
 session_core_dispose(GObject* object)
 {
 	SessionCore* self = (SessionCore*)object;
+	SessionCorePrivate* priv = session_core_get_instance_private(self);
 
-	if (self->hub->ws)
+	if (priv->hub->ws)
 	{
-		if (soup_websocket_connection_get_state(self->hub->ws) ==
+		if (soup_websocket_connection_get_state(priv->hub->ws) ==
 			SOUP_WEBSOCKET_STATE_OPEN)
-			 soup_websocket_connection_close(self->hub->ws, 1000, "");
+			 soup_websocket_connection_close(priv->hub->ws, 1000, "");
 		else
-			g_object_unref(self->hub->ws);
+			g_object_unref(priv->hub->ws);
 	}
 
 
 
-	gst_element_set_state(GST_ELEMENT(self->pipe->pipeline), GST_STATE_NULL);
+	gst_element_set_state(GST_ELEMENT(priv->pipe->pipeline), GST_STATE_NULL);
 	g_print("Pipeline stopped\n");
-	gst_object_unref(self->pipe->pipeline);
+	gst_object_unref(priv->pipe->pipeline);
 
-	g_object_unref(self->pipe);
-	g_object_unref(self->session);
-	g_object_unref(self->hub);
-	g_object_unref(self->session);
-	g_object_unref(self->state);
+	g_object_unref(priv->pipe);
+	g_object_unref(priv->session);
+	g_object_unref(priv->hub);
+	g_object_unref(priv->session);
+	g_object_unref(priv->state);
 }
 static void
 session_core_finalize(GObject* object)
@@ -174,122 +189,87 @@ session_core_finalize(GObject* object)
 
 
 
+
+
+
+
+gboolean 
+session_core_connect_shared_memory_hub(SessionCore* self)
+{
+	SessionCoreClass* klass = SESSION_CORE_GET_CLASS(self);
+	return klass->connect_shared_memory_hub(self);
+}
+
+gboolean
+session_core_connect_signalling_server(SessionCore* self)
+{
+	SessionCoreClass* klass = SESSION_CORE_GET_CLASS(self);
+	return klass->connect_signalling_server(self);
+}
+
+gboolean 
+session_core_setup_pipeline(SessionCore* self)
+{
+	SessionCoreClass* klass = SESSION_CORE_GET_CLASS(self);
+	return klass->setup_pipeline(self);
+}
+
+gboolean 
+session_core_setup_data_channel(SessionCore* self)
+{
+	SessionCoreClass* klass = SESSION_CORE_GET_CLASS(self);
+	return klass->setup_data_channel (self);
+}
+
+gboolean 
+session_core_setup_webrtc_signalling(SessionCore* self)
+{
+	SessionCoreClass* klass = SESSION_CORE_GET_CLASS(self);
+	return klass->setup_webrtc_signalling(self);
+}
+
+gboolean 
+session_core_start_pipeline(SessionCore* self)
+{
+	SessionCoreClass* klass = SESSION_CORE_GET_CLASS(self);
+	return klass->start_pipeline(self);
+}
+
+gboolean 
+session_core_stop_pipeline(SessionCore* self)
+{
+	SessionCoreClass* klass = SESSION_CORE_GET_CLASS(self);
+	return klass->stop_pipeline(self);
+}
+
+
+
+
+
+
+
 void
-session_core_link_shared_memory_hub(GObject* object)
-{
-	SessionCore* self = (GObject*)object;
-	self->ipc->hub = shared_memory_hub_new_default(self->ipc->core_id);
-		
-	shared_memory_hub_link_default_async(self->ipc->hub,
-		self->ipc->core_id,
-		self->ipc->block_size,
-		self->ipc->pipe_size,
-		NULL,
-		on_link_connected,
-		NULL);
-	return;
-}
-
-static void
-on_link_connected(GObject* object,
-	GAsyncResult* res,
-	gpointer user_data)
+session_core_send_message(GObject* object,
+	Message* msg)
 {
 	SessionCore* self = (SessionCore*)object;
+	SessionCorePrivate* priv = session_core_get_instance_private(self);
 
-	GError* error = NULL;
-	self->ipc->link = shared_memory_hub_link_finish(self, res, &error);
-
-	if (error)
-	{
-		session_core_end("cannot connect to shared memory hub", self, APP_STATE_ERROR);
-		g_error_free(error);
-	}
-
-	self->state = WAITING_SESSION_INFORMATION;
-	g_signal_emit(self, signals[SIGNAL_MEMORY_HUB_CONNETED], 0);
-	return;
-}
-
-
-
-
-
-static void
-session_core_send_message(GObject* object,Message* msg)
-{
-	SessionCore* self = (SessionCore*)object;
 	gboolean ret;
 
 	GBytes* bytes;
-	switch (msg->destination)
+	switch (msg->to)
 	{
 	case CLIENT:
 		bytes = g_bytes_new(msg, sizeof(msg));
-		g_signal_emit_by_name(self->hub->control, "send-data", bytes);
+		g_signal_emit_by_name(priv->hub->control, "send-data", bytes);
 		ret = TRUE;
 	case AGENT:
-		ret = shared_memory_link_send_message(self->ipc->link, self->ipc->agent_id, msg,sizeof(msg));
+		ret = shared_memory_link_send_message(priv->ipc->link, priv->ipc->agent_id, msg,sizeof(msg));
 	case LOADER:
-		ret = shared_memory_link_send_message(self->ipc->link, self->ipc->loader_id, msg, sizeof(msg));
+		ret = shared_memory_link_send_message(priv->ipc->link, priv->ipc->loader_id, msg, sizeof(msg));
 	}
 	return ret;
-}
-
-
-/// <summary>
-/// responsible for message from agent and session loader
-/// </summary>
-/// <param name="self"></param>
-/// <param name="msg"></param>
-/// <param name="user_data"></param>
-void
-session_core_on_shared_memory_message(SessionCore* self,
-	gint from,
-	gint to,
-	Message* msg,
-	gpointer user_data)
-{
-	Session* session;
-	gint* bitrate;
-
-
-	if (from == self->ipc->agent_id)
-	{
-		switch (msg->opcode)
-		{
-		case SESSION_INFORMATION:
-			if (self->state != WAITING_SESSION_INFORMATION)
-			{
-				session_core_end("received unknown session information\n",self, APP_STATE_ERROR);
-			}
-			
-			session = (Session*)msg->data;
-			self->qoe = session->qoe;
-			self->hub->client_offer = session->client_offer;
-			self->hub->signalling_url = session->signalling_url;
-			self->hub->stun_server = session->stun_server;
-			self->hub->disable_ssl = session->disable_ssl;
-			self->hub->slave_id = session->SlaveID;
-
-			 self->state = SESSION_INFORMATION_SETTLED;
-
-			 g_signal_emit(self, signals[SIGNAL_SESSION_READY], 0);
-		case CLIENT_MESSAGE:
-			return;
-		}
-	}
-	else if (from == LOADER)
-	{
-		return;
-	}
-	else
-	{
-		g_printerr("unknown message");
-	}
-
-	g_free(session);
-	g_free(bitrate);
 }
 
 
@@ -316,15 +296,6 @@ void
 session_core_end(const gchar* msg, SessionCore* core, CoreState state)
 {
 
-
-	if (msg)
-		g_printerr("%s\n", msg);
-
-	if (state > 0)
-		g_object_set_property(core, "core-state", state);
-
-	g_object_unref(core);
-	return;
 }
 
 
@@ -336,20 +307,29 @@ session_core_end(const gchar* msg, SessionCore* core, CoreState state)
 Pipeline*
 session_core_get_pipeline(SessionCore* self)
 {
-	return self->pipe;
+
+	SessionCorePrivate* priv = session_core_get_instance_private(self);
+	return priv->pipe;
 }
 
 WebRTCHub*
 session_core_get_rtc_hub(SessionCore* self)
 {
-	return self->hub;
+	SessionCorePrivate* priv = session_core_get_instance_private(self);
+	return priv->hub;
 }
 
 
 SessionQoE*
 session_core_get_qoe(SessionCore* self)
 {
-	return self->qoe;
+	SessionCorePrivate* priv = session_core_get_instance_private(self);
+	return priv->qoe;
 }
 
-
+IPC*
+session_core_get_ipc(SessionCore* self)
+{
+	SessionCorePrivate* priv = session_core_get_instance_private(self);
+	return priv->ipc;
+}
