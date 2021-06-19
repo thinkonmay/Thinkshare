@@ -1,10 +1,4 @@
-#include "Framework.h"
-#include "Handle data channel.h"
-#include "Handle pipeline.h"
-#include "RC config.h"
-#include "Signalling handling.h"
-#include "Session.h"
-#include "session-core.c"
+#include "SignallingHandling.h"
 
 void
 send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
@@ -257,8 +251,7 @@ on_offer_received(SessionCore* core, GstSDPMessage* sdp)
 /*Connect to the signalling server. This is the entrypoint for everything else.
  */
 void
-connect_to_websocket_signalling_server_async(SessionCore* core,
-    gpointer user_data)
+connect_to_websocket_signalling_server_async(SessionCore* core)
 {
     SoupLogger* logger;
     SoupMessage* message;
@@ -523,9 +516,6 @@ on_server_connected(SoupSession* session,
 
     g_signal_connect(hub->ws, "closed", G_CALLBACK(on_server_closed), core);
     g_signal_connect(hub->ws, "message", G_CALLBACK(on_server_message), core);
-
-    session_core_set_websocket_connection(core, hub->ws);
-
     register_with_server(core);
     return;
 }

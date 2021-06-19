@@ -1,10 +1,4 @@
-#include "Framework.h"
-#include "Session initialization.h"
-#include "Session termination.h"
-#include "Variable.h"
-#include "Device Information.h"
-#include "AgentSocket.h"
-
+#include "Socket.h"
 
 
 gchar*
@@ -27,7 +21,7 @@ get_string_from_json_object(JsonObject* object)
 }
 
 void
-connect_to_host_async(void)
+connect_to_host_async(AgentObject* self)
 {
     SoupLogger* logger;
     SoupMessage* message;
@@ -53,7 +47,7 @@ connect_to_host_async(void)
     soup_session_websocket_connect_async(session,
         message, NULL, NULL, NULL,
         (GAsyncReadyCallback)on_server_connected, message);
-    agent_state = HOST_CONNECTING;
+    g_object_set_property(self,"agent-state", HOST_CONNECTING);
 }
 
 
@@ -103,7 +97,7 @@ register_with_server(void)
 }
 
 gboolean
-on_server_disconnect(gchar* message, Disconnection_State state)
+on_server_disconnect(gchar* message, DisconnectState state)
 {
     if (message)
         g_printerr("%s\n", message);

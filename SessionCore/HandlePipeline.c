@@ -1,10 +1,5 @@
-#include "Framework.h"
-#include "Handle data channel.h"
-#include "Handle pipeline.h"
-#include "RC config.h"
-#include "Signalling handling.h"
-#include "Session.h"
-#include "session-core.c"
+#include "HandlePipeline.h"
+#include "SignallingHandling.h"
 
 gboolean
 check_plugins()
@@ -41,8 +36,8 @@ check_plugins()
 /*handle all media stream include both audio and video:
 add both audio and video pipe into webrtcbin, all webrtc bin signal handle will be connected at start_pipeline()
 */
-void
-session_core_setup_pipeline(SessionCore* core, 
+gboolean
+setup_pipeline(SessionCore* core, 
     gpointer user_data)
 
 {
@@ -52,10 +47,10 @@ session_core_setup_pipeline(SessionCore* core,
     CoreState state;
     g_object_get_property(core, "core-state", &state);
 
-    if (state != SERVER_REGISTERED)
+    while (state != SERVER_REGISTERED)
     {
         g_print("Wating for server to connect");
-        sleep(1);
+        g_object_get_property(core, "core-state", &state);
     }
 
     if (!check_plugins())
@@ -248,7 +243,7 @@ session_core_setup_pipeline(SessionCore* core,
 
 
     /*link sound pipeline*/
-    gst_bin_add_many(GST_BIN(core->pipe->pipeline), 
+    gst_bin_add_many(GST_BIN(pipe->pipeline), 
         pipe->screencapture,
         pipe->videoupload,
         pipe->videoconvert,
@@ -316,7 +311,7 @@ session_core_setup_pipeline(SessionCore* core,
     g_signal_emit_by_name(core, "pipeline-ready", NULL);
 }
 
-void
+gboolean
 connect_WebRTCHub_handler(SessionCore* core)
 
 {
@@ -346,7 +341,7 @@ connect_WebRTCHub_handler(SessionCore* core)
 
 
 gboolean
-session_core_start_pipeline(SessionCore* core)
+start_pipeline(SessionCore* core)
 {
     GstStateChangeReturn ret;
     Pipeline* pipe = session_core_get_pipeline(core);
@@ -361,4 +356,11 @@ session_core_start_pipeline(SessionCore* core)
         return FALSE;
     }
     return TRUE;
+}
+
+
+void
+stop_pipeline(SessionCore* core)
+{
+
 }

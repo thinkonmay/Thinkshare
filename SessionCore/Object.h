@@ -1,6 +1,8 @@
 #pragma once
 
-#include <glib-2.0/glib.h>
+#include "Framework.h"
+#include "session-core.h"
+#include "Object.h"
 
 typedef enum
 {
@@ -30,7 +32,8 @@ typedef enum
 	CORE,
 	CLIENT,
 	LOADER,
-	AGENT
+	AGENT,
+	HOST
 }Location;
 
 typedef struct
@@ -64,6 +67,8 @@ typedef enum
 typedef struct
 {
 	Opcode opcode;
+	gint from;
+	gint to;
 	gpointer data;
 }Message;
 
@@ -98,7 +103,7 @@ typedef enum
 
 typedef struct
 {
-	gint SlaveID;
+	gint SessionSlaveID;
 
 	gchar* signalling_url;
 
@@ -116,9 +121,11 @@ typedef struct
 	SharedMemoryHub* hub;
 	SharedMemoryLink* link;
 
-	gint core_id;
-	gint loader_id;
-	gint agent_id;
+	const gint core_id;
+	const gint loader_id;
+	const gint agent_id;
+	const gint host_id;
+	const gint client_id;
 
 	gint block_size;
 	gint pipe_size;

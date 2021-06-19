@@ -1,9 +1,7 @@
-#include "Framework.h"
-#include "Session.h"
 #include "session-core.h"
-#include "Handle pipeline.h"
-#include "Handle data channel.h"
-#include "Signalling handling.h"
+
+
+
 gint id;
 SessionCore* core;
 GMainLoop* loop;
@@ -35,14 +33,22 @@ main(int argc, char* argv[])
    
     g_object_new(SESSION_TYPE_CORE, "hub-id",id);
 
+
+
+
+
+
     core = session_core_new(id);
 
 
 
 
-    session_core_link_shared_memory_hub(core);
-    session_core_setup_pipeline(core,NULL);
-    connect_WebRTCHub_handler(core);
+    session_core_connect_shared_memory_hub(core);
+    session_core_setup_pipeline(core);
+    session_core_setup_data_channel(core);
+    session_core_setup_webrtc_signalling(core);
+    session_core_connect_signalling_server(core);
+    session_core_start_pipeline(core);
 
 
 

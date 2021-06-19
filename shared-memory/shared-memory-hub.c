@@ -2,7 +2,7 @@
 #include "frame-work.h"
 #include "shared-memory-hub.h"
 #include "shared-memory-link.h"
-#include "type-def.h"
+#include "Object.h"
 
 /// <summary>
 /// private struct 

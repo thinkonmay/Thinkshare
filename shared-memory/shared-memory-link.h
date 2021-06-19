@@ -8,7 +8,7 @@ extern "C"
 #define  __SHARED_MEMORY_LINK_H__
 #include "frame-work.h"
 #include "shared-memory-hub.h"
-#include "type-def.h"
+#include "object.h"
 
 G_BEGIN_DECLS
 

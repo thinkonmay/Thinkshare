@@ -140,24 +140,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AgentSocket.cpp" />
-    <ClCompile Include="Device information.cpp" />
-    <ClCompile Include="Namedpipe-connection.c" />
-    <ClCompile Include="Program.cpp" />
-    <ClCompile Include="Session initialization.cpp" />
-    <ClCompile Include="Session termination.cpp" />
+    <ClCompile Include="agent-object.c" />
+    <ClCompile Include="Cmd.c" />
+    <ClCompile Include="Socket.c" />
+    <ClCompile Include="DeviceInformation.c" />
+    <ClCompile Include="SharedMemory.c" />
+    <ClCompile Include="Program.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AgentSocket.h" />
-    <ClInclude Include="Device Information.h" />
+    <ClInclude Include="agent-object.h" />
+    <ClInclude Include="Socket.h" />
+    <ClInclude Include="Cmd.h" />
     <ClInclude Include="Framework.h" />
-    <ClInclude Include="Namedpipe-connection.h" />
-    <ClInclude Include="Session initialization.h" />
-    <ClInclude Include="Session termination.h" />
-    <ClInclude Include="Variable.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
+    <ClInclude Include="DeviceInformation.h" />
+    <ClInclude Include="SharedMemory.h" />
+    <ClInclude Include="Object.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,18 +1,21 @@
 #include "Framework.h"
-#include "Session.h"
+#include "Object.h"
 #include "session-core.h"
 
 
 gboolean
 check_plugins();
 
-void
+gboolean
 connect_WebRTCHub_handler(SessionCore* core);
 
 
-void
-session_core_setup_pipeline(SessionCore* core,
+gboolean
+setup_pipeline(SessionCore* core,
 	gpointer user_data);
 
 gboolean
-session_core_start_pipeline(SessionCore* core)
+start_pipeline(SessionCore* core);
+
+void
+stop_pipeline(SessionCore* core);

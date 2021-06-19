@@ -138,7 +138,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\msgpack-c-c_master\msgpack-c-c_master\include;E:\msgpack-c-c_master\msgpack-c-c_master\include\msgpack;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\personal cloud computing\personal cloud computing\shared-memory;E:\msgpack-c-c_master\msgpack-c-c_master\include;E:\msgpack-c-c_master\msgpack-c-c_master\include\msgpack;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,21 +150,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Handle data channel.c" />
-    <ClCompile Include="Handle pipeline.c" />
+    <ClCompile Include="HandleDataChannel.c" />
+    <ClCompile Include="HandlePipeline.c" />
     <ClCompile Include="Program.c" />
-    <ClCompile Include="RC config.c" />
+    <ClCompile Include="RcConfig.c" />
     <ClCompile Include="session-core.c" />
-    <ClCompile Include="Signalling handling.c" />
+    <ClCompile Include="SharedMemory.c" />
+    <ClCompile Include="SignallingHandling.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h" />
-    <ClInclude Include="Handle data channel.h" />
-    <ClInclude Include="Handle pipeline.h" />
-    <ClInclude Include="RC config.h" />
+    <ClInclude Include="HandleDataChannel.h" />
+    <ClInclude Include="HandlePipeline.h" />
+    <ClInclude Include="RcConfig.h" />
     <ClInclude Include="session-core.h" />
-    <ClInclude Include="Session.h" />
-    <ClInclude Include="Signalling handling.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="SharedMemory.h" />
+    <ClInclude Include="SignallingHandling.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

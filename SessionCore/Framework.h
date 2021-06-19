@@ -22,4 +22,8 @@
 #include <sstream>
 #include <string.h>
 
+
+#include <E:\personal cloud computing\personal cloud computing\shared-memory\shared-memory-hub.h>
+#include <E:\personal cloud computing\personal cloud computing\shared-memory\shared-memory-link.h>
+
 #define GST_USE_UNSTABLE_API
