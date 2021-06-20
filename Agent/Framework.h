@@ -1,4 +1,8 @@
-#pragma once 
+#pragma once
+
+/*Framework header file contain all necessary header
+for all other header and source file to
+reduce complexity*/
 #include <Windows.h>
 #include <iostream>
 
@@ -19,3 +23,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+
+#include <E:\personal cloud computing\personal cloud computing\shared-memory\shared-memory-hub.h>
+#include <E:\personal cloud computing\personal cloud computing\shared-memory\shared-memory-link.h>
+
+
+
+

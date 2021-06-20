@@ -54,8 +54,7 @@ on_server_connected(SoupSession* session,
     SessionCore* core);
 
 void
-connect_to_websocket_signalling_server_async(SessionCore* core,
-    gpointer user_data);
+connect_to_websocket_signalling_server_async(SessionCore* core);
 
 gboolean
 register_with_server(SessionCore* core);

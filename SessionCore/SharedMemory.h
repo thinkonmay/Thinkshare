@@ -3,10 +3,6 @@
 #include "session-core.h"
 
 
-void
-on_link_connected(GObject* object,
-	GAsyncResult* res,
-	gpointer user_data);
 
 void
 link_shared_memory_hub(GObject* object);

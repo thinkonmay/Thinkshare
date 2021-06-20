@@ -1,12 +1,6 @@
 #include "agent-object.h"
 
 
-static GOptionEntry entries[] = {
-  {"Host_URL",0,0, G_OPTION_ARG_STRING, &Host_URL,
-    "personal cloud computer cluster host",NULL},
-  {NULL},
-};
-
 
 int
 main(int argc, char* argv[])
