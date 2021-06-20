@@ -58,6 +58,7 @@ G_DEFINE_TYPE_WITH_PRIVATE(SharedMemoryLink, shared_memory_link, G_TYPE_OBJECT)
 /*declaration stuff*/
 static void
 shared_memory_link_constructed(GObject* object);
+
 static void
 shared_memory_link_get_property(GObject* object);
 
@@ -264,7 +265,7 @@ atomic_mem_read(SharedMemoryLink* self,
 /// <param name="self"></param>
 /// <param name="block"></param>
 /// <param name="data"></param>
-/// <param name="data_size"></param>
+/// <para           m name="data_size"></param>
 /// <returns></returns>
 gboolean
 atomic_mem_write(SharedMemoryLink* self,
@@ -297,34 +298,36 @@ atomic_mem_write(SharedMemoryLink* self,
 /// <param name="msg"></param>
 /// <returns></returns>
 gboolean 
-shared_memory_link_send_message(SharedMemoryLink* self, 
-	Message* msg)
+shared_memory_link_send_message(SharedMemoryLink* self,
+	gint to,
+	gpointer data)
 {
 	SharedMemoryLinkClass* klass = SHARED_MEMORY_LINK_GET_CLASS(self);
 	SharedMemoryLinkPrivate* priv = shared_memory_link_get_instance_private(self);
 
 
-	if (msg->to == priv->peer_id)
+	if (to == priv->peer_id)
 	{
-		if (!klass->atomic_mem_read(self, priv->block_array[0]))
+		if (shared_memory_link_send_message_lite(self, READ, NULL))
 		{
 			return FALSE;
 		}
-		klass->atomic_mem_write(self, priv->block_array[0],msg->data,sizeof(msg->data));
+		klass->atomic_mem_write(self, priv->block_array[0],data,sizeof(data));
 		shared_memory_link_send_message_lite(self, MESSAGE, NULL);
 	}
 	else
 	{
 		/*process peer transfer process*/
-		MemoryBlock* block = new_empty_block(g_random_int(),sizeof(msg));
+		MemoryBlock* block = new_empty_block(g_random_int(),sizeof(data));
 
 		/*get handle (search for window handle concept) of memory block*/
-		block->handle =	CreateFileMapping(
+		block->handle =	
+			CreateFileMapping(
 				INVALID_HANDLE_VALUE,    // use paging file
 				NULL,                    // default security
 				PAGE_READWRITE,          // read/write access
 				0,                       // maximum object size (high-order DWORD)
-			sizeof(msg),                // maximum object size (low-order DWORD)
+				sizeof(data),                // maximum object size (low-order DWORD)
 				block->name);                 // name of mapping object
 		
 		/*get memory block pointer from memory block handle*/
@@ -333,23 +336,23 @@ shared_memory_link_send_message(SharedMemoryLink* self,
 				FILE_MAP_ALL_ACCESS, // read/write permission
 				0,
 				0,
-				sizeof(msg));
+				sizeof(data));
 
 		/*copy data from message to block data*/
-		memcpy(block->pointer, msg, sizeof(msg));
+		memcpy(block->pointer, data, sizeof(data));
 
 		block->pointer = NULL;
 		block->handle =  NULL;
 
 		/*initialize message */
-		Message* msg_temp = malloc(sizeof(Message));
-		msg_temp->from = priv->owned_hub_id;
-		msg_temp->to = msg->to;
-		msg_temp->opcode = PEER_TRANSFER_REQUEST;
-		msg_temp->data = msg;
+		SharedMemoryMessage* msg = malloc(sizeof(SharedMemoryMessage));
+		msg->from = priv->owned_hub_id;
+		msg->to = to;
+		msg->opcode = PEER_TRANSFER_REQUEST;
+		msg->data = block;
 
 		/*send peer transfer request to master hub*/
-		shared_memory_link_send_message_lite(self, PEER_TRANSFER_REQUEST, msg_temp);
+		shared_memory_link_send_message_lite(self, PEER_TRANSFER_REQUEST, msg);
 	}
 }
 
@@ -394,17 +397,20 @@ atomic_pipe_send(SharedMemoryLink* self,
 /// <returns></returns>
 gboolean
 shared_memory_link_send_message_lite(SharedMemoryLink* self,
-	Opcode opcode,
+	SharedMemoryOpcode opcode,
 	gpointer data)
 {
 	SharedMemoryLinkClass* klass = SHARED_MEMORY_LINK_GET_CLASS(self);
 	SharedMemoryLinkPrivate* priv = shared_memory_link_get_instance_private(self);
 
-	Message* msg = malloc(sizeof(Message));
+	SharedMemoryMessage* msg = malloc(sizeof(SharedMemoryMessage));
 	msg->opcode = opcode;
 	/*copy from data to pkg buffer*/
-	memcpy(msg->data, data, sizeof(data));
-	return klass->atomic_pipe_send(self, msg, sizeof(Message));
+	if(data != NULL)
+	{
+		memcpy(msg->data, data, sizeof(data));
+	}
+	return klass->atomic_pipe_send(self, msg, sizeof(SharedMemoryMessage));
 }
 
 
@@ -441,7 +447,7 @@ handle_receive_pipe(SharedMemoryLink* self)
 	} while (TRUE);
 	g_free(read_buffer);
 
-	Message* msg = (Message*)buffer;
+	SharedMemoryMessage* msg = (SharedMemoryMessage*)buffer;
 
 	switch (msg->opcode)
 	{
@@ -515,7 +521,7 @@ handle_receive_pipe(SharedMemoryLink* self)
 
 			priv->block_array[0]->state = !priv->hub_is_master;
 
-			Message* message = klass->atomic_mem_read(self, priv->block_array[0]);
+			SharedMemoryMessage* message = klass->atomic_mem_read(self, priv->block_array[0]);
 
 			g_signal_emit(self, signals[SIGNAL_ON_DATA_MESSAGE],
 				message->from, message->to, message->opcode, message->data);
@@ -539,7 +545,7 @@ handle_receive_pipe(SharedMemoryLink* self)
 		}
 		else
 		{
-			Message* message = (Message*)msg->data;
+			SharedMemoryMessage* message = (SharedMemoryMessage*)msg->data;
 			shared_memory_hub_perform_peer_transfer_request(priv->owned_hub, message, msg->to);
 		}
 	}

@@ -1,12 +1,11 @@
 #pragma once
 
-#ifndef __TYPE_DEF_h__
-#define __TYPE_DEF_H__
+#ifndef __OBJECT_h__
+#define __OBJECT_H__
+#include "frame-work.h"
 
-#include <glib-2.0/glib.h>
-#include <windows.h>
-#include <glib-2.0/glib-object.h>
-typedef struct pipe
+
+typedef struct
 {
 	gint id;
 
@@ -18,7 +17,7 @@ typedef struct pipe
 	GMainContext* context;
 }NamedPipe;
 
-typedef enum opcode
+typedef enum
 {
 	MESSAGE,
 
@@ -31,18 +30,18 @@ typedef enum opcode
 	STATE_ERROR,
 
 	PEER_TRANSFER_REQUEST,
-}Opcode;
+}SharedMemoryOpcode;
 
-typedef struct message
+typedef struct
 {
 	gint from;
 	gint to;
-	Opcode opcode;
+	SharedMemoryOpcode opcode;
 	gpointer data;
-}Message;
+}SharedMemoryMessage;
 
 
-typedef struct memory_block
+typedef struct
 {
 	HANDLE handle;
 	gpointer pointer;
@@ -59,7 +58,7 @@ typedef struct memory_block
 }MemoryBlock;
 
 
-typedef struct init_data
+typedef struct
 {
 	MemoryBlock*		mem_block;
 	NamedPipe*			send_pipe;
@@ -69,4 +68,6 @@ typedef struct init_data
 	gint				owned_hub_id;
 	gint				peer_hub_id;
 }InitData;
+
+
 #endif

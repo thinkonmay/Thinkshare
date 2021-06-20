@@ -36,6 +36,8 @@ enum
 };
 
 
+static guint signals[SIGNAL_LAST] = { 0, };
+static guint properties[PROP_LAST] = { 0, };
 
 
 
@@ -59,8 +61,6 @@ static void
 init_data_free(InitData* data);
 
 
-static guint signals[SIGNAL_LAST] = { 0, };
-static guint properties[PROP_LAST] = { 0, };
 
 G_DEFINE_TYPE_WITH_PRIVATE(SharedMemoryHub,shared_memory_hub,G_TYPE_OBJECT)
 
@@ -380,6 +380,7 @@ new_empty_block(gint id, gsize block_size)
 	return ret;
 }
 
+
 NamedPipe* 
 new_empty_pipe(gint id,gsize buffer_size)
 {
@@ -405,7 +406,7 @@ new_empty_pipe(gint id,gsize buffer_size)
 /// <returns></returns>
 gboolean
 shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
-	Message* msg,
+	SharedMemoryMessage* msg,
 	gint destination)
 {
 	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(hub);

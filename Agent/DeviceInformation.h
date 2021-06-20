@@ -1,5 +1,7 @@
 #pragma once
+#include "agent-object.h"
 #include "Framework.h"
 #include "Object.h"
-#include "agent-object.h"
+
+/*Bao should create device information query component in this source file*/
 

@@ -91,6 +91,7 @@ typedef enum
 	PEER_CALL_STOPPING,
 	PEER_CALL_STOPPED,
 	PEER_CALL_ERROR,
+
 	SESSION_DENIED,
 	SESSION_INFORMATION_SETTLED,
 	WAITING_SESSION_INFORMATION,
@@ -131,12 +132,7 @@ typedef struct
 	gint pipe_size;
 }IPC;
 
-typedef struct
-{
-	gint agent_id;
-	gint core_id;
-	gint loader_id;
-}Hub;
+
 
 
 typedef struct

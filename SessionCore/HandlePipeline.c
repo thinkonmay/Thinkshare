@@ -1,5 +1,6 @@
-#include "HandlePipeline.h"
+﻿#include "HandlePipeline.h"
 #include "SignallingHandling.h"
+#include "RcConfig.h"
 
 gboolean
 check_plugins()
@@ -33,9 +34,14 @@ check_plugins()
 
 
 
-/*handle all media stream include both audio and video:
-add both audio and video pipe into webrtcbin, all webrtc bin signal handle will be connected at start_pipeline()
-*/
+/// <summary>
+/// handle all media stream include both audio and video:
+///add both audioand video pipe into webrtcbin, 
+/// signal handler will we connect in connect_handler
+/// </summary>
+/// <param name="core"></param>
+/// <param name="user_data"></param>
+/// <returns></returns>
 gboolean
 setup_pipeline(SessionCore* core, 
     gpointer user_data)
@@ -163,7 +169,12 @@ setup_pipeline(SessionCore* core,
     }
     if (g_strcmp0(qoe->video_encoder, "nvh265enc"))
     {
+        /*Tôi cần Minh Quang bổ sung nvh265 encoder pipeline vào cho hệ thống
+        *Tuy nhiên phần này sẽ cần được hoàn thành sau khi quang hoàn thiện xong 
+        * thuật toán adaptive bitrate control
+        */
         g_print("nvh265");
+        
     }
     else
     {

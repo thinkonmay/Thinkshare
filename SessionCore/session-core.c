@@ -11,15 +11,10 @@
 
 typedef struct 
 {
-
-	GObject* parent_instance;
-	
 	Pipeline* pipe;
 
 	SessionQoE* qoe;
 
-	Session* session;
-	
 	WebRTCHub* hub;
 
 	CoreState state;
@@ -173,9 +168,7 @@ session_core_dispose(GObject* object)
 	gst_object_unref(priv->pipe->pipeline);
 
 	g_object_unref(priv->pipe);
-	g_object_unref(priv->session);
 	g_object_unref(priv->hub);
-	g_object_unref(priv->session);
 	g_object_unref(priv->state);
 }
 static void

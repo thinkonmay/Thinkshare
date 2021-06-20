@@ -1,7 +1,14 @@
 #include "RcConfig.h"
 
 
-/*perform adaptive bitrate here*/
+/// <summary>
+/// perform adaptive bitrate calculation here
+/// the algorithm should base on the QoE mode to compensate video and audio bitrate,
+/// further more, some work will related to adjust framerate and resolution.
+/// </summary>
+/// <param name="compose_bitrate"></param>
+/// <param name="qoe"></param>
+/// <returns></returns>
 gdouble*
 process_bitrate_calculation(gint compose_bitrate, 
 	SessionQoE* qoe)
@@ -21,6 +28,13 @@ process_bitrate_calculation(gint compose_bitrate,
 	return temp;
 }
 
+
+/// <summary>
+/// attach bitrate controller with element in pipeline, 
+/// more information can be found in gstreamer-dynamic controllable variable
+/// </summary>
+/// <param name="encoder"></param>
+/// <param name="controller"></param>
 void
 attach_bitrate_control(GstObject* encoder, 
 	GstControlSource* controller)

@@ -5,6 +5,14 @@
 #include <glib.h>
 #include <glib-2.0/glib-object.h>
 #include <glib-2.0/gio/gio.h>
+/*Test file for shared-memory project, 
+Hiep and Tuan should perform bandwidth and latency test here 
+*/
+
+
+
+
+
 
 #define MAIN_HUB_ID 123456
 #define PEER_HUB_ID 654321
@@ -37,7 +45,7 @@ void
 on_message_string(SharedMemoryLink* self,
     gint from,
     gint to,
-    Opcode opcode,
+    SharedMemoryOpcode opcode,
     gpointer data,
     gpointer user_data)
 {
