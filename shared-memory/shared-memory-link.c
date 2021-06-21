@@ -26,13 +26,9 @@ typedef struct
 
 enum
 {
-	SIGNAL_MEM_READ,
-	SIGNAL_MEM_WRITE,
-	SIGNAL_MEM_READ_DONE,
-	SIGNAL_MEM_WRITE_DONE,
-	SIGNAL_MEM_STATE_ERROR,
 	SIGNAL_PIPE_CONNECTED,
 	SIGNAL_ON_DATA_MESSAGE,
+	SIGNAL_GOT_MEMORY_BLOCK,
 
 	SIGNAL_LAST
 };
@@ -60,10 +56,10 @@ static void
 shared_memory_link_constructed(GObject* object);
 
 static void
-shared_memory_link_get_property(GObject* object);
-
-static void
-shared_memory_get_property(GObject* object);
+shared_memory_link_get_property(GObject* object,
+	guint prop_id,
+	GValue* value,
+	GParamSpec* pspec);
 
 static void
 shared_memory_link_dispose(GObject * object);
@@ -101,6 +97,9 @@ link_del_mem_block(SharedMemoryLink* self,
 static guint signals[SIGNAL_LAST] = { 0, };
 static guint properties[PROP_LAST] = {0, };
 
+static void
+shared_memory_link_init(GObject* object) {}
+
 
 /// <summary>
 /// class initialization: override gobject base class method
@@ -113,9 +112,15 @@ shared_memory_link_class_init(SharedMemoryLinkClass* klass)
 	GObjectClass* object_class = G_OBJECT_CLASS(klass);
 
 	object_class->constructed = shared_memory_link_constructed;
-	object_class->get_property = shared_memory_get_property;
+	object_class->get_property = shared_memory_link_get_property;
 	object_class->dispose = shared_memory_link_dispose;
 	object_class->finalize = shared_memory_link_finalize;
+
+
+	klass->atomic_mem_read = atomic_mem_read;
+	klass->atomic_mem_write = atomic_mem_write;
+	klass->atomic_pipe_send = atomic_pipe_send;
+	klass->establish_link = establish_link;
 
 
 	///register object signal
@@ -130,8 +135,14 @@ shared_memory_link_class_init(SharedMemoryLinkClass* klass)
 			SHARED_MEMORY_TYPE_LINK,
 			G_SIGNAL_RUN_LAST,
 			0, NULL, NULL, NULL,
-			G_TYPE_NONE, 4,
-			G_TYPE_INT,G_TYPE_INT, G_TYPE_INT, G_TYPE_POINTER);
+			G_TYPE_NONE, 1,
+			G_TYPE_POINTER);
+	signals[SIGNAL_GOT_MEMORY_BLOCK] =
+		g_signal_new("got_memory",
+			SHARED_MEMORY_TYPE_LINK,
+			G_SIGNAL_RUN_LAST,
+			0, NULL, NULL, NULL,
+			G_TYPE_NONE, 0);
 
 	//register object properties
 	properties[PROP_PEER_ID] =
@@ -152,21 +163,6 @@ shared_memory_link_class_init(SharedMemoryLinkClass* klass)
 
 }
 
-/// <summary>
-/// object instance initialization: declare link class method
-/// </summary>
-/// <param name="self"></param>
-static void
-shared_memory_link_init(SharedMemoryLink* self)
-{
-	/*get class from instance*/
-	SharedMemoryLinkClass* klass = SHARED_MEMORY_LINK_GET_CLASS(self);
-
-	klass->atomic_mem_read = atomic_mem_read;
-	klass->atomic_mem_write = atomic_mem_write;
-	klass->atomic_pipe_send = atomic_pipe_send;
-	klass->establish_link = establish_link;
-}
 
 /// <summary>
 /// constructed method of g object base class: run after initialize process is done
@@ -194,7 +190,10 @@ shared_memory_link_constructed(GObject* object)
 /// </summary>
 /// <param name="object"></param>
 static void
-shared_memory_get_property(GObject* object) 
+shared_memory_link_get_property(GObject* object,
+	guint prop_id,
+	GValue* value,
+	GParamSpec* pspec)
 {
 
 }
@@ -241,9 +240,14 @@ atomic_mem_read(SharedMemoryLink* self,
 	MemoryBlock* block)
 {
 	SharedMemoryLinkPrivate* priv = shared_memory_link_get_instance_private(self);
+
+	/*memory allocate before copy from shared memory*/
 	gpointer ret = malloc(block->size);
 
+	/*run memory read in separate private thread to prevent it from blocking other thread*/
 	g_main_context_push_thread_default(block->context);
+	/*send READ signal to peer before read from shared memroy*/
+	shared_memory_link_send_message_lite(self, READ, NULL);
 	while (TRUE)
 	{
 		if (block->state==priv->hub_is_master)
@@ -254,6 +258,7 @@ atomic_mem_read(SharedMemoryLink* self,
 	/*copy memory from memory block to ret memory, then return ret pointer*/
 	memcpy(ret, block->pointer, block->size);
 	shared_memory_link_send_message_lite(self, READ_DONE,NULL);
+	/*pop out thread before memcopy operation is done*/
 	g_main_context_pop_thread_default(block->context);
 	return ret;
 }
@@ -276,7 +281,10 @@ atomic_mem_write(SharedMemoryLink* self,
 	SharedMemoryLinkPrivate* priv = shared_memory_link_get_instance_private(self);
 	gpointer ret;
 
+	/*run memory write in separate thread to prevent memcpy from blocking other thread*/
 	g_main_context_push_thread_default(block->context);
+	/*send write signal before memcopy*/
+	shared_memory_link_send_message_lite(self, WRITE, NULL);
 	while (TRUE)
 	{
 		if (block->state == priv->hub_is_master)
@@ -287,12 +295,14 @@ atomic_mem_write(SharedMemoryLink* self,
 	/* copy data from data that (data) pointer pointed to, to memory block*/
 	memcpy(block->pointer, data, data_size);
 	shared_memory_link_send_message_lite(self, WRITE_DONE, NULL);
+	/*pop out thread after memcpy operation is done*/
 	g_main_context_pop_thread_default(block->context);
 }
 
 
 /// <summary>
 /// public method used by user to send message to other hub.
+/// Included master hub and other peer-slave hub
 /// </summary>
 /// <param name="self"></param>
 /// <param name="msg"></param>
@@ -305,19 +315,16 @@ shared_memory_link_send_message(SharedMemoryLink* self,
 	SharedMemoryLinkClass* klass = SHARED_MEMORY_LINK_GET_CLASS(self);
 	SharedMemoryLinkPrivate* priv = shared_memory_link_get_instance_private(self);
 
-
+	/*if destination equal peer-id, perform standard atomic write method to primary block*/
 	if (to == priv->peer_id)
 	{
-		if (shared_memory_link_send_message_lite(self, READ, NULL))
-		{
-			return FALSE;
-		}
 		klass->atomic_mem_write(self, priv->block_array[0],data,sizeof(data));
 		shared_memory_link_send_message_lite(self, MESSAGE, NULL);
 	}
+	/*else, perform peer transfer*/
 	else
 	{
-		/*process peer transfer process*/
+		/*create new empty block with random identification id*/
 		MemoryBlock* block = new_empty_block(g_random_int(),sizeof(data));
 
 		/*get handle (search for window handle concept) of memory block*/
@@ -341,10 +348,11 @@ shared_memory_link_send_message(SharedMemoryLink* self,
 		/*copy data from message to block data*/
 		memcpy(block->pointer, data, sizeof(data));
 
+		/*pointer is invalid after memory copy if performed, so assign NULL pointer to memory block pointer*/
 		block->pointer = NULL;
 		block->handle =  NULL;
 
-		/*initialize message */
+		/*initialize standard SharedMemoryMessage to send to master  hub*/
 		SharedMemoryMessage* msg = malloc(sizeof(SharedMemoryMessage));
 		msg->from = priv->owned_hub_id;
 		msg->to = to;
@@ -512,41 +520,43 @@ handle_receive_pipe(SharedMemoryLink* self)
 			priv->block_array[0]->state = UN_OWN;
 		}
 	case MESSAGE:
-		if (priv->block_array[0]->state != UN_OWN)
+		if (priv->block_array[0]->state == UN_OWN)
 		{
-			shared_memory_link_send_message_lite(self, STATE_ERROR, NULL);
-		}
-		else
-		{
+
 
 			priv->block_array[0]->state = !priv->hub_is_master;
 
-			SharedMemoryMessage* message = klass->atomic_mem_read(self, priv->block_array[0]);
+			gpointer data = klass->atomic_mem_read(self, priv->block_array[0]);
 
 			g_signal_emit(self, signals[SIGNAL_ON_DATA_MESSAGE],
-				message->from, message->to, message->opcode, message->data);
+				data);
 		}
-
+		else
+		{
+			shared_memory_link_send_message_lite(self, STATE_ERROR, NULL);
+		}
 	case PEER_TRANSFER_REQUEST:
 		if (!priv->hub_is_master)
 		{
-			/*Algorithm summation: if hub is not an master, its mean that hub is the destination of the message,
+			/*Algorithm summation: if hub is not an master,
+			*its mean that hub is the destination of the message,
 			* thus link will add the memblock which information lies inside message
 			*/
 			MemoryBlock* block = (MemoryBlock*)msg->data;
 			link_add_mem_block(self, block, FALSE);
 
-			gpointer data = klass->atomic_mem_read(self, priv->block_array[block->position]);
+			gpointer data = 
+				klass->atomic_mem_read(self, 
+				priv->block_array[block->position]);
 
 			g_signal_emit(self, signals[SIGNAL_ON_DATA_MESSAGE],
-				msg->from, msg->to, msg->opcode, data);
+				data);
 
 			link_del_mem_block(self, block);
 		}
 		else
 		{
-			SharedMemoryMessage* message = (SharedMemoryMessage*)msg->data;
-			shared_memory_hub_perform_peer_transfer_request(priv->owned_hub, message, msg->to);
+			shared_memory_hub_perform_peer_transfer_request(priv->owned_hub, msg->data, msg->to);
 		}
 	}
 

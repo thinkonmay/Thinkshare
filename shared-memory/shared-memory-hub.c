@@ -48,18 +48,23 @@ static guint properties[PROP_LAST] = { 0, };
 static void
 shared_memory_hub_constructed(GObject* object);
 static void
-shared_memory_hub_get_property(GObject* object, guint prop_id,
-	const GValue* value, GParamSpec* pspec);
+shared_memory_hub_get_property(GObject* object, 
+	guint prop_id,
+	const GValue* value, 
+	GParamSpec* pspec);
 static void
-shared_memory_hub_set_property(GObject* object, guint prop_id,
-	const GValue* value, GParamSpec* pspec);
+shared_memory_hub_set_property(GObject* object,
+	guint prop_id,
+	const GValue* value, 
+	GParamSpec* pspec);
 static void
 shared_memory_hub_dispose(GObject * object);
 static void
 shared_memory_hub_finalize(GObject * object);
 static void
 init_data_free(InitData* data);
-
+static void
+shared_memory_hub_init(GObject* object) {}
 
 
 G_DEFINE_TYPE_WITH_PRIVATE(SharedMemoryHub,shared_memory_hub,G_TYPE_OBJECT)
@@ -120,7 +125,8 @@ shared_memory_hub_class_init(SharedMemoryHubClass* klass)
 	object_class->dispose =      shared_memory_hub_dispose;
 	object_class->finalize =     shared_memory_hub_finalize;
 
-
+	klass->atomic_create_block = new_empty_block;
+	klass->atomic_create_pipe = new_empty_pipe;
 
 	signals[SIGNAL_LINKED] =
 		g_signal_new("connected",
@@ -154,21 +160,6 @@ shared_memory_hub_class_init(SharedMemoryHubClass* klass)
 	g_object_class_install_properties(object_class, PROP_LAST, properties);
 
 }
-
-/// <summary>
-/// instance initialization:
-/// register shared memory class method
-/// </summary>
-/// <param name="self"></param>
-static void
-shared_memory_hub_init(SharedMemoryHub* self)
-{
-	SharedMemoryHubClass* klass = SHARED_MEMORY_HUB_GET_CLASS(self);
-
-	klass->atomic_create_block = new_empty_block;
-	klass->atomic_create_pipe = new_empty_pipe;
-}
-
 
 /// <summary>
 /// constructed method used by base class, process after initialization process is done
@@ -239,8 +230,10 @@ shared_memory_hub_finalize(GObject* object)
 
 
 static void
-shared_memory_hub_get_property(GObject* object, guint prop_id,
-	GValue* value, GParamSpec* pspec)
+shared_memory_hub_get_property(GObject* object,
+	guint prop_id,
+	GValue* value,
+	GParamSpec* pspec)
 {
 	SharedMemoryHub* self = SHARED_MEMORY_HUB(object);
 	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(self);
@@ -406,7 +399,7 @@ new_empty_pipe(gint id,gsize buffer_size)
 /// <returns></returns>
 gboolean
 shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
-	SharedMemoryMessage* msg,
+	MemoryBlock* block,
 	gint destination)
 {
 	SharedMemoryHubPrivate* priv = shared_memory_hub_get_instance_private(hub);
@@ -421,7 +414,7 @@ shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
 		{
 			g_free(z);
 			if (!shared_memory_link_send_message_lite(priv->link_array[i],
-				PEER_TRANSFER_REQUEST,msg))
+				PEER_TRANSFER_REQUEST,block))
 			{
 				return FALSE;
 			}
@@ -429,8 +422,6 @@ shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
 	}
 
 	g_signal_emit(hub, signals[SIGNAL_PEER_TRANSFER], 0);
-	g_free(msg);
-
 	return TRUE;
 }
 

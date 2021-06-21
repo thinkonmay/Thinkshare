@@ -14,9 +14,6 @@ reduce complexity*/
 #include <libsoup\soup-types.h>
 #include <json-glib\json-glib.h>
 
-#include <gst/controller/gstinterpolationcontrolsource.h>
-#include <gst/controller/gstdirectcontrolbinding.h>
-
 #include <glib.h>
 #include <glib-object.h>
 #include <gio/gio.h>
@@ -24,10 +21,9 @@ reduce complexity*/
 #include <stdio.h>
 #include <stdlib.h>
 
-
+/*currently my visual studio has some problem with including shared-memory library*/
 #include <E:\personal cloud computing\personal cloud computing\shared-memory\shared-memory-hub.h>
 #include <E:\personal cloud computing\personal cloud computing\shared-memory\shared-memory-link.h>
-
 
 
 

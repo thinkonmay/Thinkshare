@@ -15,6 +15,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared-memory", "shared-mem
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SessionCore", "SessionCore\personal cloud computing.vcxproj", "{3DB67F17-6841-4468-BFB2-14D93977AEFC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1735D8F9-3D35-4F40-839D-88B6C82A9DB6}"
+	ProjectSection(SolutionItems) = preProject
+		signalling.py = signalling.py
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

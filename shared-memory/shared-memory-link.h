@@ -62,7 +62,8 @@ establish_link(GTask* task,
 /*NECESSARY FUNCTION FOR APPLICATION DEVELOPMENT*/
 gboolean
 shared_memory_link_send_message(SharedMemoryLink* self,
-	SharedMemoryMessage* msg);
+	gint to,
+	gpointer data);
 
 gboolean
 shared_memory_link_send_message_lite(SharedMemoryLink* self,

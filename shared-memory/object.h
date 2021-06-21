@@ -29,7 +29,7 @@ typedef enum
 	WRITE_DONE,
 	STATE_ERROR,
 
-	PEER_TRANSFER_REQUEST,
+	PEER_TRANSFER_REQUEST
 }SharedMemoryOpcode;
 
 typedef struct
