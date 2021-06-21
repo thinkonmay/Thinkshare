@@ -1,6 +1,7 @@
 #pragma once
 #include "Framework.h"
 #include "Object.h"
+#include "agent-object.h"
 
 gchar*
 get_string_from_json_object(JsonObject* object);

@@ -1,6 +1,12 @@
 #include "Socket.h"
 
 
+
+/*todo: replace websocket with REST API responsible for data exchange between agent and host,
+* 
+* 
+*/
+
 gchar*
 get_string_from_json_object(JsonObject* object)
 {

@@ -154,6 +154,12 @@ on_ice_gathering_state_notify(GstElement* webrtcbin,
     g_print("ICE gathering state changed to %s\n", new_state);
 }
 
+
+/// <summary>
+/// register with server by sending SLAVEREQUEST +{hub_id}
+/// </summary>
+/// <param name="core"></param>
+/// <returns></returns>
 gboolean
 register_with_server(SessionCore* core)
 {
@@ -178,6 +184,12 @@ register_with_server(SessionCore* core)
     return TRUE;
 }
 
+
+/// <summary>
+/// close
+/// </summary>
+/// <param name="G_GNUC_UNUSED"></param>
+/// <param name="G_GNUC_UNUSED"></param>
 void
 on_server_closed(SoupWebsocketConnection* conn G_GNUC_UNUSED,
     SessionCore* core G_GNUC_UNUSED)
@@ -248,8 +260,12 @@ on_offer_received(SessionCore* core, GstSDPMessage* sdp)
 
 
 
-/*Connect to the signalling server. This is the entrypoint for everything else.
- */
+/// <summary>
+/// *Connect to the signalling server. 
+///  This is the entrypoint for everything else.
+/// 
+/// </summary>
+/// <param name="core"></param>
 void
 connect_to_websocket_signalling_server_async(SessionCore* core)
 {
@@ -310,7 +326,14 @@ get_string_from_json_object(JsonObject* object)
     return text;
 }
 
-/* One mega message handler for our asynchronous calling mechanism */
+/// <summary>
+/// callback function for signalling server message
+/// 
+/// </summary>
+/// <param name="conn"></param>
+/// <param name="type"></param>
+/// <param name="message"></param>
+/// <param name="core"></param>
 void
 on_server_message(SoupWebsocketConnection* conn,
     SoupWebsocketDataType type,

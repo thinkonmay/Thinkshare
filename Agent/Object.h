@@ -3,7 +3,17 @@
 #include "Object.h"
 #include "agent-object.h"
 
-
+/*
+*
+* 
+* Object header file contain object hierarchy structure of  
+* 
+* 
+* 
+* 
+* 
+* 
+*/
 
 
 
@@ -194,7 +204,7 @@ typedef struct
 /// <summary>
 /// contain information about shared memory hub and connection
 /// </summary>
-typedef struct
+typedef struct abc
 {
 	SharedMemoryHub* hub;
 	SharedMemoryLink* core_link;
@@ -209,6 +219,9 @@ typedef struct
 	gint block_size;
 	gint pipe_size;
 }IPC;
+
+
+
 
 /// <summary>
 /// contain information about websocket socket with host
@@ -242,6 +255,4 @@ typedef struct
 	gint cpu_usage;
 	gint gpu_usage;
 	gint ram_usage;
-
-
 }DeviceState;
