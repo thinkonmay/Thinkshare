@@ -15,21 +15,12 @@ namespace Signalling.Models
         public int ClientId { get; set; }
         public int SlaveId { get; set; }
         public DateTime Created { get; set; }
-        public SessionStatus Status { get; set; }
 
         public Session(SessionRequest req)
         {
             ClientId = req.ClientId;
             SlaveId = req.SlaveId;
         }
-    }
-
-    public enum SessionStatus
-    {
-        SlaveConnected,
-        ClientConnected,
-        BothConnected,
-        Disconnected
     }
 
     public class SessionRequest
