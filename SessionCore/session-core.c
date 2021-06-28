@@ -63,13 +63,13 @@ session_core_class_init(SessionCoreClass* klass)
 	object_class->dispose =			session_core_dispose;
 	object_class->finalize =		session_core_finalize;
 
-	klass->connect_shared_memory_hub =	link_shared_memory_hub;
 	klass->connect_signalling_server =	connect_to_websocket_signalling_server_async;
 	klass->setup_pipeline =				setup_pipeline;
 	klass->setup_webrtc_signalling =	connect_WebRTCHub_handler;
 	klass->setup_data_channel =			connect_data_channel_signals;
 	klass->start_pipeline =				start_pipeline;
 	klass->stop_pipeline =				stop_pipeline;
+	klass->send_message =				session_core_send_message;
 
 
 	/*signal registering
@@ -248,26 +248,45 @@ session_core_stop_pipeline(SessionCore* self)
 
 
 
-void
+gboolean
 session_core_send_message(GObject* object,
-	Message* msg)
+	Message* message)
 {
 	SessionCore* self = (SessionCore*)object;
 	SessionCorePrivate* priv = session_core_get_instance_private(self);
 
 	gboolean ret;
 
-	GBytes* bytes;
-	switch (msg->to)
+	
+	switch (message->to)
 	{
 	case CLIENT:
-		bytes = g_bytes_new(msg, sizeof(msg));
-		g_signal_emit_by_name(priv->hub->control, "send-data", bytes);
+	{
+		msgpack_sbuffer* sbuf;
+		msgpack_sbuffer_init(sbuf);
+
+		GBytes* data;
+		msgpack_packer* pk;
+		pk = msgpack_packer_new(sbuf, msgpack_sbuffer_write);
+
+		msgpack_pack_array(pk, 4);
+		msgpack_pack_int(pk, message->from);
+		msgpack_pack_int(pk, message->to);
+		msgpack_pack_int(pk, message->opcode);
+		/*message->data in form of binary with be deserialized by message pack*/
+		msgpack_pack_bin(pk, sizeof(message->data));
+		msgpack_pack_bin_body(pk, sbuf->data, sbuf->size);
+
+		data = g_bytes_new(message, sizeof(message));
+		g_signal_emit_by_name(priv->hub->control, "send-data", data);
 		ret = TRUE;
+	}
 	case AGENT:
-		ret = shared_memory_link_send_message(priv->ipc->link, priv->ipc->agent_id, msg,sizeof(msg));
+		ret = send_message_through_shared_memory(self, message);
 	case LOADER:
-		ret = shared_memory_link_send_message(priv->ipc->link, priv->ipc->loader_id, msg, sizeof(msg));
+		ret = send_message_through_shared_memory(self, message);
+	case HOST:
+		ret = send_message_through_shared_memory(self, message);
 	}
 	return ret;
 }
@@ -286,7 +305,7 @@ session_core_send_message(GObject* object,
 
 
 SessionCore*
-session_core_new(gint id)
+session_core_new()
 {
 	return g_object_new(SESSION_TYPE_CORE, "hub-id",id);
 }

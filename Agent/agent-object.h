@@ -45,7 +45,7 @@ struct _AgentObjectClass
 };
 
 /// <summary>
-/// Create new agent object based ovn information of host
+/// Create new agent object based on information of host
 /// </summary>
 /// <param name="Host_URL"></param>
 /// <param name="Host_ID"></param>
@@ -75,12 +75,15 @@ handle_shared_memory_hub(AgentObject* self);
 /// <param name="message"></param>
 /// <returns></returns>
 gboolean
-send_message_to(AgentObject* self,
+send_message(AgentObject* self,
 	Message* message);
 
 
 
 
+
+DeviceInformation*
+agent_object_get_information(AgentObject* self);
 
 G_END_DECLS
 #endif // !__AGENT_OBJECT__

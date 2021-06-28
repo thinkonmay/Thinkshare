@@ -313,7 +313,6 @@ setup_pipeline(SessionCore* core,
 
 gboolean
 connect_WebRTCHub_handler(SessionCore* core)
-
 {
     Pipeline* pipe = session_core_get_pipeline(core);
     CoreState state;

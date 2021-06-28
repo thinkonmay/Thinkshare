@@ -159,6 +159,11 @@ register_with_server(SessionCore* core)
 {
     gchar* hello;
     CoreState* state;
+    JsonObject* json_object;
+
+    json_object = json_object_new();
+
+
     g_object_get_property(core, "core-state", state);
     WebRTCHub* hub = session_core_get_rtc_hub(core);
 
@@ -167,11 +172,18 @@ register_with_server(SessionCore* core)
         return FALSE;
 
     g_print("Registering ID with signalling server\n");
-    g_object_set_state(core,"core-state",SERVER_REGISTERING);
+    g_object_set_property(core,"core-state",SERVER_REGISTERING);
 
-    /* Register with the server with a random integer id. Reply will be received
-     * by on_server_message() */
-    hello = g_strdup_printf("SLAVEREQUEST %i", hub->slave_id);
+    /*register to signalling server by send an json object which has 3 members:
+    * "request_type" : "SLAVEREQUEST"
+    * "subject_id": {SlaveSessionID}
+    * "content": {SlaveSessionID}
+    */
+    json_object_set_string_member(json_object,"request_type","SLAVEREQUEST");
+    json_object_set_int_member(json_object, "subject_id", hub->signalling_url);
+    json_object_set_int_member(json_object, "content", hub->signalling_url);
+    hello = get_string_from_json_object(json_object);
+
     soup_websocket_connection_send_text(hub->ws, hello);
     g_free(hello);
 
@@ -257,9 +269,14 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
     SoupMessage* message;
     SoupSession* session;
     const char* https_aliases[] = { "wss", NULL };
-
+    JsonObject* json_object;
     WebRTCHub* hub = session_core_get_rtc_hub(core);
     CoreState state;
+    gchar* text;
+
+    WebRTCHub* hub = session_core_get_rtc_hub(core);
+
+
     g_object_get_property(core, "core-state", &state);
 
     while (state != SESSION_INFORMATION_SETTLED)
@@ -282,8 +299,8 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
 
     message = soup_message_new(SOUP_METHOD_GET, hub->signalling_url);
 
-    g_print("Connecting to server...\n");
 
+    g_print("Connecting to server...\n");
     /* Once connected, we will register */
     soup_session_websocket_connect_async(session,
         message, NULL, NULL, NULL,
@@ -318,7 +335,15 @@ on_server_message(SoupWebsocketConnection* conn,
     SessionCore* core)
 {
     CoreState state;
+    JsonNode* root;
+    JsonObject* object, * child;
+    gchar* request_type, * result;
+
+
+
+    JsonParser* parser = json_parser_new();
     Pipeline* pipe = session_core_get_pipeline(core);
+
     g_object_get_property(core, "core-state", state);
 
     gchar* text = "ERROR";
@@ -337,154 +362,120 @@ on_server_message(SoupWebsocketConnection* conn,
         g_assert_not_reached();
     }
 
-    g_object_get_property(core, "core-state", &state);
 
-    if (g_strcmp0(text, "SESSION_ACCEPTED") == 0) 
+    if (!json_parser_load_from_data(parser, text, -1, NULL))
     {
-        if (state != SERVER_REGISTERING) {
-            session_core_end("ERROR: Received SESSION_ACCEPTED signal when not registering", core,
-                APP_STATE_ERROR);
-            goto out;
-        }
-        g_object_set_property(core, "core-state", SERVER_REGISTERED);
-        g_signal_emit_by_name(core, "signalling-server-connected", NULL);
-        g_print("Remote control accepted\n");
-        /* Call has been setup by the server, now we can start negotiation */
+      g_printerr("Unknown message '%s', ignoring", text);
+      g_object_unref(parser);
+      goto out;
     }
-    else if (g_strcmp0(text, "SESSION_DENIED") == 0)
+
+    root = json_parser_get_root(parser);
+    if (!JSON_NODE_HOLDS_OBJECT(root))
     {
-        if (state != SERVER_REGISTERING) 
-        {
-            session_core_end("ERROR: Received SESSION_DENIED signal when not registering", core,
-                SESSION_DENIED);
-            goto out;
-        }
-        session_core_end("SessionID pair not found, session denied", core,
-            SESSION_DENIED);
+        g_printerr("Unknown json message '%s', ignoring", text);
+        g_object_unref(parser);
+        goto out;
     }
-    else if (g_strcmp0(text, "SESSION_OK") == 0) {
-        if (state != PEER_CONNECTING) {
-            session_core_end("ERROR: Received SESSION_OK when not calling", core,
-                PEER_CONNECTION_ERROR);
-            goto out;
-        }
 
-        g_object_get_property(core,"core-state", PEER_CONNECTED);
-        /* Start negotiation (exchange SDP and ICE candidates) */
-        g_signal_emit_by_name(core, "signalling-handshake-done", NULL);
-    }
-    else if (g_str_has_prefix(text, "ERROR")) {
-        switch (state) {
-        case SERVER_CONNECTING:
-            g_object_set_property(core, "core-state", SERVER_CONNECTION_ERROR); 
-            break;
-        case SERVER_REGISTERING:
-            g_object_set_property(core, "core-state", SERVER_REGISTRATION_ERROR);
-            break;
-        case PEER_CONNECTING:
-            g_object_set_property(core, "core-state", PEER_CONNECTION_ERROR);
-            break;
-        case PEER_CONNECTED:
-        case PEER_CALL_NEGOTIATING:
-            g_object_set_property(core, "core-state", PEER_CALL_ERROR);
-            break;
-        default:
-            g_object_set_property(core, "core-state", APP_STATE_ERROR); 
-        }
-        session_core_end(text, core,APP_STATE_UNKNOWN);
-        /* Look for JSON messages containing SDP and ICE candidates */
-    }
-    else
+    object = json_node_get_object(root);
+     /* Check type of JSON message */
+
+
+    if (json_object_has_member(object, "request_type"))
     {
-        JsonNode* root;
-        JsonObject* object, * child;
-        JsonParser* parser = json_parser_new();
-        if (!json_parser_load_from_data(parser, text, -1, NULL))
+        request_type = json_object_get_string_member(object, "request_type");
+        if (request_type == "result")
         {
-            g_printerr("Unknown message '%s', ignoring", text);
-            g_object_unref(parser);
-            goto out;
-        }
-
-        root = json_parser_get_root(parser);
-        if (!JSON_NODE_HOLDS_OBJECT(root))
-        {
-            g_printerr("Unknown json message '%s', ignoring", text);
-            g_object_unref(parser);
-            goto out;
-        }
-
-        object = json_node_get_object(root);
-        /* Check type of JSON message */
-        if (json_object_has_member(object, "sdp"))
-        {
-            int ret;
-            GstSDPMessage* sdp;
-            const gchar* text, * sdptype;
-            GstWebRTCSessionDescription* answer;
-
-            g_assert_cmphex(state, == , PEER_CALL_NEGOTIATING);
-
-            child = json_object_get_object_member(object, "sdp");
-
-            if (!json_object_has_member(child, "type"))
+            result = json_object_get_string_member(object, "content");
+             /*session id pair id found, set core-state to server registered and start pipeline*/
+            if (result == "accepted")
             {
-                session_core_end("ERROR: received SDP without 'type'", core,
-                    PEER_CALL_ERROR);
-                goto out;
-            }
-
-            sdptype = json_object_get_string_member(child, "type");
-            text = json_object_get_string_member(child, "sdp");
-            ret = gst_sdp_message_new(&sdp);
-            g_assert_cmphex(ret, == , GST_SDP_OK);
-            ret = gst_sdp_message_parse_buffer((guint8*)text, strlen(text), sdp);
-            g_assert_cmphex(ret, == , GST_SDP_OK);
-
-            if (g_str_equal(sdptype, "answer"))
-            {
-                g_print("Received answer:\n%s\n", text);
-                answer = gst_webrtc_session_description_new(GST_WEBRTC_SDP_TYPE_ANSWER,
-                    sdp);
-                g_assert_nonnull(answer);
-
-                /* Set remote description on our pipeline */
+                if (state != SERVER_REGISTERING) 
                 {
-                    GstPromise* promise = gst_promise_new();
-                    g_signal_emit_by_name(pipe->webrtcbin, "set-remote-description", answer,
-                        promise);                         
-                    gst_promise_interrupt(promise);
-                    gst_promise_unref(promise);
+                    session_core_end("ERROR: Received SESSION_ACCEPTED signal when not registering", core, APP_STATE_ERROR);
+                    goto out;
                 }
-                g_object_set_property(core,"core-state",PEER_CALL_STARTED);
+                g_object_set_property(core, "core-state", SERVER_REGISTERED);
+                g_print("Remote control accepted\n");
+                /* Call has been setup by the server, now we can start negotiation */
             }
-            else
+             /*denied message send from signalling server to slave, end session core*/
+            if (result == "denied")
             {
-                g_print("Received offer:\n%s\n", text);
-                on_offer_received(pipe->webrtcbin,sdp);
+                if (state != SERVER_REGISTERING)
+                {
+                    session_core_end("ERROR: Received SESSION_DENIED signal when not registering", core,
+                        SESSION_DENIED);
+                    goto out;
+                }
+                session_core_end("SessionID pair not found, session denied", core,
+                    SESSION_DENIED);
             }
-
-        }
-        else if (json_object_has_member(object, "ice"))
-        {
-            const gchar* candidate;
-            int sdpmlineindex;
-
-            child = json_object_get_object_member(object, "ice");
-            candidate = json_object_get_string_member(child, "candidate");
-            sdpmlineindex = json_object_get_int_member(child, "sdpMLineIndex");
-
-            /* Add ice candidate sent by remote peer */
-            g_signal_emit_by_name(pipe->webrtcbin, "add-ice-candidate", sdpmlineindex,
-                candidate);
         }
         else
         {
             g_printerr("Ignoring unknown JSON message:\n%s\n", text);
         }
-
-        g_object_unref(parser);
     }
+    else if (json_object_has_member(object, "sdp"))
+    {
+        int ret;
+        GstSDPMessage* sdp;
+        const gchar* text, * sdptype;
+        GstWebRTCSessionDescription* answer;
+         g_assert_cmphex(state, == , PEER_CALL_NEGOTIATING);
+         child = json_object_get_object_member(object, "sdp");
+         if (!json_object_has_member(child, "type"))
+        {
+            session_core_end("ERROR: received SDP without 'type'", core,
+                PEER_CALL_ERROR);
+            goto out;
+        }
+        sdptype = json_object_get_string_member(child, "type");
+        text = json_object_get_string_member(child, "sdp");
+        ret = gst_sdp_message_new(&sdp);
+        g_assert_cmphex(ret, == , GST_SDP_OK);
+        ret = gst_sdp_message_parse_buffer((guint8*)text, strlen(text), sdp);
+        g_assert_cmphex(ret, == , GST_SDP_OK);
+        if (g_str_equal(sdptype, "answer"))
+        {
+            g_print("Received answer:\n%s\n", text);
+            answer = gst_webrtc_session_description_new(GST_WEBRTC_SDP_TYPE_ANSWER,
+                sdp);
+            g_assert_nonnull(answer);
+             /* Set remote description on our pipeline */
+            {
+                GstPromise* promise = gst_promise_new();
+                g_signal_emit_by_name(pipe->webrtcbin, "set-remote-description", answer,
+                    promise);                         
+                gst_promise_interrupt(promise);
+                gst_promise_unref(promise);
+            }
+            g_object_set_property(core,"core-state",PEER_CALL_STARTED);
+        }
+        else
+        {
+            g_print("Received offer:\n%s\n", text);
+            on_offer_received(pipe->webrtcbin,sdp);
+        }
+              }
+    else if (json_object_has_member(object, "ice"))
+    {
+        const gchar* candidate;
+        int sdpmlineindex;
+        child = json_object_get_object_member(object, "ice");
+        candidate = json_object_get_string_member(child, "candidate");
+        sdpmlineindex = json_object_get_int_member(child, "sdpMLineIndex");
+         /* Add ice candidate sent by remote peer */
+        g_signal_emit_by_name(pipe->webrtcbin, "add-ice-candidate", sdpmlineindex,
+            candidate);
+    }
+    else
+    {
+        g_printerr("Ignoring unknown JSON message:\n%s\n", text);
+    }
+    g_object_unref(parser);   
 
 out:
     g_free(text);
