@@ -70,6 +70,8 @@ typedef enum
 	SESSION_INFORMATION,
 	BITRATE_CALIBRATE,
 	CLIENT_MESSAGE,
+	REGISTER_SLAVE,
+	UPDATE_SLAVE_STATE,
 
 
 	OPCODE_LAST
@@ -93,7 +95,7 @@ typedef struct
 	Opcode opcode;
 	gint from;
 	gint to;
-	gpointer data;
+	gchar* data;
 }Message;
 
 

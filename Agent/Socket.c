@@ -99,8 +99,9 @@ on_server_closed(SoupWebsocketConnection* conn G_GNUC_UNUSED,
 
 }
 
+
 /// <summary>
-/// handle message from host
+/// handle message from host, all host message are handled here
 /// </summary>
 /// <param name="conn"></param>
 /// <param name="type"></param>
@@ -130,13 +131,47 @@ on_server_message(SoupWebsocketConnection* conn,
     default:
         g_assert_not_reached();
     }
+
+
+    JsonNode* root;
+    JsonObject* object, * child;
+    JsonParser* parser = json_parser_new();
+    json_parser_load_form_data(parser, text, -1, NULL);
+
+    root = json_parser_get_root(parser);
+    object = json_node_get_object(root);
+
+    Location from = json_object_get_int_member(object, "from");
+    Location to = json_object_get_int_member(object, "to");
+    Opcode opcode = json_object_get_int_member(object, "opcode");
+    if (to == AGENT)
+    {
+        if (from == HOST)
+        {
+
+        }
+        if (from == CLIENT)
+        {
+
+        }
+    }
+    else
+    {
+        Message message;
+        message.from = from;
+        message.to = to;
+        message.opcode = opcode;
+        message.data = json_object_get_int_member(object, "data");
+        send_message(self, &message);
+    }
+
+
 }
 
 /*register slave device with host, provide slave information*/
 gboolean
 register_with_server(AgentObject* self)
 {
-
 }
 
 void 
@@ -147,6 +182,72 @@ send_message_to_host(AgentObject* self,
     gpointer data)
 {
 
+
+    DeviceInformation* infor = agent_object_get_information(self);
+    JsonObject* json;
+
+    json_object_get_string_member(json, "cpu", infor->cpu);
+    json_object_get_string_member(json, "gpu", infor->gpu);
+    json_object_get_string_member(json, "ram", infor->ram_capacity);
+    json_object_get_string_member(json, "os", infor->OS);
+
+    Message message;
+    message.from = AGENT;
+    message.to = HOST;
+    message.opcode = REGISTER_SLAVE;
+    message.data = get_string_from_json_object(json);
+
+    g_free(json);
+    send_message(self, &message);      
 }
+
+
+/// <summary>
+/// convert json object to string, used by (*send_message_to_host)
+/// </summary>
+/// <param name="object"></param>
+/// <returns></returns>
+gchar*
+get_string_from_json_object(JsonObject* object)
+{
+    JsonNode* root;
+    JsonGenerator* generator;
+    gchar* text;
+
+    /* Make it the root node */
+    root = json_node_init_object(json_node_alloc(), object);
+    generator = json_generator_new();
+    json_generator_set_root(generator, root);
+    text = json_generator_to_data(generator, NULL);
+
+    /* Release everything */
+    g_object_unref(generator);
+    json_node_free(root);
+    return text;
+}
+
+/// <summary>
+/// send data to host in form of json object, should not use directly, 
+/// using send_message method instead
+/// 
+/// </summary>
+/// <param name="self"></param>
+/// <param name="message"></param>
+void 
+send_message_to_host(AgentObject* self,
+    Message* message)
+{
+    Socket* socket = agent_object_get_socket(socket);
+    JsonObject* json_object = json_object_new();
+
+    json_object_set_int_member(json_object, "from", message->from);
+    json_object_set_int_member(json_object, "to", message->from);
+    json_object_set_int_member(json_object, "opcode", message->from);
+    json_object_set_string_member(json_object, "data", message->data);
+
+    gchar* message = get_string_from_json_object(json_object);
+
+    soup_websocket_connection_send_text(socket->ws, message);
+
 
 

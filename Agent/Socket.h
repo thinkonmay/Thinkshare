@@ -7,6 +7,8 @@ gchar*
 get_string_from_json_object(JsonObject* object);
 
 void
+connect_to_host_async(void);
+
 connect_to_host_async(AgentObject* self);
 
 void
@@ -24,8 +26,13 @@ on_server_message(SoupWebsocketConnection* conn,
     GBytes* message,
     AgentObject* user_data);
 
-gboolean
-register_with_server(AgentObject* self);
+
+
+register_with_host(AgentObject* self);
+
+void
+send_message_to_host(AgentObject* self,
+    Message* message);
 
 void
 send_message_to_host(AgentObject* self,

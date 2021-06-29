@@ -34,11 +34,14 @@ struct _SessionCoreClass
 
 	gboolean
 	(*connect_signalling_server)(SessionCore* self);
+	
+	gboolean
+	(*send_message)(SessionCore* self, Message* message)
 };
 
 
 SessionCore*
-session_core_new(gint id);
+session_core_new(void);
 
 void
 session_core_end(const gchar* msg, 
@@ -74,7 +77,7 @@ session_core_connect_signalling_server(SessionCore* self);
 
 
 
-void
+gboolean
 session_core_send_message(GObject* object,
 	Message* msg);
 

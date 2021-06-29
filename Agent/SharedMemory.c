@@ -155,6 +155,14 @@ on_shared_memory_message(SharedMemoryLink* self,
 /// <returns></returns>
 gboolean
 send_message_through_shared_memory(AgentObject* self,
+	Message* message)
+{
+	gboolean ret;
+
+	IPC* ipc = agent_object_get_ipc(self);
+
+	switch (message->to)
+	{
 	Location from,
 	Location to,
 	Opcode opcode,
@@ -175,17 +183,11 @@ send_message_through_shared_memory(AgentObject* self,
 		g_printerr("wrong lane");
 		return FALSE;
 	case LOADER:
-		message->opcode = opcode;
-		message->data = data;
-		message->from = from;
-		message->to = to;
-		shared_memory_link_send_message(ipc->loader_link, message);
+		ret = shared_memory_link_send_message(ipc->loader_link,ipc->loader_id, message);
 	case CORE:
-		message->opcode = opcode;
-		message->data = data;
-		message->from = from;
-		message->to = to;
-		shared_memory_link_send_message(ipc->core_link, message);
+		ret = shared_memory_link_send_message(ipc->core_link,ipc->core_id, message);
+	case CLIENT:
+		ret = shared_memory_link_send_message(ipc->core_link, ipc->core_id, message);
 	}
-	return TRUE;
-}
+	return ret;
+  }

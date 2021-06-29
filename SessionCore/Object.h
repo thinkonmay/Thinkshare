@@ -69,7 +69,7 @@ typedef struct
 	Opcode opcode;
 	gint from;
 	gint to;
-	gpointer data;
+	gchar* data;
 }Message;
 
 typedef enum
@@ -125,8 +125,6 @@ typedef struct
 	const gint core_id;
 	const gint loader_id;
 	const gint agent_id;
-	const gint host_id;
-	const gint client_id;
 
 	gint block_size;
 	gint pipe_size;

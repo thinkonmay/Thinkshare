@@ -1,18 +1,7 @@
 #include "session-core.h"
 
-
-
-gint id;
 SessionCore* core;
 GMainLoop* loop;
-
-
-static GOptionEntry entries[] = {
-  {"hub-id",0,0, G_OPTION_ARG_INT, &id,
-    "shared memory id used for shared memory handshake","ID"},
-  {NULL},
-};
-
 
 int
 main(int argc, char* argv[])
@@ -22,33 +11,23 @@ main(int argc, char* argv[])
 
     /*context stuff*/
     context = g_option_context_new("personal cloud computing");
-    g_option_context_add_main_entries(context, entries, NULL);
-    g_option_context_add_group(context, gst_init_get_option_group());
 
-    if (!g_option_context_parse(context, &argc, &argv, &error)) {
-        g_printerr("Error initializing: %s\n", error->message);
-        return -1;
-    }
+    g_option_context_add_group(context, gst_init_get_option_group());
     loop = g_main_loop_new(NULL, FALSE);
    
-    g_object_new(SESSION_TYPE_CORE, "hub-id",id);
+    SharedMemoryHub* hub = shared_memory_hub_initialize(argc, argv);
+    g_object_new(SESSION_TYPE_CORE,NULL);
 
 
+    core = session_core_new();
+    SessionCoreClass* klass = SESSION_CORE_GET_CLASS(core);
 
-
-
-
-    core = session_core_new(id);
-
-
-
-
-    session_core_connect_shared_memory_hub(core);
-    session_core_setup_pipeline(core);
-    session_core_setup_data_channel(core);
-    session_core_setup_webrtc_signalling(core);
-    session_core_connect_signalling_server(core);
-    session_core_start_pipeline(core);
+    klass->connect_shared_memory_hub(core);
+    klass->setup_pipeline(core);
+    klass->setup_data_channel(core);
+    klass->setup_webrtc_signalling(core);
+    klass->connect_signalling_server(core);
+    klass->start_pipeline(core);
 
 
 

@@ -64,10 +64,7 @@ on_link_connected(GObject* object,
 /// <param name="user_data"></param>
 void
 on_shared_memory_message(SharedMemoryLink* self,
-	gint from,
-	gint to,
-	gint opcode,
-	gpointer* data,
+	Message* message,
 	SessionCore* core)
 {
 	IPC* ipc = session_core_get_ipc(self);
@@ -80,61 +77,61 @@ on_shared_memory_message(SharedMemoryLink* self,
 	Session* session;
 	gint* bitrate;
 
-
-	if (from == ipc->agent_id)
+	if (message->to = ipc->core_id)
 	{
-		switch (opcode)
+		if (message->from == ipc->agent_id)
 		{
-		case SESSION_INFORMATION:
-			if (state != WAITING_SESSION_INFORMATION)
+			switch (message->opcode)
 			{
-				session_core_end("received unknown session information\n", self, APP_STATE_ERROR);
+			case SESSION_INFORMATION:
+				if (state != WAITING_SESSION_INFORMATION)
+				{
+					session_core_end("received unknown session information\n", self, APP_STATE_ERROR);
+				}
+
+				session = (Session*)message->data;
+				qoe = session->qoe;
+				hub->client_offer = session->client_offer;
+				hub->signalling_url = session->signalling_url;
+				hub->stun_server = session->stun_server;
+				hub->disable_ssl = session->disable_ssl;
+				hub->slave_id = session->SessionSlaveID;
+
+				g_object_set_property(self, "core-state", SESSION_INFORMATION_SETTLED);
+
+				g_signal_emit_by_name(self, "session-ready", 0);
+			case CLIENT_MESSAGE:
+				return;
 			}
-
-			session = (Session*)data;
-			qoe = session->qoe;
-			hub->client_offer =		session->client_offer;
-			hub->signalling_url =	session->signalling_url;
-			hub->stun_server =		session->stun_server;
-			hub->disable_ssl =		session->disable_ssl;
-			hub->slave_id =			session->SessionSlaveID;
-
-			g_object_set_property(self,"core-state",SESSION_INFORMATION_SETTLED);
-
-			g_signal_emit_by_name(self, "session-ready", 0);
-		case CLIENT_MESSAGE:
-			return;
 		}
-	}
-	else if (from == ipc->loader_id)
-	{
-		switch (opcode)
+		else if (message->from == ipc->loader_id)
 		{
-		default:
-			break;
+			switch (message->opcode)
+			{
+			default:
+				break;
+			}
 		}
-	}
-	else if (from == ipc->host_id)
-	{
-		switch (opcode)
+		else
 		{
-		default:
-			break;
+			g_printerr("unknown message");
 		}
+
+		g_free(session);
+		g_free(bitrate);
 	}
-	else
+	else if (message->to == CLIENT)
 	{
-		g_printerr("unknown message");
+		g_signal_emit_by_name(hub->control,"send-data", );
 	}
 
-	g_free(session);
-	g_free(bitrate);
 }
 
 
 /// <summary>
 /// send message through shared memory,
 /// this function should only be used by other function 
+/// base on shared-memory library
 /// </summary>
 /// <param name="self"></param>
 /// <param name="location"></param>
@@ -143,36 +140,22 @@ on_shared_memory_message(SharedMemoryLink* self,
 /// <returns></returns>
 gboolean
 send_message_through_shared_memory(SessionCore* self,
-	Location location,
-	Opcode opcode,
-	gpointer data)
+	Message* message)
 {
-	Message* message = malloc(sizeof(Message));
+	gboolean ret;
 	IPC* ipc = session_core_get_ipc(self);
 
-	switch(location)
+	switch(message->to)
 	{
 	case CLIENT:
 		g_printerr("wrong lane");
 		return FALSE;
 	case HOST:
-		message->opcode = opcode;
-		message->data = data;
-		message->from = ipc->core_id;
-		message->to = ipc->host_id;
-		shared_memory_link_send_message(ipc->link, message);
+		ret = shared_memory_link_send_message(ipc->link,ipc->agent_id, message);
 	case LOADER:
-		message->opcode = opcode;
-		message->data = data;
-		message->from = ipc->core_id;
-		message->to = ipc->loader_id;
-		shared_memory_link_send_message(ipc->link, message);
+		ret = shared_memory_link_send_message(ipc->link,ipc->loader_id, message);
 	case AGENT:
-		message->opcode = opcode;
-		message->data = data;
-		message->from = ipc->core_id;
-		message->to = ipc->agent_id;
-		shared_memory_link_send_message(ipc->link, message);
+		ret = shared_memory_link_send_message(ipc->link,ipc->agent_id, message);
 	}
-	return TRUE; 
+	return ret; 
 }
