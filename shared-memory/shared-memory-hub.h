@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #ifndef  __SHARED_MEMORY_HUB_H__
@@ -52,6 +52,12 @@ shared_memory_hub_new(gint hub_id,
 MemoryBlock*
 new_empty_block( gint id,gsize block_size);
 
+
+/*Tôi cần tuấn và hiệp support tôi hoàn thiện method này
+* Vai trò của method là tạo ra một cái namedpipe có name và id ngẫu nhiên
+* Tuy nhiên vấn đề cần phải giải là làm sao 1 memory block có thể xác định hoàn toàn tên 
+* thông qua số id này
+*/
 NamedPipe*
 new_empty_pipe( gint id,gsize buffer_size);
 
@@ -73,7 +79,7 @@ shared_memory_hub_link_finish(SharedMemoryHub* self,
 
 gboolean
 shared_memory_hub_perform_peer_transfer_request(SharedMemoryHub* hub,
-	MemoryBlock* block,
+	MemoryBlock* msg,
 	gint destination);
 
 

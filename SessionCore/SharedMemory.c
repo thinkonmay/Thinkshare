@@ -11,7 +11,7 @@ link_shared_memory_hub(GObject* object)
 	
 
 	shared_memory_hub_link_default_async(ipc->hub,
-		ipc->core_id,
+		ipc->agent_id,
 		ipc->block_size,
 		ipc->pipe_size,
 		NULL,

@@ -1,11 +1,5 @@
 #include "DeviceInformation.h"
 
-<<<<<<< Updated upstream
-
-=======
-
-
-
 gchar*
 get_string_from_json_object(JsonObject* object)
 {
@@ -73,4 +67,3 @@ update_slave_state(void)
 {
 
 }
->>>>>>> Stashed changes

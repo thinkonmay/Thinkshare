@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 #include "SharedMemory.h"
 
 /// <summary>
@@ -165,6 +163,22 @@ send_message_through_shared_memory(AgentObject* self,
 
 	switch (message->to)
 	{
+	Location from,
+	Location to,
+	Opcode opcode,
+	gpointer data)
+{
+	Message* message = malloc(sizeof(Message));
+	IPC* ipc = session_core_get_ipc(self);
+
+	switch (to)
+	{
+	case CLIENT:
+		message->opcode = opcode;
+		message->data = data;
+		message->from = from;
+		message->to = to;
+		shared_memory_link_send_message(ipc->core_link, message);
 	case HOST:
 		g_printerr("wrong lane");
 		return FALSE;
@@ -176,5 +190,4 @@ send_message_through_shared_memory(AgentObject* self,
 		ret = shared_memory_link_send_message(ipc->core_link, ipc->core_id, message);
 	}
 	return ret;
-}
->>>>>>> Stashed changes
+  }

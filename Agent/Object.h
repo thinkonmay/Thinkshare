@@ -3,7 +3,17 @@
 #include "Object.h"
 #include "agent-object.h"
 
-
+/*
+*
+* 
+* Object header file contain object hierarchy structure of  
+* 
+* 
+* 
+* 
+* 
+* 
+*/
 
 
 
@@ -66,6 +76,16 @@ typedef enum
 
 	OPCODE_LAST
 }Opcode;
+
+typedef enum
+{
+	CORE,
+	CLIENT,
+	LOADER,
+	AGENT,
+	HOST
+}Location;
+
 
 /// <summary>
 /// Message template to send to all device in one session
@@ -183,6 +203,39 @@ typedef struct
 }LocalStorage;
 
 
+/// <summary>
+/// contain information about shared memory hub and connection
+/// </summary>
+typedef struct abc
+{
+	SharedMemoryHub* hub;
+	SharedMemoryLink* core_link;
+	SharedMemoryLink* loader_link;
+
+	const gint core_id;
+	const gint loader_id;
+	const gint agent_id;
+	const gint host_id;
+	const gint client_id;
+
+	gint block_size;
+	gint pipe_size;
+}IPC;
+
+
+
+
+/// <summary>
+/// contain information about websocket socket with host
+/// </summary>
+typedef struct
+{
+	SoupWebsocketConnection* ws;
+
+	gchar* host_url;
+
+
+}Socket;
 
 
 
@@ -204,6 +257,4 @@ typedef struct
 	gint cpu_usage;
 	gint gpu_usage;
 	gint ram_usage;
-
-
 }DeviceState;

@@ -19,6 +19,12 @@ struct _AgentObjectClass
 {
 	GObjectClass parent;
 
+	void
+	(*connect_to_host)(AgentObject* self);
+
+	DeviceInformation*
+	(*query_device_information)(AgentObject* self);
+
 	gboolean
 	(*session_initialization)(AgentObject* self,
 		Session* session);
@@ -42,6 +48,12 @@ struct _AgentObjectClass
 	gboolean
 	(*add_local_nas_storage)(AgentObject* self, 
 		LocalStorage* storage);
+	void
+	(*send_message)(AgentObject* self,
+		Location from,
+		Location location,
+		Opcode opcode,
+		gpointer data);
 };
 
 /// <summary>
@@ -79,7 +91,11 @@ send_message(AgentObject* self,
 	Message* message);
 
 
+IPC*
+agent_object_get_ipc(AgentObject* self);
 
+Socket*
+agent_object_get_socket(AgentObject* self);
 
 
 DeviceInformation*
