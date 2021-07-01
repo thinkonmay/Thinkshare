@@ -1,0 +1,19 @@
+
+cmake_minimum_required(VERSION 2.20.0)
+project(Agent)
+
+set(CMP0048 NEW)
+
+if (MINGW)
+set(CMAKE_PREFIX_PATH "C:\\gstreamer\\1.0\\mingw_x86")
+elseif(MSVC)
+set(CMAKE_PREFIX_PATH "C:\\gstreamer\\1.0\\msvc_x86_64")
+endif()
+
+
+
+add_subdirectory(source)
+
+
+
+
