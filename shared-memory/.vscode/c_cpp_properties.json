@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/gstreamer/1.0/mingw_x86/include/glib-2.0/**",
+                "C:/gstreamer/1.0/mingw_x86/lib/glib-2.0/include/**",
+                "C:/gstreamer/1.0/mingw_x86/include/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.19041.0",
+            "compilerPath": "C:/MinGW/bin/gcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x86",
+            "compileCommands": "E:/shared_memory_new_version/builddir/compile_commands.json"
+        }
+    ],
+    "version": 4
+}

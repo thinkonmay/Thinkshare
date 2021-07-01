@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\personal cloud computing\personal cloud computing\shared-memory\source\shared-memory-hub-master.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\personal cloud computing\personal cloud computing\shared-memory\source\shared-memory-hub.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\personal cloud computing\personal cloud computing\shared-memory\source\shared-memory-link.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\personal cloud computing\personal cloud computing\shared-memory\source\shared-memory-thread-pool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\personal cloud computing\personal cloud computing\shared-memory\source\CmakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{FE01E290-61D8-390B-85D3-2BE39F1723D4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\Cmd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\DeviceInformation.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\Program.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\SharedMemory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\Socket.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\agent-object.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\personal cloud computing\personal cloud computing\Agent\source\CmakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{EDCA8340-4D99-3318-B8DC-125D69BE7F96}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

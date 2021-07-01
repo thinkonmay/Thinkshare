@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\personal cloud computing\personal cloud computing\SessionCore\build-vs\CMakeFiles\da2cccb625dcbea0343e7589bd44850d\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{4C477EE9-F8C7-3758-8950-8676C0A172EE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

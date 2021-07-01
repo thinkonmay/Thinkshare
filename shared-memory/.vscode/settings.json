@@ -1,5 +1,9 @@
 {
+    "mesonbuild.configureOnOpen": true,
     "files.associations": {
-        "*.rh": "cpp"
+        "shared-memory-link.h": "c",
+        "shared-memory-hub-master.h": "c",
+        "shared-memory-hub.h": "c",
+        "shared-memory-thread-pool.h": "c"
     }
 }
