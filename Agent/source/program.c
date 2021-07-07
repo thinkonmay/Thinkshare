@@ -1,20 +1,12 @@
 #include <glib.h>
 #include <agent-object.h>
-#define HOST_URL abc;
 
 
-GMainLoop* loop;
+const gchar* HOST_URL  = "http://google.com";
 
-int main(int argc, char* argv[])
+int 
+main(void)
 {
     AgentObject* object = agent_object_new(HOST_URL); 
-
-    loop = g_main_loop_new(NULL, FALSE);
-
-
-    connect_to_host_async();
-
-    g_main_loop_run(loop);
-    g_main_loop_unref(loop);
     return 0;
 }

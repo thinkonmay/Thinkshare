@@ -22,7 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DD768BAC-A55F-3916-BC97-92C2C3A2C819}</ProjectGuid>
+    <ProjectGuid>{6762D531-1088-37E4-B2CC-DE5A11E593E3}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>x64</Platform>
@@ -59,25 +59,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\personal cloud computing\personal cloud computing\Agent\build-vs\source\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\huyho_fscnz\Desktop\agent\build-vs\source\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Agent.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\personal cloud computing\personal cloud computing\Agent\build-vs\source\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\huyho_fscnz\Desktop\agent\build-vs\source\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Agent.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\personal cloud computing\personal cloud computing\Agent\build-vs\source\MinSizeRel\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\huyho_fscnz\Desktop\agent\build-vs\source\MinSizeRel\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Agent.dir\MinSizeRel\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\personal cloud computing\personal cloud computing\Agent\build-vs\source\RelWithDebInfo\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\huyho_fscnz\Desktop\agent\build-vs\source\RelWithDebInfo\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Agent.dir\RelWithDebInfo\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
@@ -86,8 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -mms-bitfields</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -99,15 +98,15 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -120,8 +119,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/Debug/Agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/Debug/Agent.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/Debug/Agent.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/Debug/Agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -130,8 +129,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -mms-bitfields</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -141,17 +139,17 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -164,8 +162,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/Release/Agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/Release/Agent.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/Release/Agent.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/Release/Agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -174,8 +172,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -mms-bitfields</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -185,17 +182,17 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -208,8 +205,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/MinSizeRel/Agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/MinSizeRel/Agent.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/MinSizeRel/Agent.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/MinSizeRel/Agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -218,8 +215,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>%(AdditionalOptions) -mms-bitfields</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>
@@ -230,15 +226,15 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>E:\personal cloud computing\personal cloud computing\Agent\include;C:\gstreamer\1.0\mingw_x86\include\libsoup-2.4;C:\gstreamer\1.0\mingw_x86\include\libxml2;C:\gstreamer\1.0\mingw_x86\include;C:\gstreamer\1.0\mingw_x86\include\glib-2.0;C:\gstreamer\1.0\mingw_x86\lib\glib-2.0\include;C:\gstreamer\1.0\mingw_x86\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -251,8 +247,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/RelWithDebInfo/Agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/RelWithDebInfo/Agent.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/RelWithDebInfo/Agent.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/RelWithDebInfo/Agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -260,11 +256,11 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="E:\personal cloud computing\personal cloud computing\Agent\source\CmakeLists.txt">
-      <StdOutEncoding>UTF-8</StdOutEncoding>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule E:/personal cloud computing/personal cloud computing/Agent/source/CMakeLists.txt</Message>
+    <CustomBuild Include="C:\Users\huyho_fscnz\Desktop\agent\source\CmakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/agent/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-SE:/personal cloud computing/personal cloud computing/Agent" "-BE:/personal cloud computing/personal cloud computing/Agent/build-vs" --check-stamp-file "E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/CMakeFiles/generate.stamp"
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/agent -BC:/Users/huyho_fscnz/Desktop/agent/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -272,12 +268,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">E:\personal cloud computing\personal cloud computing\Agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\huyho_fscnz\Desktop\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule E:/personal cloud computing/personal cloud computing/Agent/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/agent/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-SE:/personal cloud computing/personal cloud computing/Agent" "-BE:/personal cloud computing/personal cloud computing/Agent/build-vs" --check-stamp-file "E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/CMakeFiles/generate.stamp"
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/agent -BC:/Users/huyho_fscnz/Desktop/agent/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -285,12 +281,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">E:\personal cloud computing\personal cloud computing\Agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\huyho_fscnz\Desktop\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule E:/personal cloud computing/personal cloud computing/Agent/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/agent/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-SE:/personal cloud computing/personal cloud computing/Agent" "-BE:/personal cloud computing/personal cloud computing/Agent/build-vs" --check-stamp-file "E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/CMakeFiles/generate.stamp"
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/agent -BC:/Users/huyho_fscnz/Desktop/agent/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -298,12 +294,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">E:\personal cloud computing\personal cloud computing\Agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\huyho_fscnz\Desktop\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule E:/personal cloud computing/personal cloud computing/Agent/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/agent/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-SE:/personal cloud computing/personal cloud computing/Agent" "-BE:/personal cloud computing/personal cloud computing/Agent/build-vs" --check-stamp-file "E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/CMakeFiles/generate.stamp"
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/agent -BC:/Users/huyho_fscnz/Desktop/agent/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -311,22 +307,23 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">E:\personal cloud computing\personal cloud computing\Agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\huyho_fscnz\Desktop\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\Cmd.c" />
-    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\DeviceInformation.c" />
-    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\Program.c" />
-    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\SharedMemory.c" />
-    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\Socket.c" />
-    <ClCompile Include="E:\personal cloud computing\personal cloud computing\Agent\source\agent-object.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-cmd.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-device.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-ipc.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-message.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-object.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-socket.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\program.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="E:\personal cloud computing\personal cloud computing\Agent\build-vs\ZERO_CHECK.vcxproj">
-      <Project>{C7549FBA-F652-39C0-A935-2BBA3155005C}</Project>
+    <ProjectReference Include="C:\Users\huyho_fscnz\Desktop\agent\build-vs\ZERO_CHECK.vcxproj">
+      <Project>{1BE917D6-0B5E-317A-8D93-8E671CC670B1}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

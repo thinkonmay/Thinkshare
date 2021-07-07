@@ -14,21 +14,6 @@
 
 
 
-/// <summary>
-/// contain information about websocket socket with host
-/// </summary>
-struct _Socket
-{
-    SoupWebsocketConnection* ws;
-    gchar* host_url;
-};
-
-
-
-
-
-
-
 
 gchar*									get_string_from_json_object			(JsonObject* object);
 
@@ -40,26 +25,40 @@ void									on_server_message					(SoupWebsocketConnection* conn,
     																		 GBytes* message,
    																			 AgentObject* user_data);
 
+/*register slave device with host, provide slave information*/
+gboolean                                register_with_host                  (AgentObject* self);
 
 
-
-gboolean								register_with_host					(AgentObject* self);
-
-
-
+/// <summary>
+/// send data to host in form of json object, should not use directly, 
+/// using agent_send_message method instead
+/// </summary>
+/// <param name="self"></param>
+/// <param name="message"></param>
 void 									send_message_to_host				(AgentObject* self,
-   																			 gint from,
-  																			 gint to,
-   																			 gint opcode,
-   																			 JsonObject* data);
+                                                                             gchar* data);
 
 
 void									connect_to_host_async				(AgentObject* self);
 
-void 									send_message_to_host				(Socket* socket,
-                   															 gint from,
-                     														 gint to,
-                    														 gint opcode,
-                    														 GValue* data);
+
+gchar*                                  socket_get_host_url                 (Socket* socket);
+
+
+SoupWebsocketConnection*                socket_get_connection               (Socket* socket);
+
+/// <summary>
+/// (THREAD FUNTION)
+/// iretationally update the state of slave device to host,
+/// thread stop when agent state is not 
+/// </summary>
+/// <param name="data"></param>
+/// <returns></returns>
+gpointer                                update_device_with_host             (AgentObject* data);
+
+void                                    socket_set_host_url                 (Socket* socket,
+                                                                             gchar* Host_Url);
+
+Socket*                                 initialize_socket                   (gchar* host_url);
 
 #endif

@@ -1,4 +1,4 @@
-# Install script for directory: E:/personal cloud computing/personal cloud computing/Agent
+# Install script for directory: C:/Users/huyho_fscnz/Desktop/agent
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("E:/personal cloud computing/personal cloud computing/Agent/build-vs/source/cmake_install.cmake")
+  include("C:/Users/huyho_fscnz/Desktop/agent/build-vs/source/cmake_install.cmake")
 
 endif()
 
@@ -46,5 +46,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "E:/personal cloud computing/personal cloud computing/Agent/build-vs/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/huyho_fscnz/Desktop/agent/build-vs/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

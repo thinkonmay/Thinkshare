@@ -1,23 +1,24 @@
-﻿#pragma once
-#include <agent-object.h>
-#include <Object.h>
+﻿#include <agent-object.h>
 
+#include <Windows.h>
+#include <stdio.h>
 
-
-#include <Cmd.h>
-#include <SharedMemory.h>
-#include <Socket.h>
-#include <DeviceInformation.h>
-
+#include <agent-type.h>
+#include <agent-ipc.h>
+#include <agent-socket.h>
+#include <agent-device.h>
+#include <agent-message.h>
+#include <agent-cmd.h>
+#include <agent-device.h>
 
 
 
 /// <summary>
 /// agent instance base for instance
 /// </summary>
-typedef struct 
+struct _AgentObject
 {
-	AgentState state;
+	HANDLE state_mutex;
 
 	DeviceState* device_state;
 
@@ -26,112 +27,345 @@ typedef struct
 	IPC* ipc;
 
 	Socket* socket;
-}AgentObjectPrivate;
+
+	Session* session;
+
+	gint state;
+
+	GMainLoop* loop;
+};
 
 
-///define agent object data type (follow gobject standard)
-G_DEFINE_TYPE_WITH_PRIVATE(AgentObject, agent_object, G_TYPE_OBJECT)
-
-
-static void
-agent_object_class_init(AgentObjectClass* klass)
+gpointer
+update_device(gpointer data)
 {
-	GObjectClass* object_class = G_OBJECT_CLASS(klass);
+	AgentObject* self = (AgentObject*)data;
 
-	object_class->constructed = agent_object_constructed;
-	object_class->dispose = agent_object_dispose;
-	object_class->finalize = agent_object_finalize;
 
-	klass->add_local_nas_storage;      
-	klass->session_initialization;
-	klass->session_termination;
-	klass->command_line_passing;		
-	klass->remote_control_disconnect;
-	klass->remote_control_reconnect;
-	klass->connect_to_host =			connect_to_host_async;            
-	klass->query_device_information  =	get_device_state;    
-	klass->send_message =				send_message;
+	while (TRUE)
+	{
 
+		WaitForSingleObject(self->state_mutex, INFINITE);
+		self->device_information =	get_device_information();
+		self->device_state	 =		get_device_state();
+		ReleaseMutex(self->state_mutex);
+		Sleep(1000);
+
+
+		if (self->state == AGENT_CLOSED)
+			break;
+	}
+	return NULL;
 }
 
-static void
-agent_object_constructed(GObject* object)
+void
+agent_object_constructed(AgentObject* self)
 {
-	AgentObject* self = (AgentObject*) object;
-	AgentObjectPrivate* priv =  agent_object_get_instance_private(self);
+	SECURITY_ATTRIBUTES attr;
+	attr.nLength = sizeof(SECURITY_ATTRIBUTES);
+	attr.bInheritHandle = TRUE;
+	attr.lpSecurityDescriptor = NULL;
 
-	priv->ipc->hub = shared_memory_hub_master_new();
+	HANDLE mutex = CreateMutex(&attr, FALSE, NULL);
+
+	self->state_mutex = &mutex;
+	g_thread_new("update device", (GThreadFunc)update_device, self);
+
+	self->loop = g_main_loop_new(NULL, FALSE);
+
+	g_main_loop_run(self->loop);
+	g_main_loop_unref(self->loop);
 }
-
-static void
-agent_object_dispose(GObject* object)
-{
-
-}
-
-static void
-agent_object_finalize(GObject* object)
-{
-
-}
-
 
 AgentObject*
-agent_object_new(gchar* Host_URL,
-	gint Host_ID)
+agent_object_new(gchar* Host_URL)
 {
-	AgentObject* agent =g_object_new(AGENT_TYPE_OBJECT,NULL);
-	AgentObjectPrivate* priv = agent_object_get_instance_private(agent);
-	priv->socket->host_url = Host_URL;
+	AgentObject* agent = malloc(sizeof(AgentObject));
+	agent->state = AGENT_NEW;
+
+
+	agent->ipc=		initialize_ipc(agent);
+	agent->socket = initialize_socket(agent,Host_URL);
+
+	agent->device_information = get_device_information();
+	agent->device_state =		get_device_state();
+	agent->state = ATTEMP_TO_RECONNECT;
+
+
+	agent_connect_to_host(agent);
+
+	agent_object_constructed(agent);
+	return agent;
+}
 
 
 
-	AgentObjectClass* klass = AGENT_OBJECT_GET_CLASS(agent);
-	klass->connect_to_host(agent);
+
+void
+agent_object_finalize(AgentObject* object)
+{
+	object->state = AGENT_CLOSED;
+
+	SoupWebsocketConnection* connection = 
+		socket_get_connection(object->socket);
+
+	soup_websocket_connection_close(connection,0,"");
+
+	if (object->loop)
+	{
+		g_main_loop_quit(object->loop);
+		object->loop = NULL;
+		g_free(object);
+	}
+}
+
+
+void
+agent_register_with_host(AgentObject* self)
+{
+	if (self->state == ATTEMP_TO_RECONNECT)
+		register_with_host(self);
+	else
+	{
+		g_printerr("register while not in reconnect state");
+		return;
+	}
+	self->state = SLAVE_REGISTERING;
+	return;
 }
 
 
 
 
 
-gboolean
-send_message(AgentObject* self,
-	Message* message)
-{
-	switch (message->to)
-	{
-	case HOST:
-	{
-		send_message_to_host(self, message);
-	}
-	case CORE:
-		send_message_through_shared_memory(self, message);
-	case LOADER:
-		send_message_through_shared_memory(self, message);
-	case CLIENT:
-		send_message_through_shared_memory(self,message);
-	}
-}
+
 
 
 
 IPC*
 agent_object_get_ipc(AgentObject* self)
 {
-	AgentObjectPrivate* priv = agent_object_get_instance_private(self);
-	return priv->ipc;
+	return self->ipc;
 }
 
 Socket*
 agent_object_get_socket(AgentObject* self)
 {
-	AgentObjectPrivate* priv = agent_object_get_instance_private(self);
-	return priv->socket;
+	return self->socket;
+}
+
+DeviceState*
+agent_get_device_state(AgentObject* self)
+{
+	return self->device_state;
 }
 
 DeviceInformation*
-agent_object_get_information(AgentObject* self)
+agent_get_device_information(AgentObject* self)
 {
-	AgentObjectPrivate* priv = agent_object_get_instance_private(self);
-	return priv->device_information;
+	return self->device_information;
 }
+
+Session*
+agent_object_get_session(AgentObject* self)
+{
+	return self->session;
+}
+
+void
+agent_object_set_session(AgentObject* self, Session* session)
+{
+	return self->session = session;
+}
+
+void
+agent_set_state(AgentObject* object, AgentState state)
+{
+	object->state = state;
+}
+
+AgentState
+agent_get_state(AgentObject* self)
+{
+	return self->state;
+}
+
+HANDLE*
+agent_get_mutex_handle_ptr(AgentObject* self)
+{
+	return self->state_mutex;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// <summary>
+/// attemp to connect to host until succes or close signal is received
+/// </summary>
+/// <param name="self"></param>
+/// <returns></returns>
+gboolean
+agent_connect_to_host(AgentObject* self)
+{
+	while (TRUE)
+	{
+		connect_to_host_async(self);
+		Sleep(10000);
+
+		if (self->state == AGENT_OPEN || self->state == AGENT_CLOSED || self->state == SLAVE_REGISTERING)
+			break;
+	}
+}
+
+
+
+
+gboolean
+agent_session_initialize(AgentObject* self)
+{
+	gboolean ret = FALSE;
+	if (self->state != AGENT_OPEN)
+	{
+		ret = FALSE;
+		g_printerr("cannot create new session while on one");
+	}
+	ret = session_initialize(self);
+	self->state = ON_SESSION;
+	return ret;
+}
+
+
+gboolean										
+agent_disconnect_host(AgentObject* self)
+{
+	if (self->state != AGENT_CLOSED)
+	{
+		self->state = ATTEMP_TO_RECONNECT;
+		agent_connect_to_host(self);
+	}
+	else
+	{
+		agent_object_finalize(self);
+	}
+}
+
+gboolean										
+agent_session_terminate(AgentObject* self)
+{
+	if (self->state == ON_SESSION || self->state == ON_SESSION_OFF_REMOTE)
+	{
+		g_free(self->session);
+		self->session = NULL;
+		session_terminate_process(self);
+		self->state = AGENT_OPEN;
+	}
+	else
+	{
+		g_printerr("not in sesssion");
+		return FALSE;
+	}
+	return TRUE;
+}
+
+gboolean										
+agent_remote_control_disconnect(AgentObject* self)
+{
+	if (self->state == ON_SESSION)
+	{
+		session_terminate_process(self);
+		self->state = ON_SESSION_OFF_REMOTE;
+	}
+	else 
+	{
+		g_printerr("not in sesssion");
+		return FALSE;
+	}
+	return TRUE;
+}
+
+gboolean										
+agent_remote_control_reconnect(AgentObject* self)
+{
+	if (self->state == ON_SESSION_OFF_REMOTE)
+	{
+		if (session_initialize(self))
+		{
+			self->state = ON_SESSION;
+			return TRUE;
+		}
+		else
+			return FALSE;
+	}
+	else
+	{
+		g_printerr("not in session state");
+		return;
+	}
+}
+
+gboolean
+agent_register_settled(AgentObject* self)
+{
+	if (self->state != SLAVE_REGISTERING)
+	{
+		g_printerr("not in registering state");
+		return FALSE;
+	}
+	else
+	{
+		GError** err;
+		do
+		{
+			
+			self->state = AGENT_OPEN;
+			g_thread_try_new("information update",
+				(GThreadFunc*)update_device_with_host, self, err);
+			if (err != NULL)
+			{
+				g_printerr("failed to create thread");
+			}
+		} while (err == NULL);
+		return TRUE;
+	}
+}
+
+gboolean										
+agent_command_line_passing(AgentObject* self,
+	gchar* command)
+{
+	
+}
+
+gboolean										
+agent_add_local_nas_storage(AgentObject* self,
+	LocalStorage* storage)
+{
+
+}
+
+gboolean										
+agent_send_message(AgentObject* self,
+	Message* message)
+{
+	send_message(self, message);
+}
+
