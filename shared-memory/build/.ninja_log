@@ -1,6 +1,0 @@
-# ninja log v5
-14	451	6468410068714412	source/CMakeFiles/shared-memory.dir/shared-memory-thread-pool.c.obj	d28e9b123c42461c
-0	459	6468410068870681	source/CMakeFiles/shared-memory.dir/shared-memory-hub-master.c.obj	d8877f13ccb11af7
-17	462	6468410068870681	source/CMakeFiles/shared-memory.dir/shared-memory-hub.c.obj	acd000006659bbdc
-19	490	6468410068714412	source/CMakeFiles/shared-memory.dir/shared-memory-link.c.obj	15051f75c5e3ae7f
-492	587	6468410070120764	source/libshared-memory.a	39a33350c297efee

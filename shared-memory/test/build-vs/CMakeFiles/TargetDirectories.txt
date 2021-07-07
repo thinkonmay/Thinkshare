@@ -1,4 +1,0 @@
-E:/shared_memory_new_version/test/build-vs/CMakeFiles/TEST_MASTER.dir
-E:/shared_memory_new_version/test/build-vs/CMakeFiles/TEST_SLAVE.dir
-E:/shared_memory_new_version/test/build-vs/CMakeFiles/ALL_BUILD.dir
-E:/shared_memory_new_version/test/build-vs/CMakeFiles/ZERO_CHECK.dir
