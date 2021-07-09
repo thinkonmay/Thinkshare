@@ -14,3 +14,4 @@ namespace Host.Interfaces
         Task SendMessage(WebSocket ws, Message message);
     }
 }
+ 
