@@ -14,7 +14,7 @@
 
 
 /// <summary>
-/// agent instance base for instance
+/// agent object 
 /// </summary>
 struct _AgentObject
 {
@@ -36,6 +36,12 @@ struct _AgentObject
 };
 
 
+
+/// <summary>
+/// update device thread function, invoke during agent object initialization
+/// </summary>
+/// <param name="data"></param>
+/// <returns></returns>
 gpointer
 update_device(gpointer data)
 {
@@ -58,8 +64,21 @@ update_device(gpointer data)
 	return NULL;
 }
 
+
+
+
+
+
+
+
+
+/// <summary>
+/// constructed function, run after agent object has been initialized sucessfully,
+/// run related thread and main loop
+/// </summary>
+/// <param name="self"></param>
 void
-agent_object_constructed(AgentObject* self)
+agent_constructed(AgentObject* self)
 {
 	SECURITY_ATTRIBUTES attr;
 	attr.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -78,7 +97,7 @@ agent_object_constructed(AgentObject* self)
 }
 
 AgentObject*
-agent_object_new(gchar* Host_URL)
+agent_new(gchar* Host_URL)
 {
 	AgentObject* agent = malloc(sizeof(AgentObject));
 	agent->state = AGENT_NEW;
@@ -94,7 +113,7 @@ agent_object_new(gchar* Host_URL)
 
 	agent_connect_to_host(agent);
 
-	agent_object_constructed(agent);
+	agent_constructed(agent);
 	return agent;
 }
 
@@ -102,7 +121,7 @@ agent_object_new(gchar* Host_URL)
 
 
 void
-agent_object_finalize(AgentObject* object)
+agent_finalize(AgentObject* object)
 {
 	object->state = AGENT_CLOSED;
 
@@ -138,91 +157,6 @@ agent_register_with_host(AgentObject* self)
 
 
 
-
-
-
-
-IPC*
-agent_object_get_ipc(AgentObject* self)
-{
-	return self->ipc;
-}
-
-Socket*
-agent_object_get_socket(AgentObject* self)
-{
-	return self->socket;
-}
-
-DeviceState*
-agent_get_device_state(AgentObject* self)
-{
-	return self->device_state;
-}
-
-DeviceInformation*
-agent_get_device_information(AgentObject* self)
-{
-	return self->device_information;
-}
-
-Session*
-agent_object_get_session(AgentObject* self)
-{
-	return self->session;
-}
-
-void
-agent_object_set_session(AgentObject* self, Session* session)
-{
-	return self->session = session;
-}
-
-void
-agent_set_state(AgentObject* object, AgentState state)
-{
-	object->state = state;
-}
-
-AgentState
-agent_get_state(AgentObject* self)
-{
-	return self->state;
-}
-
-HANDLE*
-agent_get_mutex_handle_ptr(AgentObject* self)
-{
-	return self->state_mutex;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/// <summary>
-/// attemp to connect to host until succes or close signal is received
-/// </summary>
-/// <param name="self"></param>
-/// <returns></returns>
 gboolean
 agent_connect_to_host(AgentObject* self)
 {
@@ -236,6 +170,13 @@ agent_connect_to_host(AgentObject* self)
 	}
 }
 
+
+gboolean
+agent_send_message(AgentObject* self,
+	Message* message)
+{
+	send_message(self, message);
+}
 
 
 
@@ -264,7 +205,7 @@ agent_disconnect_host(AgentObject* self)
 	}
 	else
 	{
-		agent_object_finalize(self);
+		agent_finalize(self);
 	}
 }
 
@@ -275,7 +216,7 @@ agent_session_terminate(AgentObject* self)
 	{
 		g_free(self->session);
 		self->session = NULL;
-		session_terminate_process(self);
+		session_terminate(self);
 		self->state = AGENT_OPEN;
 	}
 	else
@@ -362,10 +303,78 @@ agent_add_local_nas_storage(AgentObject* self,
 
 }
 
-gboolean										
-agent_send_message(AgentObject* self,
-	Message* message)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*START get-set function*/
+
+IPC*
+agent_get_ipc(AgentObject* self)
 {
-	send_message(self, message);
+	return self->ipc;
 }
+
+Socket*
+agent_get_socket(AgentObject* self)
+{
+	return self->socket;
+}
+
+DeviceState*
+agent_get_device_state(AgentObject* self)
+{
+	return self->device_state;
+}
+
+DeviceInformation*
+agent_get_device_information(AgentObject* self)
+{
+	return self->device_information;
+}
+
+Session*
+agent_get_session(AgentObject* self)
+{
+	return self->session;
+}
+
+void
+agent_set_session(AgentObject* self, Session* session)
+{
+	return self->session = session;
+}
+
+void
+agent_set_state(AgentObject* object, AgentState state)
+{
+	object->state = state;
+}
+
+AgentState
+agent_get_state(AgentObject* self)
+{
+	return self->state;
+}
+
+HANDLE*
+agent_get_mutex_handle_ptr(AgentObject* self)
+{
+	return self->state_mutex;
+}
+
+/*START get-set function*/
 

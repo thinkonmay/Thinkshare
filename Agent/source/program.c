@@ -7,6 +7,6 @@ const gchar* HOST_URL  = "http://google.com";
 int 
 main(void)
 {
-    AgentObject* object = agent_object_new(HOST_URL); 
+    AgentObject* object = agent_new(HOST_URL); 
     return 0;
 }

@@ -95,15 +95,15 @@ session_core_setup_pipeline (self)
 }				
 
 gboolean
-session_core_start_pipeline(SessionCore* core)
+session_core_start_pipeline(SessionCore* self)
 {
-	return start_pipeline(core);
+	return start_pipeline(self);
 }
 
 void
-session_core_send_message(SessionCore* core, Message* message)
+session_core_send_message(SessionCore* self, Message* message)
 {
-	send_message(core, message);
+	send_message(self, message);
 }
 
 gboolean
@@ -218,21 +218,6 @@ session_core_setup_session(SessionCore* self,
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void
 session_core_finalize(SessionCore* self, gint exit_code)
 {
@@ -267,7 +252,7 @@ session_core_finalize(SessionCore* self, gint exit_code)
 
 
 
-
+/*START get-set function related to session core object*/
 
 Pipeline*
 session_core_get_pipeline(SessionCore* self)
@@ -312,3 +297,6 @@ session_core_get_ipc(SessionCore* core)
 {
 	return core->ipc;
 }
+
+
+/*END get-set function related to session core object*/

@@ -22,6 +22,10 @@ struct _SessionQoE
 	gint bitrate;
 };
 
+/// <summary>
+/// session related information:
+/// session slave id, signalling url, ...
+/// </summary>
 struct _Session
 {
 	gint SessionSlaveID;
@@ -30,6 +34,11 @@ struct _Session
 	gboolean client_offer;
 	gchar* stun_server;
 };
+
+
+
+
+
 
 
 void
@@ -88,6 +97,15 @@ get_json_from_session(Session* session)
 	return object;
 
 }
+
+
+
+
+
+
+
+
+
 
 Message*
 message_init(Module from,
@@ -227,7 +245,7 @@ on_agent_message(AgentObject* self,
 				{
 					Session* session = 
 						get_session_information_from_message(json_data);
-					agent_object_set_session(self, session);
+					agent_set_session(self, session);
 
 					if (agent_session_initialize(self))
 						message = message_init( from, to, SESSION_INITIALIZE_CONFIRM, NULL);
@@ -261,7 +279,7 @@ on_agent_message(AgentObject* self,
 			{
 			case SESSION_CORE_STARTUP_DONE:
 			{
-				Session* session = agent_object_get_session(self);
+				Session* session = agent_get_session(self);
 				Message* message = get_json_from_session(session);
 				msg = message_init(AGENT_MODULE, CORE_MODULE, SESSION_INFORMATION, message);
 			}

@@ -16,6 +16,8 @@ namespace Signalling.Models
         public int SlaveId { get; set; }
         public DateTime Created { get; set; }
 
+        /*provide both created time and closed time for better management*/
+
         public Session(SessionRequest req)
         {
             ClientId = req.ClientId;

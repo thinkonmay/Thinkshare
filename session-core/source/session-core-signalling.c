@@ -193,9 +193,10 @@ on_negotiation_needed(GstElement* element, SessionCore* core)
 
     if (hub->client_offer) 
     {
-        gchar* msg = g_strdup_printf("WAITING_CLIENT");
-        soup_websocket_connection_send_text(hub->connection, msg);
-        g_free(msg);
+
+        //gchar* msg = g_strdup_printf("WAITING_CLIENT");  
+        //soup_websocket_connection_send_text(hub->connection, msg);
+        ///g_free(msg);
     }
     else 
     {
@@ -419,7 +420,45 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
 
 
 
+void
+server_register_result(SessionCore* core, JsonObject* object)
+{
+    gchar* result;
+    gchar* request_type = 
+        json_object_get_string_member(object, "request_type");
 
+
+    SignallingHub* signalling = session_core_get_signalling_hub(core);
+
+
+    if (request_type == "result")
+    {
+        result = json_object_get_string_member(object, "content");
+        /*session id pair id found, set core-state to server registered and start pipeline*/
+        if (result == "accepted")
+        {
+            if ( signalling->signalling_state != SIGNALLING_SERVER_REGISTERING)
+            {
+                session_core_finalize(core, CORE_STATE_ERROR);
+            }
+            session_core_set_state(core, SIGNALLING_SERVER_REGISTERED);
+            /* Call has been setup by the server, now we can start negotiation */
+        }
+        /*denied message send from signalling server to slave, end session core*/
+        if (result == "denied")
+        {
+            if ( signalling->signalling_state != SIGNALLING_SERVER_REGISTERING)
+            {
+                session_core_finalize(core, CORE_STATE_ERROR);
+            }
+            session_core_finalize(core, SESSION_DENIED);
+        }
+    }
+    else
+    {
+        g_printerr("Ignoring unknown JSON message");
+    }
+}
 
 
 
@@ -437,6 +476,9 @@ on_server_message(SoupWebsocketConnection* conn,
     GBytes* message,
     SessionCore* core)
 {
+
+    SignallingHub* signalling = session_core_get_signalling_hub(core);
+
     CoreState state = session_core_get_state(core);
     JsonNode* root;
     JsonObject* object, * child;
@@ -468,14 +510,16 @@ on_server_message(SoupWebsocketConnection* conn,
     {
       g_printerr("Unknown message '%s', ignoring", text);
       g_object_unref(parser);
-      goto out;
+      g_free(text);
+      return;
     }
 
     root = json_parser_get_root(parser);
     if (!JSON_NODE_HOLDS_OBJECT(root))
     {
         g_object_unref(parser);
-        goto out;
+        g_free(text);
+        return;
     }
 
     object = json_node_get_object(root);
@@ -491,50 +535,27 @@ on_server_message(SoupWebsocketConnection* conn,
     */
     if (json_object_has_member(object, "request_type"))
     {
-        request_type = json_object_get_string_member(object, "request_type");
-        if (request_type == "result")
-        {
-            result = json_object_get_string_member(object, "content");
-             /*session id pair id found, set core-state to server registered and start pipeline*/
-            if (result == "accepted")
-            {
-                if (state != SIGNALLING_SERVER_REGISTERING) 
-                {
-                    session_core_finalize(core, CORE_STATE_ERROR);
-                    goto out;
-                }
-                session_core_set_state(core, SIGNALLING_SERVER_REGISTERED);
-                /* Call has been setup by the server, now we can start negotiation */
-            }
-             /*denied message send from signalling server to slave, end session core*/
-            if (result == "denied")
-            {
-                if (state != SIGNALLING_SERVER_REGISTERING)
-                {
-                    session_core_finalize(core, CORE_STATE_ERROR);
-                    goto out;
-                }
-                session_core_finalize( core, SESSION_DENIED);
-            }
-        }
-        else
-        {
-            g_printerr("Ignoring unknown JSON message:\n%s\n", text);
-        }
+        server_register_result(core, object);
     }
+
+    /*sdp exchange*/
     else if (json_object_has_member(object, "sdp"))
     {
         int ret;
         GstSDPMessage* sdp;
         const gchar* text, * sdptype;
         GstWebRTCSessionDescription* answer;
-        g_assert_cmphex(state, == , PEER_CALL_NEGOTIATING);
+
+        if (!signalling->signalling_state == PEER_CALL_NEGOTIATING)
+            session_core_finalize(core, CORE_STATE_ERROR);
+
         child = json_object_get_object_member(object, "sdp");
         if (!json_object_has_member(child, "type"))
         {
             g_printerr("ERROR: received SDP without 'type'", core,
                 PEER_CALL_ERROR);
-            goto out;
+            g_free(text);
+            return;
         }
         sdptype = json_object_get_string_member(child, "type");
         text = json_object_get_string_member(child, "sdp");
@@ -565,6 +586,7 @@ on_server_message(SoupWebsocketConnection* conn,
                 sdp);
         }
     }
+    /*ice exchange*/
     else if (json_object_has_member(object, "ice"))
     {
         const gchar* candidate;
@@ -580,11 +602,8 @@ on_server_message(SoupWebsocketConnection* conn,
     {
         g_printerr("Ignoring unknown JSON message:\n%s\n", text);
     }
-    g_object_unref(parser);   
 
-out:
-    g_free(text);
-    return;
+    g_object_unref(parser);   
 }
 
 

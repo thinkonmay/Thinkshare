@@ -22,7 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DBEC7C28-6414-3028-AC8E-F4B99ECC60AC}</ProjectGuid>
+    <ProjectGuid>{5563D12B-A440-3C6E-B48C-7697181A14BA}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>x64</Platform>
@@ -59,25 +59,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\huyho_fscnz\Desktop\session-core\build-vs\source\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\build-vs\source\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SessionCore.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SessionCore</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\huyho_fscnz\Desktop\session-core\build-vs\source\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\build-vs\source\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SessionCore.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SessionCore</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\huyho_fscnz\Desktop\session-core\build-vs\source\MinSizeRel\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\build-vs\source\MinSizeRel\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">SessionCore.dir\MinSizeRel\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">SessionCore</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\huyho_fscnz\Desktop\session-core\build-vs\source\RelWithDebInfo\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\build-vs\source\RelWithDebInfo\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">SessionCore.dir\RelWithDebInfo\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">SessionCore</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -103,10 +103,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -114,13 +114,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glib-2.0.lib;gstreamer-1.0.lib;intl.lib;json-glib-1.0.lib;gstrtp-1.0.lib;gstbase-1.0.lib;gobject-2.0.lib;gstcontroller-1.0.lib;soup-2.4.lib;gio-2.0.lib;gstsdp-1.0.lib;gstwebrtc-1.0.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\gstreamer\1.0\msvc_x86_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/Debug/SessionCore.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/Debug/SessionCore.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/Debug/SessionCore.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/Debug/SessionCore.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -129,7 +129,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -146,10 +146,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -157,13 +157,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glib-2.0.lib;gstreamer-1.0.lib;intl.lib;json-glib-1.0.lib;gstrtp-1.0.lib;gstbase-1.0.lib;gobject-2.0.lib;gstcontroller-1.0.lib;soup-2.4.lib;gio-2.0.lib;gstsdp-1.0.lib;gstwebrtc-1.0.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\gstreamer\1.0\msvc_x86_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/Release/SessionCore.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/Release/SessionCore.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/Release/SessionCore.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/Release/SessionCore.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -172,7 +172,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -189,10 +189,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -200,13 +200,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glib-2.0.lib;gstreamer-1.0.lib;intl.lib;json-glib-1.0.lib;gstrtp-1.0.lib;gstbase-1.0.lib;gobject-2.0.lib;gstcontroller-1.0.lib;soup-2.4.lib;gio-2.0.lib;gstsdp-1.0.lib;gstwebrtc-1.0.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\gstreamer\1.0\msvc_x86_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/MinSizeRel/SessionCore.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/MinSizeRel/SessionCore.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/MinSizeRel/SessionCore.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/MinSizeRel/SessionCore.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -215,7 +215,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>
@@ -231,10 +231,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -242,13 +242,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glib-2.0.lib;gstreamer-1.0.lib;intl.lib;json-glib-1.0.lib;gstrtp-1.0.lib;gstbase-1.0.lib;gobject-2.0.lib;gstcontroller-1.0.lib;soup-2.4.lib;gio-2.0.lib;gstsdp-1.0.lib;gstwebrtc-1.0.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\gstreamer\1.0\msvc_x86_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/RelWithDebInfo/SessionCore.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/RelWithDebInfo/SessionCore.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/RelWithDebInfo/SessionCore.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/RelWithDebInfo/SessionCore.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -256,11 +256,11 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\huyho_fscnz\Desktop\session-core\source\CmakeLists.txt">
+    <CustomBuild Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\source\CmakeLists.txt">
       <UseUtf8Encoding>Always</UseUtf8Encoding>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/session-core/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/session-core -BC:/Users/huyho_fscnz/Desktop/session-core/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core -BC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -269,11 +269,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\huyho_fscnz\Desktop\session-core\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/session-core/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/session-core -BC:/Users/huyho_fscnz/Desktop/session-core/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core -BC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -282,11 +282,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\huyho_fscnz\Desktop\session-core\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/session-core/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/session-core -BC:/Users/huyho_fscnz/Desktop/session-core/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core -BC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -295,11 +295,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\huyho_fscnz\Desktop\session-core\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/session-core/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/session-core -BC:/Users/huyho_fscnz/Desktop/session-core/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/session-core/build-vs/source/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core -BC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/build-vs/source/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -308,23 +308,22 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\huyho_fscnz\Desktop\session-core\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\session-core\source\Program.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\session-core\source\session-core-data-channel.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\session-core\source\session-core-message.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\session-core\source\session-core-pipeline.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\session-core\source\session-core-remote-config.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\session-core\source\session-core-signalling.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\session-core\source\session-core.c" />
-    <ClCompile Include="session-core-ipc.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\source\Program.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\source\session-core-data-channel.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\source\session-core-message.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\source\session-core-pipeline.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\source\session-core-remote-config.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\source\session-core-signalling.c" />
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\source\session-core.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\Users\huyho_fscnz\Desktop\session-core\build-vs\ZERO_CHECK.vcxproj">
-      <Project>{6F6B6836-97F0-35C0-81F2-20C9A0C5E0ED}</Project>
+    <ProjectReference Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\session-core\build-vs\ZERO_CHECK.vcxproj">
+      <Project>{BEC8F3CF-79E0-340F-9A44-13BEFE08D167}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

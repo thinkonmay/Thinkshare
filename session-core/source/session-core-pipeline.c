@@ -303,6 +303,12 @@ connect_element(SessionCore* core)
     SignallingHub* signalling = session_core_get_signalling_hub(core);
     Pipeline* pipe = session_core_get_pipeline(core);
 
+
+
+    /*VIDEO element link filtered algorithm: 
+    *search in element_ptr array, if any element is not NULL,
+    *link it to the next non-NULL element,
+    *the last element link to webrtcbin*/
     gint i = 0;
     while(i<VIDEO_ELEMENT_LAST)
     {
@@ -332,6 +338,10 @@ connect_element(SessionCore* core)
     }
 
 
+    /*VIDEO element link filtered algorithm:
+    *search in element_ptr array, if any element is not NULL,
+    *link it to the next non-NULL element,
+    *the last element link to webrtcbin*/
     gint a = 0;
     while (a < AUDIO_ELEMENT_LAST)
     {

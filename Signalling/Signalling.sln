@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Signalling", "Signalling.csproj", "{9E9A2898-2374-4CB2-9533-8C19A8FF7E85}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E9A2898-2374-4CB2-9533-8C19A8FF7E85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E9A2898-2374-4CB2-9533-8C19A8FF7E85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E9A2898-2374-4CB2-9533-8C19A8FF7E85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E9A2898-2374-4CB2-9533-8C19A8FF7E85}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {28A0FE65-DEB9-4580-853A-D90F660F092B}
+	EndGlobalSection
+EndGlobal

@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/huyho_fscnz/Desktop/session-core/include
+# Install script for directory: C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/include
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

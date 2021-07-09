@@ -14,9 +14,17 @@
 
 #pragma comment(lib, "d3d9.lib")
 
-/*Bao should create device information query component in this source file*/;
+/// <summary>
+/// get device information directly from window,
+/// wrapped by device state update thread
+/// </summary>
+/// <returns></returns>
 DeviceInformation* 									get_device_information();
-
+/// <summary>
+/// get device state directly from window,
+/// wrapped by device state update thread
+/// </summary>
+/// <returns></returns>
 DeviceState* 										get_device_state();
 
 #endif

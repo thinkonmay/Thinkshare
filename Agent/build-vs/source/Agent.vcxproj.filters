@@ -1,34 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-cmd.c">
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-cmd.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-device.c">
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-device.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-ipc.c">
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-ipc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-message.c">
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-message.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-object.c">
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-object.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\agent-socket.c">
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-socket.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\agent\source\program.c">
+    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\program.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\huyho_fscnz\Desktop\agent\source\CmakeLists.txt" />
+    <CustomBuild Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\CmakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{18BF5F73-E4B6-34DA-A690-EE9BCDE17282}</UniqueIdentifier>
+      <UniqueIdentifier>{17BE1968-9C2D-3B15-BF32-4EBF1176CFB4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

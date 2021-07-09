@@ -32,7 +32,7 @@ send_message_to_host(AgentObject* object,
         g_printerr("not connected to host");
         return;
     }
-    Socket* socket = agent_object_get_socket(object);
+    Socket* socket = agent_get_socket(object);
     soup_websocket_connection_send_text(socket->ws, message);
 }
 
@@ -86,20 +86,26 @@ on_server_closed(SoupWebsocketConnection* conn,
     AgentObject* self)
 {
     /*close websocket connection*/
-    Socket* socket = agent_object_get_socket(self);
+    Socket* socket = agent_get_socket(self);
     socket_close(socket);
     /*then attemp to reconnect*/
     agent_connect_to_host(self);
 }
 
-
+/// <summary>
+/// on server connected function, 
+/// callback function invoke when websocket connection has been established
+/// </summary>
+/// <param name="session"></param>
+/// <param name="res"></param>
+/// <param name="self"></param>
 void
 on_server_connected(SoupSession* session,
     GAsyncResult* res,
     AgentObject* self)
 {
     GError* error = NULL;
-    Socket* socket = agent_object_get_socket(self);
+    Socket* socket = agent_get_socket(self);
 
     socket->ws = soup_session_websocket_connect_finish(session, res, &error);
 
@@ -133,7 +139,7 @@ connect_to_host_async(AgentObject* self)
     SoupMessage* message;
     SoupSession* session;
     const gchar *https_aliases[] = { "wss", NULL };
-    Socket* socket = agent_object_get_socket(self);
+    Socket* socket = agent_get_socket(self);
 
     ///logger = soup_logger_new(SOUP_LOGGER_LOG_BODY, -1);
 
@@ -159,17 +165,6 @@ connect_to_host_async(AgentObject* self)
 
 
 
-
-
-
-
-/// <summary>
-/// handle message from host, all host message are handled here
-/// </summary>
-/// <param name="conn"></param>
-/// <param name="type"></param>
-/// <param name="message"></param>
-/// <param name="self"></param>
 void
 on_server_message(SoupWebsocketConnection* conn,
                     SoupWebsocketDataType type,
@@ -240,20 +235,8 @@ register_with_host(AgentObject* self)
 
 
 
+/*START get-set-function for Socket*/
 
-/*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*/
 SoupWebsocketConnection*
 socket_get_connection(Socket* socket)
 {
@@ -273,3 +256,5 @@ initialize_socket(gchar* host_url)
     socket->host_url = host_url;
     return socket;
 }
+
+/*END get-set-function for Socket*/

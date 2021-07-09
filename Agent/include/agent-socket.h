@@ -14,22 +14,41 @@
 
 
 
-
+/// <summary>
+/// get string from json object, using json-glib library
+/// </summary>
+/// <param name="object"></param>
+/// <returns></returns>
 gchar*									get_string_from_json_object			(JsonObject* object);
 
 
 
-
+/// <summary>
+/// (ATOMIC function)
+/// handle message received from host over websocket, 
+/// the received message should be parse using agent_on_message 
+/// </summary>
+/// <param name="conn"></param>
+/// <param name="type"></param>
+/// <param name="message">(TEXT only) received message</param>
+/// <param name="user_data"></param>
 void									on_server_message					(SoupWebsocketConnection* conn,
     																		 SoupWebsocketDataType type,
     																		 GBytes* message,
    																			 AgentObject* user_data);
 
-/*register slave device with host, provide slave information*/
+/// <summary>
+/// register slave device with host, 
+/// provide slave information 
+/// included cpu, gpu , ram capacity and os
+/// </summary>
+/// <param name="self"></param>
+/// <returns></returns>
 gboolean                                register_with_host                  (AgentObject* self);
 
 
 /// <summary>
+/// (ATOMIC function)
 /// send data to host in form of json object, should not use directly, 
 /// using agent_send_message method instead
 /// </summary>
@@ -38,14 +57,18 @@ gboolean                                register_with_host                  (Age
 void 									send_message_to_host				(AgentObject* self,
                                                                              gchar* data);
 
-
+/// <summary>
+/// connect to host asynchronously,
+/// this function create new soup message and session,
+/// wrap soup_websocket_connect_async function
+/// </summary>
+/// <param name="self"></param>
 void									connect_to_host_async				(AgentObject* self);
 
 
-gchar*                                  socket_get_host_url                 (Socket* socket);
 
 
-SoupWebsocketConnection*                socket_get_connection               (Socket* socket);
+
 
 /// <summary>
 /// (THREAD FUNTION)
@@ -56,9 +79,40 @@ SoupWebsocketConnection*                socket_get_connection               (Soc
 /// <returns></returns>
 gpointer                                update_device_with_host             (AgentObject* data);
 
+
+/// <summary>
+/// Initialize socket, this include assign host url for socket 
+/// </summary>
+/// <param name="host_url"></param>
+/// <returns>Socket correspond to host url</returns>
+Socket*                                 initialize_socket                   (gchar* host_url);
+
+
+
+
+/*START get-set function for Socket*/
+
+/// <summary>
+/// get SoupWebsocketConnection for the socket
+/// </summary>
+/// <param name="socket"></param>
+/// <returns></returns>
+SoupWebsocketConnection*                socket_get_connection               (Socket* socket);
+
+/// <summary>
+/// set a host url for a specific socket
+/// </summary>
+/// <param name="socket"></param>
+/// <param name="Host_Url"></param>
 void                                    socket_set_host_url                 (Socket* socket,
                                                                              gchar* Host_Url);
+/// <summary>
+/// get host url from Socket
+/// </summary>
+/// <param name="socket"></param>
+/// <returns></returns>
+gchar*                                  socket_get_host_url                 (Socket* socket);
 
-Socket*                                 initialize_socket                   (gchar* host_url);
+/*END get-set function for Socket*/
 
 #endif

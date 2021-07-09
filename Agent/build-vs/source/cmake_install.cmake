@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/huyho_fscnz/Desktop/agent/source
+# Install script for directory: C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/source
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

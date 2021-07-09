@@ -16,6 +16,59 @@
 
 
 
+
+
+
+
+
+/// <summary>
+/// contain information about shared memory hub and connection
+/// </summary>
+struct _IPC
+{
+	HANDLE* core_process;
+	HANDLE* loader_process;
+
+    HANDLE* core_in;
+    HANDLE* core_out;
+    HANDLE* loader_in;
+    HANDLE* loader_out;
+
+	CoreState state;
+
+    GThread* ipc_thread;
+};
+
+/// <summary>
+/// stdio pipe used by child process, agent should not used this object
+/// </summary>
+typedef struct
+{
+    HANDLE* core_in;
+    HANDLE* core_out;
+    HANDLE* loader_in;
+    HANDLE* loader_out;
+}ChildPipe;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// <summary>
+/// (OPTIONAL function)
+/// used to print out error  related to winapi
+/// </summary>
+/// <param name="dwErr"></param>
 void
 print_window_error(DWORD dwErr)
 {
@@ -45,7 +98,7 @@ print_window_error(DWORD dwErr)
         hInst = LoadLibrary(L"Ntdsbmsg.dll");
         if (NULL == hInst)
         {
-            printf("cannot load Ntdsbmsg.dll\n");
+            g_printerr("cannot load Ntdsbmsg.dll\n");
             exit(1);  // Could 'return' instead of 'exit'.
         }
 
@@ -65,46 +118,23 @@ print_window_error(DWORD dwErr)
     }
 
     // Display the error message, or generic text if not found.
-    printf("Error value: %d Message: %ws\n",
+    g_printerr("Error value: %d Message: %ws\n",
         dwErr,
         dwChars ? wszMsgBuff : L"Error message not found.");
 }
 
 
 
-
 /// <summary>
-/// contain information about shared memory hub and connection
+/// initialize anonymous pipe to assign to 
+/// session core and session loader child process
 /// </summary>
-struct _IPC
-{
-	HANDLE* core_process;
-	HANDLE* loader_process;
-
-    HANDLE* core_in;
-    HANDLE* core_out;
-    HANDLE* loader_in;
-    HANDLE* loader_out;
-
-	CoreState state;
-
-    GThread* ipc_thread;
-};
-
-typedef struct
-{
-    HANDLE* core_in;
-    HANDLE* core_out;
-    HANDLE* loader_in;
-    HANDLE* loader_out;
-}ChildPipe;
-
-
-
+/// <param name="self"></param>
+/// <returns></returns>
 ChildPipe*
 initialize_handle(AgentObject* self)
 {
-    IPC* ipc = agent_object_get_ipc(self);
+    IPC* ipc = agent_get_ipc(self);
     ChildPipe* pipe = malloc(sizeof(ChildPipe));
 
     SECURITY_ATTRIBUTES attr;
@@ -122,11 +152,18 @@ initialize_handle(AgentObject* self)
     return pipe;
 }
 
+
+/// <summary>
+/// handle_thread responsible for handle data from 
+/// session core and session loader standard input output
+/// </summary>
+/// <param name="data"></param>
+/// <returns></returns>
 gpointer
 handle_thread(gpointer data)
 {
     AgentObject* object = (AgentObject*)data;
-    IPC* ipc = agent_object_get_ipc(object);
+    IPC* ipc = agent_get_ipc(object);
 
     while (TRUE)
     {
@@ -156,9 +193,9 @@ handle_thread(gpointer data)
 
 
 gboolean
-session_terminate_process(AgentObject* object)
+session_terminate(AgentObject* object)
 {
-	IPC* ipc = agent_object_get_ipc(object);
+	IPC* ipc = agent_get_ipc(object);
 
     CloseHandle(ipc->core_in);
     CloseHandle(ipc->core_out);
@@ -173,7 +210,7 @@ session_terminate_process(AgentObject* object)
 gboolean
 session_initialize(AgentObject* object)
 {
-	IPC* ipc = agent_object_get_ipc(object);
+	IPC* ipc = agent_get_ipc(object);
 
 	PROCESS_INFORMATION pi;
 	ZeroMemory(&pi, sizeof(pi));
@@ -222,7 +259,7 @@ session_initialize(AgentObject* object)
 gboolean
 send_message_to_core(AgentObject* self, gchar* buffer)
 {
-    IPC* ipc = agent_object_get_ipc(self);
+    IPC* ipc = agent_get_ipc(self);
 
     DWORD written;
     gboolean success = FALSE;
@@ -238,7 +275,7 @@ send_message_to_core(AgentObject* self, gchar* buffer)
 gboolean
 send_message_to_loader(AgentObject* self, gchar* buffer)
 {
-    IPC* ipc = agent_object_get_ipc(self);
+    IPC* ipc = agent_get_ipc(self);
 
     DWORD written;
     gboolean success = FALSE;
