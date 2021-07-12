@@ -22,7 +22,7 @@ namespace Host.Models
 
         public string StunServer { get; set; }
 
-        public string ClientOffer { get; set; }
+        public bool ClientOffer { get; set; }
 
         public QoE QoE { get; set; }
     }

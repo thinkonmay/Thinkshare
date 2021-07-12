@@ -6,6 +6,8 @@
 #include <agent-object.h>
 #include <glib.h>
 #include <agent-type.h>
+#include <agent-state-open.h>
+#include <agent-state.h>
 
 #include <string.h>
 
@@ -132,7 +134,7 @@ message_init(Module from,
 
 
 
-gboolean
+void
 send_message(AgentObject* self,
              Message* message)
 {
@@ -144,13 +146,13 @@ send_message(AgentObject* self,
 	    send_message_to_host(self, 
 			get_string_from_json_object(message));
 	case CORE_MODULE:
-		send_message_to_core(self,
+		agent_send_message_to_session_core(self,
 			get_string_from_json_object(message));
 	case LOADER_MODULE:
-		send_message_to_loader(self,
+		agent_send_message_to_session_loader(self,
 			get_string_from_json_object(message));
 	case CLIENT_MODULE:
-		send_message_to_core(self,
+		agent_send_message_to_session_core(self,
 			get_string_from_json_object(message));
 	}
 }
@@ -191,7 +193,7 @@ get_session_information_from_message(Message* object)
 
 
 void
-on_agent_message(AgentObject* self,
+on_agent_message(AgentObject* agent,
 				 gchar* data)
 {
 
@@ -224,51 +226,46 @@ on_agent_message(AgentObject* self,
 		{
 			if (opcode == SLAVE_ACCEPTED)
 			{
-				agent_register_settled(self);
+				AgentState* open_state = transition_to_on_open_state();
+				agent_set_state(agent, open_state);
+
+				GError** err;
+				g_thread_try_new("information update",
+					(GThreadFunc*)update_device_with_host, agent, err);
+				if (err != NULL)
+				{
+					g_printerr("failed to create thread");
+				}
 				return;
 			}
 			else if (opcode == REJECT_SLAVE)
 			{
-				agent_object_finalize(self);
+				agent_finalize(agent);
 				return;
 			}
-			else if (opcode == AGENT_END)
+			else if (opcode == DENY_SLAVE)
 			{
-				agent_object_finalize(self);
+				agent_finalize(agent);
 			}
 			else
 			{
-				Message* message;
 				switch (opcode)
 				{
 				case SESSION_INITIALIZE:
 				{
 					Session* session = 
 						get_session_information_from_message(json_data);
-					agent_set_session(self, session);
+					agent_set_session(agent, session);
 
-					if (agent_session_initialize(self))
-						message = message_init( from, to, SESSION_INITIALIZE_CONFIRM, NULL);
-					else
-						message = message_init(from, to, SESSION_INITIALIZE_FAILED, NULL);
+					agent_session_initialize(agent);
 				}
 				case SESSION_TERMINATE:
-					if (agent_session_terminate(self))
-						message = message_init( from, to, SESSION_TERMINATE_CONFIRM, NULL);
-					else
-						message = message_init(from, to, SESSION_TERMINATE_FAILED, NULL);
+					agent_session_terminate(agent);
 				case RECONNECT_REMOTE_CONTROL:
-					if (agent_remote_control_reconnect(self))
-						message = message_init( from, to, RECONNECT_REMOTE_CONTROL_CONFIRM, NULL);
-					else
-						message = message_init(from, to, RECONNECT_REMOTE_CONTROL_FAILED, NULL);
+					agent_remote_control_reconnect(agent);
 				case DISCONNECT_REMOTE_CONTROL:
-					if (agent_remote_control_disconnect(self))
-						message = message_init( from, to, DISCONNECT_REMOTE_CONTROL_CONFIRM, NULL);
-					else
-						message = message_init(from, to, DISCONNECT_REMOTE_CONTROL_FAILED, NULL);
+					agent_remote_control_disconnect(agent);
 				}
-				agent_send_message(self, message);
 			}
 
 		}
@@ -277,19 +274,19 @@ on_agent_message(AgentObject* self,
 			Message* msg;
 			switch (opcode)
 			{
-			case SESSION_CORE_STARTUP_DONE:
+			case SESSION_INFORMATION_REQUEST:
 			{
-				Session* session = agent_get_session(self);
+				Session* session = agent_get_session(agent);
 				Message* message = get_json_from_session(session);
 				msg = message_init(AGENT_MODULE, CORE_MODULE, SESSION_INFORMATION, message);
 			}
 			}
-			agent_send_message(self, msg);
+			agent_send_message(agent, msg);
 		}
 	}
 	else
 	{
-		agent_send_message(self, object);
+		agent_send_message(agent, object);
 	}
 }
 

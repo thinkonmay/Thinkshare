@@ -100,7 +100,7 @@ get_device_state()
 	MEMORYSTATUSEX statex;
 	statex.dwLength = sizeof(MEMORYSTATUSEX);
 
-	//GlobalMemoryStatusEx(&statex);
+	GlobalMemoryStatusEx(&statex);
 
 	gulong ram_use = (gulong)statex.dwMemoryLoad;
 
@@ -195,5 +195,6 @@ FileTimeToInt64(const FILETIME ft)
 // Returns 1.0f for "CPU fully pinned", 0.0f for "CPU idle", or somewhere in between
 // You'll need to call this at regular intervals, since it measures the load between
 // the previous call and the current one.  Returns -1.0 on error.
+
 
 

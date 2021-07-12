@@ -3,6 +3,9 @@
 #include <agent-type.h>
 #include <agent-object.h>
 #include <agent-message.h>
+#include <agent-state.h>
+#include <agent-state-open.h>
+
 
 #include <gmodule.h>
 #include <Windows.h>
@@ -193,9 +196,9 @@ handle_thread(gpointer data)
 
 
 gboolean
-session_terminate(AgentObject* object)
+session_terminate(AgentObject* agent)
 {
-	IPC* ipc = agent_get_ipc(object);
+	IPC* ipc = agent_get_ipc(agent);
 
     CloseHandle(ipc->core_in);
     CloseHandle(ipc->core_out);

@@ -2,6 +2,7 @@
 #include <agent-type.h>
 #include <agent-ipc.h>
 #include <agent-message.h>
+#include <agent-device.h>
 
 #include <json-glib/json-glib.h>
 #include <agent-object.h>
@@ -27,11 +28,6 @@ void
 send_message_to_host(AgentObject* object,
                      gchar* message)
 {
-    if (agent_get_state(object) == ATTEMP_TO_RECONNECT || agent_get_state(object) == AGENT_CLOSED)
-    {
-        g_printerr("not connected to host");
-        return;
-    }
     Socket* socket = agent_get_socket(object);
     soup_websocket_connection_send_text(socket->ws, message);
 }
@@ -77,7 +73,8 @@ socket_close(Socket* socket)
 }
 
 /// <summary>
-/// handle close signal from host, terminate websocket connection then try to reconnect
+/// handle close signal from host, 
+/// terminate websocket connection then try to reconnect
 /// </summary>
 /// <param name="websocket connection"></param>
 /// <param name=""></param>
@@ -124,8 +121,6 @@ on_server_connected(SoupSession* session,
     /*connect websocket connection signal with signal handler*/
     g_signal_connect(socket->ws, "closed", G_CALLBACK(on_server_closed), self);
     g_signal_connect(socket->ws, "message", G_CALLBACK(on_server_message), self);
-    
-    agent_set_state(self, SLAVE_REGISTERING);
 
     /*after establish websocket connection with host, perform register procedure*/
     agent_register_with_host(self);
@@ -203,10 +198,7 @@ update_device_with_host(AgentObject* data)
             UPDATE_SLAVE_STATE, msg, sizeof(msg));
 		agent_send_message(data,msg);
 
-		Sleep(10);
-
-        if (agent_get_state(data) == AGENT_CLOSED || agent_get_state(data) == ATTEMP_TO_RECONNECT)
-            break;
+		Sleep(1000);
 	}
 
     return NULL;

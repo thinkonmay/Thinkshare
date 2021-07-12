@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent
+# Install script for directory: D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/cmake_install.cmake")
+  include("D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/cmake_install.cmake")
 
 endif()
 
@@ -46,5 +46,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

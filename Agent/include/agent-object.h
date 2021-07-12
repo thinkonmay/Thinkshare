@@ -5,6 +5,7 @@
 
 #include <agent-type.h>
 #include <agent-device.h>
+#include <agent-state.h>
  
 
 
@@ -18,7 +19,7 @@
 /// </summary>
 /// <param name="self"></param>
 /// <returns></returns>
-gboolean										agent_connect_to_host				(AgentObject* self);
+void											agent_connect_to_host				(AgentObject* self);
 
 
 /// <summary>
@@ -26,7 +27,7 @@ gboolean										agent_connect_to_host				(AgentObject* self);
 /// </summary>
 /// <param name="self"></param>
 /// <returns></returns>
-gboolean										agent_disconnect_host				(AgentObject* self);
+void											agent_disconnect_host				(AgentObject* self);
 
 
 /// <summary>
@@ -35,7 +36,7 @@ gboolean										agent_disconnect_host				(AgentObject* self);
 /// </summary>
 /// <param name="self"></param>
 /// <returns></returns>
-gboolean										agent_session_initialize			(AgentObject* self);
+void											agent_session_initialize			(AgentObject* self);
 
 
 /// <summary>
@@ -44,7 +45,7 @@ gboolean										agent_session_initialize			(AgentObject* self);
 /// </summary>
 /// <param name="self"></param>
 /// <returns></returns>
-gboolean										agent_session_terminate				(AgentObject* self);
+void											agent_session_terminate				(AgentObject* self);
 
 /// <summary>
 /// agent remote control disconnect function, 
@@ -52,7 +53,7 @@ gboolean										agent_session_terminate				(AgentObject* self);
 /// </summary>
 /// <param name="self"></param>
 /// <returns></returns>
-gboolean										agent_remote_control_disconnect		(AgentObject* self);
+void											agent_remote_control_disconnect		(AgentObject* self);
 
 /// <summary>
 /// agent remote control reconnect function,
@@ -60,16 +61,13 @@ gboolean										agent_remote_control_disconnect		(AgentObject* self);
 /// </summary>
 /// <param name="self"></param>
 /// <returns></returns>
-gboolean										agent_remote_control_reconnect		(AgentObject* self);
+void											agent_remote_control_reconnect		(AgentObject* self);
 
 
 
 
 gboolean										agent_command_line_passing			(AgentObject* self,
 																					 gchar* command);
-
-gboolean										agent_add_local_nas_storage			(AgentObject* self,
-																					 LocalStorage* storage);
 
 
 /// <summary>
@@ -78,7 +76,7 @@ gboolean										agent_add_local_nas_storage			(AgentObject* self,
 /// <param name="self"></param>
 /// <param name="message"></param>
 /// <returns></returns>
-gboolean										agent_send_message					(AgentObject* self,
+void											agent_send_message					(AgentObject* self,
 																					 Message* message);
 
 
@@ -103,21 +101,28 @@ AgentObject*									agent_new							(gchar* Host_URL);
 void											handle_host_connection				(AgentObject* self);
 
 /// <summary>
-/// handle message from session core and session loader
-/// </summary>
-/// <param name="self"></param>
-void											handle_shared_memory_hub			(AgentObject* self);
-
-/// <summary>
 /// send message to arbitrary device in system
 /// </summary>
 /// <param name="self"></param>
 /// <param name="message"></param>
 /// <returns></returns>
-gboolean										send_message						(AgentObject* self,
-																					Message* message);
+void											agent_send_message_to_host			(AgentObject* self,
+																					gchar* message);
+/// <summary>
+/// 
+/// </summary>
+/// <param name="self"></param>
+/// <param name="message"></param>
+void											agent_send_message_to_session_core	(AgentObject* self,
+																					 gchar* message);
 
-
+/// <summary>
+/// 
+/// </summary>
+/// <param name="self"></param>
+/// <param name="message"></param>
+void											agent_send_message_to_session_loader(AgentObject* self,
+																					 gchar* message);
 
 /// <summary>
 /// register slave device with host by sending SLAVE_REGISTER message,
@@ -143,7 +148,7 @@ HANDLE*											agent_get_mutex_handle_ptr			(AgentObject* self);
 
 
 
-/*get-set function for agent obnject*/
+/*get-set function for agent object*/
 
 IPC*											agent_get_ipc						(AgentObject* self);
 
@@ -161,11 +166,12 @@ void											agent_set_session					(AgentObject* self,
 																					 Session* session);
 
 
-AgentState										agent_get_state						(AgentObject* self);
+AgentState*										agent_get_state						(AgentObject* self);
 
 void											agent_set_state						(AgentObject* self,
-																					 AgentState state);
+																					 AgentState* state);
 
+CommandLine**									agent_get_command_line_array		(AgentObject* self);
 
 
 /*END get-set function for agent object*/

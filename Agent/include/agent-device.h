@@ -19,12 +19,22 @@
 /// wrapped by device state update thread
 /// </summary>
 /// <returns></returns>
-DeviceInformation* 									get_device_information();
+DeviceInformation* 				get_device_information						(void);
 /// <summary>
 /// get device state directly from window,
 /// wrapped by device state update thread
 /// </summary>
 /// <returns></returns>
-DeviceState* 										get_device_state();
+DeviceState* 					get_device_state							(void);
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="infor"></param>
+/// <returns></returns>
+Message*						get_json_message_from_device_information	(DeviceInformation* infor);
+
+
+Message*						get_json_message_from_device				(AgentObject* object);
 
 #endif

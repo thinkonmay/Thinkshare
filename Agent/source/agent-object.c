@@ -10,14 +10,17 @@
 #include <agent-message.h>
 #include <agent-cmd.h>
 #include <agent-device.h>
+#include <agent-state.h>
 
-
+#define CMD_MAX 8
 
 /// <summary>
 /// agent object 
 /// </summary>
 struct _AgentObject
 {
+	CommandLine* cmd[CMD_MAX];
+
 	HANDLE state_mutex;
 
 	DeviceState* device_state;
@@ -30,9 +33,9 @@ struct _AgentObject
 
 	Session* session;
 
-	gint state;
-
 	GMainLoop* loop;
+
+	AgentState* state;
 };
 
 
@@ -56,10 +59,6 @@ update_device(gpointer data)
 		self->device_state	 =		get_device_state();
 		ReleaseMutex(self->state_mutex);
 		Sleep(1000);
-
-
-		if (self->state == AGENT_CLOSED)
-			break;
 	}
 	return NULL;
 }
@@ -88,7 +87,9 @@ agent_constructed(AgentObject* self)
 	HANDLE mutex = CreateMutex(&attr, FALSE, NULL);
 
 	self->state_mutex = &mutex;
-	g_thread_new("update device", (GThreadFunc)update_device, self);
+
+	g_thread_new("update-device", (GThreadFunc)update_device, self);
+	g_thread_new("handle-commandline", (GThreadFunc)handle_command_line_thread, self);
 
 	self->loop = g_main_loop_new(NULL, FALSE);
 
@@ -109,6 +110,11 @@ agent_new(gchar* Host_URL)
 	agent->device_information = get_device_information();
 	agent->device_state =		get_device_state();
 	agent->state = ATTEMP_TO_RECONNECT;
+
+	for (gint i = 0; i < CMD_MAX; i++)
+	{
+		agent->cmd[i] = initialize_command_line();
+	}
 
 
 	agent_connect_to_host(agent);
@@ -139,39 +145,76 @@ agent_finalize(AgentObject* object)
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+gboolean
+agent_create_new_command_line_process(AgentObject* self, gint order)
+{
+	if (self->cmd[order] == NULL)
+	{
+		return FALSE;
+	}
+	else
+	{
+		self->cmd[order] = create_new_command_line_process();
+
+		if (self->cmd[order] == NULL)
+			return FALSE;
+	}
+}
+
+gboolean
+agent_close_command_line_process(AgentObject* self, gint order)
+{
+	close_command_line_process(self->cmd[order]);
+	return TRUE;
+}
+
+void
+agent_send_command_line(AgentObject* self, 
+						gchar* command, 
+						gint order)
+{
+	if (self->cmd[order] != NULL)
+	{
+		agent_create_new_command_line_process(self, order);
+	}
+	send_command_line(self->cmd[order], command);
+}
+
+
+
+
+
+
+
+
+
+
 void
 agent_register_with_host(AgentObject* self)
 {
-	if (self->state == ATTEMP_TO_RECONNECT)
-		register_with_host(self);
-	else
-	{
-		g_printerr("register while not in reconnect state");
-		return;
-	}
-	self->state = SLAVE_REGISTERING;
-	return;
+	self->state->register_to_host(self);
 }
 
 
-
-
-
-gboolean
+void
 agent_connect_to_host(AgentObject* self)
 {
-	while (TRUE)
-	{
-		connect_to_host_async(self);
-		Sleep(10000);
-
-		if (self->state == AGENT_OPEN || self->state == AGENT_CLOSED || self->state == SLAVE_REGISTERING)
-			break;
-	}
+	self->state->connect_to_host(self);
 }
 
 
-gboolean
+void
 agent_send_message(AgentObject* self,
 	Message* message)
 {
@@ -179,129 +222,57 @@ agent_send_message(AgentObject* self,
 }
 
 
+void
+agent_send_message_to_host(AgentObject* self,
+	gchar* message)
+{
+	self->state->send_message_to_host(self, message);
+}
 
-gboolean
+void
+agent_send_message_to_session_core(AgentObject* self,
+	gchar* message)
+{
+	self->state->send_message_to_session_core(self, message);
+}
+
+void
+agent_send_message_to_session_loader(AgentObject* self,
+	gchar* message)
+{
+	self->state->send_message_to_session_loader(self, message);
+}
+
+
+void
 agent_session_initialize(AgentObject* self)
 {
-	gboolean ret = FALSE;
-	if (self->state != AGENT_OPEN)
-	{
-		ret = FALSE;
-		g_printerr("cannot create new session while on one");
-	}
-	ret = session_initialize(self);
-	self->state = ON_SESSION;
-	return ret;
+	self->state->session_initialize(self);
 }
 
-
-gboolean										
-agent_disconnect_host(AgentObject* self)
-{
-	if (self->state != AGENT_CLOSED)
-	{
-		self->state = ATTEMP_TO_RECONNECT;
-		agent_connect_to_host(self);
-	}
-	else
-	{
-		agent_finalize(self);
-	}
-}
-
-gboolean										
+void										
 agent_session_terminate(AgentObject* self)
 {
-	if (self->state == ON_SESSION || self->state == ON_SESSION_OFF_REMOTE)
-	{
-		g_free(self->session);
-		self->session = NULL;
-		session_terminate(self);
-		self->state = AGENT_OPEN;
-	}
-	else
-	{
-		g_printerr("not in sesssion");
-		return FALSE;
-	}
-	return TRUE;
+	self->state->session_terminate(self);
 }
 
-gboolean										
+void										
 agent_remote_control_disconnect(AgentObject* self)
 {
-	if (self->state == ON_SESSION)
-	{
-		session_terminate_process(self);
-		self->state = ON_SESSION_OFF_REMOTE;
-	}
-	else 
-	{
-		g_printerr("not in sesssion");
-		return FALSE;
-	}
-	return TRUE;
+	self->state->remote_control_disconnect(self);
 }
 
-gboolean										
+void										
 agent_remote_control_reconnect(AgentObject* self)
 {
-	if (self->state == ON_SESSION_OFF_REMOTE)
-	{
-		if (session_initialize(self))
-		{
-			self->state = ON_SESSION;
-			return TRUE;
-		}
-		else
-			return FALSE;
-	}
-	else
-	{
-		g_printerr("not in session state");
-		return;
-	}
+	self->state->remote_control_reconnect(self);
 }
 
-gboolean
-agent_register_settled(AgentObject* self)
-{
-	if (self->state != SLAVE_REGISTERING)
-	{
-		g_printerr("not in registering state");
-		return FALSE;
-	}
-	else
-	{
-		GError** err;
-		do
-		{
-			
-			self->state = AGENT_OPEN;
-			g_thread_try_new("information update",
-				(GThreadFunc*)update_device_with_host, self, err);
-			if (err != NULL)
-			{
-				g_printerr("failed to create thread");
-			}
-		} while (err == NULL);
-		return TRUE;
-	}
-}
 
-gboolean										
-agent_command_line_passing(AgentObject* self,
-	gchar* command)
-{
-	
-}
 
-gboolean										
-agent_add_local_nas_storage(AgentObject* self,
-	LocalStorage* storage)
-{
 
-}
+
+
 
 
 
@@ -359,12 +330,12 @@ agent_set_session(AgentObject* self, Session* session)
 }
 
 void
-agent_set_state(AgentObject* object, AgentState state)
+agent_set_state(AgentObject* object, AgentState* state)
 {
 	object->state = state;
 }
 
-AgentState
+AgentState*
 agent_get_state(AgentObject* self)
 {
 	return self->state;
@@ -374,6 +345,12 @@ HANDLE*
 agent_get_mutex_handle_ptr(AgentObject* self)
 {
 	return self->state_mutex;
+}
+
+CommandLine**
+agent_get_command_line_array(AgentObject* self)
+{
+	self->cmd;
 }
 
 /*START get-set function*/

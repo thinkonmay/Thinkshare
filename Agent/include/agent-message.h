@@ -23,6 +23,7 @@ Message*             message_init              ( Module from,
 
 /// <summary>
 /// initialize session qoe (quality of experience)
+/// member of session structure
 /// </summary>
 /// <param name="qoe"></param>
 /// <param name="frame_rate"></param>
@@ -62,4 +63,12 @@ void                session_information_init	(Session* session,
 /// <param name="self"></param>
 void				on_agent_message			(AgentObject* self,
 												 gchar* data);
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="self"></param>
+/// <param name="message"></param>
+void				send_message				(AgentObject* self,
+												 Message* message);
 #endif

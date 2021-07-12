@@ -16,9 +16,9 @@ namespace Host.Services
 {
     public class AgentHub : IAgentHub
     {
-        public ConnectionState state;
+        private WebSocket ws;
 
-        private async Task<Message> ReceiveMessage(WebSocket ws)
+        private async Task<Message> ReceiveMessage()
         {
             var buffer = new Memory<byte>();
             var request = await ws.ReceiveAsync(buffer, CancellationToken.None);
@@ -33,11 +33,11 @@ namespace Host.Services
         }
 
 
-        public async Task Handle(WebSocket ws)
+        public async Task Handle()
         {
             while (ws.State == WebSocketState.Open)
             {
-                var message = await ReceiveMessage(ws);
+                var message = await ReceiveMessage();
                 if (message != null)
                 {
                     if (message.To != Module.HOST_MODULE)
@@ -66,8 +66,9 @@ namespace Host.Services
 
 
 
-        public async Task SendMessage(WebSocket ws, Message message)
+        public async Task SendMessage(Message message)
         {
+
             string msg_string = JsonConvert.SerializeObject(message);
 
             var bytes = Encoding.UTF8.GetBytes(msg_string);

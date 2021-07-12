@@ -1,34 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-cmd.c">
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-cmd.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-device.c">
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-device.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-ipc.c">
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-ipc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-message.c">
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-message.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-object.c">
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-object.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-socket.c">
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-socket.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\program.c">
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state-disconnected.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state-on-session-off-remote.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state-on-session.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state-open.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state-unregistered.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\program.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\CmakeLists.txt" />
+    <CustomBuild Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\CmakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{17BE1968-9C2D-3B15-BF32-4EBF1176CFB4}</UniqueIdentifier>
+      <UniqueIdentifier>{C350E1FC-C98B-339B-BA0D-80504E7335DA}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

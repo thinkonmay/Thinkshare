@@ -9,9 +9,9 @@ namespace Host.Interfaces
 {
     public interface IAgentHub
     {
-        Task Handle(WebSocket ws);
+        Task Handle();
 
-        Task SendMessage(WebSocket ws, Message message);
+        Task SendMessage(Message message);
     }
 }
  

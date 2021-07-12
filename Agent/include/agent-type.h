@@ -11,7 +11,7 @@
 #define	REGISTER_SLAVE							2
 
 #define	SLAVE_ACCEPTED							3
-#define	DECLINE_SLAVE							4
+#define	DENY_SLAVE								4
 
 #define	REJECT_SLAVE							5
 
@@ -39,7 +39,9 @@
 #define SLAVE_ERROR
 
 #define	COMMAND_LINE_FORWARD					21
-#define DEVICE_STATE_REQUEST					22
+#define ON_COMMAND_LINE							22
+
+#define DEVICE_STATE_REQUEST					23
 
 /*module*/
 #define	CORE_MODULE								0
@@ -120,15 +122,17 @@ typedef		   JsonObject			Message;
 
 typedef		   gint					CoreState;
 
-typedef		   gint					AgentState;
-
 typedef		   gint					Module;
 
 typedef		   gint					Opcode;
 
 typedef		   gint					CoreState;
 
+typedef	struct _CommandLine			CommandLine;
 
+typedef struct _LocalStorage		LocalStorage;
+
+typedef struct _AgentState			AgentState;
 
 
 

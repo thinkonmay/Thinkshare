@@ -22,7 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{3CBCE0DA-B891-376B-B932-BFCA182A7B31}</ProjectGuid>
+    <ProjectGuid>{E0112339-6D48-34A9-806A-C48FB92B0BF4}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>x64</Platform>
@@ -59,25 +59,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\build-vs\source\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\build-vs\source\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Agent.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\build-vs\source\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\build-vs\source\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Agent.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\build-vs\source\MinSizeRel\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\build-vs\source\MinSizeRel\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Agent.dir\MinSizeRel\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\build-vs\source\RelWithDebInfo\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\build-vs\source\RelWithDebInfo\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Agent.dir\RelWithDebInfo\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -103,10 +103,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -119,8 +119,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/Debug/Agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/Debug/Agent.pdb</ProgramDataBaseFile>
+      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/Debug/Agent.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/Debug/Agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -129,7 +129,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -146,10 +146,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -162,8 +162,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/Release/Agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/Release/Agent.pdb</ProgramDataBaseFile>
+      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/Release/Agent.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/Release/Agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -172,7 +172,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -189,10 +189,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -205,8 +205,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/MinSizeRel/Agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/MinSizeRel/Agent.pdb</ProgramDataBaseFile>
+      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/MinSizeRel/Agent.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/MinSizeRel/Agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -215,7 +215,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>
@@ -231,10 +231,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\include;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include;D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\include\agent-state;C:\gstreamer\1.0\msvc_x86_64\include\libsoup-2.4;C:\gstreamer\1.0\msvc_x86_64\include\libxml2;C:\gstreamer\1.0\msvc_x86_64\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\json-glib-1.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -247,8 +247,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/RelWithDebInfo/Agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/RelWithDebInfo/Agent.pdb</ProgramDataBaseFile>
+      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/RelWithDebInfo/Agent.lib</ImportLibrary>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/RelWithDebInfo/Agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -256,11 +256,11 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\CmakeLists.txt">
+    <CustomBuild Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\CmakeLists.txt">
       <UseUtf8Encoding>Always</UseUtf8Encoding>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent -BC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -269,11 +269,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent -BC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -282,11 +282,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent -BC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -295,11 +295,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/source/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent -BC:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs --check-stamp-file C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/agent/build-vs/source/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/agent/build-vs/source/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -308,22 +308,28 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\build-vs\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-cmd.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-device.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-ipc.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-message.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-object.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\agent-socket.c" />
-    <ClCompile Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\source\program.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-cmd.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-device.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-ipc.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-message.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-object.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-socket.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state-disconnected.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state-on-session-off-remote.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state-on-session.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state-open.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state-unregistered.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\agent-state\agent-state.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\source\program.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\Users\huyho_fscnz\Desktop\personal-cloud-computing\agent\build-vs\ZERO_CHECK.vcxproj">
-      <Project>{595095C1-6E29-33B7-9278-0F43CBC57E11}</Project>
+    <ProjectReference Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\agent\build-vs\ZERO_CHECK.vcxproj">
+      <Project>{217E2D84-9737-38D4-AF56-E6B746AD1792}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

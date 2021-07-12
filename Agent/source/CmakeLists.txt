@@ -8,7 +8,7 @@ pkg_check_modules(JSON_GLIB REQUIRED json-glib-1.0)
 pkg_check_modules(LIBSOUP REQUIRED libsoup-2.4)
 
 
-file(GLOB SOURCE ${CMAKE_SOURCE_DIR}/source/*.c)
+file(GLOB SOURCE ${CMAKE_SOURCE_DIR}/source/*.c ${CMAKE_SOURCE_DIR}/source/agent-state/*.c)
 
 
 
@@ -21,6 +21,8 @@ add_executable(${PROJECT_NAME} ${SOURCE})
 target_include_directories(${PROJECT_NAME} 
 PUBLIC
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/agent-state
+	
 
     
     ${LIBSOUP_INCLUDE_DIRS}
