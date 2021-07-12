@@ -10,13 +10,18 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Host.Data;
 
 namespace Host.Services
 {
     public class AgentHub : IAgentHub
     {
-        public ConnectionState state;
+        private readonly ApplicationDbContext _db;
+
+        public AgentHub(ApplicationDbContext db)
+        {
+            _db = db;
+        }
 
         private async Task<Message> ReceiveMessage(WebSocket ws)
         {
@@ -42,23 +47,25 @@ namespace Host.Services
                 {
                     if (message.To != Module.HOST_MODULE)
                     {
-
+                        continue;
                     }
 
                     switch (message.Opcode)
                     {
-                        case Opcode.UPDATE_SLAVE_STATE:
-
-                        case Opcode.SESSION_INITIALIZE_CONFIRM:
-
-                        case Opcode.SESSION_TERMINATE_CONFIRM:
-
-                        case Opcode.DISCONNECT_REMOTE_CONTROL_CONFIRM:
-
-                        case Opcode.RECONNECT_REMOTE_CONTROL_CONFIRM:
-
                         case Opcode.REGISTER_SLAVE:
+                            var deviceInfo = JsonConvert.DeserializeObject<DeviceInformation>(message.Data);
 
+                            break;
+                        case Opcode.UPDATE_SLAVE_STATE:
+                            break;
+                        case Opcode.SESSION_INITIALIZE_CONFIRM:
+                            break;
+                        case Opcode.SESSION_TERMINATE_CONFIRM:
+                            break;
+                        case Opcode.DISCONNECT_REMOTE_CONTROL_CONFIRM:
+                            break;
+                        case Opcode.RECONNECT_REMOTE_CONTROL_CONFIRM:
+                            break;
                     }  
                 }
             }
