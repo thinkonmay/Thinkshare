@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>6e362b62-5b06-4a28-98ae-9fdc94495bb9</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SharedHost</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ClientSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Command.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Device.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Message.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\QoE.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SlaveSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SystemSession.cs" />
+  </ItemGroup>
+</Project>

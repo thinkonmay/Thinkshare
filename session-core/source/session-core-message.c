@@ -63,8 +63,8 @@ session_core_on_message(SessionCore* core,
 			{
 			case SESSION_INFORMATION:
 			{
-				if (session_core_get_state(core) != WAITING_SESSION_INFORMATION)
-					session_core_finalize(core, CORE_STATE_ERROR);
+				if (session_core_get_state(core) != SESSION_CORE_INITIALIZING)
+					session_core_finalize(core, CORE_STATE_CONFLICT);
 
 
 				JsonNode* session_root;
@@ -74,6 +74,9 @@ session_core_on_message(SessionCore* core,
 				Message* session_object = json_node_get_object(root);
 
 				Session* session = get_session_information_from_message(session_object);
+
+				if (session == NULL)
+					session_core_finalize(core, CORRUPTED_SESSION_INFORMATION);
 
 				session_core_setup_session(core, session);
 			}
@@ -86,6 +89,14 @@ session_core_on_message(SessionCore* core,
 			default:
 				break;
 			}
+		}
+		else if (from == HOST_MODULE)
+		{
+
+		}
+		else 
+		{
+			report_session_core_error(core, UNKNOWN_MESSAGE);
 		}
 	}
 	else 
@@ -116,21 +127,11 @@ get_string_from_json_object(JsonObject* object)
 
 
 
-/// <summary>
-/// send message through shared memory,
-/// this function should only be used by other function 
-/// base on stdout 
-/// </summary>
-/// <param name="self"></param>
-/// <param name="location"></param>
-/// <param name="opcode"></param>
-/// <param name="data"></param>
-/// <returns></returns>
-gboolean
+
+void
 send_message(SessionCore* self,
 			 Message* message)
 {
-	gboolean ret;
 	gint to = json_object_get_int_member(message, "to");
 
 	gchar* string_data = get_string_from_json_object(message);
@@ -145,7 +146,6 @@ send_message(SessionCore* self,
 
 		g_signal_emit_by_name(control, "send-data", byte);
 	}
-
 	/*write to std out stream if destination is not client module*/
 	case HOST_MODULE:
 		send_message_to_agent(self,string_data);
@@ -154,7 +154,6 @@ send_message(SessionCore* self,
 	case AGENT_MODULE:
 		send_message_to_agent(self, string_data);
 	}
-	return ret; 
 }
 
 
@@ -166,8 +165,6 @@ message_init(Module from,
 			Message* data)
 {
 	Message* object = json_object_new();
-	gchar* data_string = get_string_from_json_object(data);
-	gchar* data_string_ = g_strndup(data_string, sizeof(data_string));
 
 	json_object_set_int_member(object, "from", from);
 	json_object_set_int_member(object, "to", to);
@@ -176,6 +173,10 @@ message_init(Module from,
 		return object;
 	else
 	{
+		gchar* data_string = get_string_from_json_object(data);
+		gchar* data_string_ = g_strndup(data_string, sizeof(data_string));
+		g_free(data_string);
+
 		json_object_set_string_member(object, "data", data_string_);
 		return object;
 	}

@@ -18,13 +18,8 @@ void			qoe_setup							(QoE* qoe,
 													 gint framerate,
 													 gint bitrate);
 
-
-/*START get-set function*/
-
 gint			qoe_get_screen_width				(QoE* qoe);
 
 gint			qoe_get_screen_height				(QoE* qoe);
 
 gint			qoe_get_framerate					(QoE* qoe);
-
-/*END get-set function*/

@@ -20,12 +20,7 @@ gboolean			send_command_line								(CommandLine* self,
 /// <param name="cmd"></param>
 void				close_command_line_process						(CommandLine* cmd);
 
-/// <summary>
-/// 
-/// </summary>
-/// <param name=""></param>
-/// <returns></returns>
-CommandLine*		initialize_command_line							(void);
+
 
 /// <summary>
 /// 

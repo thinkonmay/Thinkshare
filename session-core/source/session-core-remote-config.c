@@ -133,8 +133,6 @@ attach_bitrate_control(GstObject* audio_encoder,
 
 	}
 	}
-
-	return;
 }
 
 

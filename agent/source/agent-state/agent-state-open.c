@@ -27,6 +27,7 @@ transition_to_on_open_state(void)
         open_state.session_initialize = on_open_session_initialize;
         open_state.send_message_to_host = send_message_to_host;
 
+
         
 
         initialized = TRUE; 

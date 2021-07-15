@@ -9,7 +9,7 @@
 /// <param name="self"></param>
 /// <param name="message"></param>
 /// <returns></returns>
-gboolean			send_message			(SessionCore* self,
+void				send_message			(SessionCore* self,
 											 Message* message);
 	
 /// <summary>
