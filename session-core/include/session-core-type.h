@@ -4,85 +4,86 @@
 
 #include <json-glib-1.0/json-glib/json-glib.h>
 
-/*session core state*/
-#define	CORE_STATE_UNKNOWN               0
-#define	CORE_STATE_ERROR                 1              /* generic error */
+/*session core state*/ 
+#define SESSION_CORE_INITIALIZING					1
+#define	SESSION_INFORMATION_SETTLED					2  
 
-#define WAITING_SESSION_INFORMATION		 2
-#define	SESSION_INFORMATION_SETTLED      4  
+#define SESSION_REGISTERED							3	
 
-#define	SESSION_DENIED			         5
-#define SESSION_REGISTERED				 6	
+#define SESSION_HANDSHAKING							4
 
-#define REMOTE_CONNECT_STARTED			 7
+#define REMOTE_CONNECT_STARTED						5
 
 
 
 
 
 /*pipeline macros*/
+#define PIPELINE_NOT_READY							1
+#define PIPELINE_READY								2
 
-#define PIPELINE_INITIALIZED			 1
-#define PIPELINE_SETTING_UP				 2
+#define PIPELINE_CREATING_ELEMENT					3
+#define PIPELINE_SETTING_UP_ELEMENT					4
+#define PIPELINE_CONNECT_ELEMENT_SIGNAL				5
+#define	PIPELINE_LINKING_ELEMENT					6
 
-#define	PIPELINE_ELEMENT_LINKED			 5
-
-
-#define	PIPELINE_SETUP_DONE              3
-#define PIPELINE_STARTED				 4
-
-
-
-
-
-
-
+#define	PIPELINE_SETUP_DONE							7
 
 
 
 
 /*SignallingState macros*/
-#define SIGNALLING_SERVER_NOT_READY					998
-#define SIGNALLING_SERVER_READY						999
+#define SIGNALLING_SERVER_NOT_READY					1
+#define SIGNALLING_SERVER_READY						2
 
-#define	SIGNALLING_SERVER_CONNECTING				1000
-#define SIGNALLING_SERVER_CONNECTION_ERROR          1001
-#define	SIGNALLING_SERVER_CONNECTED					1003            /* Ready to register */
+#define	SIGNALLING_SERVER_CONNECTING				3
+#define	SIGNALLING_SERVER_CONNECTED					4            /* Ready to register */
 
-#define	SIGNALLING_SERVER_REGISTERING				2000
-#define	SIGNALLING_SERVER_REGISTRATION_ERROR		2001
-#define	SIGNALLING_SERVER_REGISTERED				2002            /* Ready to call a peer */
-#define	SIGNALLING_SERVER_CLOSED					2003            /* server connection closed by us or the server */
+#define	SIGNALLING_SERVER_REGISTERING				5
+#define	SIGNALLING_SERVER_REGISTER_DONE				6            /* Ready to call a peer */
+#define	SIGNALLING_SERVER_CLOSED					7            /* server connection closed by us or the server */
 
-/*PeerCallState macors*/          
-#define	PEER_CALL_NEGOTIATING           4000
-#define	PEER_CALL_ERROR                 4002
-#define PEER_CALL_STARTED				4003
+/*PEER CALL MACROS*/
+#define PEER_CALL_NOT_READY							1
+#define PEER_CALL_READY								2
 
-#define PEER_CALL_NOT_READY				4004	
-#define	PEER_CONNECTION_ERROR			4005
-#define PEER_CALL_READY
+#define	PEER_CALL_NEGOTIATING						3
+
+#define PEER_CALL_DONE								4
 
 
+/*session core error code*/
 
+#define UNKNOWN_ERROR								0
+#define DATA_CHANNEL_ERROR							1
 
+#define UNKNOWN_MESSAGE								2
+#define SIGNALLING_ERROR							3
 
+/*session core exit code*/
 
+#define UNKNOWN_ERROR								0
+#define	CORE_STATE_CONFLICT					        1              /* generic error */
 
+#define	SIGNALLING_SERVER_REGISTRATION_ERROR		2
+#define SIGNALLING_SERVER_CONNECTION_ERROR          3
+#define PIPELINE_ERROR								4
+#define DATA_CHANNEL_ERROR							5
 
-
-
+#define SESSION_DENIED								6
+#define CORRUPTED_SESSION_INFORMATION				7
+#define PLUGINS_MISSING								8
 
 
 /*opcode macros*/
 #define	SESSION_INFORMATION						1
-#define	BITRATE_CALIBRATE						2
 
 #define	REGISTER_SLAVE							3
-#define	SLAVE_ACCEPTED							4
 
-#define	REJECT_SLAVE							5
-#define	SLAVE_REJECTED							6
+#define	SLAVE_ACCEPTED							4
+#define	SLAVE_DENY  							5
+
+#define	REJECT_SLAVE							6
 
 #define	UPDATE_SLAVE_STATE						7
 
@@ -91,23 +92,18 @@
 #define	RECONNECT_REMOTE_CONTROL				10
 #define	DISCONNECT_REMOTE_CONTROL				11
 
-#define	SESSION_INITIALIZE_CONFIRM				12
-#define	SESSION_TERMINATE_CONFIRM				13
-#define	RECONNECT_REMOTE_CONTROL_CONFIRM		14
-#define	DISCONNECT_REMOTE_CONTROL_CONFIRM		15
-
 #define SESSION_INFORMATION_REQUEST				16
-#define AGENT_END								17
 
 #define	CHANGE_MEDIA_MODE						18
-#define	COMPOSE_BITRATE							19
-#define	TOGGLE_CURSOR							20
 #define	CHANGE_RESOLUTION						21	
 #define	CHANGE_FRAMERATE						22
-#define	AGENT_MESSAG							23
+#define	BITRATE_CALIBRATE						24
 
-#define DATA_CHANNEL_ERROR						24	
+#define	COMMAND_LINE_FORWARD					24
 
+#define EXIT_CODE_REPORT						25
+#define ERROR_REPORT							26
+	
 
 
 
@@ -132,7 +128,6 @@
 #define AUDIO_PIORITY							4
 #define VIDEO_PIORITY							5
 
-/*session core exit code*/
 
 
 
@@ -140,35 +135,47 @@ typedef struct 			_Pipeline 				Pipeline;
 
 typedef struct 			_SessionCore 			SessionCore;
 
-typedef 				JsonObject				Message;
-
 typedef struct 			_QoE					QoE;
 
 typedef struct			_Session				Session;
 
 typedef struct			_SessionQoE				SessionQoE;
 
-typedef 				int						Codec;
-
-typedef					int						CoreState;
-
 typedef struct			_WebRTCHub				WebRTCHub;
 
 typedef struct 			_SignallingHub			SignallingHub;
 
-typedef					int						QoEMode;
+typedef	struct			_IPC					IPC;
+
+typedef 				JsonObject				Message;
+
+
+
+
+
+typedef 				gint					Codec;
+
+typedef					gint					QoEMode;
+
+
+
+typedef					gint					Opcode;
 
 typedef					gint					Module;
 
-typedef					gint					Opcode;
+
+
+typedef					gint					CoreState;
+
+typedef					gint					PipelineState;
 
 typedef					gint					SignallingServerState;
 
 typedef					gint					PeerCallState;
 
-typedef	struct			_IPC					IPC;
+typedef					gint					ExitCode;
 
-typedef					gint					PipelineState;
+typedef					gint					ErrorCode;
 
 
 

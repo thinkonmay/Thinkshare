@@ -147,6 +147,17 @@ gboolean										agent_register_settled				(AgentObject* self);
 HANDLE*											agent_get_mutex_handle_ptr			(AgentObject* self);
 
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="self"></param>
+/// <param name="command"></param>
+/// <param name="order"></param>
+void											agent_send_command_line				(AgentObject* self,
+																					 gchar* command,
+																					 gint order);
+
+
 
 /*get-set function for agent object*/
 

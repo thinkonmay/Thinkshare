@@ -39,15 +39,6 @@ struct _CommandLine
 };
 
 
-CommandLine* 
-initialize_command_line(void)
-{
-    CommandLine* cmd = malloc(sizeof(CommandLine));
-    memset(cmd, 0, sizeof(CommandLine));
-
-    return cmd;
-}
-
 
 
 
@@ -67,14 +58,15 @@ handle_command_line_thread(gpointer data)
         {
             success = ReadFile(
                 *((*(cmd + i))->standard_out), buffer, BUFFER_SIZE, &dwread, NULL);
-
+             
             if (!success || dwread == 0)
             {
                 Message* object = json_object_new();
-                json_object_set_int_member(object, "order", i);
-                json_object_set_string_member(object, "command", buffer);
+                json_object_set_int_member(object, "Order", i);
+                json_object_set_string_member(object, "Command", buffer);
 
-                Message* msg = message_init(AGENT_MODULE, HOST_MODULE, ON_COMMAND_LINE, object);
+                Message* msg = message_init(AGENT_MODULE, HOST_MODULE,
+                    COMMAND_LINE_FORWARD, object);
 
                 agent_send_message(agent, msg);
             }
@@ -83,15 +75,15 @@ handle_command_line_thread(gpointer data)
             if (!success || dwread == 0)
             {
                 Message* object = json_object_new();
-                json_object_set_int_member(object, "order", i);
-                json_object_set_string_member(object, "command", buffer);
+                json_object_set_int_member(object, "Order", i);
+                json_object_set_string_member(object, "Command", buffer);
 
-                Message* msg = message_init(AGENT_MODULE, HOST_MODULE, ON_COMMAND_LINE, object);
+                Message* msg = message_init(AGENT_MODULE, HOST_MODULE,
+                    COMMAND_LINE_FORWARD, object);
 
                 agent_send_message(agent, msg);
             }
-        }
-
+        } 
     }
 }
 

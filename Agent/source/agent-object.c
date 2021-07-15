@@ -11,6 +11,7 @@
 #include <agent-cmd.h>
 #include <agent-device.h>
 #include <agent-state.h>
+#include <agent-state-unregistered.h>
 
 #define CMD_MAX 8
 
@@ -41,7 +42,8 @@ struct _AgentObject
 
 
 /// <summary>
-/// update device thread function, invoke during agent object initialization
+/// update device thread function,
+/// invoke during agent object initialization
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
@@ -53,7 +55,6 @@ update_device(gpointer data)
 
 	while (TRUE)
 	{
-
 		WaitForSingleObject(self->state_mutex, INFINITE);
 		self->device_information =	get_device_information();
 		self->device_state	 =		get_device_state();
@@ -71,55 +72,47 @@ update_device(gpointer data)
 
 
 
-/// <summary>
-/// constructed function, run after agent object has been initialized sucessfully,
-/// run related thread and main loop
-/// </summary>
-/// <param name="self"></param>
-void
-agent_constructed(AgentObject* self)
+
+AgentObject*
+agent_new(gchar* Host_URL)
 {
+	AgentObject* agent = malloc(sizeof(AgentObject));
+
+	AgentState* unregistered = transition_to_unregistered_state();
+	agent->state = unregistered;
+
+
+	agent->ipc =				initialize_ipc(agent);
+	agent->socket =				initialize_socket(agent,Host_URL);
+	agent->device_information = get_device_information();
+	agent->device_state =		get_device_state();
+
+	for (gint i = 0; i < CMD_MAX; i++)
+	{
+		agent->cmd[i] = create_new_command_line_process();
+	}
+
+	agent_connect_to_host(agent);
+
 	SECURITY_ATTRIBUTES attr;
 	attr.nLength = sizeof(SECURITY_ATTRIBUTES);
 	attr.bInheritHandle = TRUE;
 	attr.lpSecurityDescriptor = NULL;
 
 	HANDLE mutex = CreateMutex(&attr, FALSE, NULL);
+	agent->state_mutex = &mutex;
 
-	self->state_mutex = &mutex;
-
-	g_thread_new("update-device", (GThreadFunc)update_device, self);
-	g_thread_new("handle-commandline", (GThreadFunc)handle_command_line_thread, self);
-
-	self->loop = g_main_loop_new(NULL, FALSE);
-
-	g_main_loop_run(self->loop);
-	g_main_loop_unref(self->loop);
-}
-
-AgentObject*
-agent_new(gchar* Host_URL)
-{
-	AgentObject* agent = malloc(sizeof(AgentObject));
-	agent->state = AGENT_NEW;
+	g_thread_new("update-device", 
+		(GThreadFunc)update_device, agent);
+	g_thread_new("handle-commandline", 
+		(GThreadFunc)handle_command_line_thread, agent);
 
 
-	agent->ipc=		initialize_ipc(agent);
-	agent->socket = initialize_socket(agent,Host_URL);
 
-	agent->device_information = get_device_information();
-	agent->device_state =		get_device_state();
-	agent->state = ATTEMP_TO_RECONNECT;
-
-	for (gint i = 0; i < CMD_MAX; i++)
-	{
-		agent->cmd[i] = initialize_command_line();
-	}
-
-
-	agent_connect_to_host(agent);
-
-	agent_constructed(agent);
+	agent->loop = g_main_loop_new(NULL, FALSE);
+	g_main_loop_run(agent->loop);
+	g_main_loop_unref(agent->loop);
+	
 	return agent;
 }
 
@@ -127,67 +120,25 @@ agent_new(gchar* Host_URL)
 
 
 void
-agent_finalize(AgentObject* object)
+agent_finalize(AgentObject* self)
 {
-	object->state = AGENT_CLOSED;
+	socket_close(self->socket);
 
-	SoupWebsocketConnection* connection = 
-		socket_get_connection(object->socket);
+	agent_session_terminate(self);
 
-	soup_websocket_connection_close(connection,0,"");
-
-	if (object->loop)
+	if (self->loop)
 	{
-		g_main_loop_quit(object->loop);
-		object->loop = NULL;
-		g_free(object);
+		g_main_loop_quit(self->loop);
 	}
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-gboolean
-agent_create_new_command_line_process(AgentObject* self, gint order)
-{
-	if (self->cmd[order] == NULL)
-	{
-		return FALSE;
-	}
-	else
-	{
-		self->cmd[order] = create_new_command_line_process();
-
-		if (self->cmd[order] == NULL)
-			return FALSE;
-	}
-}
-
-gboolean
-agent_close_command_line_process(AgentObject* self, gint order)
-{
-	close_command_line_process(self->cmd[order]);
-	return TRUE;
-}
 
 void
 agent_send_command_line(AgentObject* self, 
 						gchar* command, 
 						gint order)
 {
-	if (self->cmd[order] != NULL)
-	{
-		agent_create_new_command_line_process(self, order);
-	}
 	send_command_line(self->cmd[order], command);
 }
 
@@ -220,7 +171,6 @@ agent_send_message(AgentObject* self,
 {
 	send_message(self, message);
 }
-
 
 void
 agent_send_message_to_host(AgentObject* self,

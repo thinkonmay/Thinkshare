@@ -71,15 +71,18 @@ struct _Pipeline
 
 
 
+
 Pipeline*
 pipeline_initialize()
 {
+
+
     Pipeline* pipeline = malloc(sizeof(Pipeline));
 	memset(pipeline,0,sizeof(Pipeline));
 
     pipeline->webrtcbin = gst_element_factory_make("webrtcbin", NULL);
     pipeline->pipeline = gst_pipeline_new("video_capture_pipeline");
-    pipeline->state = PIPELINE_INITIALIZED;
+    pipeline->state = PIPELINE_NOT_READY;
 
     return pipeline;
 }
@@ -89,10 +92,12 @@ pipeline_initialize()
 gpointer
 setup_pipeline(SessionCore* core)
 {
+    SignallingHub* signalling = session_core_get_signalling_hub(core);
     Pipeline* pipe = session_core_get_pipeline(core);
     QoE* qoe= session_core_get_qoe(core);
 
-    pipe->state = PIPELINE_SETTING_UP;
+
+    pipe->state = PIPELINE_CREATING_ELEMENT;
 
     pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] =    gst_element_factory_make("dx9screencapsrc", NULL);
     pipe->video_element[CUDA_UPLOAD] =                  gst_element_factory_make("cudaupload", NULL);                      /*cuda upload responsible for upload memory from main memory to gpu memory*/
@@ -105,10 +110,8 @@ setup_pipeline(SessionCore* core)
     pipe->audio_element[RTP_OPUS_PAYLOAD] =             gst_element_factory_make("rtpopuspay", NULL);
     pipe->audio_element[RTP_RTX_QUEUE] =                gst_element_factory_make("rtprtxqueue", NULL);
 
-    
-    setup_element_cap( core);
-    setup_element_property( core);
 
+    /**/
     for (gint i = 0; i < VIDEO_ELEMENT_LAST; i++)
     {
         if (pipe->video_element[i] != NULL)
@@ -117,6 +120,8 @@ setup_pipeline(SessionCore* core)
             gst_element_sync_state_with_parent(pipe->video_element[i]);
         }
     }
+
+    /**/
     for (gint i = 0; i < AUDIO_ELEMENT_LAST; i++)
     {
         if (pipe->audio_element[i] != NULL)
@@ -125,18 +130,34 @@ setup_pipeline(SessionCore* core)
             gst_element_sync_state_with_parent(pipe->audio_element[i]);
         }
     }
-    connect_element(core);
-    pipe->state = PIPELINE_ELEMENT_LINKED;
 
+
+
+    pipe->state = PIPELINE_SETTING_UP_ELEMENT;
+
+    setup_element_cap( core);
+    setup_element_property( core);
+
+
+    pipe->state = PIPELINE_CONNECT_ELEMENT_SIGNAL;
     connect_signalling_handler(core);
-    connect_data_channel_signals(core);
+    if (!connect_data_channel_signals(core))
+        session_core_finalize(core, DATA_CHANNEL_ERROR);
+
+
+
+    pipe->state = PIPELINE_LINKING_ELEMENT;
+
+    if (!connect_element(core))
+        session_core_finalize(core, PIPELINE_ERROR);
 
     pipe->state = PIPELINE_SETUP_DONE;
 
     if (!start_pipeline(core))
-        session_core_finalize(core, CORE_STATE_ERROR);
+        session_core_finalize(core, PIPELINE_ERROR);
 
     session_core_set_state(core, REMOTE_CONNECT_STARTED);
+    signalling_hub_set_peer_call_state(signalling, PEER_CALL_DONE);
 }
 
 void
@@ -303,12 +324,6 @@ connect_element(SessionCore* core)
     SignallingHub* signalling = session_core_get_signalling_hub(core);
     Pipeline* pipe = session_core_get_pipeline(core);
 
-
-
-    /*VIDEO element link filtered algorithm: 
-    *search in element_ptr array, if any element is not NULL,
-    *link it to the next non-NULL element,
-    *the last element link to webrtcbin*/
     gint i = 0;
     while(i<VIDEO_ELEMENT_LAST)
     {
@@ -338,10 +353,6 @@ connect_element(SessionCore* core)
     }
 
 
-    /*VIDEO element link filtered algorithm:
-    *search in element_ptr array, if any element is not NULL,
-    *link it to the next non-NULL element,
-    *the last element link to webrtcbin*/
     gint a = 0;
     while (a < AUDIO_ELEMENT_LAST)
     {
@@ -373,7 +384,7 @@ connect_element(SessionCore* core)
 
 } 
 
-gboolean
+void
 connect_signalling_handler(SessionCore* core)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
@@ -386,7 +397,6 @@ connect_signalling_handler(SessionCore* core)
         G_CALLBACK(send_ice_candidate_message), core);
     g_signal_connect(pipe->webrtcbin, "notify::ice-gathering-state",
         G_CALLBACK(on_ice_gathering_state_notify), core);
-
 }
 
 
@@ -428,4 +438,17 @@ GstElement*
 pipeline_get_pipline(Pipeline* pipe)
 {
     return pipe->pipeline;
+}
+
+PipelineState
+pipeline_get_state(Pipeline* pipe)
+{
+    return pipe->state;
+}
+
+void
+pipeline_get_state(Pipeline* pipe,
+                    PipelineState state)
+{
+    pipe->state = state;
 }

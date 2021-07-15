@@ -5,8 +5,11 @@
 
 
 
-
-gboolean			connect_signalling_handler		(SessionCore* core);
+/// <summary>
+/// 
+/// </summary>
+/// <param name="core"></param>
+void				connect_signalling_handler		(SessionCore* core);
 
 /// <summary>
 /// 
@@ -54,4 +57,19 @@ void				setup_element_property			(SessionCore* core);
 /// </summary>
 /// <param name="core"></param>
 void				setup_element_cap				(SessionCore* core);
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pipe"></param>
+/// <returns></returns>
+PipelineState		pipeline_get_state				(Pipeline* pipe);
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pipe"></param>
+/// <param name="state"></param>
+void                pipeline_set_state              (Pipeline* pipe,
+                                                     PipelineState state);
 
