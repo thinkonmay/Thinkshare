@@ -1,6 +1,6 @@
-﻿using Host.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using SharedHost.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,5 +19,13 @@ namespace Conductor.Data
             base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseLazyLoadingProxies();
         }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<SystemSession>().HasIndex(s => new { s.SessionClientID, s.SessionSlaveID }).IsUnique();
+        }
+
+        public DbSet<SystemSession> Sessions { get; set; }
     }
 }

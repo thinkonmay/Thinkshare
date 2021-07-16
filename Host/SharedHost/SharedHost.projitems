@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Message.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\QoE.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SessionRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SlaveSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SystemSession.cs" />
   </ItemGroup>

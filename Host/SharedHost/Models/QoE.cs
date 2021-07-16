@@ -19,6 +19,12 @@ namespace SharedHost.Models
         public Codec VideoCodec { get; set; }
 
         public QoEMode QoEMode { get; set; }
+
+        // TODO: Create default configuration for QoE
+        public QoE()
+        {
+
+        }
     }
 
     public enum Codec

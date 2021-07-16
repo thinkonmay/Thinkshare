@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharedHost.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,11 +24,5 @@ namespace Signalling.Models
             ClientId = req.ClientId;
             SlaveId = req.SlaveId;
         }
-    }
-
-    public class SessionRequest
-    {
-        public int ClientId { get; set; }
-        public int SlaveId { get; set; }
     }
 }

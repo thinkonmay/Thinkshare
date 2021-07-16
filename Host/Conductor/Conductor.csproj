@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MersenneTwister" Version="1.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.7" />
@@ -15,12 +16,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="RestSharp" Version="106.12.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Services\" />
   </ItemGroup>
+
+  <Import Project="..\SharedHost\SharedHost.projitems" Label="Shared" />
 
 </Project>

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SharedHost.Models;
 using Signalling.Data;
 using Signalling.Interfaces;
 using Signalling.Models;

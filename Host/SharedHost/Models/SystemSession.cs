@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SharedHost.Models
 {
-    class SystemSession
+    public class SystemSession
     {
         public int ClientID { get; set; }
 
