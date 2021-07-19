@@ -2,52 +2,52 @@
 #include <agent-type.h>
 #include <glib.h>
 
-void  
+static void
 default_session_initialize  ( AgentObject* agent)
 {
     g_printerr("receive unknown session initialize signal");
 }
 
-void
+static void
 default_session_terminate   (AgentObject* agent)
 {
     g_printerr("receive unknown session termination signal");
 }                             
 
-void
+static void
 default_remote_control_disconnect( AgentObject* agent)
 {
     g_printerr("receive unknown remote control disconnect");
 }
 
-void
+static void
 default_remote_control_reconnect(AgentObject* agent)
 {
     g_printerr("receive unknown remote control reconnect");
 }
 
 
-void 
+static void
 default_send_message_to_host(AgentObject* agent,
                              Message* message)
 {
     g_printerr("receive unknown send message to host request");
 }
 
-void
+static void
 default_send_message_to_local_module(AgentObject* agent,
                                      Message* message)
 {
     g_printerr("receive unknown send message to local module request");
 }
 
-void
+static void
 default_connect_to_host(AgentObject* agent)
 {
     g_printerr("receive unknown connect to host request");
 }
 
-void
+static void
 default_register_to_host(AgentObject* agent)
 {
     g_printerr("receive unknown connect to host request");

@@ -20,12 +20,7 @@ gboolean			send_command_line								(CommandLine* self,
 /// <param name="cmd"></param>
 void				close_command_line_process						(CommandLine* cmd);
 
-/// <summary>
-/// 
-/// </summary>
-/// <param name=""></param>
-/// <returns></returns>
-CommandLine*		initialize_command_line							(void);
+
 
 /// <summary>
 /// 
@@ -47,7 +42,10 @@ gboolean			add_nas											(AgentObject* self);
 /// </summary>
 /// <param name="data"></param>
 /// <returns></returns>
-gpointer			handle_command_line_thread						(gpointer data);
+void			handle_command_line_thread						(GTask* task,
+																 gpointer source_object,
+																 gpointer agent,
+																 GCancellable* cancellable);
 
 #endif
 

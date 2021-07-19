@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/huyho_fscnz/Desktop/personal-cloud-computing/session-core/source
+# Install script for directory: D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/session-core/source
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

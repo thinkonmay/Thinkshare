@@ -5,7 +5,7 @@
 
 
 
-void
+static void
 disconnected_connect_to_host(AgentObject* agent)
 {
     connect_to_host_async(agent);
@@ -16,7 +16,7 @@ disconnected_connect_to_host(AgentObject* agent)
 
 
 
-AgentState* 
+AgentState*
 transition_to_disconnected_state(void)
 {
     static AgentState disconnected_state;

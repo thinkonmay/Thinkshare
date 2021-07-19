@@ -32,7 +32,11 @@ gchar*              get_string_from_json_object             (JsonObject* object)
 void                on_server_closed                        (SoupWebsocketConnection* conn G_GNUC_UNUSED,
                                                              SessionCore* core G_GNUC_UNUSED);
 
-/* Answer created by our pipeline, to be sent to the peer */
+/// <summary>
+/// Answer created by our pipeline, to be sent to the peer 
+/// </summary>
+/// <param name="promise"></param>
+/// <param name="core"></param>
 void                on_answer_created                       (GstPromise* promise,
                                                              SessionCore* core);
 
@@ -57,11 +61,24 @@ void                signalling_hub_setup                    (SignallingHub* hub,
 
 gboolean            signalling_close                        (SignallingHub* hub);
 
+
+
+
+
 void                signalling_hub_set_stun_server          (SignallingHub* hub, 
                                                              gchar* stun);
 
 gchar*              signalling_hub_get_stun_server          (SignallingHub* hub);
 
+PeerCallState       signalling_hub_get_peer_call_state      (SignallingHub* hub);
+
+SignallingServerState signalling_hub_get_signalling_state   (SignallingHub* hub);
+
+void                signalling_hub_set_peer_call_state      (SignallingHub* hub,
+                                                             PeerCallState state);
+
+void                signalling_hub_set_signalling_state     (SignallingHub* hub,
+                                                             SignallingServerState state);
 
 
 #endif // !__SESSION_CORE_SIGNALLING_H

@@ -5,7 +5,7 @@
 #include <agent-state-on-session.h>
 #include <agent-socket.h>
 
-void
+static void
 on_open_session_initialize(AgentObject* agent)
 {
     session_initialize(agent);
@@ -15,7 +15,7 @@ on_open_session_initialize(AgentObject* agent)
 }
 
 
-AgentState* 
+AgentState*
 transition_to_on_open_state(void)
 {
     static AgentState open_state;
@@ -27,7 +27,6 @@ transition_to_on_open_state(void)
         open_state.session_initialize = on_open_session_initialize;
         open_state.send_message_to_host = send_message_to_host;
 
-        
 
         initialized = TRUE; 
     }

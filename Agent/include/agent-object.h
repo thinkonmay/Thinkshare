@@ -86,13 +86,9 @@ void											agent_send_message					(AgentObject* self,
 /// </summary>
 /// <param name="object"></param>
 void											agent_finalize						(AgentObject* object);
-/// <summary>
-/// Create new agent object based on information of host
-/// </summary>
-/// <param name="Host_URL"></param>
-/// <param name="Host_ID"></param>
-/// <returns></returns>
-AgentObject*									agent_new							(gchar* Host_URL);
+
+
+AgentObject*									agent_new							(void);
 
 /// <summary>
 /// handle message from host
@@ -147,6 +143,17 @@ gboolean										agent_register_settled				(AgentObject* self);
 HANDLE*											agent_get_mutex_handle_ptr			(AgentObject* self);
 
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="self"></param>
+/// <param name="command"></param>
+/// <param name="order"></param>
+void											agent_send_command_line				(AgentObject* self,
+																					 gchar* command,
+																					 gint order);
+
+
 
 /*get-set function for agent object*/
 
@@ -154,6 +161,9 @@ IPC*											agent_get_ipc						(AgentObject* self);
 
 
 Socket*											agent_get_socket					(AgentObject* self);
+
+void											agent_set_socket					(AgentObject* self,
+																					 Socket* socket);
 
 
 DeviceInformation*								agent_get_device_information		(AgentObject* self);
@@ -172,6 +182,9 @@ void											agent_set_state						(AgentObject* self,
 																					 AgentState* state);
 
 CommandLine**									agent_get_command_line_array		(AgentObject* self);
+
+void											agent_object_set_main_loop			(AgentObject* self,
+																					GMainLoop* loop);
 
 
 /*END get-set function for agent object*/

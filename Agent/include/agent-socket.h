@@ -85,7 +85,13 @@ gpointer                                update_device_with_host             (Age
 /// </summary>
 /// <param name="host_url"></param>
 /// <returns>Socket correspond to host url</returns>
-Socket*                                 initialize_socket                   (gchar* host_url);
+void                                 initialize_socket                   (AgentObject* agent);
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="socket"></param>
+void                                    socket_close                        (Socket* socket);
 
 
 

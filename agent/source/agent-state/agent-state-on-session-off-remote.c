@@ -6,7 +6,7 @@
 #include <agent-state-on-session.h>
 #include <agent-socket.h>
 
-void
+static void
 off_remote_session_terminate(AgentObject* agent)
 {
     g_free(agent_get_session(agent));
@@ -16,7 +16,7 @@ off_remote_session_terminate(AgentObject* agent)
     agent_set_state(agent, open_state);
 }
 
-void
+static void
 off_remote_remote_control_reconnect(AgentObject* agent)
 {
     session_initialize(agent);
@@ -25,7 +25,7 @@ off_remote_remote_control_reconnect(AgentObject* agent)
     agent_set_state(agent, on_session);
 }
 
-AgentState* 
+AgentState*
 transition_to_off_remote_state(void)
 {
     static AgentState off_remote_state;
@@ -37,7 +37,7 @@ transition_to_off_remote_state(void)
         off_remote_state.session_terminate = off_remote_session_terminate;
         off_remote_state.remote_control_reconnect = off_remote_remote_control_reconnect;
         off_remote_state.send_message_to_host = send_message_to_host;
-        off_remote_state.send_message_to_session_loader = send_message_to_loader;
+  //      off_remote_state.send_message_to_session_loader = send_message_to_loader;
         off_remote_state.send_message_to_session_core = send_message_to_core;
         initialized = TRUE; 
     }

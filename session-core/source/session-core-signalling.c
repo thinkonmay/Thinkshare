@@ -14,7 +14,7 @@
 #include <libsoup/soup.h>
 
 #include <stdio.h>
-
+#include <Windows.h>
 
 
 
@@ -90,11 +90,8 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
 
     SignallingHub* hub = session_core_get_rtc_hub(core);
 
-    if (session_core_get_state(core) != PEER_CALL_NEGOTIATING) 
-    {
-        session_core_finalize(core, CORE_STATE_ERROR);
-        return;
-    }
+    if (hub->peer_call_state != PEER_CALL_NEGOTIATING) 
+        session_core_finalize(core, CORE_STATE_CONFLICT);
 
     ice = json_object_new();
     json_object_set_string_member(ice, "candidate", candidate);
@@ -117,24 +114,24 @@ send_sdp_to_peer(SessionCore* core,
     gchar* text;
     JsonObject* msg, * sdp;
 
-    CoreState* state;
     SignallingHub* hub = session_core_get_rtc_hub(core);
 
-    if (state < PEER_CALL_NEGOTIATING) {
-        session_core_finalize( core, CORE_STATE_ERROR);
-        return;
-    }
+    if (!hub->peer_call_state == PEER_CALL_NEGOTIATING) 
+        session_core_finalize( core, CORE_STATE_CONFLICT);
 
     text = gst_sdp_message_as_text(desc->sdp);
     sdp = json_object_new();
 
-    if (desc->type == GST_WEBRTC_SDP_TYPE_OFFER) {
+    if (desc->type == GST_WEBRTC_SDP_TYPE_OFFER) 
+    {
         json_object_set_string_member(sdp, "type", "offer");
     }
-    else if (desc->type == GST_WEBRTC_SDP_TYPE_ANSWER) {
+    else if (desc->type == GST_WEBRTC_SDP_TYPE_ANSWER) 
+    {
         json_object_set_string_member(sdp, "type", "answer");
     }
-    else {
+    else 
+    {
         g_assert_not_reached();
     }
 
@@ -159,9 +156,9 @@ on_offer_created( GstPromise* promise, SessionCore* core)
     const GstStructure* reply;
 
     Pipeline* pipe = session_core_get_pipeline(core);
+    SignallingHub* hub = session_core_get_signalling_hub(core);
 
-
-    g_assert_cmphex(session_core_get_state(core), == , PEER_CALL_NEGOTIATING);
+    g_assert_cmphex(hub->peer_call_state, == , PEER_CALL_NEGOTIATING);
 
     g_assert_cmphex(gst_promise_wait(promise), == , GST_PROMISE_RESULT_REPLIED);
 
@@ -187,16 +184,24 @@ void
 on_negotiation_needed(GstElement* element, SessionCore* core)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
-    SignallingHub* hub = session_core_get_rtc_hub(core);
+    SignallingHub* signalling = session_core_get_signalling_hub(core);
 
-    hub->peer_call_state = PEER_CALL_NEGOTIATING;
+    if(!signalling ->peer_call_state == PEER_CALL_READY)
 
-    if (hub->client_offer) 
+    
+
+    if (signalling->client_offer)
     {
+        //gchar* msg = g_strdup_printf("WAITING_CLIENT");
+        //soup_websocket_connection_send_text(signalling->connection, msg);
+        //g_free(msg);
 
-        //gchar* msg = g_strdup_printf("WAITING_CLIENT");  
-        //soup_websocket_connection_send_text(hub->connection, msg);
-        ///g_free(msg);
+        /*wait until sdp is received*/
+        while (TRUE)
+        {
+            if (signalling->peer_call_state == PEER_CALL_NEGOTIATING)
+                break;
+        }
     }
     else 
     {
@@ -205,6 +210,8 @@ on_negotiation_needed(GstElement* element, SessionCore* core)
 
         g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
             "create-offer", NULL, promise);
+
+        signalling->peer_call_state = PEER_CALL_NEGOTIATING;
     }
 }
 
@@ -244,19 +251,15 @@ register_with_server(SessionCore* core)
     gchar* hello;
     CoreState* state;
     JsonObject* json_object = json_object_new();
-
     SignallingHub* hub = session_core_get_rtc_hub(core);
 
     if (hub->signalling_state != SIGNALLING_SERVER_CONNECTED)
-        return;
-
-    
+        session_core_finalize(core, CORE_STATE_CONFLICT);    
 
     if (soup_websocket_connection_get_state(hub->connection) !=
         SOUP_WEBSOCKET_STATE_OPEN)
-        return FALSE;
+        session_core_finalize(core, CORE_STATE_CONFLICT);
 
-    hub->signalling_state = SIGNALLING_SERVER_REGISTERING;
 
     /*register to signalling server by send an json object which has 3 members:
     * "request_type" : "SLAVEREQUEST"
@@ -271,6 +274,8 @@ register_with_server(SessionCore* core)
     soup_websocket_connection_send_text(hub->connection, hello);
     g_free(hello);
 
+
+    hub->signalling_state = SIGNALLING_SERVER_REGISTERING;
     return TRUE;
 }
 
@@ -285,8 +290,14 @@ on_server_closed(SoupWebsocketConnection* conn G_GNUC_UNUSED,
     SessionCore* core G_GNUC_UNUSED)
 {
     SignallingHub* hub = session_core_get_signalling_hub(core);
+    if (!hub->peer_call_state == PEER_CALL_DONE)
+        report_session_core_error(core, SIGNALLING_ERROR);
+
+    hub->connection = NULL;
+    hub->session = NULL;
 
     hub->signalling_state = SIGNALLING_SERVER_CLOSED;
+
 }
 
 /* Answer created by our pipeline, to be sent to the peer */
@@ -298,8 +309,9 @@ on_answer_created(GstPromise* promise,
     const GstStructure* reply;
 
     Pipeline* pipe = session_core_get_pipeline(core);
+    SignallingHub* hub = session_core_get_signalling_hub(core);
 
-    g_assert_cmphex(session_core_get_state(core), == , PEER_CALL_NEGOTIATING);
+    g_assert_cmphex(hub->peer_call_state, == , PEER_CALL_NEGOTIATING);
 
     g_assert_cmphex(gst_promise_wait(promise), == , GST_PROMISE_RESULT_REPLIED);
     reply = gst_promise_get_reply(promise);
@@ -418,49 +430,115 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
 }
 
 
-
-
 void
-server_register_result(SessionCore* core, JsonObject* object)
+on_registering_message(JsonObject* object, SessionCore* core)
 {
-    gchar* result;
-    gchar* request_type = 
-        json_object_get_string_member(object, "request_type");
-
-
     SignallingHub* signalling = session_core_get_signalling_hub(core);
 
+    if (!signalling->signalling_state == SIGNALLING_SERVER_REGISTERING)
+        session_core_finalize(core, CORE_STATE_CONFLICT);
+
+    gchar* request_type = json_object_get_string_member(object, "request_type");
 
     if (request_type == "result")
     {
-        result = json_object_get_string_member(object, "content");
+        gchar* result = json_object_get_string_member(object, "content");
+
+
+
+
         /*session id pair id found, set core-state to server registered and start pipeline*/
         if (result == "accepted")
         {
-            if ( signalling->signalling_state != SIGNALLING_SERVER_REGISTERING)
+            if (signalling->signalling_state != SIGNALLING_SERVER_REGISTERING)
             {
-                session_core_finalize(core, CORE_STATE_ERROR);
+                session_core_finalize(core, CORE_STATE_CONFLICT);
             }
-            session_core_set_state(core, SIGNALLING_SERVER_REGISTERED);
+            signalling->signalling_state = SIGNALLING_SERVER_REGISTER_DONE;
+            signalling->peer_call_state = PEER_CALL_READY;
             /* Call has been setup by the server, now we can start negotiation */
         }
         /*denied message send from signalling server to slave, end session core*/
         if (result == "denied")
         {
-            if ( signalling->signalling_state != SIGNALLING_SERVER_REGISTERING)
+            if (signalling->signalling_state != SIGNALLING_SERVER_REGISTERING)
             {
-                session_core_finalize(core, CORE_STATE_ERROR);
+                session_core_finalize(core, CORE_STATE_CONFLICT);
             }
-            session_core_finalize(core, SESSION_DENIED);
+            session_core_finalize(core,  SESSION_DENIED);
         }
     }
     else
     {
-        g_printerr("Ignoring unknown JSON message");
+        report_session_core_error(core, SIGNALLING_ERROR);
     }
 }
 
+void
+on_ice_exchange(JsonObject* object,SessionCore* core)
+{
+    Pipeline* pipe = session_core_get_pipeline(core);
 
+    const gchar* candidate;
+    int sdpmlineindex;
+    JsonObject* child = json_object_get_object_member(object, "ice");
+    candidate = json_object_get_string_member(child, "candidate");
+    sdpmlineindex = json_object_get_int_member(child, "sdpMLineIndex");
+    /* Add ice candidate sent by remote peer */
+    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+        "add-ice-candidate", sdpmlineindex, candidate);
+}
+
+void
+on_sdp_exchange(JsonObject* object, SessionCore* core)
+{
+    gint ret;
+    GstSDPMessage* sdp;
+    const gchar* text, * sdptype;
+    GstWebRTCSessionDescription* answer;
+    Pipeline* pipe = session_core_get_pipeline(core);
+    SignallingHub* signalling = session_core_get_signalling_hub(core);
+
+    if (!signalling->client_offer)
+        g_assert_cmphex(session_core_get_state(core), == , PEER_CALL_NEGOTIATING);
+    else
+        signalling->client_offer = PEER_CALL_NEGOTIATING;
+
+    JsonObject* child = json_object_get_object_member(object, "sdp");
+    if (!json_object_has_member(child, "type"))
+    {
+        report_session_core_error(core, SIGNALLING_ERROR);
+        return;
+    }
+    sdptype = json_object_get_string_member(child, "type");
+    text = json_object_get_string_member(child, "sdp");
+    ret = gst_sdp_message_new(&sdp);
+
+    g_assert_cmphex(ret, == , GST_SDP_OK);
+    ret = gst_sdp_message_parse_buffer((guint8*)text, strlen(text), sdp);
+    g_assert_cmphex(ret, == , GST_SDP_OK);
+
+
+    if (g_str_equal(sdptype, "answer"))
+    {
+        answer = gst_webrtc_session_description_new(GST_WEBRTC_SDP_TYPE_ANSWER,sdp);
+
+        g_assert_nonnull(answer);
+        /* Set remote description on our pipeline */
+        {
+            GstPromise* promise = gst_promise_new();
+            g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+                "set-remote-description", answer, promise);
+            gst_promise_interrupt(promise);
+            gst_promise_unref(promise);
+        }
+    }
+    else
+    {
+        on_offer_received(pipeline_get_webrtc_bin(pipe),
+            sdp);
+    }
+}
 
 /// <summary>
 /// callback function for signalling server message
@@ -476,13 +554,8 @@ on_server_message(SoupWebsocketConnection* conn,
     GBytes* message,
     SessionCore* core)
 {
-
-    SignallingHub* signalling = session_core_get_signalling_hub(core);
-
-    CoreState state = session_core_get_state(core);
     JsonNode* root;
-    JsonObject* object, * child;
-    gchar* request_type, * result;
+    JsonObject* object;
 
 
 
@@ -490,9 +563,11 @@ on_server_message(SoupWebsocketConnection* conn,
     Pipeline* pipe = session_core_get_pipeline(core);
 
     gchar* text = "ERROR";
-    switch (type) {
+
+    switch (type) 
+    {
     case SOUP_WEBSOCKET_DATA_BINARY:
-        g_printerr("Received unknown binary message, ignoring\n");
+        report_session_core_error(core, SIGNALLING_ERROR);
         return;
     case SOUP_WEBSOCKET_DATA_TEXT: {
         gsize size;
@@ -502,13 +577,13 @@ on_server_message(SoupWebsocketConnection* conn,
         break;
     }
     default:
-        g_assert_not_reached();
+        report_session_core_error(core, UNKNOWN_MESSAGE);
     }
 
 
     if (!json_parser_load_from_data(parser, text, -1, NULL))
     {
-      g_printerr("Unknown message '%s', ignoring", text);
+      report_session_core_error(core, UNKNOWN_MESSAGE);
       g_object_unref(parser);
       g_free(text);
       return;
@@ -525,83 +600,17 @@ on_server_message(SoupWebsocketConnection* conn,
     object = json_node_get_object(root);
      /* Check type of JSON message */
 
-
-
-
-
-
     /*this is websocket message with signalling server and has nothing to do with 
     * json message format use to communicate with other module
     */
     if (json_object_has_member(object, "request_type"))
-    {
-        server_register_result(core, object);
-    }
-
-    /*sdp exchange*/
+        on_registering_message(object, core);
     else if (json_object_has_member(object, "sdp"))
-    {
-        int ret;
-        GstSDPMessage* sdp;
-        const gchar* text, * sdptype;
-        GstWebRTCSessionDescription* answer;
-
-        if (!signalling->signalling_state == PEER_CALL_NEGOTIATING)
-            session_core_finalize(core, CORE_STATE_ERROR);
-
-        child = json_object_get_object_member(object, "sdp");
-        if (!json_object_has_member(child, "type"))
-        {
-            g_printerr("ERROR: received SDP without 'type'", core,
-                PEER_CALL_ERROR);
-            g_free(text);
-            return;
-        }
-        sdptype = json_object_get_string_member(child, "type");
-        text = json_object_get_string_member(child, "sdp");
-        ret = gst_sdp_message_new(&sdp);
-
-        g_assert_cmphex(ret, == , GST_SDP_OK);
-        ret = gst_sdp_message_parse_buffer((guint8*)text, strlen(text), sdp);
-        g_assert_cmphex(ret, == , GST_SDP_OK);
-
-
-        if (g_str_equal(sdptype, "answer"))
-        {
-            answer = gst_webrtc_session_description_new(GST_WEBRTC_SDP_TYPE_ANSWER,
-                sdp);
-            g_assert_nonnull(answer);
-            /* Set remote description on our pipeline */
-            {
-                GstPromise* promise = gst_promise_new();
-                g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
-                    "set-remote-description", answer, promise);
-                gst_promise_interrupt(promise);
-                gst_promise_unref(promise);
-            }
-        }
-        else
-        {
-            on_offer_received(pipeline_get_webrtc_bin(pipe),
-                sdp);
-        }
-    }
-    /*ice exchange*/
+        on_sdp_exchange(object, core);
     else if (json_object_has_member(object, "ice"))
-    {
-        const gchar* candidate;
-        int sdpmlineindex;
-        child = json_object_get_object_member(object, "ice");
-        candidate = json_object_get_string_member(child, "candidate");
-        sdpmlineindex = json_object_get_int_member(child, "sdpMLineIndex");
-         /* Add ice candidate sent by remote peer */
-        g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe), 
-            "add-ice-candidate", sdpmlineindex, candidate);
-    }
+        on_ice_exchange(object, core);
     else
-    {
-        g_printerr("Ignoring unknown JSON message:\n%s\n", text);
-    }
+        report_session_core_error(core, UNKNOWN_MESSAGE);
 
     g_object_unref(parser);   
 }
@@ -616,29 +625,24 @@ on_server_connected(SoupSession* session,
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
     if (hub->signalling_state != SIGNALLING_SERVER_CONNECTING)
-    {
         return;
-    }
 
 
     hub->connection = soup_session_websocket_connect_finish(session, res, &error);
-    if (error) {
+
+    static gint count;
+    if (error != NULL) 
+    {
+        g_error_free(error);
         gint count = 0;
 
-        /*attemp to connnect to signalling server 5 time before close session*/
-        while (TRUE)
-        {
-            session_core_connect_signalling_server(core);
-            Sleep(1000);
-            if (session_core_get_state(core) == SIGNALLING_SERVER_CONNECTED)
-                break;
-            count++;
-            if(count == 10)
-                session_core_finalize(core, CORE_STATE_ERROR);
-        }
-        g_error_free(error);
-        return;
+        session_core_connect_signalling_server(core);
+        Sleep(1000);
+        count++;
+        if(count == 5)
+            session_core_finalize(core, SIGNALLING_SERVER_CONNECTION_ERROR);
     }
+
 
     g_assert_nonnull(hub->connection);
 
@@ -667,6 +671,7 @@ signalling_close(SignallingHub* hub)
 
 
 
+/*START get-set function*/
 gchar* 
 signalling_hub_get_stun_server(SignallingHub* hub)
 {
@@ -677,4 +682,30 @@ void
 signalling_hub_set_stun_server(SignallingHub* hub, gchar* stun)
 {
     hub->stun_server = stun;
+}
+
+SignallingServerState 
+signalling_hub_get_signalling_state(SignallingHub* hub)
+{
+    return hub->signalling_state;
+}
+
+PeerCallState
+signalling_hub_get_peer_call_state(SignallingHub* hub)
+{
+    return hub->peer_call_state;
+}
+
+void
+signalling_hub_set_signalling_state(SignallingHub* hub,
+                                    SignallingServerState state)
+{
+    hub->signalling_state = state;
+}
+
+void
+signalling_hub_set_peer_call_state(SignallingHub* hub,
+                                   PeerCallState state)
+{
+    hub->peer_call_state = state;
 }

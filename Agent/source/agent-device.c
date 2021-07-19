@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #define DIV 1048576
+#define ID  0
 
 #include <intrin.h>
 static unsigned long long
@@ -30,10 +31,12 @@ GetCPULoad()
 /// </summary>
 struct _DeviceInformation
 {
-	gchar** cpu;
-	gchar** gpu;
-	gint* ram_capacity;
-	gchar** OS;
+	gint id;
+
+	gchar cpu[64];
+	gchar gpu[64];
+	gint ram_capacity;
+	gchar OS[64];
 };
 
 struct _DeviceState
@@ -46,8 +49,20 @@ struct _DeviceState
 DeviceInformation*
 get_device_information() 
 {
-
 	DeviceInformation* device_info = malloc(sizeof(DeviceInformation));
+
+	device_info->id = ID;
+
+
+	memcpy(&device_info->cpu, "ryzen 7 2700",sizeof("ryzen 7 2700"));
+	memcpy(&device_info->gpu, "gtx 1060 6GB",sizeof("gtx 1060 6GB"));
+	memcpy(&device_info->OS, "Windows 10", sizeof("Windows 10"));
+	device_info->ram_capacity = 16000000;
+
+
+	return device_info;
+
+	/*
 
 	int CPUInfo[4] = { -1 };
 	unsigned nExIds, i = 0;
@@ -56,7 +71,7 @@ get_device_information()
 	nExIds = CPUInfo[0];
 	
 
-
+	
 	for (i = 0x80000000; i <= nExIds; i++) {
 		__cpuid(CPUInfo, i);
 		if (i == 0x80000002)
@@ -66,14 +81,19 @@ get_device_information()
 		else if (i == 0x80000004)
 			memcpy(CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
 	}
-	device_info->cpu = &CPUBrandString;
+	
+
+	memcpy(&device_info->cpu ,"ryzen 7 2700" (&CPUBrandString), 64);
+
 
 	MEMORYSTATUSEX statex;
 	statex.dwLength = sizeof(statex);
 	GlobalMemoryStatusEx(&statex);
 	guint64 ram_cap = (statex.ullTotalPhys / 1024) / 1024;
 
-	device_info->ram_capacity = &ram_cap;
+
+	memcpy(&device_info->ram_capacity, &ram_cap,sizeof(guint64));
+
 
 	IDirect3D9* d3Object = Direct3DCreate9(D3D_SDK_VERSION);
 	UINT adaptercount = d3Object->lpVtbl->GetAdapterCount(d3Object);
@@ -84,18 +104,18 @@ get_device_information()
 		d3Object->lpVtbl->GetAdapterIdentifier(d3Object, i, 0, &(adapters[i]));
 	}
 
-	device_info->gpu = &adapters->Description;
+	memcpy(&device_info->gpu , "gtx 1060", 512);
 
-	return device_info;
+	memcpy(&device_info->OS , "Window10",sizeof("Window10"));
+
+	*/
 };
 
 //Function to Update get device state;
 DeviceState* 
 get_device_state() 
 {
-
 	DeviceState* device_state = malloc(sizeof(DeviceState));
-
 
 	MEMORYSTATUSEX statex;
 	statex.dwLength = sizeof(MEMORYSTATUSEX);
@@ -117,6 +137,7 @@ Message*
 get_json_message_from_device(AgentObject* object)
 {
 	HANDLE* handle = agent_get_mutex_handle_ptr(object);
+
 	WaitForSingleObject(*handle,INFINITE);
 	DeviceInformation* infor =	agent_get_device_information(object);
 	DeviceState* state =		agent_get_device_state(object);
@@ -125,19 +146,20 @@ get_json_message_from_device(AgentObject* object)
 	JsonObject* information = json_object_new();
 	JsonObject* device_state = json_object_new();
 
-	json_object_set_string_member(information, "cpu", *infor->cpu);
-	json_object_set_string_member(information, "gpu", *infor->gpu);
-	json_object_set_string_member(information, "os", *infor->OS);
-	json_object_set_int_member(information, "ram", *infor->ram_capacity);
+	json_object_set_string_member(information, "CPU", infor->cpu);
+	json_object_set_string_member(information, "GPU", infor->gpu);
+	json_object_set_string_member(information, "OS", infor->OS);
+	json_object_set_int_member(information, "RAMcapacity", infor->ram_capacity);
+	json_object_set_int_member(information, "ID", infor->id);
 
-	json_object_set_int_member(device_state, "cpu_usage", *state->cpu_usage);
-	json_object_set_int_member(device_state, "gpu_usage", *state->gpu_usage);
-	json_object_set_int_member(device_state, "ram_usage", *state->ram_usage);
+	json_object_set_int_member(device_state, "CPUusage", *state->cpu_usage);
+	json_object_set_int_member(device_state, "GPUusage", *state->gpu_usage);
+	json_object_set_int_member(device_state, "RAMusage", *state->ram_usage);
 
 	Message* message;
 
-	json_object_set_object_member(message, "state", device_state);
-	json_object_set_object_member(message, "information", information);
+	json_object_set_object_member(message, "DeviceState", device_state);
+	json_object_set_object_member(message, "DeviceInformation", information);
 
 
 	return message;
@@ -149,15 +171,15 @@ Message*
 get_json_message_from_device_information(DeviceInformation* infor)
 {
 
-	JsonObject* information;
+	JsonObject* information = json_object_new();
 
-	json_object_set_string_member(information,	"cpu", infor->cpu);
-	json_object_set_string_member(information,	"gpu", infor->gpu);
-	json_object_set_string_member(information,	"os", infor->OS);
-	json_object_set_int_member(information,		"ram", infor->ram_capacity);
+	json_object_set_string_member(information,	"CPU", infor->cpu);
+	json_object_set_string_member(information,	"GPU", infor->gpu);
+	json_object_set_string_member(information,	"OS", infor->OS);
+	json_object_set_int_member(information,		"RAM", infor->ram_capacity);
 
-	JsonObject* message;
-	json_object_set_object_member(message, "information", information);
+	JsonObject* message = json_object_new();
+	json_object_set_object_member(message, "DeviceInformation", information);
 
 	return message;
 }

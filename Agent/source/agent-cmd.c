@@ -1,7 +1,7 @@
 #include <agent-cmd.h>
 #include <agent-type.h>
 #include <agent-message.h>
-
+#include <gmodule.h>
 
 #define BUFFER_SIZE 10000
 
@@ -22,76 +22,54 @@ struct _LocalStorage
 
 typedef struct
 {
-    HANDLE* standard_in;
-    HANDLE* standard_out;
-
-    HANDLE* standard_err;
+    HANDLE standard_in;
+    HANDLE standard_out;
 }CmdHANDLE;
 
 struct _CommandLine
 {
     HANDLE* process;
 
-    HANDLE* standard_in;
-    HANDLE* standard_out;
-
-    HANDLE* standard_err;
+    HANDLE standard_in;
+    HANDLE standard_out;
 };
 
 
-CommandLine* 
-initialize_command_line(void)
+
+
+
+void
+handle_command_line_thread(GTask* task,
+    gpointer source_object,
+    gpointer data,
+    GCancellable* cancellable)
 {
-    CommandLine* cmd = malloc(sizeof(CommandLine));
-    memset(cmd, 0, sizeof(CommandLine));
-
-    return cmd;
-}
-
-
-
-
-gpointer
-handle_command_line_thread(gpointer data)
-{
-    AgentObject* agent = (AgentObject*)data;
+    AgentObject* agent = g_task_get_task_data(task);
     CommandLine** cmd = agent_get_command_line_array(agent);
 
     while (TRUE)
     {
-        DWORD dwread, dwrite;
+        DWORD dwread = 0;
         gchar buffer[BUFFER_SIZE];
         gboolean success = FALSE;
 
         for (gint i = 0; i < 8; i++)
         {
-            success = ReadFile(
-                *((*(cmd + i))->standard_out), buffer, BUFFER_SIZE, &dwread, NULL);
-
-            if (!success || dwread == 0)
+            CommandLine* line = *(cmd + i);
+            success = ReadFile(line->standard_out, buffer, BUFFER_SIZE, &dwread, NULL);
+             
+            if (success)
             {
                 Message* object = json_object_new();
-                json_object_set_int_member(object, "order", i);
-                json_object_set_string_member(object, "command", buffer);
+                json_object_set_int_member(object, "Order", i);
+                json_object_set_string_member(object, "Command", buffer);
 
-                Message* msg = message_init(AGENT_MODULE, HOST_MODULE, ON_COMMAND_LINE, object);
+                Message* msg = message_init(AGENT_MODULE, HOST_MODULE,
+                    COMMAND_LINE_FORWARD, object);
 
                 agent_send_message(agent, msg);
             }
-
-            success = ReadFile(*((*(cmd + i))->standard_err), buffer, BUFFER_SIZE, &dwread, NULL);
-            if (!success || dwread == 0)
-            {
-                Message* object = json_object_new();
-                json_object_set_int_member(object, "order", i);
-                json_object_set_string_member(object, "command", buffer);
-
-                Message* msg = message_init(AGENT_MODULE, HOST_MODULE, ON_COMMAND_LINE, object);
-
-                agent_send_message(agent, msg);
-            }
-        }
-
+        } 
     }
 }
 
@@ -116,14 +94,17 @@ initialize_cmd_handle(CommandLine* self)
     attr.bInheritHandle = TRUE;
     attr.lpSecurityDescriptor = NULL;
 
-    if (!CreatePipe(*(hdl->standard_out), *(self->standard_out), &attr, 0) ||
-        CreatePipe(*(hdl->standard_in), *(self->standard_in), &attr, 0) ||
-        CreatePipe(*(hdl->standard_err), *(self->standard_err), &attr, 0) )
+    if (!CreatePipe(&hdl->standard_out, &self->standard_out, &attr, 0))
     {
-        g_print("cannot create session core pipe");
-        return NULL;
+        g_printerr("cannot create session core pipe");
+    }
+    if (!CreatePipe(&hdl->standard_in, &self->standard_in, &attr, 0))
+    {
+        g_printerr("cannot create session core pipe");
     }
 
+    SetHandleInformation(hdl->standard_in, HANDLE_FLAG_INHERIT, 0);
+    SetHandleInformation(hdl->standard_out, HANDLE_FLAG_INHERIT, 0);
     return hdl;
 }
 
@@ -132,9 +113,6 @@ CommandLine*
 create_new_command_line_process(void)
 {
     CommandLine* cmd = malloc(sizeof(CommandLine));
-
-    PROCESS_INFORMATION pi;
-    ZeroMemory(&pi, sizeof(pi)); 
 
 
     CmdHANDLE* hdl = initialize_cmd_handle(cmd);
@@ -145,27 +123,43 @@ create_new_command_line_process(void)
         return FALSE;
     }
 
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi, sizeof(pi));
+
     /*setup startup infor(included standard input and output)*/
     STARTUPINFO startup_infor;
     startup_infor.cb = sizeof(STARTUPINFO);
-    startup_infor.dwFlags = STARTF_USESTDHANDLES;
+    startup_infor.dwFlags |= STARTF_USESTDHANDLES;
     startup_infor.hStdInput = hdl->standard_in;
     startup_infor.hStdOutput = hdl->standard_out;
-    startup_infor.hStdError = hdl->standard_err;
+    startup_infor.hStdError = hdl->standard_out;
 
 
+    LPWSTR path = malloc(1000);
+    LPWSTR path_ = g_utf8_to_utf16("C:\\Windows\\System32\\cmd.exe\0",
+        (glong)strlen("C:\\Windows\\System32\\cmd.exe\0"), 
+        NULL, NULL, NULL);
+
+    memcpy(path, path_, sizeof(path_));
+
+    gint t = sizeof(path);
     /*START cmd.exe process, all standard input and output are controlled by agent*/
-    if (CreateProcess("cmd.exe", "C:\\Windows\\System32\\cmd.exe",
-        NULL, NULL, TRUE, CREATE_NEW_CONSOLE,
-        NULL, NULL, &startup_infor, &pi) == 0)
+    if (!CreateProcessW(NULL, 
+        (LPWSTR)path,
+        NULL,
+        NULL, 
+        TRUE, 
+        0,
+        NULL,
+        NULL, 
+        &startup_infor, &pi) == 0)
     {
         DWORD drError = GetLastError();
         g_printerr("fail to create commandline process\n");
-        return NULL;
     }
-    else
-        cmd->process=  &pi.hProcess;
-        return cmd;
+    cmd->process=  &pi.hProcess;
+
+    return cmd;
 }
 
 
@@ -174,9 +168,8 @@ void
 close_command_line_process(CommandLine* cmd)
 {
     TerminateProcess(*(cmd->process), 0);
-    CloseHandle(*(cmd->standard_err));
-    CloseHandle(*(cmd->standard_out));
-    CloseHandle(*(cmd->standard_in));
+    CloseHandle(cmd->standard_out);
+    CloseHandle(cmd->standard_in);
     cmd = NULL;
 }
 

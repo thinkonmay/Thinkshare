@@ -5,19 +5,13 @@
 
 
 
-void
+static void
 unregistered_connect_to_host(AgentObject* agent)
 {
-    static gint i = 0;
-    while (i < 5)
-    {
-        connect_to_host_async(agent);
-        Sleep(10000);
-        i++;
-    }
+    connect_to_host_async(agent);
 }
 
-void
+static void
 unregistered_register_with_host(AgentObject* agent)
 {
     register_with_host(agent);
@@ -36,6 +30,7 @@ transition_to_unregistered_state(void)
 
         unregistered_state.connect_to_host = unregistered_connect_to_host;
         unregistered_state.register_to_host = unregistered_register_with_host;
+        unregistered_state.send_message_to_host = send_message_to_host;
 
         initialized = TRUE; 
     }

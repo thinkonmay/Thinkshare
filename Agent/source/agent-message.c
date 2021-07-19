@@ -12,99 +12,6 @@
 #include <string.h>
 
 
-/// <summary>
-/// SessionQoE (quality of experience) of the remote control session
-/// (included QoE controller)
-/// </summary>
-struct _SessionQoE
-{
-	gint screen_height;
-	gint screen_width;
-	gint framerate;
-	gint bitrate;
-};
-
-/// <summary>
-/// session related information:
-/// session slave id, signalling url, ...
-/// </summary>
-struct _Session
-{
-	gint SessionSlaveID;
-	gchar* signalling_url;
-	SessionQoE* qoe;
-	gboolean client_offer;
-	gchar* stun_server;
-};
-
-
-
-
-
-
-
-void
-session_qoe_init(SessionQoE* qoe,
-				 gint frame_rate,
-				 gint screen_width,
-				 gint screen_height,
-				 gint bitrate)
-{
-	qoe = malloc(sizeof(SessionQoE));
-
-	qoe->bitrate = bitrate;
-	qoe->framerate = frame_rate;
-	qoe->screen_height = screen_height;
-	qoe->screen_width = screen_width;
-}
-
-void
-session_information_init(Session* session,
-			 gint session_slave_id,
-			 gchar* signalling_url,
-			 SessionQoE* qoe,
-			 gboolean client_offer,
-			 gchar* stun_server)
-{
-
-
-	session = malloc(sizeof(Session));
-
-	session->SessionSlaveID = session_slave_id;
-	session->client_offer = client_offer;
-	session->stun_server = stun_server;
-	session->qoe = qoe;
-	session->signalling_url = signalling_url;
-}
-
-Message* 
-get_json_from_session(Session* session)
-{
-
-	JsonObject* object = json_object_new();
-	json_object_set_int_member(object, "session-slave-id", session->SessionSlaveID);
-	json_object_set_string_member(object, "signalling-url", session->signalling_url);
-	json_object_set_boolean_member(object, "client-offer", session->client_offer);
-	json_object_set_string_member(object, "stun-server", session->stun_server);
-
-	JsonObject* qoe;
-	json_object_set_int_member(object, "framerate", session->qoe->framerate);
-	json_object_set_int_member(object, "bitrate", session->qoe->bitrate);
-	json_object_set_int_member(object, "screen_height", session->qoe->screen_height);
-	json_object_set_int_member(object, "screen_width", session->qoe->screen_width);
-
-
-	json_object_set_member(object, "session-qoe", qoe);
-
-	return object;
-
-}
-
-
-
-
-
-
 
 
 
@@ -116,16 +23,17 @@ message_init(Module from,
              Message* data)
 {
 	Message* object = json_object_new();
-	gchar* data_string = get_string_from_json_object(data);
-	gchar* data_string_ = g_strndup( data_string,sizeof(data_string) );
 
 	json_object_set_int_member		(object, "from",	from);
 	json_object_set_int_member		(object, "to",		to);
 	json_object_set_int_member		(object, "opcode",	opcode);
+
 	if(data == NULL)
 		return object;
 	else
 	{
+		gchar* data_string = get_string_from_json_object(data);
+		gchar* data_string_ = g_strndup(data_string, sizeof(data_string));
 		json_object_set_string_member	(object, "data", data_string_);
 		return object;
 	}
@@ -140,54 +48,26 @@ send_message(AgentObject* self,
 {
 	Module to = json_object_get_int_member(message, "to");
 
-	switch (to)
+	if(to == HOST_MODULE)
 	{
-	case HOST_MODULE:
-	    send_message_to_host(self, 
+		agent_send_message_to_host(self,
 			get_string_from_json_object(message));
-	case CORE_MODULE:
-		agent_send_message_to_session_core(self,
-			get_string_from_json_object(message));
-	case LOADER_MODULE:
-		agent_send_message_to_session_loader(self,
-			get_string_from_json_object(message));
-	case CLIENT_MODULE:
+	}
+	else if (to == CORE_MODULE)
+	{
 		agent_send_message_to_session_core(self,
 			get_string_from_json_object(message));
 	}
-}
-
-/// <summary>
-/// (PRIVATE function)
-/// get_session_information from host message, 
-/// used to set session information
-/// </summary>
-/// <param name="object"></param>
-/// <returns></returns>
-Session*
-get_session_information_from_message(Message* object)
-{
-	Session* session;
-	SessionQoE* qoe;
-
-	JsonObject* session_object = json_object_get_member(object, "data");
-	gint SessionSlaveID = json_object_get_int_member(session_object, "SessionSlaveID");
-	gchar* signalling_url = json_object_get_string_member(session_object, "SignallingURL");
-	gchar* client_offer = json_object_get_boolean_member(session_object, "ClientOffer");
-	gchar* stun_server = json_object_get_string_member(session_object, "StunServer");
-
-	JsonObject* qoe_object = json_object_get_member(session_object, "SessionQoE");
-	gint screen_width = json_object_get_int_member(qoe_object, "ScreenWidth");
-	gint screen_height = json_object_get_int_member(qoe_object, "ScreenHeight");
-	gint framerate = json_object_get_int_member(qoe_object, "FrameRate");
-	gint bitrate = json_object_get_int_member(qoe_object, "Bitrate");
-
-	session_qoe_init(qoe, framerate,
-		screen_width, screen_height, bitrate);
-
-	session_information_init(session, SessionSlaveID,
-		signalling_url, qoe, client_offer, stun_server);
-	return session;
+	else if (to == LOADER_MODULE)
+	{
+		agent_send_message_to_session_loader(self,
+			get_string_from_json_object(message));
+	}
+	else if (to == CLIENT_MODULE)
+	{
+		agent_send_message_to_session_core(self,
+			get_string_from_json_object(message));
+	}
 }
 
 
@@ -232,56 +112,53 @@ on_agent_message(AgentObject* agent,
 				GError** err;
 				g_thread_try_new("information update",
 					(GThreadFunc*)update_device_with_host, agent, err);
+
 				if (err != NULL)
-				{
 					g_printerr("failed to create thread");
-				}
-				return;
 			}
-			else if (opcode == REJECT_SLAVE)
+			else if (opcode == SESSION_INITIALIZE)
 			{
-				agent_finalize(agent);
-				return;
-			}
-			else if (opcode == DENY_SLAVE)
-			{
-				agent_finalize(agent);
-			}
-			else
-			{
-				switch (opcode)
-				{
-				case SESSION_INITIALIZE:
-				{
-					Session* session = 
-						get_session_information_from_message(json_data);
-					agent_set_session(agent, session);
+				Session* session = json_data;
+				agent_set_session(agent, session);
 
-					agent_session_initialize(agent);
-				}
-				case SESSION_TERMINATE:
-					agent_session_terminate(agent);
-				case RECONNECT_REMOTE_CONTROL:
-					agent_remote_control_reconnect(agent);
-				case DISCONNECT_REMOTE_CONTROL:
-					agent_remote_control_disconnect(agent);
-				}
+				agent_session_initialize(agent);
 			}
 
+			else if (opcode == SESSION_INITIALIZE)
+			{
+				agent_send_command_line(agent,
+					json_object_get_int_member(json_data, "Order"),
+					json_object_get_int_member(json_data, "Command"));
+			}
+			else if (opcode == SESSION_INITIALIZE)
+				agent_finalize(agent);
+			else if (opcode == SESSION_INITIALIZE)
+				agent_finalize(agent);
+			else if (opcode == SESSION_INITIALIZE)
+				agent_session_terminate(agent);
+			else if (opcode == SESSION_INITIALIZE)
+				agent_remote_control_reconnect(agent);
+			else if (opcode == SESSION_INITIALIZE)
+				agent_remote_control_disconnect(agent);
 		}
+
+		
 		else if(from == CORE_MODULE)
 		{
-			Message* msg;
-			switch (opcode)
+			
 			{
-			case SESSION_INFORMATION_REQUEST:
-			{
-				Session* session = agent_get_session(agent);
-				Message* message = get_json_from_session(session);
-				msg = message_init(AGENT_MODULE, CORE_MODULE, SESSION_INFORMATION, message);
+				if(opcode == SESSION_INFORMATION_REQUEST)
+				{
+					Message* msg;
+					Session* session = agent_get_session(agent);
+					msg = message_init(AGENT_MODULE, 
+						CORE_MODULE, SESSION_INFORMATION, session);
+
+					agent_send_message(agent, msg);
+				}
+				if(opcode == EXIT_CODE_REPORT)
+					agent_session_terminate(agent);
 			}
-			}
-			agent_send_message(agent, msg);
 		}
 	}
 	else

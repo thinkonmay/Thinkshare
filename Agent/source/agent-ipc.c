@@ -30,14 +30,9 @@
 struct _IPC
 {
 	HANDLE* core_process;
-	HANDLE* loader_process;
 
     HANDLE* core_in;
     HANDLE* core_out;
-    HANDLE* loader_in;
-    HANDLE* loader_out;
-
-	CoreState state;
 
     GThread* ipc_thread;
 };
@@ -49,8 +44,6 @@ typedef struct
 {
     HANDLE* core_in;
     HANDLE* core_out;
-    HANDLE* loader_in;
-    HANDLE* loader_out;
 }ChildPipe;
 
 
@@ -72,6 +65,7 @@ typedef struct
 /// used to print out error  related to winapi
 /// </summary>
 /// <param name="dwErr"></param>
+/*
 void
 print_window_error(DWORD dwErr)
 {
@@ -125,7 +119,7 @@ print_window_error(DWORD dwErr)
         dwErr,
         dwChars ? wszMsgBuff : L"Error message not found.");
 }
-
+*/
 
 
 /// <summary>
@@ -181,10 +175,8 @@ handle_thread(gpointer data)
             gboolean success = FALSE;
             while (TRUE)
             {
-                success = ReadFile(*(ipc->core_in), buffer, BUFFER_SIZE, &dwread, NULL);
-                if (!success || dwread == 0) goto send;
-
-                success = ReadFile(*(ipc->loader_in), buffer, BUFFER_SIZE, &dwread, NULL);
+                success = ReadFile(*(ipc->core_in), 
+                    buffer, BUFFER_SIZE, &dwread, NULL);
                 if (!success || dwread == 0) goto send;
             }
 
@@ -200,10 +192,14 @@ session_terminate(AgentObject* agent)
 {
 	IPC* ipc = agent_get_ipc(agent);
 
+    TerminateProcess(*(ipc->core_process), 0);
     CloseHandle(ipc->core_in);
     CloseHandle(ipc->core_out);
-    TerminateProcess(*(ipc->core_process), 0);
     CloseHandle(ipc->core_process);
+
+    ipc->core_in = NULL;
+    ipc->core_out = NULL;
+    ipc->core_process = NULL;
 
     ipc->ipc_thread = NULL;
 
@@ -274,7 +270,7 @@ send_message_to_core(AgentObject* self, gchar* buffer)
     }
 }
 
-
+/*
 gboolean
 send_message_to_loader(AgentObject* self, gchar* buffer)
 {
@@ -289,10 +285,12 @@ send_message_to_loader(AgentObject* self, gchar* buffer)
             return TRUE;
     }
 }
+*/
 
 IPC*
 initialize_ipc()
 {
     IPC* ipc = malloc(sizeof(IPC));
-    ipc->state = CORE_STATE_UNKNOWN;
+
+    return ipc;
 }

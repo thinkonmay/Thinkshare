@@ -3,12 +3,15 @@
 #include <agent-ipc.h>
 #include <agent-message.h>
 #include <agent-device.h>
+#include <agent-state-disconnected.h>
+#include <agent-state-open.h>
 
 #include <json-glib/json-glib.h>
 #include <agent-object.h>
-#include <agent-object.h>
 #include <glib-object.h>
 #include <libsoup/soup.h>
+#include <glib/gprintf.h>
+#include <glib.h>
 
 /// <summary>
 /// contain information about websocket socket with host
@@ -17,7 +20,13 @@ struct _Socket
 {
     SoupWebsocketConnection* ws;
 
-    gchar* host_url;
+    SoupSession* session;
+
+    SoupLogger* logger;
+
+    SoupMessage* message;
+
+    gchar host_url[100];
 };
 
 
@@ -61,7 +70,7 @@ socket_close(Socket* socket)
 {
     g_print("socket closed");
 
-    if (socket->ws)
+    if (socket->ws != NULL)
     {
         if (soup_websocket_connection_get_state(socket->ws) == SOUP_WEBSOCKET_STATE_OPEN)
         {
@@ -80,13 +89,14 @@ socket_close(Socket* socket)
 /// <param name=""></param>
 void
 on_server_closed(SoupWebsocketConnection* conn,
-    AgentObject* self)
+    AgentObject* agent)
 {
     /*close websocket connection*/
-    Socket* socket = agent_get_socket(self);
+    Socket* socket = agent_get_socket(agent);
     socket_close(socket);
     /*then attemp to reconnect*/
-    agent_connect_to_host(self);
+    AgentState* disconnected = transition_to_disconnected_state();
+    agent_set_state(agent, disconnected);
 }
 
 /// <summary>
@@ -102,25 +112,20 @@ on_server_connected(SoupSession* session,
     AgentObject* self)
 {
     GError* error = NULL;
-    Socket* socket = agent_get_socket(self);
 
-    socket->ws = soup_session_websocket_connect_finish(session, res, &error);
+    agent_get_socket(self)->ws = soup_session_websocket_connect_finish(session, res, &error);
 
     /*if error happen during connection, restart agent_connect_to_host*/
-    if (error) 
-    {
-        on_server_closed(socket, self);
-        g_error_free(error);
-        return;
-    }
+    if (error)
+        agent_connect_to_host(self);
 
-    g_assert_nonnull(socket->ws);
+    //g_assert_nonnull(socket->ws);
 
     g_print("Connected to host\n");
 
     /*connect websocket connection signal with signal handler*/
-    g_signal_connect(socket->ws, "closed", G_CALLBACK(on_server_closed), self);
-    g_signal_connect(socket->ws, "message", G_CALLBACK(on_server_message), self);
+    g_signal_connect(agent_get_socket(self)->ws, "closed", G_CALLBACK(on_server_closed), self);
+    g_signal_connect(agent_get_socket(self)->ws, "message", G_CALLBACK(on_server_message), self);
 
     /*after establish websocket connection with host, perform register procedure*/
     agent_register_with_host(self);
@@ -129,32 +134,16 @@ on_server_connected(SoupSession* session,
 void
 connect_to_host_async(AgentObject* self)
 {
-    /*currently there is some bug of soup logger related to write access violation*/
-    ///SoupLogger* logger;
-    SoupMessage* message;
-    SoupSession* session;
-    const gchar *https_aliases[] = { "wss", NULL };
-    Socket* socket = agent_get_socket(self);
-
-    ///logger = soup_logger_new(SOUP_LOGGER_LOG_BODY, -1);
-
-    session =   soup_session_new_with_options(SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
-                ///SOUP_SESSION_ADD_FEATURE, logger,
-                //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
-                SOUP_SESSION_HTTPS_ALIASES, https_aliases);
-
-    
-
-
-
-    message =   soup_message_new(SOUP_METHOD_GET, socket->host_url);
+    Socket* socket = 
+        agent_get_socket(self);
 
     g_print("Connecting to server...\n");
 
-    /* Once connected, we will register */
-    soup_session_websocket_connect_async(session,
-        message, NULL, NULL, NULL,
+    /* Once connected, we will register 
+     soup_session_websocket_connect_async(socket->session,
+        socket->message, NULL, NULL, NULL,
         (GAsyncReadyCallback)on_server_connected, self);
+        */
 }
 
 
@@ -175,7 +164,7 @@ on_server_message(SoupWebsocketConnection* conn,
     case SOUP_WEBSOCKET_DATA_TEXT: 
     {
         gsize size;
-        const char* data = g_bytes_get_data(message, &size);
+        const gchar* data = g_bytes_get_data(message, &size);
         /* Convert to NULL-terminated string */
         text = g_strndup(data, size);
         break;
@@ -184,23 +173,27 @@ on_server_message(SoupWebsocketConnection* conn,
         g_assert_not_reached();
     }
     on_agent_message(self, text);
+
+    g_print("%s", text);
+    g_free(text);
 }
 
 gpointer 
-update_device_with_host(AgentObject* data)
+update_device_with_host(gpointer data)
 {
+    AgentObject* agent = (AgentObject*)data;
 	while(TRUE)
 	{
-
-        Message* msg = get_json_message_from_device(data);
+        Message* msg = 
+            get_json_message_from_device(data);
 
         message_init( AGENT_MODULE, HOST_MODULE,
             UPDATE_SLAVE_STATE, msg, sizeof(msg));
-		agent_send_message(data,msg);
+
+		agent_send_message(agent,msg);
 
 		Sleep(1000);
 	}
-
     return NULL;
 }
 
@@ -212,11 +205,11 @@ register_with_host(AgentObject* self)
     JsonObject* json;
 
     Message* message = 
-        get_json_message_from_device_information(infor);
+    get_json_message_from_device_information(infor);
 
     Message* package =
         message_init(AGENT_MODULE, HOST_MODULE, 
-            REGISTER_SLAVE,message, sizeof(message));
+            REGISTER_SLAVE,message);
 
     agent_send_message(self, package); 
     return TRUE;     
@@ -241,12 +234,36 @@ socket_get_host_url(Socket* socket)
     socket->host_url;
 }
 
-Socket*
-initialize_socket(gchar* host_url)
+
+static const gchar *url = "wss://localhost:44353/ws";
+
+void
+initialize_socket(AgentObject* agent)
 {
-    Socket* socket = malloc(sizeof(Socket));
-    socket->host_url = host_url;
-    return socket;
+    const char* https_aliases[] = { "wss", NULL };
+
+
+    Socket socket;
+    gboolean disable_ssl = TRUE;
+
+    socket.session =
+        soup_session_new_with_options(SOUP_SESSION_SSL_STRICT, !disable_ssl,
+            SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
+            //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
+            SOUP_SESSION_HTTPS_ALIASES, https_aliases, NULL);
+
+    socket.logger = soup_logger_new(SOUP_LOGGER_LOG_BODY, -1);
+    soup_session_add_feature(socket.session, SOUP_SESSION_FEATURE(socket.logger));
+    g_object_unref(socket.logger);
+
+    socket.message = soup_message_new(SOUP_METHOD_GET, url);
+
+
+    agent_set_socket(agent, &socket);
+
+    soup_session_websocket_connect_async(socket.session,
+        socket.message, NULL, NULL, NULL,
+        (GAsyncReadyCallback)on_server_connected, agent);
 }
 
 /*END get-set-function for Socket*/
