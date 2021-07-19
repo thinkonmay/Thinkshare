@@ -30,7 +30,7 @@ namespace Signalling.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        public async Task<IActionResult> Create(SessionRequest req)
+        public async Task<IActionResult> Create(ClientRequest req)
         {
             if (ModelState.IsValid)
             {
@@ -45,7 +45,7 @@ namespace Signalling.Controllers
 
         // GET: ManageSessions/Delete/5
         [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> Delete(SessionRequest req)
+        public async Task<IActionResult> Delete(ClientRequest req)
         {
             if (req == null)
             {

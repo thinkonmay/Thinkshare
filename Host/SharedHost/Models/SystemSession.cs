@@ -9,7 +9,7 @@ namespace SharedHost.Models
     /// store inside database,
     /// use for maintainance and management 
     /// </summary>
-    class SystemSession
+    public class SystemSession
     {
         /// <summary>
         /// ID of client

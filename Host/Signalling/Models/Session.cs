@@ -19,7 +19,7 @@ namespace Signalling.Models
 
         /*provide both created time and closed time for better management*/
 
-        public Session(SessionRequest req)
+        public Session(ClientRequest req)
         {
             ClientId = req.ClientId;
             SlaveId = req.SlaveId;

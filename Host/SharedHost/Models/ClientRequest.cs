@@ -8,14 +8,14 @@ namespace SharedHost.Models
     /// Contain session initialize request that user send to host
     /// in order to start remote control session
     /// </summary>
-    class ClientRequest
+    public class ClientRequest
     {
 
         public int ClientId { get; set; }
         /// <summary>
         /// slave id that match with requested user
         /// </summary>
-        public int SlaveID { get; set; }
+        public int SlaveId { get; set; }
 
         /// <summary>
         /// quality of experience 

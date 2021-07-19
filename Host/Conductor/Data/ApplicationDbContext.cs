@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Conductor.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SharedHost.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Conductor.Data
 {
@@ -24,8 +22,11 @@ namespace Conductor.Data
         {
             base.OnModelCreating(builder);
             builder.Entity<SystemSession>().HasIndex(s => new { s.SessionClientID, s.SessionSlaveID }).IsUnique();
+            builder.Entity<Telemetry>().HasOne(p => p.Device).WithMany(p => p.Telemetry);
         }
 
         public DbSet<SystemSession> Sessions { get; set; }
+        public DbSet<Slave> Devices { get; set; }
+        public DbSet<Telemetry> TelemetryLogs { get; set; }
     }
 }

@@ -19,6 +19,8 @@ namespace SlaveManager.Controllers
     [Route("/[controller]/[action]")]
     public class ConductorController : ControllerBase
     {
+        private const string CONDUCTOR_URL = "";
+
         /// <summary>
         /// 
         /// </summary>
