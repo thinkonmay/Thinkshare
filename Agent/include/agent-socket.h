@@ -93,6 +93,12 @@ void                                 initialize_socket                   (AgentO
 /// <param name="socket"></param>
 void                                    socket_close                        (Socket* socket);
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="socket"></param>
+void                                    socket_close                        (Socket* socket);
+
 
 
 

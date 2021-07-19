@@ -139,8 +139,13 @@ connect_to_host_async(AgentObject* self)
 
     g_print("Connecting to server...\n");
 
+<<<<<<< HEAD
     /* Once connected, we will register 
      soup_session_websocket_connect_async(socket->session,
+=======
+    /* Once connected, we will register */
+    soup_session_websocket_connect_async(socket->session,
+>>>>>>> 167cfab56c30e4b134d849247fe3fccfe139d127
         socket->message, NULL, NULL, NULL,
         (GAsyncReadyCallback)on_server_connected, self);
         */
@@ -173,8 +178,11 @@ on_server_message(SoupWebsocketConnection* conn,
         g_assert_not_reached();
     }
     on_agent_message(self, text);
+<<<<<<< HEAD
 
     g_print("%s", text);
+=======
+>>>>>>> 167cfab56c30e4b134d849247fe3fccfe139d127
     g_free(text);
 }
 
@@ -212,6 +220,9 @@ register_with_host(AgentObject* self)
             REGISTER_SLAVE,message);
 
     agent_send_message(self, package); 
+
+    AgentState* open = transition_to_on_open_state();
+    agent_set_state(self, open);
     return TRUE;     
 }
 
@@ -240,6 +251,7 @@ static const gchar *url = "wss://localhost:44353/ws";
 void
 initialize_socket(AgentObject* agent)
 {
+<<<<<<< HEAD
     const char* https_aliases[] = { "wss", NULL };
 
 
@@ -264,6 +276,28 @@ initialize_socket(AgentObject* agent)
     soup_session_websocket_connect_async(socket.session,
         socket.message, NULL, NULL, NULL,
         (GAsyncReadyCallback)on_server_connected, agent);
+=======
+
+    const gchar* https_aliases[] = { "wss", NULL };
+
+    Socket* socket = malloc(sizeof(Socket));
+
+    socket->host_url = host_url;
+
+    socket->message =
+        soup_message_new(SOUP_METHOD_GET, socket->host_url);
+
+    socket->logger =
+        soup_logger_new(SOUP_LOGGER_LOG_BODY, -1);
+
+    socket->session =
+        soup_session_new_with_options(SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
+            SOUP_SESSION_ADD_FEATURE, socket->logger,
+            //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
+            SOUP_SESSION_HTTPS_ALIASES, https_aliases);
+
+    return socket;
+>>>>>>> 167cfab56c30e4b134d849247fe3fccfe139d127
 }
 
 /*END get-set-function for Socket*/

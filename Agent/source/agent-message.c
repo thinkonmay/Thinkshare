@@ -104,7 +104,7 @@ on_agent_message(AgentObject* agent,
 	{
 		if (from == HOST_MODULE)
 		{
-			if (opcode == SLAVE_ACCEPTED)
+			switch (opcode)
 			{
 				AgentState* open_state = transition_to_on_open_state();
 				agent_set_state(agent, open_state);

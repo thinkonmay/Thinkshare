@@ -13,6 +13,8 @@
 #include <agent-state.h>
 #include <agent-state-unregistered.h>
 
+#define CMD_MAX 8
+
 /// <summary>
 /// agent object 
 /// </summary>
@@ -133,6 +135,8 @@ agent_new(void)
 
 
 
+	HANDLE mutex = CreateMutex(&attr, FALSE, NULL);
+	agent->state_mutex = &mutex;
 
 void
 agent_finalize(AgentObject* self)

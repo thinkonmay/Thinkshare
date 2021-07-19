@@ -37,7 +37,6 @@ struct _CommandLine
 
 
 
-
 void
 handle_command_line_thread(GTask* task,
     gpointer source_object,
