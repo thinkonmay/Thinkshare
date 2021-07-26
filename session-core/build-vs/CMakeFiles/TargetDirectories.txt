@@ -1,0 +1,3 @@
+D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/session-core/build-vs/CMakeFiles/ALL_BUILD.dir
+D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/session-core/build-vs/CMakeFiles/ZERO_CHECK.dir
+D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/session-core/build-vs/source/CMakeFiles/SessionCore.dir

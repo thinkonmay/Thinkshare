@@ -14,6 +14,7 @@
 
 #pragma comment(lib, "d3d9.lib")
 
+<<<<<<< Updated upstream
 /// <summary>
 /// get device information directly from window,
 /// wrapped by device state update thread
@@ -26,15 +27,16 @@ DeviceInformation* 				get_device_information						(void);
 /// </summary>
 /// <returns></returns>
 DeviceState* 					get_device_state							(void);
+=======
+
+>>>>>>> Stashed changes
 
 /// <summary>
-/// 
+/// update device thread function,
+/// invoke during agent object initialization
 /// </summary>
-/// <param name="infor"></param>
+/// <param name="data"></param>
 /// <returns></returns>
-Message*						get_json_message_from_device_information	(DeviceInformation* infor);
-
-
-Message*						get_json_message_from_device				(AgentObject* object);
+gpointer				update_device					(AgentObject* data);
 
 #endif

@@ -7,10 +7,17 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
+<<<<<<< Updated upstream
 COPY ["Signalling/Signalling.csproj", "Signalling/"]
 RUN dotnet restore "Signalling/Signalling.csproj"
 COPY . .
 WORKDIR "/src/Signalling"
+=======
+COPY ["Signalling.csproj", ""]
+RUN dotnet restore "Signalling.csproj"
+COPY . .
+WORKDIR "/src/."
+>>>>>>> Stashed changes
 RUN dotnet build "Signalling.csproj" -c Release -o /app/build
 
 FROM build AS publish

@@ -1,22 +1,28 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
+<<<<<<< Updated upstream
 using System.Threading.Tasks;
 using SharedHost.Interfaces;
 using SharedHost.Services;
 
 namespace SharedHost
+=======
+using SlaveManager.Interfaces;
+using SlaveManager.Services;
+using SlaveManager.Administration;
+using SlaveManager.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace SlaveManager
+>>>>>>> Stashed changes
 {
     public class Startup
     {
@@ -30,8 +36,19 @@ namespace SharedHost
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+<<<<<<< Updated upstream
 
             services.AddControllers();
+=======
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddRazorPages();
+
+>>>>>>> Stashed changes
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SlaveManager", Version = 

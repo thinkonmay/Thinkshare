@@ -15,7 +15,39 @@ on_open_session_initialize(AgentObject* agent)
 }
 
 
+<<<<<<< Updated upstream
 AgentState* 
+=======
+static void
+open_state_send_message_to_host(AgentObject* agent,
+    gchar* message)
+{
+    Socket* socket = agent_get_socket(agent);
+    JsonNode* root;
+    JsonObject* json_data;
+
+    JsonParser* parser = json_parser_new();
+    json_parser_load_from_data(parser, message, -1, NULL);
+    root = json_parser_get_root(parser);
+    JsonObject* object = json_node_get_object(root);
+
+    GFile* file = agent_get_slave_id(agent);
+
+    GBytes* bytes = g_file_load_bytes(file, NULL, NULL, NULL);
+
+    gchar* buffer = g_bytes_get_data(bytes, NULL);
+
+
+    json_object_set_int_member(object,
+        "SlaveID", atoi(buffer));
+
+    send_message_to_host(agent,
+        get_string_from_json_object(object));
+}
+
+
+AgentState*
+>>>>>>> Stashed changes
 transition_to_on_open_state(void)
 {
     static AgentState open_state;

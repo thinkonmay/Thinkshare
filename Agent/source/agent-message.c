@@ -8,6 +8,7 @@
 #include <agent-type.h>
 #include <agent-state-open.h>
 #include <agent-state.h>
+#include <agent-cmd.h>
 
 #include <string.h>
 
@@ -64,7 +65,25 @@ send_message(AgentObject* self,
 	}
 }
 
+<<<<<<< Updated upstream
 
+=======
+static void
+setup_slave_device(AgentObject* agent, gchar* slave)
+{
+
+	AgentState* open_state = transition_to_on_open_state();
+	agent_set_state(agent, open_state);
+	GFile* file = agent_get_slave_id(agent);
+	
+	if(g_file_replace_contents(file, 
+		slave, sizeof(slave),NULL,TRUE, G_FILE_COPY_NONE,NULL, NULL, NULL))
+		g_print("set %d as SlaveID\n", atoi(slave));
+
+//	g_thread_new("information update",
+//		(GThreadFunc*)update_device_with_host, agent);
+}
+>>>>>>> Stashed changes
 
 void
 on_agent_message(AgentObject* agent,
@@ -76,7 +95,6 @@ on_agent_message(AgentObject* agent,
 
 	JsonParser* parser = json_parser_new();
 	json_parser_load_from_data(parser, data, -1, NULL);
-
 	root = json_parser_get_root(parser);
 	object = json_node_get_object(root);
 
@@ -85,19 +103,23 @@ on_agent_message(AgentObject* agent,
 	Opcode     opcode =	json_object_get_int_member(object, "opcode");
 	gchar*	   data_string =   json_object_get_string_member(object, "data");
 
-	if (data_string != NULL)
-	{
-		JsonParser* parser = json_parser_new();
-		json_parser_load_from_data(parser, data_string, -1, NULL);
 
-		JsonNode* root = json_parser_get_root(parser);
-		json_data = json_node_get_object(root);
+	JsonParser* parser_ = json_parser_new();
+	json_parser_load_from_data(parser_, data_string, -1, NULL);
+
+	JsonNode* root_ = json_parser_get_root(parser);
+
+	if (JSON_NODE_TYPE(root_) == JSON_NODE_OBJECT)
+	{
+
+		json_data = json_node_get_object(root_);
 	}
 
 	if (to == AGENT_MODULE)
 	{
 		if (from == HOST_MODULE)
 		{
+<<<<<<< Updated upstream
 			switch (opcode)
 			{
 			case  SLAVE_ACCEPTED:
@@ -121,6 +143,36 @@ on_agent_message(AgentObject* agent,
 				}
 
 			case COMMAND_LINE_FORWARD:
+=======
+			if (opcode == SLAVE_ACCEPTED)
+			{
+				setup_slave_device(agent, data_string);
+			}
+			else if (opcode == SESSION_INITIALIZE)
+			{
+				GFile* handle = agent_get_session(agent);
+				GFileOutputStream* stream = 
+					g_file_append_to(handle, G_FILE_CREATE_NONE, NULL, NULL);
+
+				g_output_stream_write(stream, data_string, strlen(data_string), NULL, NULL);
+
+				agent_session_initialize(agent);
+			}
+			else if (opcode = NEW_COMMAND_LINE_SESSION)
+			{
+				create_new_cmd_process(
+					json_object_get_int_member(json_data, "Order"), agent,
+					json_object_get_string_member(json_data, "CommandLine"));
+			}
+			else if (opcode = END_COMMAND_LINE_SESSION)
+			{
+				close_child_process(
+					agent_get_child_process(agent,
+					json_object_get_int_member(json_data, "Order")));
+			}
+			else if (opcode == COMMAND_LINE_FORWARD)
+			{
+>>>>>>> Stashed changes
 				agent_send_command_line(agent,
 					json_object_get_int_member(json_data, "Order"),
 					json_object_get_int_member(json_data, "Command"));

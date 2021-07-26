@@ -34,6 +34,9 @@
 #define EXIT_CODE_REPORT						26
 #define ERROR_REPORT							27
 
+#define NEW_COMMAND_LINE_SESSION                19
+#define END_COMMAND_LINE_SESSION                20
+
 /*module*/
 #define	CORE_MODULE								0
 #define	CLIENT_MODULE							1

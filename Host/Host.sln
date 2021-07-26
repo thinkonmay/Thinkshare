@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conductor", "Conductor\Conductor.csproj", "{2AFD993A-3DE6-487B-A15B-0D52013E356F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Signalling", "Signalling\Signalling.csproj", "{00C0924C-717C-42EE-B3D1-3B7970D5ED4B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlaveManager", "SlaveManager\SlaveManager\SlaveManager.csproj", "{0CAD9E3E-CDA6-4A4A-9BC3-1AAD7A6A602D}"
@@ -21,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2AFD993A-3DE6-487B-A15B-0D52013E356F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2AFD993A-3DE6-487B-A15B-0D52013E356F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2AFD993A-3DE6-487B-A15B-0D52013E356F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2AFD993A-3DE6-487B-A15B-0D52013E356F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{00C0924C-717C-42EE-B3D1-3B7970D5ED4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{00C0924C-717C-42EE-B3D1-3B7970D5ED4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00C0924C-717C-42EE-B3D1-3B7970D5ED4B}.Release|Any CPU.ActiveCfg = Release|Any CPU

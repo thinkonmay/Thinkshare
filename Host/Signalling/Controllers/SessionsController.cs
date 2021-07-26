@@ -19,10 +19,17 @@ namespace Signalling.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IWebSocketHandler _wsHandler;
 
+<<<<<<< Updated upstream
         public SessionsController(ApplicationDbContext context, IWebSocketHandler wsHandler)
+=======
+        private readonly ISessionQueue Queue;
+
+        public SessionsController(IWebSocketHandler wsHandler, ISessionQueue queue)
+>>>>>>> Stashed changes
         {
             _context = context;
             _wsHandler = wsHandler;
+            Queue = queue;
         }
 
         // POST: ManageSessions/Create
@@ -48,8 +55,18 @@ namespace Signalling.Controllers
         {
             if (req == null)
             {
+<<<<<<< Updated upstream
                 return NotFound();
             }
+=======
+                var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                Console.WriteLine($"Accepted connection '{context.Connection.Id}'");
+                Task t = _wsHandler.Handle(webSocket);
+
+                t.Wait();
+
+                await _wsHandler.Close(webSocket);
+>>>>>>> Stashed changes
 
             var session = await _context.Sessions.
                 FirstOrDefaultAsync(o => o.ClientId == req.ClientId && o.SlaveId == req.SlaveId);

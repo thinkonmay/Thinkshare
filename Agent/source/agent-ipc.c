@@ -209,6 +209,7 @@ session_terminate(AgentObject* agent)
 gboolean
 session_initialize(AgentObject* object)
 {
+<<<<<<< Updated upstream
 	IPC* ipc = agent_get_ipc(object);
 
 	PROCESS_INFORMATION pi;
@@ -253,11 +254,18 @@ session_initialize(AgentObject* object)
 	}
 	else
 		return TRUE;
+=======
+    ChildProcess* session_core = create_new_child_process("C:\\Windows\\System32\\SessionCore.exe", 0,NULL,
+        (ChildHandleFunc)handle_session_core_function, object);
+    ChildProcess* child_process_o = agent_get_child_process(object, 0);
+    child_process_o = session_core;
+>>>>>>> Stashed changes
 }
 
 gboolean
 send_message_to_core(AgentObject* self, gchar* buffer)
 {
+<<<<<<< Updated upstream
     IPC* ipc = agent_get_ipc(self);
 
     DWORD written;
@@ -293,4 +301,7 @@ initialize_ipc()
     IPC* ipc = malloc(sizeof(IPC));
 
     return ipc;
+=======
+    send_message_to_child_process(agent_get_child_process(self,0),buffer,strlen(buffer)*sizeof(gchar));
+>>>>>>> Stashed changes
 }

@@ -2,6 +2,7 @@
 #include <tchar.h>
 #include <json-glib/json-glib.h>
 #include <agent-object.h>
+#include <agent-cmd.h>
 
 #include <sysinfoapi.h>
 #include <agent-message.h>
@@ -46,7 +47,24 @@ struct _DeviceState
 	gint* ram_usage;
 };
 
-DeviceInformation*
+
+
+
+
+
+
+
+
+
+
+static DeviceState*
+get_device_state();
+
+JsonObject*
+track_device();
+
+
+static DeviceInformation*
 get_device_information() 
 {
 
@@ -91,11 +109,72 @@ get_device_information()
 
 	device_info->gpu = &adapters->Description;
 
+<<<<<<< Updated upstream
 	return device_info;
+=======
+
+
+	*/
+>>>>>>> Stashed changes
 };
 
+
+/*Message*
+get_json_message_from_device_information(DeviceInformation* infor)
+{
+	JsonObject* information = json_object_new();
+
+	json_object_set_string_member(information,	"CPU", infor->cpu);
+	json_object_set_string_member(information,	"GPU", infor->gpu);
+	json_object_set_string_member(information,	"OS", infor->OS);
+	json_object_set_int_member(information,		"RAM", infor->ram_capacity);
+	json_object_set_int_member(information, "ID", infor->id);
+	return information;
+}*/
+
+/// <summary>
+/// update device thread function,
+/// invoke during agent object initialization
+/// </summary>
+/// <param name="data"></param>
+/// <returns></returns>
+gpointer
+update_device(AgentObject* agent)
+{
+	while (TRUE)
+	{
+		JsonObject* device = track_device();
+		json_object_set_int_member(device, "Time", g_get_real_time());
+
+		JsonNode* root;
+		JsonGenerator* generator;
+		gchar* text;
+
+		/* Make it the root node */
+		root = json_node_init_object(json_node_alloc(), device);
+		generator = json_generator_new();
+		json_generator_set_root(generator, root);
+		text = json_generator_to_data(generator, NULL);
+
+		strcat(text, "\n");
+
+		GFile* file = agent_get_device_log(agent);
+
+		GFileOutputStream* stream = g_file_append_to(file, G_FILE_CREATE_NONE, NULL, NULL);
+		g_output_stream_write(stream, text, strlen(text), NULL, NULL);
+
+		Sleep(1000);
+	}
+	return NULL;
+}
+
+
 //Function to Update get device state;
+<<<<<<< Updated upstream
 DeviceState* 
+=======
+static DeviceState* 
+>>>>>>> Stashed changes
 get_device_state() 
 {
 	DeviceState* device_state = malloc(sizeof(DeviceState));
@@ -116,6 +195,7 @@ get_device_state()
 	return device_state;
 };
 
+<<<<<<< Updated upstream
 Message*
 get_json_message_from_device(AgentObject* object)
 {
@@ -125,10 +205,19 @@ get_json_message_from_device(AgentObject* object)
 	DeviceInformation* infor =	agent_get_device_information(object);
 	DeviceState* state =		agent_get_device_state(object);
 	ReleaseMutex(*handle);
+=======
+
+JsonObject*
+track_device()
+{
+	DeviceInformation* infor =	get_device_information();
+	DeviceState* state =		get_device_state();
+>>>>>>> Stashed changes
 
 	JsonObject* information = json_object_new();
 	JsonObject* device_state = json_object_new();
 
+<<<<<<< Updated upstream
 	json_object_set_string_member(information, "CPU", *infor->cpu);
 	json_object_set_string_member(information, "GPU", *infor->gpu);
 	json_object_set_string_member(information, "OS", *infor->OS);
@@ -138,11 +227,23 @@ get_json_message_from_device(AgentObject* object)
 	json_object_set_int_member(device_state, "CPUusage", *state->cpu_usage);
 	json_object_set_int_member(device_state, "GPUusage", *state->gpu_usage);
 	json_object_set_int_member(device_state, "RAMusage", *state->ram_usage);
+=======
+	json_object_set_string_member(information, "CPU", infor->cpu);
+	json_object_set_string_member(information, "GPU", infor->gpu);
+	json_object_set_string_member(information, "OS", infor->OS);
+	json_object_set_int_member(information, "RAMcapacity", infor->ram_capacity);
+	json_object_set_int_member(information, "ID", infor->id);
+
+	json_object_set_int_member(device_state, "CPUusage", state->cpu_usage);
+	json_object_set_int_member(device_state, "GPUusage", state->gpu_usage);
+	json_object_set_int_member(device_state, "RAMusage", state->ram_usage);
+>>>>>>> Stashed changes
 
 	Message* message;
 
 	json_object_set_object_member(message, "DeviceState", device_state);
 	json_object_set_object_member(message, "DeviceInformation", information);
+<<<<<<< Updated upstream
 
 
 	return message;
@@ -166,6 +267,13 @@ get_json_message_from_device_information(DeviceInformation* infor)
 
 	return message;
 }
+=======
+	return message;
+}
+
+
+
+>>>>>>> Stashed changes
 
 
 //Define function to calculate CPU Load

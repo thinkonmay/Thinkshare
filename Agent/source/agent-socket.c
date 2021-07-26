@@ -191,12 +191,18 @@ update_device_with_host(gpointer data)
 		Sleep(1000);
 	}
     return NULL;
+<<<<<<< Updated upstream
 }
+=======
+} 
+*/
+>>>>>>> Stashed changes
 
 
 gboolean
-register_with_host(AgentObject* self)
+register_with_host(AgentObject* agent)
 {
+<<<<<<< Updated upstream
     DeviceInformation* infor = agent_get_device_information(self);
     JsonObject* json;
 
@@ -211,6 +217,24 @@ register_with_host(AgentObject* self)
 
     AgentState* open = transition_to_on_open_state();
     agent_set_state(self, open);
+=======
+    GFile* handle = agent_get_slave_id(agent);
+
+    GBytes* bytes = g_file_load_bytes(handle,NULL,NULL,NULL);
+
+    gchar* buffer = g_bytes_get_data(bytes, NULL);
+
+    JsonObject* pkg = json_object_new();
+    json_object_set_int_member(pkg, "SlaveID", atoi(buffer));
+
+    g_print("register with host with ID %s \n", buffer);
+
+    Message* package =
+        message_init(AGENT_MODULE, HOST_MODULE, 
+            REGISTER_SLAVE, pkg);
+
+    agent_send_message(agent, package); 
+>>>>>>> Stashed changes
     return TRUE;     
 }
 
