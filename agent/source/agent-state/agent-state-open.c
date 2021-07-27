@@ -15,9 +15,6 @@ on_open_session_initialize(AgentObject* agent)
 }
 
 
-<<<<<<< Updated upstream
-AgentState* 
-=======
 static void
 open_state_send_message_to_host(AgentObject* agent,
     gchar* message)
@@ -47,7 +44,6 @@ open_state_send_message_to_host(AgentObject* agent,
 
 
 AgentState*
->>>>>>> Stashed changes
 transition_to_on_open_state(void)
 {
     static AgentState open_state;

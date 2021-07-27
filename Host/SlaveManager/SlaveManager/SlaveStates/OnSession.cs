@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 using SharedHost.Models;
 using Newtonsoft.Json;
 
-<<<<<<< Updated upstream:Host/SlaveManager/SlaveManager/Slave/OnSession.cs
-namespace SharedHost.Slave
-=======
 namespace SlaveManager.SlaveStates
->>>>>>> Stashed changes:Host/SlaveManager/SlaveManager/SlaveStates/OnSession.cs
 {
     public class OnSession : SlaveState
     {

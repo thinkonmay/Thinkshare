@@ -8,12 +8,7 @@ namespace SharedHost.Models
     public class Command
     {
         public int Order { get; set; }
-<<<<<<< Updated upstream
-
-        public string Commnad { get; set; }
-=======
         public string CommandLine { get; set; }
->>>>>>> Stashed changes
     }
 
     public class CommandResult : Command

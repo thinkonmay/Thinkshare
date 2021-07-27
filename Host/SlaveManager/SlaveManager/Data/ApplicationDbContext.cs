@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream:Host/Conductor/Data/ApplicationDbContext.cs
-﻿using Host.Models;
-=======
 ﻿using SlaveManager.Models;
->>>>>>> Stashed changes:Host/SlaveManager/SlaveManager/Data/ApplicationDbContext.cs
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,8 +19,6 @@ namespace SlaveManager.Data
             base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseLazyLoadingProxies();
         }
-<<<<<<< Updated upstream:Host/Conductor/Data/ApplicationDbContext.cs
-=======
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -37,6 +31,5 @@ namespace SlaveManager.Data
         public DbSet<Slave> Devices { get; set; }
         public DbSet<Telemetry> TelemetryLogs { get; set; }
         public DbSet<CommandLog> CommandLogs { get; set; }
->>>>>>> Stashed changes:Host/SlaveManager/SlaveManager/Data/ApplicationDbContext.cs
     }
 }

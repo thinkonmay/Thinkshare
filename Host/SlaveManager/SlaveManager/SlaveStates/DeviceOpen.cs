@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using SharedHost.Models;
 
-<<<<<<< Updated upstream:Host/SlaveManager/SlaveManager/Slave/DeviceOpen.cs
-namespace SharedHost.Slave
-=======
 namespace SlaveManager.SlaveStates
->>>>>>> Stashed changes:Host/SlaveManager/SlaveManager/SlaveStates/DeviceOpen.cs
 {
     public class DeviceOpen : SlaveState
     {

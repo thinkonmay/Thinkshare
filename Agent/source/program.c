@@ -7,10 +7,6 @@ const gchar* HOST_URL  = "http://google.com";
 int 
 main(void)
 {
-<<<<<<< Updated upstream
-    AgentObject* object = agent_new(HOST_URL); 
-    return 0;
-=======
     AgentObject* agent;
 
 
@@ -52,5 +48,4 @@ main(void)
     
     agent_new(url);
     return 1;
->>>>>>> Stashed changes
 }

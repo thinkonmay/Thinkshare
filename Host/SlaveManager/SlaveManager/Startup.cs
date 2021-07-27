@@ -7,13 +7,6 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Reflection;
-<<<<<<< Updated upstream
-using System.Threading.Tasks;
-using SharedHost.Interfaces;
-using SharedHost.Services;
-
-namespace SharedHost
-=======
 using SlaveManager.Interfaces;
 using SlaveManager.Services;
 using SlaveManager.Administration;
@@ -22,7 +15,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace SlaveManager
->>>>>>> Stashed changes
 {
     public class Startup
     {
@@ -36,10 +28,6 @@ namespace SlaveManager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-<<<<<<< Updated upstream
-
-            services.AddControllers();
-=======
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -48,7 +36,6 @@ namespace SlaveManager
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
 
->>>>>>> Stashed changes
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SlaveManager", Version = 

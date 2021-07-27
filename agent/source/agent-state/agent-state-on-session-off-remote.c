@@ -16,9 +16,6 @@ off_remote_session_terminate(AgentObject* agent)
     agent_set_state(agent, open_state);
 }
 
-<<<<<<< Updated upstream
-void
-=======
 static void
 off_remote_send_message_to_host(AgentObject* agent,
     gchar* message)
@@ -47,7 +44,6 @@ off_remote_send_message_to_host(AgentObject* agent,
 }
 
 static void
->>>>>>> Stashed changes
 off_remote_remote_control_reconnect(AgentObject* agent)
 {
     session_initialize(agent);

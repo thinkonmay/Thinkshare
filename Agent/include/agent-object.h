@@ -146,12 +146,9 @@ gboolean										agent_register_settled				(AgentObject* self);
 /// <returns></returns>
 HANDLE*											agent_get_mutex_handle_ptr			(AgentObject* self);
 
-<<<<<<< Updated upstream
-=======
 GFile*											agent_get_slave_id					(AgentObject* self);
 
 GFile*											agent_get_device_log				(AgentObject* self);
->>>>>>> Stashed changes
 
 /// <summary>
 /// 
@@ -173,18 +170,7 @@ IPC*											agent_get_ipc						(AgentObject* self);
 Socket*											agent_get_socket					(AgentObject* self);
 
 
-<<<<<<< Updated upstream
-DeviceInformation*								agent_get_device_information		(AgentObject* self);
-
-DeviceState*									agent_get_device_state				(AgentObject* self);
-
-Session*										agent_get_session					(AgentObject* self);
-
-void											agent_set_session					(AgentObject* self,
-																					 Session* session);
-=======
 GFile*											agent_get_session					(AgentObject* self);
->>>>>>> Stashed changes
 
 
 AgentState*										agent_get_state						(AgentObject* self);
@@ -192,9 +178,6 @@ AgentState*										agent_get_state						(AgentObject* self);
 void											agent_set_state						(AgentObject* self,
 																					 AgentState* state);
 
-<<<<<<< Updated upstream
-CommandLine**									agent_get_command_line_array		(AgentObject* self);
-=======
 ChildProcess*									agent_get_child_process				(AgentObject* self, 
 																					 gint position);
 
@@ -203,7 +186,6 @@ void											agent_set_child_process				(AgentObject* self,
 																					 ChildProcess* process);
 
 GMainLoop*										agent_get_main_loop					(AgentObject* self);
->>>>>>> Stashed changes
 
 
 /*END get-set function for agent object*/

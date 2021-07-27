@@ -32,13 +32,8 @@ namespace Signalling
                 options.UseSqlServer(Configuration.GetConnectionString("SqlServerConn"));
             });
 
-<<<<<<< Updated upstream
-            services.AddSingleton<IWebSocketHandler, IWebSocketHandler>();
-
-=======
             services.AddSingleton<ISessionQueue, SessionQueue>();
             services.AddTransient<IWebSocketHandler, WebSocketHandler>();
->>>>>>> Stashed changes
             services.AddMvc();
         }
 

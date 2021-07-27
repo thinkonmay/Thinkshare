@@ -14,22 +14,6 @@
 
 #pragma comment(lib, "d3d9.lib")
 
-<<<<<<< Updated upstream
-/// <summary>
-/// get device information directly from window,
-/// wrapped by device state update thread
-/// </summary>
-/// <returns></returns>
-DeviceInformation* 				get_device_information						(void);
-/// <summary>
-/// get device state directly from window,
-/// wrapped by device state update thread
-/// </summary>
-/// <returns></returns>
-DeviceState* 					get_device_state							(void);
-=======
-
->>>>>>> Stashed changes
 
 /// <summary>
 /// update device thread function,

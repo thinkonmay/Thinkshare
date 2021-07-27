@@ -4,16 +4,12 @@ using System.Text;
 
 namespace SharedHost.Models
 {
-<<<<<<< Updated upstream
-    class SystemSession
-=======
     /// <summary>
     /// information of a session that conductor
     /// store inside database,
     /// use for maintainance and management 
     /// </summary>
     public class SystemSession
->>>>>>> Stashed changes
     {
         public int ClientID { get; set; }
 

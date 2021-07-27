@@ -5,11 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SharedHost.Models;
 
-<<<<<<< Updated upstream:Host/SlaveManager/SlaveManager/Slave/DeviceDisconnected.cs
-namespace SharedHost.Slave
-=======
 namespace SlaveManager.SlaveStates
->>>>>>> Stashed changes:Host/SlaveManager/SlaveManager/SlaveStates/DeviceDisconnected.cs
 {
     public class DeviceDisconnected : SlaveState
     {

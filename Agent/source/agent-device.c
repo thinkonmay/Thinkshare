@@ -109,13 +109,9 @@ get_device_information()
 
 	device_info->gpu = &adapters->Description;
 
-<<<<<<< Updated upstream
-	return device_info;
-=======
 
 
 	*/
->>>>>>> Stashed changes
 };
 
 
@@ -170,11 +166,7 @@ update_device(AgentObject* agent)
 
 
 //Function to Update get device state;
-<<<<<<< Updated upstream
-DeviceState* 
-=======
 static DeviceState* 
->>>>>>> Stashed changes
 get_device_state() 
 {
 	DeviceState* device_state = malloc(sizeof(DeviceState));
@@ -195,39 +187,16 @@ get_device_state()
 	return device_state;
 };
 
-<<<<<<< Updated upstream
-Message*
-get_json_message_from_device(AgentObject* object)
-{
-	HANDLE* handle = agent_get_mutex_handle_ptr(object);
-
-	WaitForSingleObject(*handle,INFINITE);
-	DeviceInformation* infor =	agent_get_device_information(object);
-	DeviceState* state =		agent_get_device_state(object);
-	ReleaseMutex(*handle);
-=======
 
 JsonObject*
 track_device()
 {
 	DeviceInformation* infor =	get_device_information();
 	DeviceState* state =		get_device_state();
->>>>>>> Stashed changes
 
 	JsonObject* information = json_object_new();
 	JsonObject* device_state = json_object_new();
 
-<<<<<<< Updated upstream
-	json_object_set_string_member(information, "CPU", *infor->cpu);
-	json_object_set_string_member(information, "GPU", *infor->gpu);
-	json_object_set_string_member(information, "OS", *infor->OS);
-	json_object_set_int_member(information, "RAMcapacity", *infor->ram_capacity);
-	json_object_set_int_member(information, "ID", infor->id);
-
-	json_object_set_int_member(device_state, "CPUusage", *state->cpu_usage);
-	json_object_set_int_member(device_state, "GPUusage", *state->gpu_usage);
-	json_object_set_int_member(device_state, "RAMusage", *state->ram_usage);
-=======
 	json_object_set_string_member(information, "CPU", infor->cpu);
 	json_object_set_string_member(information, "GPU", infor->gpu);
 	json_object_set_string_member(information, "OS", infor->OS);
@@ -237,43 +206,16 @@ track_device()
 	json_object_set_int_member(device_state, "CPUusage", state->cpu_usage);
 	json_object_set_int_member(device_state, "GPUusage", state->gpu_usage);
 	json_object_set_int_member(device_state, "RAMusage", state->ram_usage);
->>>>>>> Stashed changes
 
 	Message* message;
 
 	json_object_set_object_member(message, "DeviceState", device_state);
 	json_object_set_object_member(message, "DeviceInformation", information);
-<<<<<<< Updated upstream
-
-
 	return message;
 }
 
 
 
-Message*
-get_json_message_from_device_information(DeviceInformation* infor)
-{
-
-	JsonObject* information;
-
-	json_object_set_string_member(information,	"CPU", infor->cpu);
-	json_object_set_string_member(information,	"GPU", infor->gpu);
-	json_object_set_string_member(information,	"OS", infor->OS);
-	json_object_set_int_member(information,		"RAM", infor->ram_capacity);
-
-	JsonObject* message;
-	json_object_set_object_member(message, "DeviceInformation", information);
-
-	return message;
-}
-=======
-	return message;
-}
-
-
-
->>>>>>> Stashed changes
 
 
 //Define function to calculate CPU Load

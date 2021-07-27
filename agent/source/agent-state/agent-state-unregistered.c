@@ -54,12 +54,8 @@ transition_to_unregistered_state(void)
 
         unregistered_state.connect_to_host = unregistered_connect_to_host;
         unregistered_state.register_to_host = unregistered_register_with_host;
-<<<<<<< Updated upstream
-        unregistered_state.send_message_to_host = send_message_to_host;
-=======
         unregistered_state.send_message_to_host = unregistered_send_message_to_host;
         unregistered_state.session_terminate = unregistered_connect_to_host;
->>>>>>> Stashed changes
 
         initialized = TRUE; 
     }

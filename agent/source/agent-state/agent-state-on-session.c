@@ -30,8 +30,6 @@ on_session_remote_control_disconnect(AgentObject* agent)
     agent_set_state(agent,off_remote_state);
 }
 
-<<<<<<< Updated upstream
-=======
 static void
 on_session_send_message_to_host(AgentObject* agent,
     gchar* message)
@@ -59,7 +57,6 @@ on_session_send_message_to_host(AgentObject* agent,
         get_string_from_json_object(object));
 }
 
->>>>>>> Stashed changes
 
 
 AgentState* 

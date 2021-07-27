@@ -209,99 +209,14 @@ session_terminate(AgentObject* agent)
 gboolean
 session_initialize(AgentObject* object)
 {
-<<<<<<< Updated upstream
-	IPC* ipc = agent_get_ipc(object);
-
-	PROCESS_INFORMATION pi;
-	ZeroMemory(&pi, sizeof(pi));
-
-	const gchar* null = "\0";
-
-
-	/*concantenate command line string by using memcpy*/
-	gchar* cmd;
-	cmd = (gchar*)malloc(sizeof(gchar) * (strlen(SESSION_CORE_NAME) + 1));
-
-	memcpy(cmd, SESSION_CORE_NAME, strlen(SESSION_CORE_NAME));
-	memcpy(cmd + strlen(SESSION_CORE_NAME), null, 1);
-
-
-    ChildPipe* pipe = initialize_handle(object);
-    if (pipe == NULL)
-    {
-        g_printerr("cannot create std pipe");
-        return FALSE;
-    }
-
-    /*setup startup infor(included standard input and output)*/
-    STARTUPINFO startup_infor;
-    startup_infor.cb = sizeof(STARTUPINFO);
-    startup_infor.dwFlags = STARTF_USESTDHANDLES;
-    startup_infor.hStdInput = pipe->core_in;
-    startup_infor.hStdOutput = pipe->core_out;
-
-
-    ipc->ipc_thread =
-        g_thread_new("ipc-thread", (GThreadFunc)handle_thread, object);
-
-	if (CreateProcess(SESSION_CORE_NAME, cmd, NULL, NULL,
-		TRUE, CREATE_NEW_CONSOLE,
-		NULL, NULL, &startup_infor, &pi) == 0)
-	{
-		DWORD drError = GetLastError();
-		g_print("fail to create process %s", cmd);
-		return FALSE;
-	}
-	else
-		return TRUE;
-=======
     ChildProcess* session_core = create_new_child_process("C:\\Windows\\System32\\SessionCore.exe", 0,NULL,
         (ChildHandleFunc)handle_session_core_function, object);
     ChildProcess* child_process_o = agent_get_child_process(object, 0);
     child_process_o = session_core;
->>>>>>> Stashed changes
 }
 
 gboolean
 send_message_to_core(AgentObject* self, gchar* buffer)
 {
-<<<<<<< Updated upstream
-    IPC* ipc = agent_get_ipc(self);
-
-    DWORD written;
-    gboolean success = FALSE;
-    while (TRUE)
-    {
-        success = WriteFile(ipc->core_in, buffer, sizeof(buffer),&written,NULL );
-        if (success || written == sizeof(buffer))
-            return TRUE;
-    }
-}
-
-/*
-gboolean
-send_message_to_loader(AgentObject* self, gchar* buffer)
-{
-    IPC* ipc = agent_get_ipc(self);
-
-    DWORD written;
-    gboolean success = FALSE;
-    while (TRUE)
-    {
-        success = WriteFile(ipc->loader_in, buffer, sizeof(buffer), &written, NULL);
-        if (success || written == sizeof(buffer))
-            return TRUE;
-    }
-}
-*/
-
-IPC*
-initialize_ipc()
-{
-    IPC* ipc = malloc(sizeof(IPC));
-
-    return ipc;
-=======
     send_message_to_child_process(agent_get_child_process(self,0),buffer,strlen(buffer)*sizeof(gchar));
->>>>>>> Stashed changes
 }

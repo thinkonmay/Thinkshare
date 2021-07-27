@@ -10,10 +10,6 @@ using System.Threading;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 
-<<<<<<< Updated upstream:Host/SlaveManager/SlaveManager/Slave/SlaveDevice.cs
-namespace SharedHost.Slave
-{
-=======
 namespace SlaveManager.SlaveStates
 {
     public interface ISlaveDevice
@@ -34,7 +30,6 @@ namespace SlaveManager.SlaveStates
 
         public Task RejectSlave();
     }
->>>>>>> Stashed changes:Host/SlaveManager/SlaveManager/SlaveStates/SlaveDevice.cs
     /// <summary>
     /// 
     /// </summary>

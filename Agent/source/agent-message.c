@@ -65,9 +65,6 @@ send_message(AgentObject* self,
 	}
 }
 
-<<<<<<< Updated upstream
-
-=======
 static void
 setup_slave_device(AgentObject* agent, gchar* slave)
 {
@@ -83,7 +80,6 @@ setup_slave_device(AgentObject* agent, gchar* slave)
 //	g_thread_new("information update",
 //		(GThreadFunc*)update_device_with_host, agent);
 }
->>>>>>> Stashed changes
 
 void
 on_agent_message(AgentObject* agent,
@@ -119,31 +115,6 @@ on_agent_message(AgentObject* agent,
 	{
 		if (from == HOST_MODULE)
 		{
-<<<<<<< Updated upstream
-			switch (opcode)
-			{
-			case  SLAVE_ACCEPTED:
-				{
-					AgentState* open_state = transition_to_on_open_state();
-					agent_set_state(agent, open_state);
-
-					GError** err;
-					g_thread_try_new("information update",
-						(GThreadFunc*)update_device_with_host, agent, err);
-
-					if (err != NULL)
-						g_printerr("failed to create thread");
-				}
-			case SESSION_INITIALIZE:
-				{
-					Session* session = json_data;
-					agent_set_session(agent, session);
-
-					agent_session_initialize(agent);
-				}
-
-			case COMMAND_LINE_FORWARD:
-=======
 			if (opcode == SLAVE_ACCEPTED)
 			{
 				setup_slave_device(agent, data_string);
@@ -172,7 +143,6 @@ on_agent_message(AgentObject* agent,
 			}
 			else if (opcode == COMMAND_LINE_FORWARD)
 			{
->>>>>>> Stashed changes
 				agent_send_command_line(agent,
 					json_object_get_int_member(json_data, "Order"),
 					json_object_get_int_member(json_data, "Command"));
