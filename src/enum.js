@@ -27,7 +27,7 @@ const Opcode =
     END_COMMAND_LINE_SESSION :16,    
 
 
-}
+}// Use for control data channel
 
 const HidOpcode = 
 {
@@ -43,7 +43,7 @@ const HidOpcode =
     DISPLAY_POINTER:8,
 
     CLIPBOARD:9
-}
+} // Use for HID datachannel
 
 const Module =
 {

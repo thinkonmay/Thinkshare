@@ -22,19 +22,19 @@ handle_thread(gpointer data)
 {
     SessionCore* core = (SessionCore*)data;
     IPC* ipc = session_core_get_ipc(core);
+    gchar buffer[BUFFER_SIZE];
+    ZeroMemory(&buffer, BUFFER_SIZE);
 
     while (TRUE)
     {
-         DWORD dwread, dwrite;
-         gchar buffer[BUFFER_SIZE];
+         DWORD dwread = 0;
          gboolean success = FALSE;
          while (TRUE)
          {
              HANDLE input = ipc->input_pipe;
              success = ReadFile(input, buffer, BUFFER_SIZE, &dwread, NULL);
-             if (!success || dwread == 0) goto send;
+             if (success && dwread > 0) goto send;
          }
-
     send:
          session_core_on_message(core, buffer);        
     }
@@ -64,6 +64,6 @@ send_message_to_agent(SessionCore* core,
      
     gchar* data = g_strndup(*buffer, size);
 
-    //WriteFile(ipc->output_pipe, &data, size, NULL, NULL);
-    
+    WriteFile(ipc->output_pipe, &data, size, NULL, NULL);
+    g_free(&data);    
 }

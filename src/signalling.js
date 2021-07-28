@@ -107,6 +107,7 @@ class Signalling {
     _setStatus(message) {
         if (this.onstatus !== null) {
             this.onstatus(message);
+            app.debugEntries.push("Signalling State: " + message);
         }
     }
 
@@ -118,6 +119,7 @@ class Signalling {
     _setDebug(message) {
         if (this.ondebug !== null) {
             this.ondebug(message);
+            app.debugEntries.push("Signalling Debug State: " + message);
         }
     }
 
@@ -130,6 +132,7 @@ class Signalling {
     _setError(message) {
         if (this.onerror !== null) {
             this.onerror(message);
+            app.debugEntries.push("Signalling Error State: " + message);
         }
     }
 
@@ -176,8 +179,10 @@ class Signalling {
     _onServerOpen() 
     {
         this.state = 'connected';
+        app.debugEntries.push("Signalling Server Open Connected");
         this.SignallingSend("CLIENTREQUEST",null)            
         console.log("Registering with server, CLientID: " + this.SessionClientID);
+        app.debugEntries.push("Registering with server, CLientID: " + this.SessionClientID);
     }
 
     SignallingSend(request_type, content)
@@ -224,8 +229,11 @@ class Signalling {
         } catch (e) {
             if (e instanceof SyntaxError) {
                 this.ondebug("Error parsing incoming JSON: " + event.data);
+            app.debugEntries.push("Error parsing incoming JSON: " + event.data);
+                
             } else {
                 this.ondebug("Unknown error parsing response: " + event.data);
+                app.debugEntries.push("Error parsing incoming JSON: " + event.data);
             }
             return;
         }
@@ -234,6 +242,7 @@ class Signalling {
         {
             this.ws_conn.close();
             print("session rejected");
+            app.debugEntries.push("Session Rejected")
         }
 
         switch(message_json.RequestType)
@@ -257,6 +266,7 @@ class Signalling {
             default:
             {
                 print("unknown message", event.data);
+                app.debugEntries.push("Unknown message" + event.data);
                 break;
             } 
         }

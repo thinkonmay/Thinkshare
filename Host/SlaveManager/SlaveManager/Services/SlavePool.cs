@@ -13,9 +13,12 @@ namespace SlaveManager.Services
 
         public bool AddSlaveId(int slaveid);
 
+
+        public string GetSlaveState(int ID);
+
         public List<Tuple<int, string>> GetSystemSlaveState();
 
-        public int AddSlaveDevice(SlaveDevice slave);
+        //public int AddSlaveDevice(SlaveDevice slave);
 
         public bool AddSlaveDeviceWithKey(int key, SlaveDevice slave);
 
@@ -41,27 +44,9 @@ namespace SlaveManager.Services
     {
         ConcurrentDictionary<int, SlaveDevice> SlaveList;
 
-        private readonly SlaveSession defaultSession;
-
         public SlavePool ()
         {
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
-
-
-            defaultSession = new SlaveSession();
-            defaultSession.SessionSlaveID = 2002;
-            defaultSession.SignallingUrl = "";
-            defaultSession.ClientOffer = false;
-            defaultSession.StunServer = "https://stun.l.google.com:19302";
-
-            defaultSession.QoE = new QoE();
-            defaultSession.QoE.AudioCodec = Codec.CODEC_NVH264;
-            defaultSession.QoE.VideoCodec = Codec.CODEC_OPUS_ENC;
-            defaultSession.QoE.ScreenHeight = 1440;
-            defaultSession.QoE.ScreenWidth = 2560;
-            defaultSession.QoE.Framerate = 60;
-            defaultSession.QoE.Bitrate = 1000000;
-            defaultSession.QoE.QoEMode = QoEMode.DEFAULT;
         }
         
 
@@ -82,6 +67,11 @@ namespace SlaveManager.Services
             slave.ChangeState(disconnected);
             return true;
         }
+        
+        public string GetSlaveState(int ID)
+        {
+            return SlaveList.Where(o => o.Key == ID).FirstOrDefault().Value.GetSlaveState();
+        }
 
         public List<Tuple<int, string>> GetSystemSlaveState()
         {
@@ -95,7 +85,6 @@ namespace SlaveManager.Services
                     list.Add(new Tuple<int, string>(i.Key, i.Value.GetSlaveState()));
                 }
             }
-            list.Add(new Tuple<int, string>(0, "mock"));
             return list;
         }
 
@@ -116,6 +105,7 @@ namespace SlaveManager.Services
         {
             SlaveDevice slave;
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
+            if (this.GetSlaveState(slaveid) != "On Session") { return false; }
 
             slave.RemoteControlDisconnect();
             return true;
@@ -125,7 +115,7 @@ namespace SlaveManager.Services
         {
             SlaveDevice slave;
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
-
+            if (this.GetSlaveState(slaveid) != "Off Remote") { return false; }
             slave.RemoteControlReconnect();
             return true;
         }
@@ -144,18 +134,9 @@ namespace SlaveManager.Services
             SlaveDevice slave;
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
 
-            if(session == null)
-            {
-                if(slave == null)
-                {
-                    return false;
-                }
-                slave.SessionInitialize(defaultSession);
-            }
-            else
-            {
-                slave.SessionInitialize(session);
-            }
+            if (slave.GetSlaveState() != "Device Open") { return false; }
+
+            slave.SessionInitialize(session);
             return true;
         }
 
@@ -168,6 +149,7 @@ namespace SlaveManager.Services
             return true;
         }
 
+        /*
         public int AddSlaveDevice(SlaveDevice slave)
         {
             int slave_id;
@@ -178,7 +160,7 @@ namespace SlaveManager.Services
             } while (SlaveList.Where(o => o.Key == slave_id) == null);
             SlaveList.TryAdd(slave_id, slave);
             return slave_id;
-        }
+        }*/
 
         public bool AddSlaveDeviceWithKey(int key,SlaveDevice slave)
         {

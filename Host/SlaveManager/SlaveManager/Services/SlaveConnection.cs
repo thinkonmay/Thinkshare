@@ -10,6 +10,7 @@ using System.IO;
 using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Administration;
+using SlaveManager.Models;
 
 namespace SlaveManager.Services
 {
@@ -20,11 +21,6 @@ namespace SlaveManager.Services
         public SlaveConnection(IAdmin admin)
         {
             _admin = admin;
-        }
-
-        public async Task Close(WebSocket ws)
-        {
-            await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
         }
 
         public async Task<bool> KeepReceiving(WebSocket ws)
@@ -64,10 +60,6 @@ namespace SlaveManager.Services
                                 {
                                     switch (json_message.Opcode)
                                     {
-                                        case Opcode.ERROR_REPORT:
-                                            break;
-                                        case Opcode.EXIT_CODE_REPORT:
-                                            break;
                                     }
                                 }
                             }

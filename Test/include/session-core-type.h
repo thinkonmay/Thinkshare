@@ -102,6 +102,8 @@
 #define NEW_COMMAND_LINE_SESSION                15
 #define END_COMMAND_LINE_SESSION                16
 
+#define CHANGE_MEDIA_MODE						5
+
 
 /*HID data channel opcode*/
 #define KEYBOARD                                1
@@ -109,13 +111,12 @@
 #define OTHER									3
 
 #define QOE_REPORT								4
-#define CHANGE_MEDIA_MODE						5
 
-#define CHANGE_RESOLUTION						6
-#define CHANGE_FRAMERATE						7
-#define DISPLAY_POINTER							8
+#define CHANGE_RESOLUTION						5
+#define CHANGE_FRAMERATE						6
+#define DISPLAY_POINTER							7
 
-#define CLIPBOARD								9
+#define CLIPBOARD								8
 
 
 

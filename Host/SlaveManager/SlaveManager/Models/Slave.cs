@@ -15,12 +15,15 @@ namespace SlaveManager.Models
         public int RAMcapacity { get; set; }
         public string OS { get; set; }
 
+        /*Giang please explain to me what is Telemetry*/
         public virtual ICollection<Telemetry> Telemetry { get; set; }
         public virtual ICollection<CommandLog> CommandLogs { get; set; }
     }
 
     public class Telemetry
     {
+        public int Id { get; set; }
+
         public int CPUusage;
         public int GPUusage;
         public int RAMusage;

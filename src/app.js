@@ -105,8 +105,8 @@ var app = new Vue({
 
             Clientoffer: false,
             ClientID: 456,
-            SignallingUrl =  "wss://localhost:44345/Session",
-            StunServer = "https://stun.l.google.com:19302",
+            SignallingUrl :  "wss://localhost:44383/Session",
+            StunServer : "https://stun.l.google.com:19302",
 
             // QoEMode = app.session.QoE.QoEMode,
             // AudioCodec = app.session.QoE.AudioCodec,
@@ -198,7 +198,7 @@ if (app.debug)
 // Bind vue status to connection state.
 webrtc.onconnectionstatechange = (state) => {
     app.status = state;
-
+    app.debugEntries.push("Peer Connection State: " + state);
     if (state === "connected") 
     {
         // Start watching stats.
@@ -256,7 +256,7 @@ webrtc.ondatachannelopen = () =>
 
         var message =
         {
-            "Opcode":HidOpcode.FRAMERATE_REPORT,
+            "Opcode":HidOpcode.QOE_REPORT,
             "FrameRate":app.connectionFrameRate,
             "Latency":app.connectionLatency,
             "AudioBitrate":app.audioBitRate || (parseInt(window.localStorage.getItem("audioBitRate")) || 64000),
@@ -296,6 +296,7 @@ webrtc.input.ongetstatusserverhotkey = () => {
 webrtc.input.onresizeend = () => {
     app.windowResolution = webrtc.input.getWindowResolution();
     console.log(`Window size changed: ${app.windowResolution[0]}x${app.windowResolution[1]}`);
+    app.debugEntries.push(`Window size changed: ${app.windowResolution[0]}x${app.windowResolution[1]}`);
 }
 
 webrtc.onplayvideorequired = () => {

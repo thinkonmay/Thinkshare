@@ -598,8 +598,6 @@ on_server_message(SoupWebsocketConnection* conn,
         const char* data = g_bytes_get_data(message, &size);
         /* Convert to NULL-terminated string */
         text = g_strndup(data, size);
-        strcat(text, "\n");
-        g_print(text);
         break;
     }
     default:

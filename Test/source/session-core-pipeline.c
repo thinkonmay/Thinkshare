@@ -20,6 +20,7 @@ enum
 {
     /*screen capture source*/
     DX9_SCREEN_CAPTURE_SOURCE,
+    SCREEN_CAP_QUEUE,
 
     /*preprocess before encoding*/
     CUDA_UPLOAD,
@@ -83,9 +84,6 @@ struct _Pipeline
 };
 
 
-#define STUN " stun-server=stun://stun.l.google.com:19302 "
-#define RTP_CAPS_OPUS "application/x-rtp,media=audio,encoding-name=OPUS,payload="
-#define RTP_CAPS_VP8 "application/x-rtp,media=video,encoding-name=H264,payload="
 
 Pipeline*
 pipeline_initialize(SessionCore* core)
@@ -93,26 +91,10 @@ pipeline_initialize(SessionCore* core)
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
     static Pipeline pipeline;
-    GError* error = NULL;
-    gchar* stun =          signalling_hub_get_stun_server(hub);
 
-    pipeline.pipeline =
-        gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv " 
-            STUN
-            "dx9screencapsrc ! videoconvert ! queue ! nvh264enc ! rtph264pay ! "
-            "queue ! " RTP_CAPS_VP8 "96 ! sendrecv. "
-            "audiotestsrc is-live=true wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc ! rtpopuspay ! "
-            "queue ! " RTP_CAPS_OPUS "97 ! sendrecv. ", &error);
-
-    if (error != NULL) {
-        g_printerr("Failed to parse launch: %s\n", error->message);
-        g_error_free(error);
-        return NULL;
-    }
-
-    pipeline.webrtcbin = gst_bin_get_by_name(GST_BIN(pipeline.pipeline), "sendrecv");
-    g_assert_nonnull(pipeline.webrtcbin);
-    pipeline.state = PIPELINE_NOT_READY;
+    pipeline.webrtcbin = gst_element_factory_make("webrtcbin", NULL);
+    pipeline.pipeline = gst_pipeline_new("personal cloud computing");
+    gst_bin_add(GST_BIN(pipeline.pipeline), pipeline.webrtcbin);
 
     return &pipeline;
 }
@@ -140,18 +122,73 @@ start_pipeline(SessionCore* core)
 
 
 void
-setup_element_factory_h264_media_foundation(SessionCore* core)
+setup_element_factory_h264(SessionCore* core)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
 
     pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] =    gst_element_factory_make("dx9screencapsrc", NULL);                 /*cuda upload responsible for upload memory from main memory to gpu memory*/
+    pipe->video_element[SCREEN_CAP_QUEUE] =             gst_element_factory_make("queue", NULL);
     pipe->video_element[VIDEO_CONVERT] =                gst_element_factory_make("videoconvert", NULL);                   /*convert BGR color space to I420 color space*/
-    pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION] = gst_element_factory_make("mfh264enc", NULL);
+    pipe->video_element[NVIDIA_H264_ENCODER] =          gst_element_factory_make("nvh264enc", NULL);
     pipe->video_element[RTP_H264_PAYLOAD] =             gst_element_factory_make("rtph264pay", NULL);
 
     pipe->audio_element[WASAPI_SOURCE_SOUND] =          gst_element_factory_make("wasapisrc", NULL);
     pipe->audio_element[OPUS_ENCODER] =                 gst_element_factory_make("opusenc", NULL);
     pipe->audio_element[RTP_OPUS_PAYLOAD] =             gst_element_factory_make("rtpopuspay", NULL);
+
+
+
+    pipe->state = PIPELINE_SETTING_UP_ELEMENT;
+    setup_element_cap(core);
+    setup_element_property(core);
+
+    if (!connect_element(core))
+    {
+        session_core_finalize(core, PIPELINE_ERROR);
+    }
+}
+
+#define STUN_SERVER " stun-server=stun://stun.l.google.com:19302 "
+#define RTP_CAPS_OPUS "application/x-rtp,media=audio,encoding-name=OPUS,payload="
+#define RTP_CAPS_H264 "application/x-rtp,media=video,encoding-name=H264,payload="
+#define RTP_CAPS_VP8 "application/x-rtp,media=video,encoding-name=VP9,payload="
+#define VIDEO_CONVERT_CAP "video/x-raw,media=video,format=NV12,framerate=60"
+#define SCREEN_CAPS "video/x-raw,width=2560,height=1440,framerate=60"
+
+void
+setup_element_using_parse_launch(SessionCore* core)
+{
+    Pipeline* pipe = session_core_get_pipeline(core);
+
+
+    pipe->pipeline =
+    gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
+        STUN_SERVER
+        "dx9screencapsrc name=screencap !  videoconvert! queue ! vp9enc target-bitrate=100000000 ! rtpvp9pay !"
+        "queue ! " RTP_CAPS_VP8 "96 ! sendrecv. "
+        "audiotestsrc is-live=true wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc ! rtpopuspay ! "
+        "queue ! " RTP_CAPS_OPUS "97 ! sendrecv. ", NULL);
+    /*
+    pipe->pipeline =
+        gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
+            STUN_SERVER
+            "videotestsrc is-live=true pattern=ball ! videoconvert ! queue ! vp8enc deadline=1 ! rtpvp8pay ! "
+            "queue ! " RTP_CAPS_VP8 "96 ! sendrecv. "
+            "audiotestsrc is-live=true wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc ! rtpopuspay ! "
+            "queue ! " RTP_CAPS_OPUS "97 ! sendrecv. ", &error);*/
+    
+
+    pipe->webrtcbin = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "sendrecv");
+    
+    pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
+    //pipe->video_element[NVIDIA_H264_ENCODER] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "encoder");
+    //setup_element_property(core);
+
+    /*
+    if (error != NULL) {
+        g_printerr("Failed to parse launch: %s\n", error->message);
+        g_error_free(error);
+    }*/
 }
 
 gpointer
@@ -164,34 +201,15 @@ setup_pipeline(SessionCore* core)
 
     pipe->state = PIPELINE_CREATING_ELEMENT;
 
-    /*
-    setup_element_factory_h264_media_foundation(core);
-    pipe->state = PIPELINE_SETTING_UP_ELEMENT;
-    setup_element_cap( core);
-    setup_element_property( core);
-
-
-
+    setup_element_using_parse_launch(core);
+    //setup_element_factory_h264(core);
 
 
     pipe->state = PIPELINE_CONNECT_ELEMENT_SIGNAL;
-
-    if (!connect_element(core))
-    {
-        session_core_finalize(core, PIPELINE_ERROR);
-    }*/
-
-
-
-
     connect_signalling_handler(core);
 
     gst_element_change_state(pipe->pipeline, GST_STATE_READY);
 
-    if (!connect_data_channel_signals(core)) 
-    {
-        session_core_finalize(core, DATA_CHANNEL_ERROR);
-    }
 
     pipe->state = PIPELINE_LINKING_ELEMENT;
     pipe->state = PIPELINE_SETUP_DONE;
@@ -200,6 +218,12 @@ setup_pipeline(SessionCore* core)
     {
         session_core_finalize(core, PIPELINE_ERROR);
     }
+
+    if (!connect_data_channel_signals(core))
+    {
+        session_core_finalize(core, DATA_CHANNEL_ERROR);
+    }
+
     session_core_set_state(core, REMOTE_CONNECT_STARTED);
     signalling_hub_set_peer_call_state(signalling, PEER_CALL_DONE);
 }
@@ -223,28 +247,32 @@ setup_element_property(SessionCore* core)
     /*turn off screeen cursor*/
     if (pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE], "cursor", FALSE, NULL); }
 
+    if (pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE], "height", 1440, NULL); }
+
+    if (pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE], "width", 2560, NULL); }
+
     /*monitor to display*/
-    if (pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE], "monitor", 0, NULL);}
+    //if (pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE], "monitor", 0, NULL);}
 
     /*variable bitrate mode*/
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "rc-mode", "cbr", NULL);}
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "rc-mode", 2, NULL);}
 
     if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "rc-mode", 0, NULL);}
 
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", 20000, NULL);}
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", 2000000, NULL);}
 
     if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "bitrate", 20000, NULL);}
 
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "qos", TRUE, NULL);}
+    //if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "qos", TRUE, NULL);}
 
     if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "qos", TRUE, NULL);}
 
     /*low latency preset*/
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "preset", "low-latency", NULL);}
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "preset", 3, NULL);}
 
     if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "low-latency", TRUE, NULL);}
 
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", qoe_get_video_bitrate(qoe), NULL);}
+    //if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", qoe_get_video_bitrate(qoe), NULL);}
 
     if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "bitrate", qoe_get_video_bitrate(qoe), NULL);}
 
@@ -253,10 +281,13 @@ setup_element_property(SessionCore* core)
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bframes", 0, NULL);}
 
     /**/
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "zerolatency", TRUE, NULL);}
+    //if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "zerolatency", TRUE, NULL);}
 
     /*set zero latency aggregate mode*/
     if (pipe->video_element[RTP_H264_PAYLOAD]) { g_object_set(pipe->video_element[RTP_H264_PAYLOAD], "aggregate-mode", 1, NULL);}
+
+
+    if (pipe->video_element[RTP_H264_PAYLOAD]) { g_object_set(pipe->video_element[RTP_H264_PAYLOAD], "config-interval", -1, NULL); }
 
     /*handle dynamic control bitrate*/
     //if (!pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION])
@@ -441,9 +472,9 @@ connect_element(SessionCore* core)
     }
 
     gint i = 0;
-    for (gint m = 0; m < AUDIO_ELEMENT_LAST; m++)
+    for (gint m = 0; m < VIDEO_ELEMENT_LAST; m++)
     {
-        if (pipe->audio_element[m] != NULL)
+        if (pipe->video_element[m] != NULL)
         {
             i = m;
             break;
@@ -460,7 +491,9 @@ connect_element(SessionCore* core)
                 {
                     if (!gst_element_link(pipe->video_element[i], pipe->video_element[j]))// ||
                          //gst_element_link(pipe->video_element[i], pipe->video_element_filtered[j]))
+                    {
                         return FALSE;
+                    }
                     i = j;
                     goto end;
                 }
@@ -495,7 +528,9 @@ connect_element(SessionCore* core)
                 {
                     if (!gst_element_link(pipe->audio_element[a], pipe->audio_element[b]))// ||
                          //gst_element_link(pipe->audio_element[a], pipe->audio_element_filtered[b]))
+                    {
                         return FALSE;
+                    }
                     a = b;
                     goto end_;
                 }

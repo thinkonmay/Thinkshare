@@ -53,7 +53,7 @@ namespace Signalling.Services
             else
             {
                 return null;
-            }     
+            }
         }
 
         public WebSocket GetClientSocket(int SlaveID)
@@ -114,7 +114,7 @@ namespace Signalling.Services
 
         public bool ClientIsOnline(int SlaveID)
         {
-            var ClientID  = sessionPair.Where(o => o.Value == SlaveID).FirstOrDefault().Key;
+            var ClientID = sessionPair.Where(o => o.Value == SlaveID).FirstOrDefault().Key;
 
             return DeviceIsOnline(ClientID);
         }

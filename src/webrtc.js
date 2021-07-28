@@ -144,6 +144,7 @@ class WebRTCDemo
     _setStatus(message) {
         if (this.onstatus !== null) {
             this.onstatus(message);
+            app.debugEntries.push("Streaming State: " + message);
         }
     }
 
@@ -155,6 +156,8 @@ class WebRTCDemo
      */
     _setDebug(message) {
         console.log(message);
+        app.debugEntries.push("Streaming Debug State: " + message);
+        
     }
 
     /**
@@ -166,6 +169,8 @@ class WebRTCDemo
     _setError(message) {
         if (this.onerror !== null) {
             this.onerror(message);
+            app.debugEntries.push("Streaming Error State: " + message);
+
         }
     }
 
@@ -176,6 +181,8 @@ class WebRTCDemo
     _setConnectionState(state) {
         if (this.onconnectionstatechange !== null) {
             this.onconnectionstatechange(state);
+            app.debugEntries.push("Streaming Connection State: " + state);
+
         }
     }
 

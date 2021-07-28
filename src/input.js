@@ -120,6 +120,10 @@ class Input {
      * @param {MouseEvent} event
      */
     _mouseButtonMovement(event) {
+        const down = (event.type === 'mousedown' ? 1:0);
+        var mtype = 'm';
+
+
         if (event.type === 'mousedown' ? 1 : 0)
         var mtype = "m";
 
@@ -167,13 +171,14 @@ class Input {
 
         var INPUT =
         {
-            "Opcode":HidOpcode.MOUSE,
-            "dX":this.x,
-            "dY":this.y,
-            "mouseData":0,
-            "dwFlags":dwFlags,
-            "Relative":Relative
+            "Opcode":HidOpcode.MOUSE, //mouse opcode
+            "dX":this.x,    //x position of pointer on SLAVE screeen
+            "dY":this.y,    //y axis of pointer of SLAVE screen
+            "mouseData":0, // do not touch this parameter
+            "dwFlags":dwFlags, //this too
+            "Relative":Relative //true if this.x and this.y is relative position (position after - position before)
         }
+        console.log(JSON.stringify(INPUT));
 
         this.sendHid(JSON.stringify(INPUT));
     }
@@ -200,7 +205,7 @@ class Input {
             "dwFlags":dwFlags,
             "Relative":Relative
         }
-
+        //scroll 
         this.sendHid(JSON.stringify(INPUT));
     }
 
@@ -255,7 +260,7 @@ class Input {
             "wVk":this.convertJavaScriptKeyToWindowKey(event.code),
             "IsUp":IsUp,
         }
-
+        console.log(JSON.stringify(Keyboard));
         this.sendHid(JSON.stringify(Keyboard));
 
     }
@@ -356,7 +361,8 @@ class Input {
     }
 
     /**
-     * Called when window is being resized, used to detect when resize ends so new resolution can be sent.
+     * Called when window is being resized, used to detect when resize
+     * ends so new resolution can be sent.
      */
     _resizeStart() {
         this._rtime = new Date();
@@ -568,7 +574,7 @@ class Input {
  * @param {Object} obj
  * @param {string} name
  * @param {function} func
- * @param {Object} ctx
+ * @param {Object} ctx //context
  */
 function addListener(obj, name, func, ctx) 
 {

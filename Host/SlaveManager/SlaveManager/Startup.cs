@@ -13,6 +13,8 @@ using SlaveManager.Administration;
 using SlaveManager.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SlaveManager.Models.User;
+using Microsoft.AspNetCore.Authentication;
 
 namespace SlaveManager
 {
@@ -31,10 +33,17 @@ namespace SlaveManager
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+
+            services.AddDefaultIdentity<UserAccount>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddRazorPages();
+
+            services.AddIdentityServer()
+                .AddApiAuthorization<UserAccount, ApplicationDbContext>();
+            services.AddAuthentication()
+               .AddIdentityServerJwt();
 
             services.AddSwaggerGen(c =>
             {
@@ -46,7 +55,12 @@ namespace SlaveManager
 
                 c.IncludeXmlComments(xmlFilePath);
             });
-            services.AddSingleton<IAgentHubHandler, AgentHubHandler>();
+
+            services.AddSingleton<ISlavePool, SlavePool>();
+            services.AddScoped<ISlaveFactory, SlaveFactory>();
+            services.AddScoped<IAdmin, Admin>();
+            services.AddScoped<IWebSocketConnection, WebSocketConnection>();
+            services.AddScoped<ISlaveConnection, SlaveConnection>();
 
             services.AddMvc();
         }
@@ -57,21 +71,24 @@ namespace SlaveManager
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SlaveManager_Testing v1"));
             }
 
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SlaveManager v1"));
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseIdentityServer();
+            app.UseAuthentication();
 
+            app.UseWebSockets();
+            
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

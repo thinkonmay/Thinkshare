@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using SharedHost.Models;
 using Newtonsoft.Json;
+using SharedHost.Models;
+using SlaveManager.Interfaces;
+using SlaveManager.Models;
 
 namespace SlaveManager.SlaveStates
 {
-    public class OnSession : SlaveState
+    public class OnSession : ISlaveState
     {
-        public override Tuple<bool, string> SessionInitialize(SlaveDevice slave, SlaveSession session)
+        public async Task SessionInitialize(ISlaveDevice slave, SlaveSession session)
         {
-            return new Tuple<bool, string>(false, "already on session");
+            Console.WriteLine("Already In Session");
+            return;
         }
 
-        public override Tuple<bool, string> SessionTerminate(SlaveDevice slave)
+        public async Task SessionTerminate(ISlaveDevice slave)
         {
             Message message = new Message();
 
@@ -24,16 +27,16 @@ namespace SlaveManager.SlaveStates
             message.Opcode = Opcode.SESSION_TERMINATION;
             message.Data = null;
 
-            _ = Task.Run(()=> slave.SendMessage(message));
+            await slave.SendMessage(message);
 
-            SlaveState State = new DeviceOpen();
-            slave.State = State;
+            ISlaveState _state = new DeviceOpen();
+            slave.ChangeState(_state);
 
 
-            return new Tuple<bool, string>(true, "session terminated sucessfully");
+            return ;
         }
 
-        public override Tuple<bool, string> RemoteControlDisconnect(SlaveDevice slave)
+        public async Task RemoteControlDisconnect(ISlaveDevice slave)
         {
             Message message = new Message();
 
@@ -42,18 +45,19 @@ namespace SlaveManager.SlaveStates
             message.Opcode = Opcode.DISCONNECT_REMTOE_CONTROL;
             message.Data = null;
 
-            _ = Task.Run(() => slave.SendMessage(message));
+            await slave.SendMessage(message);
 
 
-            return new Tuple<bool, string>(true, "reconnected remote control");
+            return;
         }
 
-        public override Tuple<bool, string> RemoteControlReconnect(SlaveDevice slave)
+        public async Task RemoteControlReconnect(ISlaveDevice slave)
         {
-            return new Tuple<bool, string>(false, "not in off remote state");
+            Console.WriteLine("Already In Remote Control");
+            return;
         }
 
-        public override Tuple<bool, string> SendCommand(SlaveDevice slave, int order, string command)
+        public async Task SendCommand(ISlaveDevice slave, int order, string command)
         {
 
             Message message = new Message();
@@ -64,27 +68,32 @@ namespace SlaveManager.SlaveStates
 
             Command forward_command = new Command();
             forward_command.Order = order;
-            forward_command.Commnad = command;
+            forward_command.CommandLine = command;
 
             message.Data = JsonConvert.SerializeObject(forward_command);
 
-            _ = Task.Run(() => slave.SendMessage(message));
+            await slave.SendMessage(message);
 
 
-            return new Tuple<bool, string>(true, "command send");
+            return;
         }
 
-        public override Tuple<bool, string> RejectSlave(SlaveDevice slave)
+        public async Task RejectSlave(ISlaveDevice slave)
         {
             Message msg = new Message();
             msg.From = Module.HOST_MODULE;
             msg.To = Module.AGENT_MODULE;
             msg.Opcode = Opcode.REJECT_SLAVE;
 
-            _ = Task.Run(() => slave.SendMessage(msg));
+            await slave.SendMessage(msg);
 
 
-            return new Tuple<bool, string>(true, "slave rejected");
+            return;
+        }
+
+        public string GetSlaveState()
+        {
+            return "On Session";
         }
     }
 }

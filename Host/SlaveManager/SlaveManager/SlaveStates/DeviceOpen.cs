@@ -5,12 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using SharedHost.Models;
+using SlaveManager.Interfaces;
+using SlaveManager.Models;
 
 namespace SlaveManager.SlaveStates
 {
-    public class DeviceOpen : SlaveState
+    public class DeviceOpen : ISlaveState
     {
-        public override Tuple<bool, string> SessionInitialize(SlaveDevice slave, SlaveSession session)
+        public async Task SessionInitialize(ISlaveDevice slave, SlaveSession session)
         {
             Message message = new Message();
 
@@ -19,30 +21,32 @@ namespace SlaveManager.SlaveStates
             message.Opcode = Opcode.SESSION_INITIALIZE;
             message.Data = JsonConvert.SerializeObject(session);
 
-            _ = Task.Run(() => slave.SendMessage(message));
+            await slave.SendMessage(message);
 
-            SlaveState _state = new OnSession();
-            slave.State = _state;
-
-            return new Tuple<bool, string>(true, "session initialized");
+            ISlaveState _state = new OnSession();
+            slave.ChangeState( _state);
+            return;
         }
 
-        public override Tuple<bool, string> SessionTerminate(SlaveDevice slave)
+        public async Task SessionTerminate(ISlaveDevice slave)
         {
-            return new Tuple<bool, string>(false, "not in session");
+            Console.WriteLine("Not In Session");
+            return;
         }
 
-        public override Tuple<bool, string> RemoteControlDisconnect(SlaveDevice slave)
+        public async Task RemoteControlDisconnect(ISlaveDevice slave)
         {
-            return new Tuple<bool, string>(false, "not in sessiony");
+            Console.WriteLine("Not In Session");
+            return;
         }
 
-        public override Tuple<bool, string> RemoteControlReconnect(SlaveDevice slave)
+        public async Task RemoteControlReconnect(ISlaveDevice slave)
         {
-            return new Tuple<bool, string>(false, "not in session");
+            Console.WriteLine("Not In Session");
+            return;
         }
 
-        public override Tuple<bool, string> SendCommand(SlaveDevice slave, int order, string command)
+        public async Task SendCommand(ISlaveDevice slave, int order, string command)
         {
 
             Message message = new Message();
@@ -53,24 +57,32 @@ namespace SlaveManager.SlaveStates
 
             Command forward_command = new Command();
             forward_command.Order = order;
-            forward_command.Commnad = command;
+            forward_command.CommandLine = command;
 
             message.Data = JsonConvert.SerializeObject(forward_command);
 
-            _ = Task.Run(() => slave.SendMessage(message));
+            await slave.SendMessage(message);
 
-            return new Tuple<bool, string>(true, "command send");
+            return;
         }
 
-        public override Tuple<bool, string> RejectSlave(SlaveDevice slave)
+        public async Task RejectSlave(ISlaveDevice slave)
         {
             Message msg = new Message();
             msg.From = Module.HOST_MODULE;
             msg.To = Module.AGENT_MODULE;
             msg.Opcode = Opcode.REJECT_SLAVE;
 
-            _ = Task.Run(() =>slave.SendMessage(msg));
-            return new Tuple<bool, string>(true, "rejected slave");
+            ISlaveState _state = new DeviceDisconnected();
+            slave.ChangeState(_state);
+
+            await slave.SendMessage(msg);
+            return;
+        }
+
+        public string GetSlaveState()
+        {
+            return "Device Open";
         }
     }
 }

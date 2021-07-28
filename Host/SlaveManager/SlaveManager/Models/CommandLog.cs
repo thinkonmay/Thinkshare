@@ -10,6 +10,8 @@ namespace SlaveManager.Models
     {
         public int Id { get; set; }
 
+        public int Command { get; set; }
+
         public virtual Slave Machine { get; set; }
     }
 }

@@ -561,7 +561,7 @@ pipeline_get_state(Pipeline* pipe)
 }
 
 void
-pipeline_get_state(Pipeline* pipe,
+pipeline_set_state(Pipeline* pipe,
                     PipelineState state)
 {
     pipe->state = state;

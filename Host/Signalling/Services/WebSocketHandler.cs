@@ -1,11 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Signalling.Data;
+﻿using Newtonsoft.Json;
 using Signalling.Interfaces;
 using Signalling.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -26,16 +25,17 @@ namespace Signalling.Services
             Queue = queue;
         }
 
+
         public async Task Handle(WebSocket ws)
         {
             WebSocketReceiveResult message;
             WebSocketMessage WebSocketMessage = new WebSocketMessage();
             do
             {
-                var message = await ReceiveMessage(ws);
-                if (message != null)
+                using (var memoryStream = new MemoryStream())
                 {
-                    switch (message.RequestType.ToUpper())
+                    message = await ReceiveMessage(ws, memoryStream);
+                    if (message.Count > 0)
                     {
                         var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
                         WebSocketMessage = JsonConvert.DeserializeObject<WebSocketMessage>(receivedMessage);
@@ -56,14 +56,14 @@ namespace Signalling.Services
             }
         }
 
-        public void HandleOnlineList(int subjectID,WebSocket ws)
+        public void HandleOnlineList(int subjectID, WebSocket ws)
         {
             WebSocketReceiveResult message;
             do
             {
                 using (var memoryStream = new MemoryStream())
                 {
-                    message =  ReceiveMessage(ws, memoryStream).Result;
+                    message = ReceiveMessage(ws, memoryStream).Result;
                     if (message.Count > 0)
                     {
                         var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
@@ -72,30 +72,30 @@ namespace Signalling.Services
                         switch (WebSocketMessage.RequestType.ToUpper())
                         {
                             case WebSocketMessageResult.OFFER_SDP:
-                                 _handleSdpOffer(ws, WebSocketMessage);
+                                _handleSdpOffer(ws, WebSocketMessage);
                                 break;
                             case WebSocketMessageResult.OFFER_ICE:
-                                 _handleIceOffer(ws, WebSocketMessage);
+                                _handleIceOffer(ws, WebSocketMessage);
                                 break;
                         }
                     }
-                }                
+                }
             } while (ws.State == WebSocketState.Open);
             Queue.DevieGoesOffline(subjectID);
         }
 
-        public async Task<WebSocketMessage> ReceiveMessage(WebSocket ws)
+        private async Task<WebSocketReceiveResult> ReceiveMessage(WebSocket ws, Stream memoryStream)
         {
-            var buffer = new Memory<byte>();
-            var request = await ws.ReceiveAsync(buffer, CancellationToken.None);
-
-            if (request.MessageType == WebSocketMessageType.Text)
+            var readBuffer = new ArraySegment<byte>(new byte[4 * 1024]);
+            WebSocketReceiveResult result;
+            do
             {
-                var msg = Encoding.UTF8.GetString(buffer.ToArray());
-                return JsonConvert.DeserializeObject<WebSocketMessage>(msg);
-            }
+                result = await ws.ReceiveAsync(readBuffer, CancellationToken.None);
+                await memoryStream.WriteAsync(readBuffer.Array, readBuffer.Offset, result.Count,
+                    CancellationToken.None);
+            } while (!result.EndOfMessage);
 
-            return null;
+            return result;
         }
 
         public void SendMessage(WebSocket ws, string msg)
@@ -116,7 +116,7 @@ namespace Signalling.Services
                 while (true)
                 {
                     if (Queue.SlaveIsOnline(msg.SubjectId))
-                    { 
+                    {
                         break;
                     }
                     Thread.Sleep(100);
@@ -142,11 +142,11 @@ namespace Signalling.Services
             Queue.DeviceGoesOnline(msg.SubjectId, ws);
 
             if (Queue.SlaveInQueue(msg.SubjectId))
-            {                    
+            {
                 /*run in infinite loop until slave id is found in onlineList*/
                 while (true)
                 {
-                    if (Queue.ClientIsOnline(msg.SubjectId)) 
+                    if (Queue.ClientIsOnline(msg.SubjectId))
                     {
                         break;
                     }
@@ -166,7 +166,7 @@ namespace Signalling.Services
                 msg.Result = WebSocketMessageResult.RESULT_REJECTED;
                 SendMessage(ws, JsonConvert.SerializeObject(msg));
                 return;
-            }            
+            }
         }
 
         void _handleSdpOffer(WebSocket ws, WebSocketMessage msg)
@@ -181,7 +181,7 @@ namespace Signalling.Services
                 SendMessage(receiver, JsonConvert.SerializeObject(msg));
                 return;
             }
-            else if(Queue.IsSlave(msg.SubjectId))
+            else if (Queue.IsSlave(msg.SubjectId))
             {
                 receiver = Queue.GetClientSocket(msg.SubjectId);
                 msg.Result = WebSocketMessageResult.RESULT_ACCEPTED;
@@ -213,5 +213,13 @@ namespace Signalling.Services
                 return;
             }
         }
+
+
+        public async Task Close(WebSocket ws)
+        {
+            await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+        }
+
+
     }
 }

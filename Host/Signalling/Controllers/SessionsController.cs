@@ -7,49 +7,33 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Signalling.Data;
-using Signalling.Interfaces;
 using Signalling.Models;
+using Signalling.Interfaces;
+using System.Net;
 
 namespace Signalling.Controllers
 {
-    public class SessionsController : Controller
+    [Route("/Session")]
+    [ApiController]
+    public class SessionsController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
         private readonly IWebSocketHandler _wsHandler;
 
         private readonly ISessionQueue Queue;
 
         public SessionsController(IWebSocketHandler wsHandler, ISessionQueue queue)
         {
-            _context = context;
             _wsHandler = wsHandler;
             Queue = queue;
         }
 
-        // POST: ManageSessions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        public async Task<IActionResult> Create(SessionRequest req)
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(new Session(req));
-                await _context.SaveChangesAsync();
+            var context = ControllerContext.HttpContext;
 
-                return Ok();
-            }
-
-            return BadRequest();
-        }
-
-        // GET: ManageSessions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> Delete(SessionRequest req)
-        {
-            if (req == null)
+            if (context.WebSockets.IsWebSocketRequest)
             {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync();
                 Console.WriteLine($"Accepted connection '{context.Connection.Id}'");
@@ -59,28 +43,11 @@ namespace Signalling.Controllers
 
                 await _wsHandler.Close(webSocket);
 
-            var session = await _context.Sessions.
-                FirstOrDefaultAsync(o => o.ClientId == req.ClientId && o.SlaveId == req.SlaveId);
-            if (session == null)
-            {
-                return NotFound();
+                return new EmptyResult();
             }
-
-            _context.Sessions.Remove(session);
-            await _context.SaveChangesAsync();
-
-            return Ok();
-        }
-
-        public async Task Pair()
-        {
-            if (HttpContext.WebSockets.IsWebSocketRequest)
+            else
             {
-                var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-                if (webSocket != null && webSocket.State == WebSocketState.Open)
-                {
-                    await _wsHandler.Handle(webSocket);
-                }
+                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
             }
         }
     }

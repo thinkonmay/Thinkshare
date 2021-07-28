@@ -1,47 +1,40 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using SharedHost.Interfaces;
-using SharedHost.Models;
-using Microsoft.AspNetCore.Http;
-using SharedHost.Services;
+using SlaveManager.Interfaces;
+using SlaveManager.Services;
 
-namespace SharedHost.Controllers
+namespace SlaveManager.Controllers
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    [Route("/Agent")]
     [ApiController]
-    [Route("/[controller]/[action]")]
-    public class AgentController : ControllerBase
+    public class WebSocketApiController : ControllerBase
     {
-        private readonly AgentHubHandler AgentHandler;
+        private readonly IWebSocketConnection _connection;
 
-        public AgentController(AgentHubHandler wsHandler)
+        public WebSocketApiController(IWebSocketConnection connection)
         {
-            AgentHandler = wsHandler;
+            _connection = connection; 
         }
 
-        /// <summary>
-        /// entry point for agent to connect with host, upgrade to websocket
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet, ActionName ("Register")]
-        public async Task Register()
+        [HttpGet,ActionName("Register")]
+        public async Task<IActionResult> Get()
         {
-            if (HttpContext.WebSockets.IsWebSocketRequest)
+            var context = ControllerContext.HttpContext;
+
+            if (context.WebSockets.IsWebSocketRequest)
             {
-                var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-                if (webSocket != null && webSocket.State == WebSocketState.Open)
-                {
-                    _ = Task.Run(()=> AgentHandler.Handle(webSocket));
-                }
+                var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                Console.WriteLine($"Accepted connection '{context.Connection.Id}'");
+                await _connection.KeepReceiving(webSocket);
+                await _connection.Close(webSocket);
+
+                return new EmptyResult();
+            }
+            else
+            {
+                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
             }
         }
     }

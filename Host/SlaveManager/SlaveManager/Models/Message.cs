@@ -17,6 +17,19 @@ namespace SlaveManager.Models
         public string Data { get; set; }
     }
 
+    public class MessageWithID
+    {
+        public int SlaveID { get; set; }
+
+        public Module From { get; set; }
+
+        public Module To { get; set; }
+
+        public Opcode Opcode { get; set; }
+
+        public string Data { get; set; }
+    }
+
     public enum Opcode
     {
         SESSION_INFORMATION = 1,
@@ -51,6 +64,7 @@ namespace SlaveManager.Models
         BITRATE_CALIBRATE ,
 
         SLAVE_ERROR ,
+        EXIT_CODE_REPORT,
 
         COMMAND_LINE_FOWARD,
 

@@ -13,6 +13,11 @@ namespace Signalling.Models
         public string Content { get; set; }
         public string Result { get; set; }
 
+    }
+
+    public class WebSocketMessageResult
+    {
+
         public const string REQUEST_SLAVE = "SLAVEREQUEST";
         public const string REQUEST_CLIENT = "CLIENTREQUEST";
 

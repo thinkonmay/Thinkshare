@@ -4,40 +4,52 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using SharedHost.Models;
+using SlaveManager.Interfaces;
 
 namespace SlaveManager.SlaveStates
 {
-    public class DeviceDisconnected : SlaveState
+    public class DeviceDisconnected : ISlaveState
     {
-        public override Tuple<bool, string> SessionInitialize(SlaveDevice slave, SlaveSession session)
+        public async Task SessionInitialize(ISlaveDevice slave, SlaveSession session)
         {
-            return new Tuple<bool, string>(false,"device disconnected");
+            Console.WriteLine("device disconnected");
+            return;
         }
 
-        public override Tuple<bool, string> SessionTerminate(SlaveDevice slave)
+        public async Task SessionTerminate(ISlaveDevice slave)
         {
-            return new Tuple<bool, string>(false, "device disconnected");
+            Console.WriteLine("device disconnected");
+            return;
         }
 
-        public override Tuple<bool, string> RemoteControlDisconnect(SlaveDevice slave)
+        public async Task RemoteControlDisconnect(ISlaveDevice slave)
         {
-            return new Tuple<bool, string>(false, "device disconnected");
+            Console.WriteLine("device disconnected");
+            return;
         }
 
-        public override Tuple<bool, string> RemoteControlReconnect(SlaveDevice slave)
+        public async Task RemoteControlReconnect(ISlaveDevice slave)
         {
-            return new Tuple<bool, string>(false, "device disconnected");
+            Console.WriteLine("device disconnected");
+            return;
         }
 
-        public override Tuple<bool, string> SendCommand(SlaveDevice slave,int order, string command)
+        public async Task SendCommand(ISlaveDevice slave,int order, string command)
         {
-            return new Tuple<bool, string>(false, "device disconnected");
+            Console.WriteLine("device disconnected");
+            return;
         }
 
 
-        public override Tuple<bool, string> RejectSlave(SlaveDevice slave)
+        public async Task RejectSlave(ISlaveDevice slave)
         {
-            return new Tuple<bool, string>(true, "device disconnected");
+            Console.WriteLine("device disconnected");
+            return;
+        }
+
+        public string GetSlaveState()
+        {
+            return "Device Disconnected";
         }
     }
 }
