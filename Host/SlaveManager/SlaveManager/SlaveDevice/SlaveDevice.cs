@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SlaveManager.Services;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Mvc;
+﻿using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Interfaces;
-using SlaveManager.Models;
+using System.Net.WebSockets;
+using System.Threading.Tasks;
+using SlaveManager.SlaveDevices.SlaveStates;
 
-namespace SlaveManager.SlaveStates
+namespace SlaveManager.SlaveDevices
 {
     public interface ISlaveDevice
     {
@@ -89,7 +82,7 @@ namespace SlaveManager.SlaveStates
 
         public Task SendMessage(Message message)
         {
-            return connection.Send(ws,JsonConvert.SerializeObject(message));
+            return connection.Send(ws, JsonConvert.SerializeObject(message));
         }
 
         public string GetSlaveState()

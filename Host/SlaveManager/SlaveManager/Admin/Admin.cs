@@ -1,17 +1,14 @@
 ﻿using SharedHost.Models;
 using SlaveManager.Data;
 using SlaveManager.Models;
-using SlaveManager.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SlaveManager.Administration
 {
     public interface IAdmin
     {
-        public Task<bool> AskForNewDevice(DeviceInformation information);
+        public Task<bool> AskForNewDevice(SlaveDeviceInformation information);
 
         public Task LogSlaveCommandLine(int slaveID, CommandResult result);
     }
@@ -25,7 +22,7 @@ namespace SlaveManager.Administration
             _db = db;
         }
 
-        public async Task<bool> AskForNewDevice(DeviceInformation information)
+        public async Task<bool> AskForNewDevice(SlaveDeviceInformation information)
         {
             Console.WriteLine("implement later");
             return true;

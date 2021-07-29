@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-
-namespace SharedHost.Models
+﻿namespace SharedHost.Models
 {
     public class Message
     {
@@ -17,35 +11,71 @@ namespace SharedHost.Models
         public string Data { get; set; }
     }
 
+    public class MessageWithID
+    {
+        public int SlaveID { get; set; }
+
+        public Module From { get; set; }
+
+        public Module To { get; set; }
+
+        public Opcode Opcode { get; set; }
+
+        public string Data { get; set; }
+    }
+
     public enum Opcode
     {
-        SESSION_INFORMATION = 1,
+        /// <summary>
+        /// 
+        /// </summary>
+        SESSION_INFORMATION,
 
+        /// <summary>
+        /// 
+        /// </summary>
         REGISTER_SLAVE,
 
+        /// <summary>
+        /// 
+        /// </summary>
         SLAVE_ACCEPTED,
         DENY_SLAVE,
 
-        REJECT_SLAVE ,
+        REJECT_SLAVE,
 
-        UPDATE_SLAVE_STATE ,
-
+        /// <summary>
+        /// 
+        /// </summary>
         SESSION_INITIALIZE,
         SESSION_TERMINATION,
         RECONNECT_REMOTE_CONTROL,
-        DISCONNECT_REMTOE_CONTROL ,
+        DISCONNECT_REMOTE_CONTROL,
 
-        SESSION_INFORMATION_REQUEST ,
+        /// <summary>
+        /// 
+        /// </summary>
+        CHANGE_MEDIA_MODE,
+        CHANGE_RESOLUTION,
+        CHANGE_FRAMERATE,
+        BITRATE_CALIBRATE,
 
-    	CHANGE_MEDIA_MODE,						
-    	CHANGE_RESOLUTION,						
-    	CHANGE_FRAMERATE,						
-    	BITRATE_CALIBRATE,						
+        /// <summary>
+        /// 
+        /// </summary>
+        COMMAND_LINE_FORWARD,
 
-        COMMAND_LINE_FOWARD,
+        /// <summary>
+        /// 
+        /// </summary>
+        EXIT_CODE_REPORT,
+        ERROR_REPORT,
 
-        EXIT_CODE_REPORT,						
-        ERROR_REPORT							
+        /// <summary>
+        /// 
+        /// </summary>
+        NEW_COMMAND_LINE_SESSION,
+        END_COMMAND_LINE_SESSION,
     }
 
     public enum Module

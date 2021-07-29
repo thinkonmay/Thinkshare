@@ -1,5 +1,5 @@
 ﻿namespace SlaveManager.Interfaces
 {
-    public interface ISlaveConnection : IConnection 
-    {}
+    public interface ISlaveConnection : IConnection
+    { }
 }

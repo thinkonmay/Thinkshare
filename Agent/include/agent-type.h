@@ -5,45 +5,44 @@
 #include <glib.h>
 #include <json-glib/json-glib.h>
 
-/*opcode*/
-#define	SESSION_INFORMATION						1
+typedef enum
+{
+        SESSION_INFORMATION	,
 
-#define	REGISTER_SLAVE							2
+        REGISTER_SLAVE	,
 
-#define	SLAVE_ACCEPTED							3
-#define	DENY_SLAVE								4
+        SLAVE_ACCEPTED	,
+        DENY_SLAVE	,
 
-#define	REJECT_SLAVE							5
+        REJECT_SLAVE,
 
-#define	UPDATE_SLAVE_STATE						6
+        SESSION_INITIALIZE,
+        SESSION_TERMINATE,
+        RECONNECT_REMOTE_CONTROL,
+        DISCONNECT_REMOTE_CONTROL,
 
-#define	SESSION_INITIALIZE						7
-#define	SESSION_TERMINATE						8
-#define	RECONNECT_REMOTE_CONTROL				9
-#define	DISCONNECT_REMOTE_CONTROL				10
+        CHANGE_MEDIA_MODE	,
+        CHANGE_RESOLUTION,
+        CHANGE_FRAMERATE,
+        BITRATE_CALIBRATE	,
 
-#define SESSION_INFORMATION_REQUEST				19
+        COMMAND_LINE_FORWARD,
 
-#define	CHANGE_MEDIA_MODE						20
-#define	CHANGE_RESOLUTION						21
-#define	CHANGE_FRAMERATE						22
-#define	BITRATE_CALIBRATE						23
+        EXIT_CODE_REPORT,
+        ERROR_REPORT,
 
-#define	COMMAND_LINE_FORWARD					24
+        NEW_COMMAND_LINE_SESSION   ,
+        END_COMMAND_LINE_SESSION  ,
+}Opcode;
 
-#define EXIT_CODE_REPORT						26
-#define ERROR_REPORT							27
-
-#define NEW_COMMAND_LINE_SESSION                19
-#define END_COMMAND_LINE_SESSION                20
-
-/*module*/
-#define	CORE_MODULE								0
-#define	CLIENT_MODULE							1
-#define	LOADER_MODULE							2
-#define	AGENT_MODULE							3
-#define	HOST_MODULE								4
-
+typedef enum
+{
+        CORE_MODULE	,
+        CLIENT_MODULE,
+        LOADER_MODULE,
+        AGENT_MODULE,
+        HOST_MODULE	,
+}Module;
 
 /*agent state*/
 #define			AGENT_UNREGISTERED				1
@@ -66,15 +65,7 @@
 */
 
 
-typedef struct _QoEMode 			QoEMode;
-
 typedef struct _Socket 				Socket;
-
-typedef struct _SessionQoE 			SessionQoE;
-
-typedef struct _IPC 				IPC;
-
-typedef struct _LocalStorage  		LocalStorage;
 
 typedef struct _DeviceState			DeviceState;
 
@@ -82,25 +73,17 @@ typedef struct _DeviceInformation 	DeviceInformation;
 
 typedef struct _AgentObject			AgentObject;
 
-typedef	struct _CommandLine			CommandLine;
+typedef struct _ChildPipe			ChildPipe;
 
-typedef struct _LocalStorage		LocalStorage;
+typedef	struct _ChildProcess		ChildProcess;
 
 typedef struct _AgentState			AgentState;
 
-typedef		   JsonObject			Session;
-
 typedef		   JsonObject			Message;
 
-typedef		   gint					Module;
-
-typedef		   gint					Opcode;
-
-typedef		   gint					Codec;
-
-typedef		   gint					QoEMode;
-
-
+typedef void  (*ChildHandleFunc)    (GBytes* buffer,
+                                     gint process_id,
+                                     AgentObject* agent);
 
 
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SharedHost.Models
+﻿namespace SharedHost.Models
 {
     /// <summary>
     /// information of a session that conductor
@@ -11,20 +7,45 @@ namespace SharedHost.Models
     /// </summary>
     public class SystemSession
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public int ClientID { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int SlaveID { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int SessionSlaveID { get; set; }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
         public int SessionClientID { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string SignallingUrl { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string StunServer { get; set; }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         public bool ClientOffer { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public QoE QoE { get; set; }
     }
 }

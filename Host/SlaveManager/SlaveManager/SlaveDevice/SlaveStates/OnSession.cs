@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Interfaces;
-using SlaveManager.Models;
+using System;
+using System.Threading.Tasks;
 
-namespace SlaveManager.SlaveStates
+namespace SlaveManager.SlaveDevices.SlaveStates
 {
     public class OnSession : ISlaveState
     {
@@ -33,7 +29,7 @@ namespace SlaveManager.SlaveStates
             slave.ChangeState(_state);
 
 
-            return ;
+            return;
         }
 
         public async Task RemoteControlDisconnect(ISlaveDevice slave)

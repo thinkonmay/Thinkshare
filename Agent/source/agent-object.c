@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include <agent-type.h>
-#include <agent-ipc.h>
+#include <agent-session-initializer.h>
 #include <agent-socket.h>
 #include <agent-device.h>
 #include <agent-message.h>
@@ -20,7 +20,7 @@
 /// </summary>
 struct _AgentObject
 {
-	CommandLine* cmd[CMD_MAX];
+	Socket* socket;
 
 	GFile* device;
 
@@ -28,12 +28,13 @@ struct _AgentObject
 
 	GFile* SlaveID;
 
-	DeviceState* device_state;
+	GFile* Host;
 
-	DeviceInformation* device_information;
+	GMainLoop* loop;
 
-	IPC* ipc;
+	AgentState* state;
 
+	ChildProcess* child_process[CMD_MAX];
 };
 
 
@@ -50,13 +51,12 @@ struct _AgentObject
 
 
 AgentObject*
-agent_new(gchar* Host_URL)
+agent_new(gchar* url)
 {
-	AgentObject* agent = malloc(sizeof(AgentObject));
+	static AgentObject agent;
 
 	AgentState* unregistered = transition_to_unregistered_state();
-	agent->state = unregistered;
-
+	agent.state = unregistered;
 
 
 	agent.device = g_file_parse_name("C:\\ThinkMay\\DeviceLog.txt");
@@ -65,30 +65,21 @@ agent_new(gchar* Host_URL)
 
 	agent.SlaveID = g_file_parse_name("C:\\ThinkMay\\SlaveID.txt");
 
-	SECURITY_ATTRIBUTES attr;
-	attr.nLength = sizeof(SECURITY_ATTRIBUTES);
-	attr.bInheritHandle = TRUE;
-	attr.lpSecurityDescriptor = NULL;
+	agent.Host = g_file_parse_name("C:\\ThinkMay\\Host.txt");
+
+
 
 
 	g_thread_new("update device", (GThreadFunc)update_device, &agent);
 
-	initialize_socket(&agent,url);
+	agent.socket=initialize_socket(&agent);
+	session_initialize(&agent);
+	//connect_to_host_async(&agent);
+
 	agent.loop = g_main_loop_new(NULL, FALSE);
 	g_main_loop_run(agent.loop);
 
-	g_thread_new("update-device", 
-		(GThreadFunc)update_device, agent);
-	g_thread_new("handle-commandline", 
-		(GThreadFunc)handle_command_line_thread, agent);
-
-
-
-	agent->loop = g_main_loop_new(NULL, FALSE);
-	g_main_loop_run(agent->loop);
-	g_main_loop_unref(agent->loop);
-	
-	return agent;
+	return NULL;
 }
 
 
@@ -114,7 +105,8 @@ agent_send_command_line(AgentObject* self,
 						gchar* command, 
 						gint order)
 {
-	send_message_to_child_process(self->child_process[order], command,strlen(command)*sizeof(gchar));
+	send_message_to_child_process(self->child_process[order], 
+		command,strlen(command)*sizeof(gchar));
 }
 
 
@@ -152,7 +144,7 @@ agent_send_message_to_host(AgentObject* self,
 	gchar* message)
 {
 	self->state->send_message_to_host(self, message);
-}
+}  
 
 void
 agent_send_message_to_session_core(AgentObject* self,
@@ -218,28 +210,25 @@ agent_remote_control_reconnect(AgentObject* self)
 
 /*START get-set function*/
 
-IPC*
-agent_get_ipc(AgentObject* self)
-{
-	return self->ipc;
-}
 
+
+/*START get-set function*/
 Socket*
 agent_get_socket(AgentObject* self)
 {
 	return self->socket;
 }
 
-DeviceState*
-agent_get_device_state(AgentObject* self)
+void
+agent_set_socket(AgentObject* self, Socket* socket)
 {
-	return self->device_state;
+	self->socket = socket;
 }
 
 GFile*
 agent_get_device_log(AgentObject* self)
 {
-	return self->device_information;
+	return self->device;
 }
 
 
@@ -252,7 +241,13 @@ agent_get_session(AgentObject* self)
 GFile*
 agent_get_slave_id(AgentObject* self)
 {
-	return self->session = session;
+	return self->SlaveID;
+}
+
+GFile* 
+agent_get_host_configuration(AgentObject* self)
+{
+	return self->Host;
 }
 
 void
@@ -285,7 +280,7 @@ agent_set_child_process(AgentObject* self,
 
 void
 agent_object_set_main_loop(AgentObject* self,
-						   GMainLoop* loop)
+	GMainLoop* loop)
 {
 	self->loop = loop;
 }
@@ -293,8 +288,12 @@ agent_object_set_main_loop(AgentObject* self,
 GMainLoop*
 agent_get_main_loop(AgentObject* self)
 {
-	self->cmd;
+	return self->loop;
 }
+
+/*START get-set function*/
+
+
 
 /*START get-set function*/
 

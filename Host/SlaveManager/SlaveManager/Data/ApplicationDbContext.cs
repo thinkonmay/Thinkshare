@@ -1,16 +1,14 @@
-﻿using SlaveManager.Models;
+﻿using IdentityServer4.EntityFramework.Entities;
+using IdentityServer4.EntityFramework.Extensions;
+using IdentityServer4.EntityFramework.Interfaces;
+using IdentityServer4.EntityFramework.Options;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using SharedHost.Models;
-using SlaveManager.Models.User;
-using Microsoft.AspNetCore.Identity;
-using IdentityServer4.EntityFramework.Interfaces;
-using System.Threading.Tasks;
-using IdentityServer4.EntityFramework.Entities;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
-using IdentityServer4.EntityFramework.Options;
 using Microsoft.Extensions.Options;
-using IdentityServer4.EntityFramework.Extensions;
+using SlaveManager.Models;
+using SlaveManager.Models.User;
+using System.Threading.Tasks;
 
 namespace SlaveManager.Data
 {
@@ -38,7 +36,6 @@ namespace SlaveManager.Data
             builder.ConfigurePersistedGrantContext(_operationalStoreOptions.Value);
 
             builder.Entity<Session>().HasIndex(s => new { s.SessionClientID, s.SessionSlaveID }).IsUnique();
-            builder.Entity<Telemetry>().HasOne(p => p.Device).WithMany(p => p.Telemetry);
         }
 
         public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();
@@ -46,9 +43,7 @@ namespace SlaveManager.Data
 
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Slave> Devices { get; set; }
-        public DbSet<Telemetry> TelemetryLogs { get; set; }
         public DbSet<CommandLog> CommandLogs { get; set; }
-
         public DbSet<PersistedGrant> PersistedGrants { get; set; }
         public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
     }

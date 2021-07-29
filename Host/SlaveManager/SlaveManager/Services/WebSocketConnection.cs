@@ -4,7 +4,6 @@ using SlaveManager.Administration;
 using SlaveManager.Data;
 using SlaveManager.Interfaces;
 using SlaveManager.Models;
-using SlaveManager.Services;
 using System;
 using System.IO;
 using System.Linq;
@@ -27,7 +26,7 @@ namespace SlaveManager.Services
 
         private readonly ApplicationDbContext _db;
 
-        public WebSocketConnection (ISlaveFactory slaveFactory,
+        public WebSocketConnection(ISlaveFactory slaveFactory,
                                     ISlavePool slavePool,
                                     IAdmin admin,
                                     ISlaveConnection connection,
@@ -40,7 +39,7 @@ namespace SlaveManager.Services
             _db = db;
         }
 
-        private async Task<bool> UpgradeToSlave(WebSocket ws, DeviceInformation device_information)
+        private async Task<bool> UpgradeToSlave(WebSocket ws, SlaveDeviceInformation device_information)
         {
             bool accepted;
             int slave_id = 0;
@@ -58,13 +57,13 @@ namespace SlaveManager.Services
             accepted = _slavePool.AddSlaveDeviceWithKey(device_information.ID, slave);
 
             //Add Slave into database if SlaveID is not found in database
-            if (_db.Devices.Where(o => o.Id == device_information.ID).Count() == 0)
+            if (_db.Devices.Where(o => o.ID == device_information.ID).Count() == 0)
             {
                 Slave device = new Slave();
                 device.CPU = device_information.CPU;
                 device.GPU = device_information.GPU;
-                device.RAMcapacity = device_information.RAM;
-                device.Id = device_information.ID;
+                device.RAMcapacity = device_information.RAMcapacity;
+                device.ID = device_information.ID;
                 device.OS = device_information.OS;
 
                 _db.Devices.Add(device);
@@ -80,7 +79,7 @@ namespace SlaveManager.Services
                 accept.To = Module.AGENT_MODULE;
                 accept.Opcode = Opcode.SLAVE_ACCEPTED;
                 accept.Data = slave_id.ToString();
-                await Send(ws ,JsonConvert.SerializeObject(accept));
+                await Send(ws, JsonConvert.SerializeObject(accept));
                 return true;
             }
             else
@@ -109,7 +108,7 @@ namespace SlaveManager.Services
                         var message_json = JsonConvert.DeserializeObject<Message>(receivedMessage);
                         if (message_json.Opcode == Opcode.REGISTER_SLAVE)
                         {
-                            var result = await UpgradeToSlave(ws, JsonConvert.DeserializeObject<DeviceInformation>(message_json.Data));
+                            var result = await UpgradeToSlave(ws, JsonConvert.DeserializeObject<SlaveDeviceInformation>(message_json.Data));
                             if (result)
                             {
                                 break;

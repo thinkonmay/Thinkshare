@@ -92,7 +92,7 @@ void											agent_finalize						(AgentObject* object);
 /// <param name="Host_URL"></param>
 /// <param name="Host_ID"></param>
 /// <returns></returns>
-AgentObject*									agent_new							(gchar* Host_URL);
+AgentObject*									agent_new							();
 
 /// <summary>
 /// handle message from host
@@ -150,6 +150,9 @@ GFile*											agent_get_slave_id					(AgentObject* self);
 
 GFile*											agent_get_device_log				(AgentObject* self);
 
+GFile*											agent_get_socket_configuration		(AgentObject* self);
+
+GFile*											agent_get_host_configuration		(AgentObject* self);	
 /// <summary>
 /// 
 /// </summary>
@@ -164,13 +167,17 @@ void											agent_send_command_line				(AgentObject* self,
 
 /*get-set function for agent object*/
 
-IPC*											agent_get_ipc						(AgentObject* self);
-
 
 Socket*											agent_get_socket					(AgentObject* self);
 
 
 GFile*											agent_get_session					(AgentObject* self);
+
+GFile*											agent_get_host_configuration		(AgentObject* self);
+
+GFile*											agent_get_slave_id					(AgentObject* self);
+
+GFile*											agent_get_device_log				(AgentObject* self);
 
 
 AgentState*										agent_get_state						(AgentObject* self);

@@ -1,16 +1,14 @@
-﻿using SlaveManager.Data;
-using MersenneTwister;
-using Microsoft.AspNetCore.Http;
+﻿using MersenneTwister;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RestSharp;
 using SharedHost.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SlaveManager.Data;
 using SlaveManager.Models;
 using SlaveManager.Services;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SlaveManager.Controllers
 {
@@ -44,13 +42,12 @@ namespace SlaveManager.Controllers
                 int sessionClientId = Randoms.Next();
 
                 var _QoE = new QoE();
-                _QoE.ScreenHeight = req.Capabilities.ScreenHeight;
-                _QoE.ScreenWidth = req.Capabilities.ScreenWidth;
-                _QoE.Framerate = req.Capabilities.FrameRate;
-                _QoE.Bitrate = req.Capabilities.Bitrate;
-                _QoE.VideoCodec = req.Capabilities.VideoCodec;
-                _QoE.AudioCodec = req.Capabilities.AudioCodec;
-                _QoE.QoEMode = req.Capabilities.QoEMode;
+                _QoE.ScreenHeight = req.cap.screenHeight;
+                _QoE.ScreenWidth = req.cap.screenWidth;
+                _QoE.Bitrate = req.cap.bitrate;
+                _QoE.VideoCodec = req.cap.videoCodec;
+                _QoE.AudioCodec = req.cap.audioCodec;
+                _QoE.QoEMode = req.cap.mode;
 
                 Session sess = new Session()
                 {
@@ -61,16 +58,17 @@ namespace SlaveManager.Controllers
                     ClientOffer = false, // Arbitrary value
                     QoE = _QoE,
                     SignallingUrl = GeneralConstants.SIGNALLING_SERVER,
-                    StunServer = GeneralConstants.STUN_SERVER
+                    StunServer = GeneralConstants.STUN_SERVER,
+                    StartTime = DateTime.Now.Second.ToString() + "," + DateTime.Now.Minute.ToString() + "," + DateTime.Now.Hour.ToString() + "," + DateTime.Now.Day.ToString() + "," + DateTime.Now.Month.ToString() + "," + DateTime.Now.Year.ToString()
                 };
 
                 _db.Sessions.Add(sess);
                 await _db.SaveChangesAsync();
 
-                var signalPair = new ClientRequest()
+                var signalPair = new SessionPair()
                 {
-                    SlaveId = sessionSlaveId,
-                    ClientId = sessionClientId
+                    SessionSlaveID = sessionSlaveId,
+                    SessionClientID = sessionClientId
                 };
 
                 var client = new RestClient(GeneralConstants.SIGNALLING_SERVER);
@@ -109,7 +107,7 @@ namespace SlaveManager.Controllers
             if (ses == null) return BadRequest();
 
             var deletion = new
-            { 
+            {
                 SessionClientId = ses.SessionClientID,
                 SessionSlaveId = ses.SessionSlaveID
             };
@@ -134,10 +132,11 @@ namespace SlaveManager.Controllers
 
 
             /*slavepool send terminate session signal*/
-            if(_slavePool.RemoteControlDisconnect(ses.SessionSlaveID))
+            if (_slavePool.RemoteControlDisconnect(ses.SessionSlaveID))
             {
                 return Ok();
-            }else
+            }
+            else
             {
 
                 return BadRequest("Device not in session");

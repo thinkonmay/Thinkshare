@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using SlaveManager.Interfaces;
+using System;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using SlaveManager.Interfaces;
-using SlaveManager.Services;
 
 namespace SlaveManager.Controllers
 {
@@ -15,10 +14,10 @@ namespace SlaveManager.Controllers
 
         public WebSocketApiController(IWebSocketConnection connection)
         {
-            _connection = connection; 
+            _connection = connection;
         }
 
-        [HttpGet,ActionName("Register")]
+        [HttpGet, ActionName("Register")]
         public async Task<IActionResult> Get()
         {
             var context = ControllerContext.HttpContext;

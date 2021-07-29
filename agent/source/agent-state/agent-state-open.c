@@ -1,7 +1,7 @@
 #include <agent-state-unregistered.h>
 #include <agent-state.h>
 #include <glib.h>
-#include <agent-ipc.h>
+#include <agent-session-initializer.h>
 #include <agent-state-on-session.h>
 #include <agent-socket.h>
 

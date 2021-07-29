@@ -1,20 +1,20 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SlaveManager.Administration;
+using SlaveManager.Data;
+using SlaveManager.Interfaces;
+using SlaveManager.Models.User;
+using SlaveManager.Services;
 using System;
 using System.IO;
 using System.Reflection;
-using SlaveManager.Interfaces;
-using SlaveManager.Services;
-using SlaveManager.Administration;
-using SlaveManager.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using SlaveManager.Models.User;
-using Microsoft.AspNetCore.Authentication;
 
 namespace SlaveManager
 {
@@ -47,8 +47,12 @@ namespace SlaveManager
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "SlaveManager", Version = 
-                    "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "SlaveManager",
+                    Version =
+                    "v1"
+                });
 
                 var xmlFilePath = Path.Combine(AppContext.BaseDirectory,
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
@@ -83,7 +87,7 @@ namespace SlaveManager
             app.UseAuthentication();
 
             app.UseWebSockets();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

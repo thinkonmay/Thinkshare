@@ -1,18 +1,10 @@
- using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
-
-
 namespace SharedHost.Models
 {
     public class Device
     {
         public DeviceState State;
-        public DeviceInformation Information;
-        public Device(DeviceInformation _infor, DeviceState _state)
+        public SlaveDeviceInformation Information;
+        public Device(SlaveDeviceInformation _infor, DeviceState _state)
         {
             State = _state;
             Information = _infor;
@@ -26,7 +18,7 @@ namespace SharedHost.Models
         public int RAMusage;
     }
 
-    public class DeviceInformation
+    public class SlaveDeviceInformation
     {
         public string CPU;
         public string GPU;
@@ -34,5 +26,22 @@ namespace SharedHost.Models
         public string OS;
 
         public int ID;
+    }
+
+    public class ClientDeviceCapabilities
+    {
+        public Codec audioCodec { get; set; }
+
+        public Codec videoCodec { get; set; }
+
+        public QoEMode mode { get; set; }
+
+        public int screenWidth { get; set; }
+
+        public int screenHeight { get; set; }
+
+        public int bitrate { get; set; }
+
+
     }
 }

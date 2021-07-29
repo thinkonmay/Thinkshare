@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using SlaveManager.Data;
 using SlaveManager.Models;
 using SlaveManager.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,7 +39,7 @@ namespace SlaveManager.Controllers
                 if (i.Item2 == "Device Open")
                 {
                     // Add Device Information to open device Id list;
-                    var member = _db.Devices.Where(o => o.Id == i.Item1).FirstOrDefault();
+                    var member = _db.Devices.Where(o => o.ID == i.Item1).FirstOrDefault();
                     resp.Add(member);
                 }
             }

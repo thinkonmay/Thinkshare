@@ -1,16 +1,13 @@
-﻿using SlaveManager.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Text;
-using System.IO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Administration;
-using SlaveManager.Models;
+using SlaveManager.Interfaces;
+using System;
+using System.IO;
+using System.Net.WebSockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SlaveManager.Services
 {
@@ -45,14 +42,14 @@ namespace SlaveManager.Services
                                     switch (json_message.Opcode)
                                     {
                                         case Opcode.COMMAND_LINE_FOWARD:
-                                        {
-                                            // TODO: Add command output in return message
+                                            {
+                                                // TODO: Add command output in return message
 
-                                            CommandResult cmd = JsonConvert.DeserializeObject<CommandResult>(json_message.Data);
-                                            await _admin.LogSlaveCommandLine(json_message.SlaveID, cmd);
-                                            /*send command to admin here*/
-                                            break;
-                                        }
+                                                CommandResult cmd = JsonConvert.DeserializeObject<CommandResult>(json_message.Data);
+                                                await _admin.LogSlaveCommandLine(json_message.SlaveID, cmd);
+                                                /*send command to admin here*/
+                                                break;
+                                            }
 
                                     }
                                 }
