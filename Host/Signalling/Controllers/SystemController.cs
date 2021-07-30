@@ -27,7 +27,7 @@ namespace Signalling.Controllers
             return Ok("Added session pair");
         }
 
-        [HttpPost("Terminate")]
+        [HttpDelete("Terminate")]
         public IActionResult TerminateSessionPair(int slaveID, int clientID)
         {
             _queue.RemoveIDPair(slaveID, clientID);

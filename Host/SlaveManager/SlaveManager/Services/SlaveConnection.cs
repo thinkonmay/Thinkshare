@@ -41,7 +41,7 @@ namespace SlaveManager.Services
                                 {
                                     switch (json_message.Opcode)
                                     {
-                                        case Opcode.COMMAND_LINE_FOWARD:
+                                        case Opcode.COMMAND_LINE_FORWARD:
                                             {
                                                 // TODO: Add command output in return message
 

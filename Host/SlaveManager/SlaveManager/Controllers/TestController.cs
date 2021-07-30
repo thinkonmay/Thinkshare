@@ -2,6 +2,13 @@
 using SlaveManager.Services;
 using SlaveManager.Interfaces;
 
+
+
+
+
+
+// TODO: disable in publish mode
+
 namespace SlaveManager.Controllers
 {
 

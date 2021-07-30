@@ -1,4 +1,5 @@
 ﻿using SharedHost.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace SlaveManager.Models
@@ -20,7 +21,7 @@ namespace SlaveManager.Models
         /// together with order and ID, 
         /// Emitted time define unique identification of CommandLine
         /// </summary>
-        public int Time { get; set; }
+        public DateTime Time { get; set; }
 
         /// <summary>
         /// Output of an commandline

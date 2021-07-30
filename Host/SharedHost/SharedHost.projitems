@@ -9,6 +9,7 @@
     <Import_RootNamespace>SharedHost</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SlaveServiceState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\StorageBlockIdentification.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientSession.cs" />

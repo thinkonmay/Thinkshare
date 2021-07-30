@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SlaveManager.Data;
+using SlaveManager.Interfaces;
 using SlaveManager.Models;
 using SlaveManager.Services;
 using System;
@@ -22,6 +23,11 @@ namespace SlaveManager.Controllers
             _db = db;
         }
 
+
+        /// <summary>
+        /// Queries for every slave device in the system for serving state and static information 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("System")]
         public IActionResult System()
         {
@@ -38,12 +44,24 @@ namespace SlaveManager.Controllers
         }
 
 
+        /// <summary>
+        /// Send a command line to an specific process id of an specific slave device
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="order"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [HttpPost("SSH")]
         public IActionResult CommandLine(int id, int order, string command)
         {
             return (_slavePool.SendCommand(id, order, command) ? Ok() : BadRequest());
         }
 
+        /// <summary>
+        /// Add a specific Slave device 
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         [HttpGet("AddSlave")]
         public IActionResult AddSlaveDevice(int ID)
         {

@@ -23,23 +23,13 @@ namespace SlaveManager.Models
         public string OS { get; set; }
 
         /// <summary>
-        /// The cluster that this slave device belong to
-        /// </summary>
-        public virtual Cluster OwnedCluster { get; set; }
-
-        /// <summary>
         /// 
         /// </summary>
         public virtual ICollection<CommandLog> CommandLogs { get; set; }
 
         /// <summary>
-        /// storage which attached to this slave device
-        /// </summary>
-        public virtual ICollection<StorageBlock>? servingStorage { get; set; }
-
-        /// <summary>
         /// (nullable) if slave is in a session, 
         /// </summary>
-        public virtual Session? servingSession { get; set; }
+        public virtual ICollection<Session> servingSession { get; set; }
     }
 }

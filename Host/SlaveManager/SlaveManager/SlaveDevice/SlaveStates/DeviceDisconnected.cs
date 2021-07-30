@@ -46,7 +46,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
         public string GetSlaveState()
         {
-            return "Device Disconnected";
+            return SlaveServiceState.Disconnected;
         }
     }
 }

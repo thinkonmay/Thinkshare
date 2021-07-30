@@ -45,6 +45,7 @@ namespace SlaveManager
             services.AddAuthentication()
                .AddIdentityServerJwt();
 
+            services.AddSignalR();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo

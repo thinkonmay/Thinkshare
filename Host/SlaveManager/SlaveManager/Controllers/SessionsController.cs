@@ -4,15 +4,21 @@ using Newtonsoft.Json;
 using RestSharp;
 using SharedHost.Models;
 using SlaveManager.Data;
+using SlaveManager.Interfaces;
 using SlaveManager.Models;
 using SlaveManager.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+
+
+
+// TODO: authentification
+
 namespace SlaveManager.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/Session")]
     [ApiController]
     // TODO: Add URL routing for REST requests for signalling & slave manager servers
     public class SessionsController : ControllerBase
@@ -31,16 +37,18 @@ namespace SlaveManager.Controllers
         // POST: ManageSessions/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost("Request")]
         public async Task<IActionResult> Create(ClientRequest req)
         {
             if (ModelState.IsValid)
             {
                 if (_slavePool.GetSlaveState(req.SlaveId) != "Device Open") { return BadRequest("Device Not Available"); }
 
+                /*create session id pair randomly*/
                 int sessionSlaveId = Randoms.Next();
                 int sessionClientId = Randoms.Next();
 
+                /*create session from */
                 var _QoE = new QoE();
                 _QoE.ScreenHeight = req.cap.screenHeight;
                 _QoE.ScreenWidth = req.cap.screenWidth;
@@ -99,17 +107,26 @@ namespace SlaveManager.Controllers
             return BadRequest();
         }
 
-        [HttpPost]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionClientId"></param>
+        /// <returns></returns>
+        [HttpPost("Terminate")]
         public async Task<IActionResult> Terminate(int sessionClientId)
         {
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
+            ses.EndTime = DateTime.Now.Second.ToString() + "," + DateTime.Now.Minute.ToString() + "," + DateTime.Now.Hour.ToString() + "," + DateTime.Now.Day.ToString() + "," + DateTime.Now.Month.ToString() + "," + DateTime.Now.Year.ToString();
+
+
+
 
             if (ses == null) return BadRequest();
 
-            var deletion = new
+            var deletion = new SessionPair()
             {
-                SessionClientId = ses.SessionClientID,
-                SessionSlaveId = ses.SessionSlaveID
+                SessionClientID = ses.SessionClientID,
+                SessionSlaveID = ses.SessionSlaveID
             };
 
             var client = new RestClient(GeneralConstants.SLAVE_MANAGER_SERVER);
@@ -123,7 +140,7 @@ namespace SlaveManager.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPost("Disconnect")]
         public async Task<IActionResult> DisconnectRemoteControl(int sessionClientId)
         {
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
@@ -143,8 +160,12 @@ namespace SlaveManager.Controllers
             }
         }
 
-
-        [HttpPost]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionClientId"></param>
+        /// <returns></returns>
+        [HttpPost("Reconnect")]
         public async Task<IActionResult> ReconnectRemoteControl(int sessionClientId)
         {
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();

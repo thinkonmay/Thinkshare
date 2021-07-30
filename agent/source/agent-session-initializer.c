@@ -39,8 +39,9 @@ session_terminate(AgentObject* agent)
 gboolean
 session_initialize(AgentObject* object)
 {
-    ChildProcess* session_core = create_new_child_process("D:\\OneDrive - VINACADEMY LLC\\Desktop\\personal-cloud-computing\\bin\\SessionCore.exe", 0, NULL,
-        (ChildHandleFunc)handle_session_core_function, object);
+    ChildProcess* session_core = 
+    create_new_child_process("D:\\OneDrive - VINACADEMY LLC\\Desktop\\personal-cloud-computing\\bin\\SessionCore.exe",
+        0, NULL,(ChildHandleFunc)handle_session_core_function, object);
     agent_set_child_process(object, 0, session_core);
 }
 

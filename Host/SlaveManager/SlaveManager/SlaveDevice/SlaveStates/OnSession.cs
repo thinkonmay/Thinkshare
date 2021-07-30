@@ -38,7 +38,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
-            message.Opcode = Opcode.DISCONNECT_REMTOE_CONTROL;
+            message.Opcode = Opcode.DISCONNECT_REMOTE_CONTROL;
             message.Data = null;
 
             await slave.SendMessage(message);
@@ -60,7 +60,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
-            message.Opcode = Opcode.COMMAND_LINE_FOWARD;
+            message.Opcode = Opcode.COMMAND_LINE_FORWARD;
 
             Command forward_command = new Command();
             forward_command.Order = order;
@@ -89,7 +89,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
         public string GetSlaveState()
         {
-            return "On Session";
+            return SlaveServiceState.OnSession;
         }
     }
 }
