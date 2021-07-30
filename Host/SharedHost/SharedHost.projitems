@@ -19,7 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\QoE.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SessionPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SlaveSession.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\SystemSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SessionBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Telemetry.cs" />
   </ItemGroup>
 </Project>

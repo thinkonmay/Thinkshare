@@ -64,7 +64,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             message.Opcode = Opcode.COMMAND_LINE_FORWARD;
 
             Command forward_command = new Command();
-            forward_command.Order = order;
+            forward_command.ProcessID = order;
             forward_command.CommandLine = command;
 
             message.Data = JsonConvert.SerializeObject(forward_command);

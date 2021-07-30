@@ -66,8 +66,7 @@ namespace SlaveManager.Controllers
                     ClientOffer = false, // Arbitrary value
                     QoE = _QoE,
                     SignallingUrl = GeneralConstants.SIGNALLING_SERVER,
-                    StunServer = GeneralConstants.STUN_SERVER,
-                    StartTime = DateTime.Now.Second.ToString() + "," + DateTime.Now.Minute.ToString() + "," + DateTime.Now.Hour.ToString() + "," + DateTime.Now.Day.ToString() + "," + DateTime.Now.Month.ToString() + "," + DateTime.Now.Year.ToString()
+                    StunServer = GeneralConstants.STUN_SERVER
                 };
 
                 _db.Sessions.Add(sess);
@@ -116,10 +115,7 @@ namespace SlaveManager.Controllers
         public async Task<IActionResult> Terminate(int sessionClientId)
         {
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
-            ses.EndTime = DateTime.Now.Second.ToString() + "," + DateTime.Now.Minute.ToString() + "," + DateTime.Now.Hour.ToString() + "," + DateTime.Now.Day.ToString() + "," + DateTime.Now.Month.ToString() + "," + DateTime.Now.Year.ToString();
-
-
-
+            ses.EndTime = DateTime.UtcNow;
 
             if (ses == null) return BadRequest();
 

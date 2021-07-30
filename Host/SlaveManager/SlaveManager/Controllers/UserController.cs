@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Data;
@@ -9,17 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-
-
-
-
-
-// Authentification mechanism
-
 namespace SlaveManager.Controllers
 {
     [Route("/User")]
     [ApiController]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly ISlavePool _SlavePool;

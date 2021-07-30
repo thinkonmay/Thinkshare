@@ -1,11 +1,13 @@
-﻿namespace SharedHost.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SharedHost.Models
 {
     /// <summary>
     /// information of a session that conductor
     /// store inside database,
     /// use for maintainance and management 
     /// </summary>
-    public class SystemSession
+    public class SessionBase
     {
         /// <summary>
         /// 
@@ -16,16 +18,6 @@
         /// 
         /// </summary>
         public int SlaveID { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int SessionSlaveID { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int SessionClientID { get; set; }
 
         /// <summary>
         /// 
@@ -46,6 +38,7 @@
         /// <summary>
         /// 
         /// </summary>
+        [NotMapped]
         public QoE QoE { get; set; }
     }
 }

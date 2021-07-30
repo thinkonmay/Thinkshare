@@ -21,7 +21,7 @@ namespace SlaveManager.Models
         /// </summary>
         public StorageBlockIdentification identification { get; set; }
 
-        public virtual ICollection<Client> servingClient { get; set; }
+        //public virtual ICollection<Client> servingClient { get; set; }
 
         public virtual ICollection<Slave>? servingSlave { get; set; }
 

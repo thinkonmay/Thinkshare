@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SlaveManager.Interfaces;
 using System;
 using System.Net;
@@ -15,6 +16,7 @@ namespace SlaveManager.Controllers
 {
     [Route("/Agent")]
     [ApiController]
+    [Authorize]
     public class WebSocketApiController : ControllerBase
     {
         private readonly IWebSocketConnection _connection;

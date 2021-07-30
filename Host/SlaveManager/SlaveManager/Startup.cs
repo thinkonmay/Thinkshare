@@ -43,7 +43,13 @@ namespace SlaveManager
             services.AddIdentityServer()
                 .AddApiAuthorization<UserAccount, ApplicationDbContext>();
             services.AddAuthentication()
-               .AddIdentityServerJwt();
+               .AddJwtBearer(options =>
+               {
+                   // TODO: Add JWT meta here
+                   options.Audience = "";
+                   options.Authority = "";
+                   options.ClaimsIssuer = "";
+               });
 
             services.AddSignalR();
             services.AddSwaggerGen(c =>

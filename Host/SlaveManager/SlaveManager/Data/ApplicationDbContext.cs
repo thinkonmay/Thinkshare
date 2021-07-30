@@ -36,10 +36,11 @@ namespace SlaveManager.Data
             builder.ConfigurePersistedGrantContext(_operationalStoreOptions.Value);
 
             builder.Entity<Session>().HasIndex(s => new { s.SessionClientID, s.SessionSlaveID }).IsUnique();
+            builder.Entity<Session>().Property(s => s.StartTime).HasDefaultValueSql("getUtcDate()");
+            builder.Entity<UserAccount>().Property(u => u.Created).HasDefaultValueSql("getUtcDate()");
         }
 
         public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();
-
 
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Slave> Devices { get; set; }

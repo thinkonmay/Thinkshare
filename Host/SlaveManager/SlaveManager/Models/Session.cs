@@ -7,8 +7,20 @@ namespace SlaveManager.Models
     /// <summary>
     /// 
     /// </summary>
-    public class Session : SystemSession
+    public class Session : SessionBase
     {
+        public int Id { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int SessionSlaveID { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int SessionClientID { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
