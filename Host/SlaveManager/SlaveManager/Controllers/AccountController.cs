@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace SlaveManager.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     [Authorize]
+    [ApiController]
+    [Route("[controller]")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<UserAccount> _userManager;
@@ -41,7 +41,8 @@ namespace SlaveManager.Controllers
                 if (result.Succeeded)
                 {
                     UserAccount user = await _userManager.FindByEmailAsync(model.Email);
-                    return AuthResponse.GenerateSuccessful(model.Email, _tokenGenerator.GenerateJwt(user.Id), DateTime.UtcNow.AddDays(7));
+                    string token = await _tokenGenerator.GenerateJwt(user);
+                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.UtcNow.AddDays(7));
                 }
             }
 
@@ -50,12 +51,14 @@ namespace SlaveManager.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [Route("Register")]
         public async Task<AuthResponse> Register([FromBody] RegisterModel model)
         {
             if (ModelState.IsValid)
             {
                 var user = new UserAccount()
                 {
+                    UserName = model.Email,
                     Email = model.Email,
                     FullName = model.FullName,
                     DateOfBirth = model.DateOfBirth
@@ -65,7 +68,8 @@ namespace SlaveManager.Controllers
                 if (result.Succeeded)
                 {
                     UserAccount u = await _userManager.FindByEmailAsync(model.Email);
-                    return AuthResponse.GenerateSuccessful(model.Email, _tokenGenerator.GenerateJwt(u.Id), DateTime.UtcNow.AddDays(7));
+                    string token = await _tokenGenerator.GenerateJwt(u);
+                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.UtcNow.AddDays(7));
                 }
             }
 

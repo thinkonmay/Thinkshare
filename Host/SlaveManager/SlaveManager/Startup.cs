@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -6,15 +7,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SlaveManager.Administration;
 using SlaveManager.Data;
 using SlaveManager.Interfaces;
+using SlaveManager.Models.Auth;
 using SlaveManager.Models.User;
 using SlaveManager.Services;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace SlaveManager
 {
@@ -40,16 +44,33 @@ namespace SlaveManager
                 .AddRoles<IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddIdentityServer()
-                .AddApiAuthorization<UserAccount, ApplicationDbContext>();
-            services.AddAuthentication()
-               .AddJwtBearer(options =>
-               {
-                   // TODO: Add JWT meta here
-                   options.Audience = "";
-                   options.Authority = "";
-                   options.ClaimsIssuer = "";
-               });
+            services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 5;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            });
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidIssuer = Configuration["JwtOptions:Issuer"],
+                        ValidAudience = Configuration["JwtOptions:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtOptions:Key"]))
+                    };
+                });
 
             services.AddSignalR();
             services.AddSwaggerGen(c =>
@@ -72,6 +93,7 @@ namespace SlaveManager
             services.AddScoped<IAdmin, Admin>();
             services.AddScoped<IWebSocketConnection, WebSocketConnection>();
             services.AddScoped<ISlaveConnection, SlaveConnection>();
+            services.AddTransient<ITokenGenerator, TokenGenerator>();
 
             services.AddMvc();
         }
@@ -90,8 +112,7 @@ namespace SlaveManager
             app.UseRouting();
 
             app.UseAuthentication();
-            app.UseIdentityServer();
-            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseWebSockets();
 
