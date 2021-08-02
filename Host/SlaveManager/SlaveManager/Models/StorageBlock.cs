@@ -1,5 +1,6 @@
 ﻿using SharedHost.Models;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SlaveManager.Models
 {
@@ -9,6 +10,7 @@ namespace SlaveManager.Models
     /// </summary>
     public class StorageBlock
     {
+        [Key]
         public int StorageID { get; set; }
 
         public string DriveName { get; set; }
@@ -19,7 +21,8 @@ namespace SlaveManager.Models
         /// Key to access storage block in cluster,
         /// different between storage technology
         /// </summary>
-        public StorageBlockIdentification identification { get; set; }
+        /// TODO: To be added later. Comment out to avoid database problems
+        //public StorageBlockIdentification identification { get; set; }
 
         //public virtual ICollection<Client> servingClient { get; set; }
 

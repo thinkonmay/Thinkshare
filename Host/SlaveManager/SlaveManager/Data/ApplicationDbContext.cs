@@ -12,16 +12,10 @@ using System.Threading.Tasks;
 
 namespace SlaveManager.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<UserAccount, IdentityRole<int>, int>, IPersistedGrantDbContext
+    public class ApplicationDbContext : IdentityDbContext<UserAccount, IdentityRole<int>, int>
     {
-        private readonly IOptions<OperationalStoreOptions> _operationalStoreOptions;
-
-        public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options,
-            IOptions<OperationalStoreOptions> operationalStoreOptions)
-            : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            _operationalStoreOptions = operationalStoreOptions;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -33,19 +27,14 @@ namespace SlaveManager.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.ConfigurePersistedGrantContext(_operationalStoreOptions.Value);
 
             builder.Entity<Session>().HasIndex(s => new { s.SessionClientID, s.SessionSlaveID }).IsUnique();
             builder.Entity<Session>().Property(s => s.StartTime).HasDefaultValueSql("getUtcDate()");
             builder.Entity<UserAccount>().Property(u => u.Created).HasDefaultValueSql("getUtcDate()");
         }
 
-        public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();
-
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Slave> Devices { get; set; }
         public DbSet<CommandLog> CommandLogs { get; set; }
-        public DbSet<PersistedGrant> PersistedGrants { get; set; }
-        public DbSet<DeviceFlowCodes> DeviceFlowCodes { get; set; }
     }
 }
