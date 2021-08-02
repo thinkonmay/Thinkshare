@@ -1,0 +1,16 @@
+
+{
+    "SessionClientID":456,
+    "SignallingUrl":"wss://localhost:44345/Session",
+    "StunServer":"https://stun.l.google.com:19302",
+    "ClientOffer":false,
+    
+    "QoE":{
+        "ScreenWidth":2560,
+        "ScreenHeight":1440,
+        "Framerate":60,
+        "Bitrate":1000000,
+        "AudioCodec":1,
+        "VideoCodec":3,
+        "QoEMode":0}
+}
