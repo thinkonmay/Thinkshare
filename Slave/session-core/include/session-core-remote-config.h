@@ -1,7 +1,7 @@
 #include "session-core-type.h"
 #include "session-core.h"
 #include <gst/gst.h>
-
+#
 
 void			attach_bitrate_control				(GstObject* audio_encoder,
 													 GstObject* video_encoder,

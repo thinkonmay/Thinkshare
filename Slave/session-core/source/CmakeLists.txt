@@ -1,9 +1,3 @@
-if (MINGW)
-set(CMAKE_PREFIX_PATH "C:\\gstreamer\\1.0\\mingw_x86")
-elseif(MSVC)
-set(CMAKE_PREFIX_PATH "C:\\gstreamer\\1.0\\msvc_x86_64")
-endif()
-
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(GLIB REQUIRED glib-2.0)
@@ -19,18 +13,18 @@ pkg_check_modules(CONTROLLER REQUIRED gstreamer-controller-1.0)
 
 
 
-file(GLOB SOURCE_LIST ${CMAKE_SOURCE_DIR}/source/*.c)
+file(GLOB SOURCE_LIST ${CMAKE_SOURCE_DIR}/session-core/source/*.c)
 
-add_executable(${PROJECT_NAME} ${SOURCE_LIST})
-
-
+add_executable(session-core ${SOURCE_LIST})
 
 
-target_include_directories(${PROJECT_NAME} 
+
+
+target_include_directories(session-core 
 PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/session-core/include
 
-    
+    ${CMAKE_SOURCE_DIR}/shared-items
     ${LIBSOUP_INCLUDE_DIRS}
     ${GLIB_INCLUDE_DIRS} 
     ${GIO_INCLUDE_DIRS} 
@@ -41,34 +35,37 @@ PUBLIC
     ${WEBRTC_INCLUDE_DIRS}
     ${CONTROLLER_INCLUDE_DIRS})
 
-target_compile_options(${PROJECT_NAME} PUBLIC ${GLIB_CFLAGS})
-target_compile_options(${PROJECT_NAME} PUBLIC ${GIO_CFLAGS})
-target_compile_options(${PROJECT_NAME} PUBLIC ${GOBJECT_CFLAGS})
-target_compile_options(${PROJECT_NAME} PUBLIC ${SDP_CFLAGS})
-target_compile_options(${PROJECT_NAME} PUBLIC ${GST_CFLAGS})
-target_compile_options(${PROJECT_NAME} PUBLIC ${JSON_GLIB_CFLAGS})
-target_compile_options(${PROJECT_NAME} PUBLIC ${WEBRTC_CFLAGS})
-target_compile_options(${PROJECT_NAME} PUBLIC ${CONTROLLER_CFLAGS})
+target_compile_options(session-core PUBLIC ${GLIB_CFLAGS})
+target_compile_options(session-core PUBLIC ${GIO_CFLAGS})
+target_compile_options(session-core PUBLIC ${GOBJECT_CFLAGS})
+target_compile_options(session-core PUBLIC ${SDP_CFLAGS})
+target_compile_options(session-core PUBLIC ${GST_CFLAGS})
+target_compile_options(session-core PUBLIC ${JSON_GLIB_CFLAGS})
+target_compile_options(session-core PUBLIC ${WEBRTC_CFLAGS})
+target_compile_options(session-core PUBLIC ${CONTROLLER_CFLAGS})
 
-target_link_libraries(${PROJECT_NAME} PUBLIC 
-${GLIB_LIBRARY}  
-${GIO_LIBRARY} 
-${GOBJECT_LIBRARY} 
-${SDP_LIBRARY}
-${GST_LIBRARY}
-${JSON_GLIB_LIBRARY}
-${LIBSOUP_LIBRARY}
-${WEBRTC_LIBRARY}
-${CONTROLLER_LIBRARY}
+target_link_directories(session-core PUBLIC ${INCLUDE_LIBRARY} )    
+
+target_link_libraries(session-core PUBLIC 
+    kernel32.lib
+    user32.lib
+    gdi32.lib
+    winspool.lib
+    shell32.lib
+    ole32.lib
+    oleaut32.lib
+    uuid.lib
+    comdlg32.lib
+    advapi32.lib
+    intl.lib
+    gio-2.0.lib
+    glib-2.0.lib
+    gobject-2.0.lib
+    gmodule-2.0.lib
+    gstreamer-1.0.lib
+    json-glib-1.0.lib
+    soup-2.4.lib
+    gstsdp-1.0.lib
+    gstrtp-1.0.lib
+    gstcontroller-1.0.lib
 )
-
-target_link_libraries(${PROJECT_NAME} PUBLIC 
-${GLIB_LINK_LIBRARY} 
-${GIO_LINK_LIBRARY} 
-${GOBJECT_LINK_LIBRARY}
-${LIBSOUP_LINK_LIBRARY}
-${SDP_LINK_LIBRARY}
-${GST_LINK_LIBRARY}
-${JSON_GLIB_LINK_LIBRARY}
-${WEBRTC_LINK_LIBRARY}
-${CONTROLLER_LINK_LIBRARY})

@@ -2,7 +2,7 @@
 #define __SESSION_CORE_H__
 
 #include <session-core-type.h>
-
+#include <error-code.h>
 
 
 

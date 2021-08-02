@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlaveManager", "SlaveManage
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedHost", "SharedHost\SharedHost.shproj", "{6E362B62-5B06-4A28-98AE-9FDC94495BB9}"
 EndProject
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "PCCdataBase", "PCCdataBase\PCCdataBase.sqlproj", "{61E5D5E6-4513-4FC0-9D92-D01DA102DD8B}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedHost\SharedHost.projitems*{0cad9e3e-cda6-4a4a-9bc3-1aad7a6a602d}*SharedItemsImports = 5
@@ -29,12 +27,6 @@ Global
 		{0CAD9E3E-CDA6-4A4A-9BC3-1AAD7A6A602D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CAD9E3E-CDA6-4A4A-9BC3-1AAD7A6A602D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CAD9E3E-CDA6-4A4A-9BC3-1AAD7A6A602D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{61E5D5E6-4513-4FC0-9D92-D01DA102DD8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{61E5D5E6-4513-4FC0-9D92-D01DA102DD8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{61E5D5E6-4513-4FC0-9D92-D01DA102DD8B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{61E5D5E6-4513-4FC0-9D92-D01DA102DD8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{61E5D5E6-4513-4FC0-9D92-D01DA102DD8B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{61E5D5E6-4513-4FC0-9D92-D01DA102DD8B}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

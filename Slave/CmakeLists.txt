@@ -1,0 +1,21 @@
+
+cmake_minimum_required(VERSION 2.20.0)
+project(Slave C)
+
+set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/build-ninja/ninja)
+
+if (MINGW)
+    set(CMAKE_PREFIX_PATH "C:\\gstreamer\\1.0\\mingw_x86")
+    set(INCLUDE_LIBRARY "C:\\gstreamer\\1.0\\mingw_x86\\lib")
+elseif(MSVC)
+    set(CMAKE_PREFIX_PATH "C:\\gstreamer\\1.0\\msvc_x86_64")
+    set(INCLUDE_LIBRARY "C:\\gstreamer\\1.0\\msvc_x86_64\\lib")
+endif()
+
+
+
+set(SHARED_ITEMS ${CMAKE_SOURCE_DIR}/shared-items)
+
+
+add_subdirectory(session-core)
+add_subdirectory(agent)

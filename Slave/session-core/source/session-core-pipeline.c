@@ -1,17 +1,20 @@
 ﻿#include <session-core-pipeline.h>
+#include <session-core-type.h>
 #include <session-core-data-channel.h>
 #include <session-core-signalling.h>
 #include <session-core-remote-config.h>
 #include <session-core-logging.h>
+
+#include <qoe.h>
+
 #include <gst\gst.h>
 #include <glib-2.0\glib.h>
-
-#include <Windows.h>
-
 #include <gst\webrtc\webrtc.h>
 #include <gst\rtp\gstrtppayloads.h>
 
-#include <session-core-type.h>
+#include <Windows.h>
+
+
 
 
 /// <summary>
@@ -213,7 +216,7 @@ setup_pipeline(SessionCore* core)
 
     
     
-    if (qoe_get_video_codec(qoe) == CODEC_NVH264)
+    if (qoe_get_video_codec(qoe) == CODEC_H264)
     {
         if (qoe_get_audio_codec(qoe) == OPUS_ENC)
         {

@@ -13,6 +13,12 @@
 #define ID  0
 
 #include <intrin.h>
+
+
+
+
+
+
 static unsigned long long
 FileTimeToInt64(const FILETIME ft);
 

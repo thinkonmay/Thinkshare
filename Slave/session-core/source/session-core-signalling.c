@@ -5,13 +5,16 @@
 #include <session-core-type.h>
 #include <session-core-logging.h>
 
-#include <gst\gst.h>
-#include <glib-2.0\glib.h>
+#include <exit-code.h>
+#include <error-code.h>
+
+#include <gst/gst.h>
+#include <glib-2.0/glib.h>
 #include <session-core-type.h>
 #include <libsoup/soup.h>
 
-#include <gst\webrtc\webrtc.h>
-#include <gst\rtp\gstrtppayloads.h>
+#include <gst/webrtc/webrtc.h>
+#include <gst/rtp/gstrtppayloads.h>
 #include <libsoup/soup.h>
 
 #include <stdio.h>

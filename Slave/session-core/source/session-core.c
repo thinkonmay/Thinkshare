@@ -6,8 +6,15 @@
 #include <session-core-message.h>
 #include <session-core-type.h>
 #include <session-core-ipc.h>
-#include <glib.h>
 #include <session-core-logging.h>
+
+#include <exit-code.h>
+#include <error-code.h>
+#include <module.h>
+#include <opcode.h>
+
+
+#include <glib.h>
 
 
 

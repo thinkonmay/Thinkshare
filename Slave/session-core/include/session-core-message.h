@@ -1,5 +1,7 @@
 #include <session-core-type.h>
 #include "session-core.h"
+#include <module.h>
+#include <opcode.h>
 
 
 

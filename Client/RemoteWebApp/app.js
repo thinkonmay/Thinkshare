@@ -1,20 +1,3 @@
-/**
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
- 
 var ScaleLoader = VueSpinner.ScaleLoader;
 var serverStatus = null;
 var app = new Vue({
@@ -28,95 +11,77 @@ var app = new Vue({
     data() 
     {
         return {
-            videoBitRate: (parseInt(window.localStorage.getItem("videoBitRate")) || 2000),
-            videoBitRateOptions: [
-                { text: '500 kb/s', value: 500 },
-                { text: '1 mbps', value: 1000 },
-                { text: '2 mbps', value: 2000 },
-                { text: '3 mbps', value: 3000 },
-                { text: '4 mbps', value: 4000 },
-                { text: '8 mbps', value: 8000 },
-                { text: '20 mbps', value: 20000 },
-                { text: '100 mbps', value: 100000 },
-                { text: '150 mbps', value: 150000 },
-                { text: '200 mbps', value: 200000 },
-            ],
-            videoFramerate: (parseInt(window.localStorage.getItem("videoFramerate")) || 30),
-            videoFramerateOptions: [
-                { text: '15 fps', value: 15 },
-                { text: '30 fps', value: 30 },
-                { text: '60 fps', value: 60 },
-                { text: '100 fps', value: 100 },
-            ],
-            audioBitRate: (parseInt(window.localStorage.getItem("audioBitRate")) || 32000),
-            audioBitRateOptions: [
-                { text: '32 kb/s', value: 32000 },
-                { text: '64 kb/s', value: 64000 },
-                { text: '128 kb/s', value: 128000 },
-                { text: '256 kb/s', value: 256000 },
-                { text: '320 kb/s', value: 320000 },
-            ],
-            // session = JSON.parse(
-            // {
-            //     "sessionClientID": 456,
-            //     "SignallingUrl": "wss://localhost:44345/app.session",
-            //     "StunServer": "https://stun.l.google.com:19302",
-            //     "ClientOffer": false,
-                
-            //     "QoE":
-            //     {
-            //         "ScreenWidth": 2560,
-            //         "ScreenHeight": 1440,
-            //         "Framerate": 60,
-            //         "Bitrate": 1000,
-            //         "AudioCodec": 1,
-            //         "VideoCodec": 3,
-            //         "QoEMode": 0,
-            //     }
-            // }),
+
+            /**
+             * Client configuration
+             */
+            devMode: ClientConfig.DevMode,
+
+            
 
             showStart: false,
             showDrawer: false,
+
             logEntries: [],
             debugEntries: [],
+
             status: 'connecting',
             loadingText: '',
-            audioEnabled: null,
-            windowResolution: "",
+
+            audioEnabled: ClientConfig.AudioEnable,
+
+            /**
+             * list contain window resolution [width,height]
+             */
+            windowResolution: null,
+
             connectionStatType: "unknown",
-            connectionLatency: 0,
-            connectionVideoLatency: 0,
-            connectionAudioLatency: 0,
             connectionAudioCodecName: "unknown",
-            connectionAudioBitrate: 0,
-            connectionPacketsReceived: 0,
-            connectionPacketsLost: 0,
-            connectionCodec: "unknown",
-            connectionVideoDecoder: "unknown",
+            connectionVideoCodecName: "unknown",
             connectionResolution: "",
-            connectionFrameRate: 0,
-            connectionVideoBitrate: 0,
-            connectionAvailableBandwidth: 0,
-            gpuLoad: 0,	
-            gpuMemoryTotal: 0,	
-            gpuMemoryUsed: 0,
-            debug: (window.localStorage.getItem("debug") === "true"),
+
+            debug: ClientConfig.DevMode,
+            displayStatus : ClientConfig.DevMode,
             turnSwitch: (window.localStorage.getItem("turnSwitch") === "true"),
 
-            Clientoffer: false,
-            ClientID: 456,
-            SignallingUrl :  "ws://192.168.1.2:8080/Session",
-            StunServer : "https://stun.l.google.com:19302",
 
-            // QoEMode = app.session.QoE.QoEMode,
-            // AudioCodec = app.session.QoE.AudioCodec,
-            // VideoCodec = app.session.QoE.VideoCodec,
-            // ScreenWidth = 2560,
-            // ScreenHeight = 1440,
-            // FrameRate = app.session.QoE.Framerate,
+            /*parameter serve for session initialization */
+            Clientoffer: clientSession.Clientoffer,
+            ClientID: clientSession.SessionClientID,
+            SignallingUrl: clientSession.SignallingUrl,
+            StunServer: clientSession.StunServer,
+
+            /*default value from client session fetch from server*/
+            defaultQoEMode: clientSession.QoE.QoEMode,
+            AudioCodec: clientSession.QoE.AudioCodec,
+            VideoCodec: clientSession.QoE.VideoCodec,
+
+            /**
+             * default Value of QoE metric, fetch from server
+             */
+            defaultScreenWidth: clientSession.QoE.ScreenWidth,
+            defaultScreenHeight: clientSession.QoE.ScreenHeight,
+            defaultFrameRate: clientSession.QoE.Framerate,
+            defaultBitrate: clientSession.QoE.Bitrate,
 
 
 
+            /*Metric serve for adaptive bitrate algorithm */
+            currentTime: 0,
+            adaptiveAudioBitrate: clientSession.QoE.Bitrate,
+            adaptiveVideoBitrate: clientSession.QoE.Bitrate,
+            adaptiveFramerate: clientSession.QoE.Framerate,
+            connectionVideoDecoder: "unknown",
+
+            windowsWidth:0,
+            windowsHeight:0,
+
+            adaptivePacketsLost: 0,
+            adaptiveAudioLatency: 0,
+            adaptiveVideoLatency: 0,
+            adaptiveTotalBandwidth: clientSession.QoE.Bitrate,
+
+            
         };
     },
 
@@ -124,24 +89,36 @@ var app = new Vue({
     {
         enterFullscreen() {
             // Request full screen mode.
-            console.log("Bo may dang fullscreen day");
-            webrtc.element.parentElement.requestFullscreen();
+            app.logEntries.push(applyTimestamp("[VIDEO] [Switch to full screen mode]"));
+            videoElement.parentElement.requestFullscreen();
         },
         playVideo() {
+            app.logEntries.push(applyTimestamp("[VIDEO] [Start remote control]"));
             webrtc.playVideo();
             this.showStart = false;
         },
-        offerClient(){
-            //set client offer is my browser
-            console.log("Bo may dang offer day");
-            clientoffer = true;
-        },
         connectServer(){
-            console.log("Dang connect server, doi ty")
-            webrtc.connect();
+            app.logEntries.push("[SIGNALLING] [Connecting to server]");
+            signalling.connect();
         },
         getServerStatus(){
-            serverStatus ? console.log(serverStatus): console.log("Unconnected server")
+            serverStatus ? app.logEntries.push(serverStatus): app.logEntries.push("Unconnected server");
+        },
+        resetStream(){
+            /**
+             * reset webrtc connection
+             */
+            webrtc.input.detach();
+            webrtc._close();
+        },
+        showDrawer(newValue){
+            if(newValue) {
+                webrtc.input.detach();
+            }
+            else{
+                webrtc.input.attach();
+            }
+        
         }
     },
 
@@ -150,18 +127,19 @@ var app = new Vue({
             window.localStorage.setItem("videoBitRate", newValue.toString());
         },
         videoFramerate(newValue) {
-            console.log("video frame rate changed to " + newValue);
+            app.logEntries.push("video frame rate changed to " + newValue);
             window.localStorage.setItem("videoFramerate", newValue.toString());
         },
         audioEnabled(newValue, oldValue) {
-            console.log("audio enabled changed from " + oldValue + " to " + newValue);
-            if (oldValue !== null && newValue !== oldValue) webrtc.sendDataChannelMessage('_arg_audio,' + newValue);
+            app.logEntries.push("audio enabled changed from " + oldValue + " to " + newValue);
         },
         audioBitRate(newValue) {
             webrtc.sendDataChannelMessage('ab,' + newValue);
             window.localStorage.setItem("audioBitRate", newValue.toString());
         },
         debug(newValue) {
+            if(ClientConfig.devMode === false){return;}
+
             window.localStorage.setItem("debug", newValue.toString());
             // Reload the page to force read of stored value on first load.
             setTimeout(() => {
@@ -171,12 +149,17 @@ var app = new Vue({
     },
 });
 
+
+
+
+
 var videoElement = document.getElementById("stream");
 
-// WebRTC entrypoint, connect to the signalling server
-/*global WebRTCDemoSignalling, WebRTCDemo*/
 var signalling = new Signalling(new URL(app.SignallingUrl), app.ClientID, app.Clientoffer);
-var webrtc = new WebRTCDemo(new URL(app.StunServer),signalling, videoElement);
+
+var webrtc = new WebRTC(signalling, videoElement, ClientConfig.RTPpeerconfig);
+
+
 
 
 // Function to add timestamp to logs.
@@ -186,56 +169,107 @@ var applyTimestamp = (msg) => {
     return "[" + ts + "]" + " " + msg;
 }
 
+signalling.onstatus = (message) => {
+     app.logEntries.push(applyTimestamp("[signalling] " + message));
+};
+
+webrtc.onstatus = (message) => {
+     app.logEntries.push(applyTimestamp("[webrtc] " + message))
+};
 
 
-if (app.debug) 
-{
-    signalling.ondebug = (message) => { app.debugEntries.push(applyTimestamp("[signalling] " + message));};
-    webrtc.ondebug = (message) => { app.debugEntries.push(applyTimestamp("[webrtc] " + message)) };
-}
+signalling.ondebug = (message) => {
+     app.debugEntries.push(applyTimestamp("[signalling] " + message));
+};
+
+webrtc.ondebug = (message) => { 
+    app.debugEntries.push(applyTimestamp("[webrtc] " + message)); 
+};
+
+
+
+
 
 //STATUS
 // Bind vue status to connection state.
 webrtc.onconnectionstatechange = (state) => {
     app.status = state;
-    app.debugEntries.push("Peer Connection State: " + state);
+
     if (state === "connected") 
     {
+        
+        var now = new Date();
         // Start watching stats.
+
+
+
         var bytesReceivedStart = 0;
         var audiobytesReceivedStart = 0;
         var statsStart = new Date().getTime() / 1000;
+
+
         var statsLoop = () => {
             webrtc.getConnectionStats().then((stats) => {
-                //app.audioEnabled = (app.state === 'connected' && stats.audioCodecName) ? true : false;
                 if (app.audioEnabled) {
-                    app.connectionAudioLatency = parseInt(stats.audioCurrentDelayMs);
-                    app.connectionAudioCodecName = stats.audioCodecName;
-                    app.connectionLatency = Math.max(app.connectionAudioLatency, app.connectionVideoLatency);
+                    app.adaptiveAudioLatency = parseInt(stats.audioCurrentDelayMs);
+
+
                 } else {
                     stats.audiobytesReceived = 0;
-                    app.connectionLatency = app.connectionVideoLatency;
                 }
-                app.connectionStatType = stats.videoLocalCandidateType;
-                app.connectionVideoLatency = parseInt(stats.videoCurrentDelayMs);
-                app.connectionPacketsReceived = parseInt(stats.videopacketsReceived);
-                app.connectionPacketsLost = parseInt(stats.videopacketsLost);
-                app.connectionCodec = stats.videoCodecName;
-                app.connectionVideoDecoder = stats.videocodecImplementationName;
-                app.connectionResolution = stats.videoFrameWidthReceived + "x" + stats.videoFrameHeightReceived;
-                app.connectionFrameRate = stats.videoFrameRateOutput;
-                app.connectionAvailableBandwidth = (parseInt(stats.videoAvailableReceiveBandwidth) / 1e+6).toFixed(2) + " mbps";
-
+                
                 // Compute current video bitrate in mbps
                 var now = new Date().getTime() / 1000;
-                app.connectionVideoBitrate = (((parseInt(stats.videobytesReceived) - bytesReceivedStart) / (now - statsStart)) * 8 / 1e+6).toFixed(2);
+                /**
+                 * time value of an sample
+                 */
+                app.currentTime = now - statsStart;
+
+
+                app.connectionStatType = stats.videoLocalCandidateType;
+
+                /**
+                 * packets lost
+                 */
+                app.adaptivePacketsLost = parseInt(stats.videopacketsLost);
+
+                /**
+                 * video codec,ex HEVC
+                 */
+                app.connectionVideoCodecName = stats.videoCodecName;
+                /**
+                 * video decoder ex:ffmpeg
+                 */
+                app.connectionVideoDecoder = stats.videocodecImplementationName;
+
+                app.connectionResolution = stats.videoFrameWidthReceived + "x" + stats.videoFrameHeightReceived;
+
+                /**
+                 * (volatile) framerate of the stream
+                 */
+                app.adaptiveFramerate = parseInt(stats.videoFrameRateOutput);
+
+                /**
+                 * (volatile) total bandwidth of the stream
+                 */
+                app.adaptiveTotalBandwidth =  parseInt(stats.videoAvailableReceiveBandwidth);
+
+                
+                /**
+                 * (volatile) video latency
+                 */
+                app.adaptiveVideoLatency = parseInt(stats.videoCurrentDelayMs);
+
+                 /**
+                  * (volatile) video bitrate 
+                  */
+                app.adaptiveVideoBitrate = Math.round(parseInt((stats.videobytesReceived) - bytesReceivedStart) / (now - statsStart));
                 bytesReceivedStart = parseInt(stats.videobytesReceived);
 
-                // Compute current audio bitrate in kbps
-                if (app.audioEnabled) {
-                    app.connectionAudioBitrate = (((parseInt(stats.audiobytesReceived) - audiobytesReceivedStart) / (now - statsStart)) * 8 / 1e+3).toFixed(2);
-                    audiobytesReceivedStart = parseInt(stats.audiobytesReceived);
-                }
+
+                app.adaptiveAudioBitrate = Math.round((parseInt(stats.audiobytesReceived) - audiobytesReceivedStart) / (now - statsStart));
+                audiobytesReceivedStart = parseInt(stats.audiobytesReceived);
+                
 
                 statsStart = now;
 
@@ -247,7 +281,10 @@ webrtc.onconnectionstatechange = (state) => {
     }
 }
 
-webrtc.ondatachannelopen = () => 
+
+
+
+webrtc.controldatachannelconnected = () => 
 {
     webrtc.input.attach();
 
@@ -256,16 +293,25 @@ webrtc.ondatachannelopen = () =>
 
         var message =
         {
-            "Opcode":HidOpcode.QOE_REPORT,
-            "FrameRate":app.connectionFrameRate,
-            "Latency":app.connectionLatency,
-            "AudioBitrate":app.audioBitRate || (parseInt(window.localStorage.getItem("audioBitRate")) || 64000),
-            "VideoBitrate":video_bit_rate = app.videoBitRate || (parseInt(window.localStorage.getItem("videoBitRate")) || 2000)
+            Opcode:HidOpcode.QOE_REPORT,
+            FrameRate: app.adaptiveFramerate,
+
+            AudioLatency: app.adaptiveAudioLatency,
+            VideoLatency: app.adaptiveVideoLatency,
+
+            AudioBitrate: app.adaptiveAudioBitrate,
+            VideoBitrate: app.adaptiveVideoBitrate,
+
+            TotalBandwidth: app.adaptiveTotalBandwidth,
+            PacketsLost: app.adaptivePacketsLost
         }
 
-        webrtc.sendHIDDataChannelMessage(JSON.stringify(message));
-    }, 5000)
+        webrtc.sendControlDataChannelMessage(Opcode.QOE_REPORT,Module.CORE_MODULE,JSON.stringify(message));
+    }, 1000)
 }
+
+
+
 
 webrtc.ondatachannelclose = () => {
     webrtc.input.detach();
@@ -279,30 +325,15 @@ webrtc.input.onfullscreenhotkey = () => {
     app.enterFullscreen();
 }
 
-webrtc.input.onofferclienthotkey = () => {
-    app.offerClient();
-}
-
-webrtc.input.connectserverhotkey = () => {
-    app.connectServer();
-}
-
-webrtc.input.ongetstatusserverhotkey = () => {
-    app.getServerStatus();
-}
-
-
 
 webrtc.input.onresizeend = () => {
     app.windowResolution = webrtc.input.getWindowResolution();
-    console.log(`Window size changed: ${app.windowResolution[0]}x${app.windowResolution[1]}`);
-    app.debugEntries.push(`Window size changed: ${app.windowResolution[0]}x${app.windowResolution[1]}`);
+    app.logEntries.push(`Window size changed: ${app.windowResolution[0]}x${app.windowResolution[1]}`);
 }
 
 webrtc.onplayvideorequired = () => {
     app.showStart = true;
 }
-webrtc.input.on
 
 
 

@@ -1,139 +1,63 @@
-/**
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/*global GamepadManager, Input*/
-
-/*eslint no-unused-vars: ["error", { "vars": "local" }]*/
-
-/**
- * @typedef {Object} WebRTCDemo
- * @property {function} ondebug - Callback fired when new debug message is set.
- * @property {function} onstatus - Callback fired when new status message is set.
- * @property {function} onerror - Callback fired when new error message is set.
- * @property {function} onconnectionstatechange - Callback fired when peer connection state changes.
- * @property {function} ondatachannelclose - Callback fired when data channel is closed.
- * @property {function} ondatachannelopen - Callback fired when data channel is opened.
- * @property {function} onplayvideorequired - Callback fired when user interaction is required before playing video.
- * @property {function} onclipboardcontent - Callback fired when clipboard content from the remote host is received.
- * @property {function} getConnectionStats - Returns promise that resolves with connection stats.
- * @property {Objet} rtcPeerConfig - RTC configuration containing ICE servers and other connection properties.
- * @property {fucntion} sendDataChannelMessage - Send a message to the peer though the data channel.
- */
-
-class WebRTCDemo 
+class WebRTC
 {
-    /**
-     * Interface to WebRTC demo.
-     *
-     * @constructor
-     * @param {Signalling} [signalling]
-     *    Instance of WebRTCDemoSignalling used to communicate with signalling server.
-     * @param {Element} [element]
-     *    video element to attach stream to.
-     */
-    constructor(Stun, signalling, element) {
-        /**
-         * @type {Signalling}
-         */
+    constructor(signalling, ///
+                element, 
+                rtcPeerConfig) 
+    {
         this.signalling = signalling;
 
-        /**
-         * @type {Element}
-         */
         this.element = element;
 
-        /**
-         * @type {Object}
-         */
-        this.rtcPeerConfig = {iceServers: [{urls: "stun:stun.services.mozilla.com"},
-        {urls: "stun:stun.l.google.com:19302"}]};
+        this.rtcPeerConfig = rtcPeerConfig;
 
-        /**
-         * @type {RTCPeerConnection}
-         */
         this.peerConnection = null;
 
-        /**
-         * @type {function}
-         */
         this.onstatus = null;
 
-        /**
-         * @type {function}
-         */
         this.ondebug = null;
 
-        /**
-         * @type {function}
-         */
         this.onerror = null;
 
-        /**
-         * @type {function}
-         */
         this.onconnectionstatechange = null;
 
-        /**
-         * @type {function}
-         */
         this.ondatachannelopen = null;
 
-        /**
-         * @type {function}
-         */
         this.ondatachannelclose = null;
 
-        /**
-         * @type {function}
-         */
+        this.controldatachannelconnected = null;
+
         this.onplayvideorequired = null;
 
-        /**
-         * @type {function}
-         */
         this.onclipboardcontent = null;
 
-        /**
-         * @type {function}
-         */
         this.onsystemaction = null;
 
         // Bind signalling server callbacks.
         this.signalling.onsdp = this._onSDP.bind(this);
         this.signalling.onice = this._onSignallingICE.bind(this);
 
-        /**
-         * @type {boolean}
-         */
+        //
+        this.signalling.WebRTCconnect = this.connect.bind(this);
+        this.signalling.RTCpeerConnection = this.peerConnection;
+
         this._connected = false;
 
-        /**
-         * @type {RTCDataChannel}
-         */
         this.HIDchannel = null;
-
         this.Controlchannel = null;
 
-        /**
-         * @type {Input}
-         */
         this.input = new Input(element, 
             (data) => {this.HIDchannel.send(data);}, 
             (data) => {this.Controlchannel.send(data);})
     }
+
+    /**
+     * close RTC connection
+     */
+    _close()
+    {
+        this.peerConnection.close();
+    }
+
 
     /**
      * Sets status message.
@@ -144,7 +68,6 @@ class WebRTCDemo
     _setStatus(message) {
         if (this.onstatus !== null) {
             this.onstatus(message);
-            app.debugEntries.push("Streaming State: " + message);
         }
     }
 
@@ -155,9 +78,7 @@ class WebRTCDemo
      * @param {String} message
      */
     _setDebug(message) {
-        console.log(message);
-        app.debugEntries.push("Streaming Debug State: " + message);
-        
+        this.ondebug(message);
     }
 
     /**
@@ -169,8 +90,6 @@ class WebRTCDemo
     _setError(message) {
         if (this.onerror !== null) {
             this.onerror(message);
-            app.debugEntries.push("Streaming Error State: " + message);
-
         }
     }
 
@@ -181,31 +100,28 @@ class WebRTCDemo
     _setConnectionState(state) {
         if (this.onconnectionstatechange !== null) {
             this.onconnectionstatechange(state);
-            app.debugEntries.push("Streaming Connection State: " + state);
-
         }
     }
 
     /**
      * Handles incoming ICE candidate from signalling server.
-     *
      * @param {RTCIceCandidate} icecandidate
      */
     _onSignallingICE(icecandidate) 
     {
-        this._setDebug("received ice candidate from signalling server: " + JSON.stringify(icecandidate));
+        this._setStatus("received ice candidate from signalling server: " + JSON.stringify(icecandidate));
         // if (JSON.stringify(icecandidate).indexOf("relay") < 0) { // if no relay address is found, assuming it means no TURN server
         //     this._setDebug("Rejecting non-relay ICE candidate: " + JSON.stringify(icecandidate));
         //     return;
         // }
-        this.peerConnection.addIceCandidate(icecandidate).catch(this._setError);
+        this.peerConnection.addIceCandidate(new RTCIceCandidate(ice)).catch(this._setError);
     }
+
+
 
     /**
      * Handler for ICE candidate received from peer connection.
      * If ice is null, then all candidates have been received.
-     *
-     * @event
      * @param {RTCPeerConnectionIceEvent} event - The event: https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnectionIceEvent
      */
     _onPeerICE(event) {
@@ -216,6 +132,9 @@ class WebRTCDemo
         this.signalling.sendICE(event.candidate);
     }
 
+
+
+
     /**
      * Handles incoming SDP from signalling server.
      * Sets the remote description on the peer connection,
@@ -224,23 +143,31 @@ class WebRTCDemo
      * @param {RTCSessionDescription} sdp
      */
     _onSDP(sdp) {
-        if (sdp.type != "offer") {
+        if (sdp.type != "offer") //
+        {
             this._setError("received SDP was not type offer.");
             return
         }
-        console.log("Received remote SDP", sdp);
+
+
+        this._setStatus("Received remote SDP", sdp);//
         this.peerConnection.setRemoteDescription(sdp).then(() => {
-            this._setDebug("received SDP offer, creating answer");
+
+            this._setStatus("received SDP offer, creating answer");
             this.peerConnection.createAnswer()
-                .then((local_sdp) => {
-                    console.log("Created local SDP", local_sdp);
-                    this.peerConnection.setLocalDescription(local_sdp).then(() => {
-                        this._setDebug("Sending SDP answer");
-                        this.signalling.sendSDP(this.peerConnection.localDescription);
-                    });
-                }).catch(() => {
-                    this._setError("Error creating local SDP");
+
+            .then((local_sdp) => {//on local description
+                this._setStatus("Created local SDP", local_sdp);
+                this.peerConnection.setLocalDescription(local_sdp).then(() => {
+                    this._setStatus("Sending SDP answer");
+                    this.signalling.sendSDP(this.peerConnection.localDescription);
                 });
+            })
+                
+                
+            .catch(() => {
+                this._setError("Error creating local SDP");
+            });
         })
     }
 
@@ -263,6 +190,7 @@ class WebRTCDemo
         this._setStatus("Received incoming " + event.track.kind + " stream from peer");
         if (!this.streams) this.streams = [];
         this.streams.push([event.track.kind, event.streams]);
+
         if (event.track.kind === "video") {
             this.element.srcObject = event.streams[0];
             this.playVideo();
@@ -271,41 +199,33 @@ class WebRTCDemo
 
     /**
      * Handles incoming data channel events from the peer connection.
-     *
      * @param {RTCdataChannelEvent} event
      */
     _onPeerdDataChannel(event) 
     {
         this._setStatus("Peer data channel created: " + event.channel.label);
 
-        if(event.channel.label === "HID")
-        {
-            this.HIDchannel = event.channel;
-            this.HIDchannel.onmessage = this._onHIDDataChannelMessage.bind(this);
-            this.HIDchannel.onopen = () => {
-                if (this.ondatachannelopen !== null)
-                    this.ondatachannelopen();
-            }
-            this.HIDchannel.onclose = () => {
-                if (this.ondatachannelclose !== null)
-                    this.ondatachannelclose();}
-        }else if (event.channel.label == "Control"){
-            this.Controlchannel = event.channel;
-            this.Controlchannel.onmessage = this._onControlDataChannelMessage.bind(this);
-            this.Controlchannel.onopen = () => {
-                if (this.ondatachannelopen !== null)
-                    this.ondatachannelopen();
-            }
-            this.Controlchannel.onclose = () => {
-                if (this.ondatachannelclose !== null)
-                    this.ondatachannelclose();}
+
+        this.Controlchannel = event.channel;
+        this.Controlchannel.onmessage = this._onControlDataChannelMessage.bind(this);
+
+        this.Controlchannel.onopen = () => {
+            if (this.ondatachannelopen !== null)
+                this.ondatachannelopen();
         }
+
+        this.Controlchannel.onclose = () => {
+            if (this.ondatachannelclose !== null)
+                this.ondatachannelclose();}
+
+
+        this.controldatachannelconnected();
+        
     }
     
 
-        /**
+    /**
      * Handles messages from the peer data channel.
-     *
      * @param {MessageEvent} event
      */
     _onControlDataChannelMessage(event) 
@@ -323,16 +243,17 @@ class WebRTCDemo
             return;
         }
 
+        var from = msg.From;
+        var To = msg.To;
+        var Opcode = msg.Opcode;
+        var Data = msg.Data;
+
         this._setDebug("data channel message: " + event.data).bind(this);
-
-
-
     }
      
 
     /**
      * Handles messages from the peer data channel.
-     *
      * @param {MessageEvent} event
      */
     _onHIDDataChannelMessage(event) 
@@ -354,7 +275,7 @@ class WebRTCDemo
         {
             if (msg.data !== null) {
                 var content = atob(msg.data.content);
-                this._setDebug("received clipboard contents, length: " + content.length).bind(this);
+                this._setStatus("received clipboard contents, length: " + content.length).bind(this);
 
                 if (this.onclipboardcontent !== null) 
                 {
@@ -363,7 +284,7 @@ class WebRTCDemo
             }
         } 
 
-        this._setDebug("HID data channel message: " + event.data).bind(this);
+        this._setStatus("HID data channel message: " + event.data).bind(this);
     }
 
     /**
@@ -398,7 +319,6 @@ class WebRTCDemo
 
     /**
      * Sends message to peer data channel HID. 
-     *
      * @param {String} message
      */
     sendHIDDataChannelMessage(message) 
@@ -412,17 +332,23 @@ class WebRTCDemo
 
     /**
      * Sends message to peer data channel control.
-     *
-     * @param {String} message
      */
-     sendControlDataChannelMessage(message) 
-     {
+    sendControlDataChannelMessage(opcode,to, message) {
         if (this.Controlchannel.readyState === 'open') {
-            this.Controlchannel.send(message);
+
+        var message = {
+            Opcode:opcode,
+            From:Module.CLIENT_MODULE,
+            To:to,
+            Data:message,
+        }
+            this.Controlchannel.send(JSON.stringify(message));
         } else {
             this._setError("attempt to send data channel message before channel was open.");
         }
-     }
+    }
+
+
 
     /**
      * Returns promise that resolves with connection stats.
@@ -490,11 +416,6 @@ class WebRTCDemo
         }
     }
 
-    /**
-     * Starts playing the video stream.
-     * Note that this must be called after some DOM interaction has already occured.
-     * Chrome does not allow auto playing of videos without first having a DOM interaction.
-     */
     // [START playVideo]
     playVideo() 
     {
@@ -503,7 +424,7 @@ class WebRTCDemo
         var playPromise = this.element.play();
         if (playPromise !== undefined) {
             playPromise.then(() => {
-                this._setDebug("Video stream is playing.").bind(this);
+                this._setStatus("Video stream is playing.").bind(this);
             }).catch(() => {
                 if (this.onplayvideorequired !== null) {
                     this.onplayvideorequired();
@@ -522,9 +443,17 @@ class WebRTCDemo
     {
         // Create the peer connection object and bind callbacks.
         this.peerConnection = new RTCPeerConnection(this.rtcPeerConfig);
+
+
+
         this.peerConnection.ontrack = this._ontrack.bind(this);
         this.peerConnection.onicecandidate = this._onPeerICE.bind(this);
         this.peerConnection.ondatachannel = this._onPeerdDataChannel.bind(this);
+
+
+        this.HIDchannel = this.peerConnection.createDataChannel("HID",null);
+        this.HIDchannel.onmessage = this._onHIDDataChannelMessage.bind(this);
+
 
         this.peerConnection.onconnectionstatechange = () => {
             // Local event handling.
@@ -533,8 +462,6 @@ class WebRTCDemo
             // Pass state to event listeners.
             this._setConnectionState(this.peerConnection.connectionState);
         };
-
-        this.signalling.connect();
     }
 
     send_escape_key() 

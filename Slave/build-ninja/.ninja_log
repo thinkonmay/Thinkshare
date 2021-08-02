@@ -1,0 +1,6 @@
+# ninja log v5
+74	4912	6495781360000000	session-core/source/CMakeFiles/session-core.dir/session-core-ipc.c.obj	9ee02a2c9d57ecd5
+49	5497	6495781360000000	session-core/source/CMakeFiles/session-core.dir/Program.c.obj	1d20801507560d12
+80	4963	6495781360000000	session-core/source/CMakeFiles/session-core.dir/session-core-logging.c.obj	3263538360eca0ec
+135	5810	6495781360000000	session-core/source/CMakeFiles/session-core.dir/session-core-message.c.obj	522fc3286d35f1e0
+201	1565	6495782020000000	agent/source/CMakeFiles/agent.dir/agent-state/agent-state.c.obj	e5797bf69cf16894

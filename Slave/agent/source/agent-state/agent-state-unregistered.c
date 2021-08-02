@@ -2,6 +2,7 @@
 #include <agent-state.h>
 #include <glib.h>
 #include <agent-socket.h>
+#include <opcode.h>
 
 
 
@@ -37,6 +38,7 @@ unregistered_send_message_to_host(AgentObject* agent, char* message)
     object = json_node_get_object(root);
 
     int i= json_object_get_int_member(object, "Opcode");
+
     if (i != REGISTER_SLAVE)
         g_print("We haven't registered yet \n");
     else

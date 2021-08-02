@@ -9,8 +9,6 @@
 #include <Windows.h>
 #include <stdio.h>
 
-#define SESSION_CORE_NAME  "SessionCore.exe"
-
 #define BUFFER_SIZE 10000
 
 

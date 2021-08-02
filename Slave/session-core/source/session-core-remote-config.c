@@ -2,6 +2,10 @@
 #include <session-core-type.h>
 #include <session-core-pipeline.h>
 
+#include <opcode.h>
+#include <qoe.h>
+#include <codec.h>
+
 #include <gst\gst.h>
 #include <glib-2.0\glib.h>
 #include <gst/controller/gstinterpolationcontrolsource.h>
