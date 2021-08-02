@@ -1,20 +1,25 @@
-﻿using SlaveManager.Data;
-using MersenneTwister;
-using Microsoft.AspNetCore.Http;
+﻿using MersenneTwister;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RestSharp;
 using SharedHost.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SlaveManager.Data;
+using SlaveManager.Interfaces;
 using SlaveManager.Models;
 using SlaveManager.Services;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+
+
+
+// TODO: authentification
 
 namespace SlaveManager.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/Session")]
     [ApiController]
     // TODO: Add URL routing for REST requests for signalling & slave manager servers
     public class SessionsController : ControllerBase
@@ -33,24 +38,25 @@ namespace SlaveManager.Controllers
         // POST: ManageSessions/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost("Request")]
         public async Task<IActionResult> Create(ClientRequest req)
         {
             if (ModelState.IsValid)
             {
                 if (_slavePool.GetSlaveState(req.SlaveId) != "Device Open") { return BadRequest("Device Not Available"); }
 
+                /*create session id pair randomly*/
                 int sessionSlaveId = Randoms.Next();
                 int sessionClientId = Randoms.Next();
 
+                /*create session from */
                 var _QoE = new QoE();
-                _QoE.ScreenHeight = req.Capabilities.ScreenHeight;
-                _QoE.ScreenWidth = req.Capabilities.ScreenWidth;
-                _QoE.Framerate = req.Capabilities.FrameRate;
-                _QoE.Bitrate = req.Capabilities.Bitrate;
-                _QoE.VideoCodec = req.Capabilities.VideoCodec;
-                _QoE.AudioCodec = req.Capabilities.AudioCodec;
-                _QoE.QoEMode = req.Capabilities.QoEMode;
+                _QoE.ScreenHeight = req.cap.screenHeight;
+                _QoE.ScreenWidth = req.cap.screenWidth;
+                _QoE.Bitrate = req.cap.bitrate;
+                _QoE.VideoCodec = req.cap.videoCodec;
+                _QoE.AudioCodec = req.cap.audioCodec;
+                _QoE.QoEMode = req.cap.mode;
 
                 Session sess = new Session()
                 {
@@ -67,10 +73,10 @@ namespace SlaveManager.Controllers
                 _db.Sessions.Add(sess);
                 await _db.SaveChangesAsync();
 
-                var signalPair = new ClientRequest()
+                var signalPair = new SessionPair()
                 {
-                    SlaveId = sessionSlaveId,
-                    ClientId = sessionClientId
+                    SessionSlaveID = sessionSlaveId,
+                    SessionClientID = sessionClientId
                 };
 
                 var client = new RestClient(GeneralConstants.SIGNALLING_SERVER);
@@ -101,17 +107,23 @@ namespace SlaveManager.Controllers
             return BadRequest();
         }
 
-        [HttpPost]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionClientId"></param>
+        /// <returns></returns>
+        [HttpPost("Terminate")]
         public async Task<IActionResult> Terminate(int sessionClientId)
         {
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
+            ses.EndTime = DateTime.UtcNow;
 
             if (ses == null) return BadRequest();
 
-            var deletion = new
-            { 
-                SessionClientId = ses.SessionClientID,
-                SessionSlaveId = ses.SessionSlaveID
+            var deletion = new SessionPair()
+            {
+                SessionClientID = ses.SessionClientID,
+                SessionSlaveID = ses.SessionSlaveID
             };
 
             var client = new RestClient(GeneralConstants.SLAVE_MANAGER_SERVER);
@@ -125,7 +137,7 @@ namespace SlaveManager.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPost("Disconnect")]
         public async Task<IActionResult> DisconnectRemoteControl(int sessionClientId)
         {
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
@@ -134,18 +146,23 @@ namespace SlaveManager.Controllers
 
 
             /*slavepool send terminate session signal*/
-            if(_slavePool.RemoteControlDisconnect(ses.SessionSlaveID))
+            if (_slavePool.RemoteControlDisconnect(ses.SessionSlaveID))
             {
                 return Ok();
-            }else
+            }
+            else
             {
 
                 return BadRequest("Device not in session");
             }
         }
 
-
-        [HttpPost]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sessionClientId"></param>
+        /// <returns></returns>
+        [HttpPost("Reconnect")]
         public async Task<IActionResult> ReconnectRemoteControl(int sessionClientId)
         {
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();

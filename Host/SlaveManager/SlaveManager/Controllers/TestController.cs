@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SlaveManager.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SlaveManager.Interfaces;
+
+
+
+
+
+
+// TODO: disable in publish mode
 
 namespace SlaveManager.Controllers
 {
@@ -44,7 +48,7 @@ namespace SlaveManager.Controllers
         [HttpPost("Termination")]
         public IActionResult SessionTerminate(int id)
         {
-            if(_SlavePool.SessionTerminate(id))
+            if (_SlavePool.SessionTerminate(id))
             {
 
                 return Ok("Test Ok");
@@ -70,9 +74,9 @@ namespace SlaveManager.Controllers
         }
 
         [HttpPost("SSH")]
-        public IActionResult CommandLine(int id,int order, string command)
+        public IActionResult CommandLine(int id, int order, string command)
         {
-            if (_SlavePool.SendCommand(id,order,command))
+            if (_SlavePool.SendCommand(id, order, command))
             {
 
                 return Ok("Test Ok");

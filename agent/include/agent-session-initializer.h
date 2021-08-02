@@ -1,16 +1,11 @@
 #pragma once
-#ifndef __SHAREDMEMORY_H__
-#define __SHAREDMEMORY_H__ 
+#ifndef __AGENT_SESSION_INITIALIZER_H__ 
+#define __AGENT_SESSION_INITIALIZER_H__ 
 
 #include <glib.h>
 #include <agent-object.h>
 #include <agent-type.h>
 
-/// <summary>
-/// initialize IPC object
-/// </summary>
-/// <returns></returns>
-IPC*				initialize_ipc									();
 
 
 /// <summary>

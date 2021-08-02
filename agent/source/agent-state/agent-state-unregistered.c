@@ -11,8 +11,9 @@ unregistered_connect_to_host(AgentObject* agent)
     static gint i = 0;
 
     if (i == 5)
+    {
         agent_finalize(agent);
-
+    }
     connect_to_host_async(agent);
     Sleep(1000);
     i++;

@@ -1,54 +1,26 @@
 ﻿using SharedHost.Models;
-using SlaveManager.SlaveStates;
+using SlaveManager.SlaveDevices;
+using SlaveManager.SlaveDevices.SlaveStates;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using SlaveManager.Interfaces;
 
 namespace SlaveManager.Services
 {
-    public interface ISlavePool
-    {
 
-        public bool AddSlaveId(int slaveid);
-
-
-        public string GetSlaveState(int ID);
-
-        public List<Tuple<int, string>> GetSystemSlaveState();
-
-        //public int AddSlaveDevice(SlaveDevice slave);
-
-        public bool AddSlaveDeviceWithKey(int key, SlaveDevice slave);
-
-        public bool SearchForSlaveID(int slave_id);
-
-        public bool DisconnectSlave(int slaveid);
-
-        public bool RejectSlave(int slaveid);
-
-        public bool SendCommand(int slaveid, int order, string command);
-
-        public bool RemoteControlReconnect(int slaveid);
-
-        public bool RemoteControlDisconnect(int slaveid);
-
-        public bool SessionInitialize(int slaveid, SlaveSession session);
-
-        public bool SessionTerminate(int slaveid);
-    }
 
 
     public class SlavePool : ISlavePool
     {
         ConcurrentDictionary<int, SlaveDevice> SlaveList;
 
-        public SlavePool ()
+        public SlavePool()
         {
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
         }
-        
+
 
         public bool AddSlaveId(int slaveid)
         {
@@ -67,7 +39,7 @@ namespace SlaveManager.Services
             slave.ChangeState(disconnected);
             return true;
         }
-        
+
         public string GetSlaveState(int ID)
         {
             return SlaveList.Where(o => o.Key == ID).FirstOrDefault().Value.GetSlaveState();
@@ -78,7 +50,7 @@ namespace SlaveManager.Services
             var list = new List<Tuple<int, string>>();
 
             var pair = SlaveList.Where(o => o.Value != null);
-            foreach(var i in SlaveList)
+            foreach (var i in SlaveList)
             {
                 if (i.Value != null)
                 {
@@ -162,7 +134,7 @@ namespace SlaveManager.Services
             return slave_id;
         }*/
 
-        public bool AddSlaveDeviceWithKey(int key,SlaveDevice slave)
+        public bool AddSlaveDeviceWithKey(int key, SlaveDevice slave)
         {
             return SlaveList.TryUpdate(key, slave, null);
         }

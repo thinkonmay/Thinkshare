@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SharedHost.Models
 {
@@ -9,22 +7,38 @@ namespace SharedHost.Models
     /// store inside database,
     /// use for maintainance and management 
     /// </summary>
-    public class SystemSession
+    public class SessionBase
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public int ClientID { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int SlaveID { get; set; }
 
-        public int SessionSlaveID { get; set; }
-        
-        public int SessionClientID { get; set; }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public string SignallingUrl { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string StunServer { get; set; }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         public bool ClientOffer { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [NotMapped]
         public QoE QoE { get; set; }
     }
 }

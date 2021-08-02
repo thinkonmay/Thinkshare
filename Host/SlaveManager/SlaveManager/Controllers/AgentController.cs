@@ -1,24 +1,32 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SlaveManager.Interfaces;
-using SlaveManager.Services;
+using System;
+using System.Net;
+using System.Threading.Tasks;
+
+
+
+
+
+
+
 
 namespace SlaveManager.Controllers
 {
     [Route("/Agent")]
     [ApiController]
+    [Authorize]
     public class WebSocketApiController : ControllerBase
     {
         private readonly IWebSocketConnection _connection;
 
         public WebSocketApiController(IWebSocketConnection connection)
         {
-            _connection = connection; 
+            _connection = connection;
         }
 
-        [HttpGet,ActionName("Register")]
+        [HttpGet, ActionName("Register")]
         public async Task<IActionResult> Get()
         {
             var context = ControllerContext.HttpContext;

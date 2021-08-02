@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using SharedHost.Models;
 using SlaveManager.Data;
+using SlaveManager.Interfaces;
 using SlaveManager.Models;
 using SlaveManager.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ namespace SlaveManager.Controllers
 {
     [Route("/User")]
     [ApiController]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly ISlavePool _SlavePool;
@@ -37,10 +40,10 @@ namespace SlaveManager.Controllers
 
             foreach (var i in stateList)
             {
-                if (i.Item2 == "Device Open")
+                if (i.Item2 == SlaveServiceState.Open)
                 {
                     // Add Device Information to open device Id list;
-                    var member = _db.Devices.Where(o => o.Id == i.Item1).FirstOrDefault();
+                    var member = _db.Devices.Where(o => o.ID == i.Item1).FirstOrDefault();
                     resp.Add(member);
                 }
             }

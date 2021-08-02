@@ -34,17 +34,17 @@ struct _DeviceInformation
 {
 	gint id;
 
-	gchar** cpu;
-	gchar** gpu;
-	gint* ram_capacity;
-	gchar** OS;
+	gchar cpu[100];
+	gchar gpu[512];
+	gint ram_capacity;
+	gchar OS[100];
 };
 
 struct _DeviceState
 {
-	gint* cpu_usage;
-	gint* gpu_usage;
-	gint* ram_usage;
+	gint cpu_usage;
+	gint gpu_usage;
+	gint ram_usage;
 };
 
 
@@ -64,13 +64,24 @@ JsonObject*
 track_device();
 
 
-static DeviceInformation*
+DeviceInformation*
 get_device_information() 
 {
 
 	DeviceInformation* device_info = malloc(sizeof(DeviceInformation));
+	ZeroMemory(device_info, sizeof(DeviceInformation));
 
-	device_info->id = ID;
+	static GFile* file;
+	static gboolean initialized = FALSE;
+	if (!initialized)
+	{ 
+		file = g_file_parse_name("C:\\ThinkMay\\SlaveID.txt");
+		initialized = TRUE;
+	}
+	GBytes* buffer = g_file_load_bytes(file, NULL, NULL, NULL);
+	gchar* data = g_bytes_get_data(buffer, NULL);
+
+	device_info->id = atoi(data);
 
 	int CPUInfo[4] = { -1 };
 	unsigned nExIds, i = 0;
@@ -89,14 +100,14 @@ get_device_information()
 		else if (i == 0x80000004)
 			memcpy(CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
 	}
-	device_info->cpu = &CPUBrandString;
+	memcpy(device_info->cpu , CPUBrandString,64);
 
 	MEMORYSTATUSEX statex;
 	statex.dwLength = sizeof(statex);
 	GlobalMemoryStatusEx(&statex);
 	guint64 ram_cap = (statex.ullTotalPhys / 1024) / 1024;
 
-	device_info->ram_capacity = &ram_cap;
+	device_info->ram_capacity = ram_cap;
 
 	IDirect3D9* d3Object = Direct3DCreate9(D3D_SDK_VERSION);
 	UINT adaptercount = d3Object->lpVtbl->GetAdapterCount(d3Object);
@@ -107,26 +118,48 @@ get_device_information()
 		d3Object->lpVtbl->GetAdapterIdentifier(d3Object, i, 0, &(adapters[i]));
 	}
 
-	device_info->gpu = &adapters->Description;
+	memcpy(device_info->gpu , &adapters->Description,512);
+
+
+#ifdef WIN32
+
+	gchar OS[100] = "Window10 Version ";
+	DWORD minor_version = (HIBYTE(LOWORD(GetVersion())));
+	DWORD major_version = (LOBYTE(LOWORD(GetVersion())));
+
+	gchar major[5];
+	gchar minor[5];
+
+
+	itoa(major_version, major, 10);
+	itoa(minor_version, minor, 10);
+
+	strcat(OS, major);
+	strcat(OS, ".");
+	strcat(OS, minor);
+#endif // 
 
 
 
-	*/
-};
+	memcpy(device_info->OS , &OS,strlen(OS));
+
+	return device_info;
+}
 
 
-/*Message*
-get_json_message_from_device_information(DeviceInformation* infor)
+Message*
+get_json_message_from_device_information()
 {
+	DeviceInformation* infor = get_device_information();
 	JsonObject* information = json_object_new();
 
 	json_object_set_string_member(information,	"CPU", infor->cpu);
 	json_object_set_string_member(information,	"GPU", infor->gpu);
 	json_object_set_string_member(information,	"OS", infor->OS);
-	json_object_set_int_member(information,		"RAM", infor->ram_capacity);
-	json_object_set_int_member(information, "ID", infor->id);
+	json_object_set_int_member(information,		"RAMcapacity", infor->ram_capacity);
+	json_object_set_int_member(information,		"ID", infor->id);
 	return information;
-}*/
+}
 
 /// <summary>
 /// update device thread function,
@@ -176,11 +209,11 @@ get_device_state()
 
 	GlobalMemoryStatusEx(&statex);
 
-	gulong ram_use = (gulong)statex.dwMemoryLoad;
+	gint ram_use = statex.dwMemoryLoad;
 
-	device_state->ram_usage = &ram_use;
+	device_state->ram_usage = ram_use;
 
-	gint load = (gint)(GetCPULoad() * 100);
+	gint load = GetCPULoad();
 	 
 	device_state->cpu_usage = &load;
 
@@ -207,7 +240,7 @@ track_device()
 	json_object_set_int_member(device_state, "GPUusage", state->gpu_usage);
 	json_object_set_int_member(device_state, "RAMusage", state->ram_usage);
 
-	Message* message;
+	Message* message = json_object_new();
 
 	json_object_set_object_member(message, "DeviceState", device_state);
 	json_object_set_object_member(message, "DeviceInformation", information);

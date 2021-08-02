@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Interfaces;
-using SlaveManager.Models;
+using System;
+using System.Threading.Tasks;
 
-namespace SlaveManager.SlaveStates
+namespace SlaveManager.SlaveDevices.SlaveStates
 {
     public class OnSession : ISlaveState
     {
@@ -33,7 +29,7 @@ namespace SlaveManager.SlaveStates
             slave.ChangeState(_state);
 
 
-            return ;
+            return;
         }
 
         public async Task RemoteControlDisconnect(ISlaveDevice slave)
@@ -42,7 +38,7 @@ namespace SlaveManager.SlaveStates
 
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
-            message.Opcode = Opcode.DISCONNECT_REMTOE_CONTROL;
+            message.Opcode = Opcode.DISCONNECT_REMOTE_CONTROL;
             message.Data = null;
 
             await slave.SendMessage(message);
@@ -64,10 +60,10 @@ namespace SlaveManager.SlaveStates
 
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
-            message.Opcode = Opcode.COMMAND_LINE_FOWARD;
+            message.Opcode = Opcode.COMMAND_LINE_FORWARD;
 
             Command forward_command = new Command();
-            forward_command.Order = order;
+            forward_command.ProcessID = order;
             forward_command.CommandLine = command;
 
             message.Data = JsonConvert.SerializeObject(forward_command);
@@ -93,7 +89,7 @@ namespace SlaveManager.SlaveStates
 
         public string GetSlaveState()
         {
-            return "On Session";
+            return SlaveServiceState.OnSession;
         }
     }
 }

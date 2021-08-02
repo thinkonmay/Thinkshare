@@ -1,20 +1,23 @@
 #include <agent-state-on-session-off-remote.h>
 #include <agent-state.h>
 #include <glib.h>
-#include <agent-ipc.h>
+#include <agent-session-initializer.h>
 #include <agent-state-open.h>
 #include <agent-state-on-session.h>
 #include <agent-socket.h>
 
-void
+static void
 off_remote_session_terminate(AgentObject* agent)
 {
-    g_free(agent_get_session(agent));
-    agent_set_session(agent, NULL);
+    GFile* hdl = agent_get_session(agent);
+
+    g_file_replace_contents(hdl, "EmptySession", sizeof("EmptySession"), NULL, TRUE,
+        G_FILE_CREATE_NONE, NULL, NULL, NULL);
 
     AgentState* open_state = transition_to_on_open_state();
     agent_set_state(agent, open_state);
 }
+
 
 static void
 off_remote_send_message_to_host(AgentObject* agent,
@@ -64,7 +67,7 @@ transition_to_off_remote_state(void)
         off_remote_state.session_terminate = off_remote_session_terminate;
         off_remote_state.remote_control_reconnect = off_remote_remote_control_reconnect;
         off_remote_state.send_message_to_host = send_message_to_host;
-        off_remote_state.send_message_to_session_loader = send_message_to_loader;
+        //off_remote_state.send_message_to_session_loader = send_message_to_loader;
         off_remote_state.send_message_to_session_core = send_message_to_core;
         initialized = TRUE; 
     }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SharedHost.Models
+﻿namespace SharedHost.Models
 {
     /// <summary>
     /// Contain session initialize request that user send to host
@@ -20,6 +16,6 @@ namespace SharedHost.Models
         /// <summary>
         /// quality of experience 
         /// </summary>
-        QoE QoE { get; set; }
+        public ClientDeviceCapabilities cap { get; set; }
     }
 }

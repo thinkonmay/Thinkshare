@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using SharedHost.Models;
+﻿using SharedHost.Models;
 using SlaveManager.Interfaces;
+using System;
+using System.Threading.Tasks;
 
-namespace SlaveManager.SlaveStates
+namespace SlaveManager.SlaveDevices.SlaveStates
 {
     public class DeviceDisconnected : ISlaveState
     {
@@ -34,7 +31,7 @@ namespace SlaveManager.SlaveStates
             return;
         }
 
-        public async Task SendCommand(ISlaveDevice slave,int order, string command)
+        public async Task SendCommand(ISlaveDevice slave, int order, string command)
         {
             Console.WriteLine("device disconnected");
             return;
@@ -49,7 +46,7 @@ namespace SlaveManager.SlaveStates
 
         public string GetSlaveState()
         {
-            return "Device Disconnected";
+            return SlaveServiceState.Disconnected;
         }
     }
 }

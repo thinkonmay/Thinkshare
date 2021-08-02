@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using SharedHost.Models;
+using SlaveManager.SlaveDevices;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using SharedHost.Models;
-using SlaveManager.Services;
-using SlaveManager.SlaveStates;
 
 namespace SlaveManager.Interfaces
 {

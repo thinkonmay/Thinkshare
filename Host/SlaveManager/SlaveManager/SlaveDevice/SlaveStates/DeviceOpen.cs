@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Diagnostics;
+﻿using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Interfaces;
-using SlaveManager.Models;
+using System;
+using System.Threading.Tasks;
 
-namespace SlaveManager.SlaveStates
+namespace SlaveManager.SlaveDevices.SlaveStates
 {
     public class DeviceOpen : ISlaveState
     {
@@ -24,7 +20,7 @@ namespace SlaveManager.SlaveStates
             await slave.SendMessage(message);
 
             ISlaveState _state = new OnSession();
-            slave.ChangeState( _state);
+            slave.ChangeState(_state);
             return;
         }
 
@@ -53,10 +49,10 @@ namespace SlaveManager.SlaveStates
 
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
-            message.Opcode = Opcode.COMMAND_LINE_FOWARD;
+            message.Opcode = Opcode.COMMAND_LINE_FORWARD;
 
             Command forward_command = new Command();
-            forward_command.Order = order;
+            forward_command.ProcessID = order;
             forward_command.CommandLine = command;
 
             message.Data = JsonConvert.SerializeObject(forward_command);
@@ -82,7 +78,7 @@ namespace SlaveManager.SlaveStates
 
         public string GetSlaveState()
         {
-            return "Device Open";
+            return SlaveServiceState.Open;
         }
     }
 }

@@ -1,10 +1,7 @@
 ﻿using SlaveManager.Interfaces;
-using SlaveManager.SlaveStates;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SlaveManager.SlaveDevices;
+using SlaveManager.SlaveDevices.SlaveStates;
 using System.Net.WebSockets;
-using System.Threading.Tasks;
 
 namespace SlaveManager.Services
 {
@@ -24,7 +21,7 @@ namespace SlaveManager.Services
 
         public SlaveDevice CreateSlaveDevice(WebSocket conn, bool connected)
         {
-             ISlaveState state;
+            ISlaveState state;
             if (connected)
             {
                 state = new DeviceOpen();

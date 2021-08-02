@@ -1,15 +1,10 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Interfaces;
-using SlaveManager.Models;
+using System;
+using System.Threading.Tasks;
 
-namespace SlaveManager.SlaveStates
+namespace SlaveManager.SlaveDevices.SlaveStates
 {
     public class OnSessionOffRemote : ISlaveState
     {
@@ -32,9 +27,9 @@ namespace SlaveManager.SlaveStates
             await slave.SendMessage(message);
 
             ISlaveState State = new DeviceOpen();
-            slave.ChangeState( State);
+            slave.ChangeState(State);
 
-            return ;
+            return;
         }
 
         public async Task RemoteControlDisconnect(ISlaveDevice slave)
@@ -59,17 +54,17 @@ namespace SlaveManager.SlaveStates
             return;
         }
 
-        public async Task SendCommand(ISlaveDevice slave,int order, string command)
+        public async Task SendCommand(ISlaveDevice slave, int order, string command)
         {
 
             Message message = new Message();
 
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
-            message.Opcode = Opcode.COMMAND_LINE_FOWARD;
+            message.Opcode = Opcode.COMMAND_LINE_FORWARD;
 
             Command forward_command = new Command();
-            forward_command.Order = order;
+            forward_command.ProcessID = order;
             forward_command.CommandLine = command;
 
             message.Data = JsonConvert.SerializeObject(forward_command);
@@ -91,7 +86,7 @@ namespace SlaveManager.SlaveStates
 
         public string GetSlaveState()
         {
-            return "Off Remote";
+            return SlaveServiceState.OffRemote;
         }
     }
 }
