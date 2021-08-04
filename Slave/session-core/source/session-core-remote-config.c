@@ -4,7 +4,6 @@
 
 #include <opcode.h>
 #include <qoe.h>
-#include <codec.h>
 
 #include <gst\gst.h>
 #include <glib-2.0\glib.h>
@@ -17,7 +16,7 @@
 #define DEFAULT_VIDEO_BITRATE		1000
 #define DEFAULT_AUDIO_BITRATE		1000
 #define DEFAULT_AUDIO_CODEC			OPUS_ENC
-#define DEFAULT_VIDEO_CODEC			CODEC_NVH264
+#define DEFAULT_VIDEO_CODEC			CODEC_H264
 #define DEFAULT_MODE				VIDEO_PIORITY
 
 

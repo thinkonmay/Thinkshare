@@ -3,10 +3,12 @@
 #include <session-core.h>
 #include <session-core-pipeline.h>
 #include <session-core-type.h>
-#include <session-core-logging.h>
 
+#include <logging.h>
 #include <exit-code.h>
 #include <error-code.h>
+#include <signalling-message.h>
+#include <general-constant.h>
 
 #include <gst/gst.h>
 #include <glib-2.0/glib.h>
@@ -55,16 +57,13 @@ signalling_hub_initialize(SessionCore* core)
 
     JsonParser* parser_config = json_parser_new();
     json_parser_load_from_data(parser_config, g_bytes_get_data(byte_config, NULL), -1, NULL);
-
     JsonNode* root_config = json_parser_get_root(parser_config);
     JsonObject* object_config = json_node_get_object(root_config);
 
     hub.peer_call_state = PEER_CALL_NOT_READY;
     hub.signalling_state = SIGNALLING_SERVER_NOT_READY;
 
-    hub.disable_ssl = json_object_get_boolean_member(object_config,"DisableSSL");
-    hub.signalling_state = SIGNALLING_SERVER_NOT_READY;
-
+    hub.disable_ssl = json_object_get_boolean_member(object_config,DISABLE_SSL);
     return &hub;
 }
 
@@ -87,7 +86,20 @@ signalling_hub_setup(SignallingHub* hub,
 
 
 
-
+void
+send_message_to_signalling_server(SignallingHub* signalling,
+                                gchar* request_type,
+                                gchar* content)
+{
+        JsonObject* json_object = json_object_new();
+    json_object_set_string_member(json_object, REQUEST_TYPE, "OFFER_ICE");
+    json_object_set_int_member(json_object, SUBJECT_ID, signalling->SessionSlaveID);
+    json_object_set_string_member(json_object, CONTENT, content);
+    json_object_set_string_member(json_object, RESULT, SESSION_ACCEPTED);
+    
+    gchar* buffer = get_string_from_json_object(json_object);
+    soup_websocket_connection_send_text(signalling->connection,buffer);
+}
 
 
 
@@ -103,7 +115,7 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
     if (hub->peer_call_state != PEER_CALL_NEGOTIATING) 
-        session_core_finalize(core, CORE_STATE_CONFLICT);
+        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);
 
     ice = json_object_new();
     json_object_set_string_member(ice, "candidate", candidate);
@@ -113,14 +125,9 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
     text = get_string_from_json_object(msg);
     json_object_unref(msg);
 
-    JsonObject* json_object = json_object_new();
-    json_object_set_string_member(json_object, "RequestType", "OFFER_ICE");
-    json_object_set_int_member(json_object, "SubjectId", hub->SessionSlaveID);
-    json_object_set_string_member(json_object, "Content", text);
-    json_object_set_string_member(json_object, "Result", "SESSION_ACCEPTED");
 
-    gchar* buffer = get_string_from_json_object(json_object);
-    //soup_websocket_connection_send_text(hub->connection, buffer);
+
+    send_message_to_signalling_server(hub,OFFER_ICE,text);
     g_free(text);
 }
 
@@ -136,7 +143,7 @@ send_sdp_to_peer(SessionCore* core,
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
     if (!hub->peer_call_state == PEER_CALL_NEGOTIATING) 
-        session_core_finalize( core, CORE_STATE_CONFLICT);
+        session_core_finalize( core, CORE_STATE_CONFLICT_EXIT,NULL);
 
     text = gst_sdp_message_as_text(desc->sdp);
     sdp = json_object_new();
@@ -161,13 +168,7 @@ send_sdp_to_peer(SessionCore* core,
     text = get_string_from_json_object(msg);
     json_object_unref(msg);
 
-    JsonObject* json_object = json_object_new();
-    json_object_set_string_member(json_object, "RequestType", "OFFER_SDP");
-    json_object_set_int_member(json_object, "SubjectId", hub->SessionSlaveID);
-    json_object_set_string_member(json_object, "Content", text);
-    json_object_set_string_member(json_object, "Result", "SESSION_ACCEPTED");
-    gchar* buffer = get_string_from_json_object(json_object);
-    soup_websocket_connection_send_text(hub->connection, buffer);
+    send_message_to_signalling_server(hub,OFFER_SDP,text);
     g_free(text);
 }
 
@@ -215,16 +216,15 @@ on_negotiation_needed(GstElement* element, SessionCore* core)
 
     if (signalling->client_offer)
     {
-        //gchar* msg = g_strdup_printf("WAITING_CLIENT");
-        //soup_websocket_connection_send_text(signalling->connection, msg);
-        //g_free(msg);
+        /*send sdp request to client*/
+        JsonObject* request = json_object_new();
+        json_object_set_string_member(request,"type","request");
 
-        /*wait until sdp is received*/
-        while (TRUE)
-        {
-            if (signalling->peer_call_state == PEER_CALL_NEGOTIATING)
-                break;
-        }
+        JsonObject* sdp = json_object_new();
+        json_object_set_string_member(sdp,"sdp",request);
+
+        send_message_to_signalling_server(signalling,
+            OFFER_SDP,get_string_from_json_object(sdp));        
     }
     else 
     {
@@ -277,29 +277,17 @@ register_with_server(SessionCore* core)
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
     if (hub->signalling_state != SIGNALLING_SERVER_CONNECTED)
-        session_core_finalize(core, CORE_STATE_CONFLICT);    
+        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);    
 
     if (soup_websocket_connection_get_state(hub->connection) !=
         SOUP_WEBSOCKET_STATE_OPEN)
-        session_core_finalize(core, CORE_STATE_CONFLICT);
-
-
-    /*register to signalling server by send an json object which has 3 members:
-    * "request_type" : "SLAVEREQUEST"
-    * "subject_id": {SlaveSessionID}
-    * "content": {SlaveSessionID}
-    */
-    json_object_set_string_member(json_object,"RequestType","SLAVEREQUEST");
-    json_object_set_int_member(json_object, "SubjectId", hub->SessionSlaveID);
-    json_object_set_int_member(json_object, "Content", hub->SessionSlaveID);
-    json_object_set_string_member(json_object, "Result", "SESSION_ACCEPTED");
-    hello = get_string_from_json_object(json_object);
-
-    soup_websocket_connection_send_text(hub->connection, hello);
-    g_free(hello);
+        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);
 
 
     hub->signalling_state = SIGNALLING_SERVER_REGISTERING;
+    send_message_to_signalling_server(hub,SLAVE_REQUEST,hub->SessionSlaveID);
+
+    g_free(hello);
     return TRUE;
 }
 
@@ -461,11 +449,12 @@ on_registering_message(SessionCore* core)
     SignallingHub* signalling = session_core_get_signalling_hub(core);
 
     if (!signalling->signalling_state == SIGNALLING_SERVER_REGISTERING)
-        session_core_finalize(core, CORE_STATE_CONFLICT);
-
+    {
+        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);
+    }
     if (signalling->signalling_state != SIGNALLING_SERVER_REGISTERING)
     {
-        session_core_finalize(core, CORE_STATE_CONFLICT);
+        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);
     }
     signalling->signalling_state = SIGNALLING_SERVER_REGISTER_DONE;
     signalling->peer_call_state = PEER_CALL_READY;
@@ -478,7 +467,14 @@ on_ice_exchange(gchar* text,SessionCore* core)
     JsonNode* root;
     JsonObject* object;
     JsonParser* parser = json_parser_new();
+
+    GError* error = NULL;
     json_parser_load_from_data(parser, text, -1, NULL);
+    if( error != NULL)
+    {
+        report_session_core_error(core, UNKNOWN_MESSAGE);
+        return;
+    }
 
     root = json_parser_get_root(parser);
     if (!JSON_NODE_HOLDS_OBJECT(root))
@@ -597,7 +593,7 @@ on_server_message(SoupWebsocketConnection* conn,
 
     Pipeline* pipe = session_core_get_pipeline(core);
 
-    gchar* text = "ERROR";
+    gchar* text;
 
     switch (type) 
     {
@@ -641,14 +637,14 @@ on_server_message(SoupWebsocketConnection* conn,
      /* Check type of JSON message */
 
 
-    gchar* RequestType = json_object_get_string_member(object, "RequestType");
-    gchar* SubjectId = json_object_get_int_member(object, "SubjectId");
-    gchar* Content = json_object_get_string_member(object, "Content");
-    gchar* Result = json_object_get_string_member(object, "Result");
+    gchar* RequestType =    json_object_get_string_member(object, "RequestType");
+    gchar* SubjectId =      json_object_get_int_member(object, "SubjectId");
+    gchar* Content =        json_object_get_string_member(object, "Content");
+    gchar* Result =         json_object_get_string_member(object, "Result");
 
     if (Result == "SESSION_REJECTED" || Result == "SESSION_TIMEOUT")
     {
-        session_core_finalize(core, SESSION_DENIED);
+        session_core_finalize(core, SESSION_DENIED_EXIT,NULL);
     }
 
 
@@ -686,25 +682,11 @@ on_server_connected(SoupSession* session,
 
     if (hub->signalling_state != SIGNALLING_SERVER_CONNECTING)
         return;
-
-
     hub->connection = soup_session_websocket_connect_finish(session, res, &error);
-
-    static gint count;
-    if (error != NULL) 
+    if (error != NULL || hub->connection == NULL) 
     {
-        g_error_free(error);
-        gint count = 0;
-
-        session_core_connect_signalling_server(core);
-        Sleep(1000);
-        count++;
-        if(count == 5)
-            session_core_finalize(core, SIGNALLING_SERVER_CONNECTION_ERROR);
+        session_core_finalize(core, SIGNALLING_SERVER_CONNECTION_ERROR_EXIT,error);
     }
-
-
-    g_assert_nonnull(hub->connection);
 
     hub->signalling_state = SIGNALLING_SERVER_CONNECTED;
 

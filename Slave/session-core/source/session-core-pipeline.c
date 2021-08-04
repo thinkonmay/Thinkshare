@@ -3,9 +3,12 @@
 #include <session-core-data-channel.h>
 #include <session-core-signalling.h>
 #include <session-core-remote-config.h>
-#include <session-core-logging.h>
 
+
+#include <general-constant.h>
+#include <logging.h>
 #include <qoe.h>
+#include <exit-code.h>
 
 #include <gst\gst.h>
 #include <glib-2.0\glib.h>
@@ -90,8 +93,6 @@ struct _Pipeline
 };
 
 
-void
-setup_element_factory_h264_media_foundation(SessionCore* core);
 
 Pipeline*
 pipeline_initialize(SessionCore* core)
@@ -112,15 +113,12 @@ start_pipeline(SessionCore* core)
     GstStateChangeReturn ret;
     Pipeline* pipe = session_core_get_pipeline(core);
 
-    ret = GST_IS_ELEMENT(pipe->pipeline);
-
-    
+    ret = GST_IS_ELEMENT(pipe->pipeline);    
 
     ret = gst_element_set_state(pipe->pipeline, GST_STATE_PLAYING);
-
     if (ret == GST_STATE_CHANGE_FAILURE)
     {
-        return FALSE;
+        session_core_finalize(core, PIPELINE_ERROR_EXIT,NULL);
     }
     write_to_log_file(core,"Starting pipeline\n");
     return TRUE;
@@ -132,15 +130,16 @@ start_pipeline(SessionCore* core)
 #define RTP_CAPS_VIDEO "application/x-rtp,media=video,encoding-name=H264,payload="
 
 void
-setup_element_factory(Pipeline* pipe,
-    gchar* video, 
-    gchar* audio)
+setup_element_factory(SessionCore* core,
+    Codec video, 
+    Codec audio)
 {
+    Pipeline* pipe = session_core_get_pipeline(core);
     GError* error = NULL;
     
-    if (!g_strcmp0(video, "H264"))
+    if (video == CODEC_H264)
     {
-        if (!g_strcmp0(audio, "OPUS")) 
+        if (OPUS_ENC) 
         {
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "STUN_SERVER
@@ -156,9 +155,9 @@ setup_element_factory(Pipeline* pipe,
             pipe->audio_element[OPUS_ENCODER] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
         }
     }
-    else if (!g_strcmp0(video, "H265"))
+    else if (video == CODEC_H265)
     {
-        if (!g_strcmp0(audio, "OPUS"))
+        if (audio == OPUS_ENC)
         {
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
@@ -174,9 +173,9 @@ setup_element_factory(Pipeline* pipe,
             pipe->audio_element[OPUS_ENCODER] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
         }
     }
-    else if (!g_strcmp0(video, "VP9"))
+    else if (video == VP9_ENCODER)
     {
-        if (!g_strcmp0(audio, "OPUS"))
+        if (audio == OPUS_ENC)
         {
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
@@ -194,13 +193,10 @@ setup_element_factory(Pipeline* pipe,
     }
 
     if (error != NULL) {
-        g_error_free(error);
-        return NULL;
+        session_core_finalize(core,PIPELINE_ERROR_EXIT,error);
     }
 
     pipe->webrtcbin = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "sendrecv");
-
-    g_assert_nonnull(pipe->webrtcbin);
 }
 
 gpointer
@@ -216,16 +212,9 @@ setup_pipeline(SessionCore* core)
 
     
     
-    if (qoe_get_video_codec(qoe) == CODEC_H264)
-    {
-        if (qoe_get_audio_codec(qoe) == OPUS_ENC)
-        {
-            setup_element_factory(pipe,"H264","OPUS");
-        }
-    }
-
-
-
+    setup_element_factory(pipe, 
+        qoe_get_video_codec(qoe),
+        qoe_get_audio_codec(qoe));
 
 
     
@@ -233,23 +222,15 @@ setup_pipeline(SessionCore* core)
     setup_element_property( core);
 
     pipe->state = PIPELINE_CONNECT_ELEMENT_SIGNAL;
-
     connect_signalling_handler(core);
 
     gst_element_change_state(pipe->pipeline, GST_STATE_READY);
 
-    if (!connect_data_channel_signals(core)) 
-    {
-        session_core_finalize(core, DATA_CHANNEL_ERROR);
-    }
-
-    pipe->state = PIPELINE_LINKING_ELEMENT;
+    connect_data_channel_signals(core);
     pipe->state = PIPELINE_SETUP_DONE;
 
-    if (!start_pipeline(core))
-    {
-        session_core_finalize(core, PIPELINE_ERROR);
-    }
+    start_pipeline(core);
+
     session_core_set_state(core, REMOTE_CONNECT_STARTED);
     signalling_hub_set_peer_call_state(signalling, PEER_CALL_DONE);
 }
@@ -333,201 +314,10 @@ setup_element_property(SessionCore* core)
 
 }
 
-void
-setup_element_cap(SessionCore* core)
-{
-    Pipeline* pipe = session_core_get_pipeline(core);
-    QoE* qoe = session_core_get_qoe(core);
-
-
-
-    /*create cappabilities for screen capture*/
-    pipe->video_caps[DX9_SCREEN_CAPTURE_SOURCE] = gst_caps_new_simple
-    ("video/x-raw",
-        "format", G_TYPE_STRING,"BGR",
-        "width",G_TYPE_INT ,qoe_get_screen_width(qoe),
-        "height", G_TYPE_INT,qoe_get_screen_height(qoe),
-        "framerate",GST_TYPE_FRACTION ,qoe_get_framerate(qoe), 1, NULL);
-
-    pipe->video_caps[VIDEO_CONVERT] = gst_caps_new_simple
-    ("video/x-raw",
-        "format", G_TYPE_STRING, "NV12",
-        "width", G_TYPE_INT, qoe_get_screen_width(qoe),
-        "height" ,G_TYPE_INT, qoe_get_screen_height(qoe),NULL );
-
-    pipe->video_caps[CUDA_UPLOAD] = gst_caps_new_simple
-    ("video/x-raw", NULL);
-
-    /*create capability for encoder source pad*/
-    pipe->video_caps[NVIDIA_H264_ENCODER] = gst_caps_new_simple
-    ("video/x-h264",
-        "width", G_TYPE_INT, qoe_get_screen_width(qoe),
-        "height", G_TYPE_INT, qoe_get_screen_height(qoe),
-        "framerate", G_TYPE_INT, qoe_get_framerate(qoe),
-        "stream-format", G_TYPE_STRING, "byte-stream",
-        "alignment", G_TYPE_STRING, "au",
-        "profile", G_TYPE_STRING, "high", NULL);
-
-    /*create capability for encoder source pad*/
-    pipe->video_caps[NVIDIA_H264_MEDIA_FOUNDATION] = gst_caps_new_simple
-    ("video/x-h264",
-        "width", G_TYPE_INT, qoe_get_screen_width(qoe),
-        "height", G_TYPE_INT, qoe_get_screen_height(qoe),
-        "framerate", G_TYPE_INT, qoe_get_framerate(qoe),
-        "profile", G_TYPE_STRING, "high",
-        "stream-format", G_TYPE_STRING, "byte-stream",
-        "alignment", G_TYPE_STRING, "au", NULL);
-
-
-    pipe->audio_caps[PULSE_SOURCE_SOUND] = gst_caps_new_simple
-    ("audio/x-raw",
-        "format", G_TYPE_STRING,"S16LE",
-        "layout", G_TYPE_STRING, "interleaved",
-        "rate", G_TYPE_INT, qoe_get_audio_bitrate(qoe),
-        "channels", G_TYPE_INT, 2, NULL);
-
-    pipe->audio_caps[WASAPI_SOURCE_SOUND] = gst_caps_new_simple
-    ("audio/x-raw",
-        "format", G_TYPE_STRING, "S16LE",
-        "layout", G_TYPE_STRING, "interleaved",
-        "rate", G_TYPE_INT, qoe_get_audio_bitrate(qoe),
-        "channels", G_TYPE_INT, 2, NULL);
-
-    /**/
-    pipe->audio_caps[OPUS_ENCODER] = gst_caps_new_simple
-    ("audio/x-raw",
-        "format", G_TYPE_STRING, "S16LE",
-        "layout", G_TYPE_STRING, "interleaved",
-        //"rate", G_TYPE_INT, qoe_get_audio_bitrate(qoe),
-        "channels", G_TYPE_INT, 2, NULL);
-
-    /*create rtp packetizer forr audio stream*/    
-    pipe->audio_caps[RTP_OPUS_PAYLOAD] = gst_caps_new_simple(
-        "applicaton/x-rtp",
-        "media", G_TYPE_STRING, "audio",
-        "payload", G_TYPE_INT, 96,
-        "encoding-params", G_TYPE_INT, 2,
-        "encoding-name", G_TYPE_STRING, "OPUS", NULL);
-
-    pipe->audio_caps[RTP_RTX_QUEUE] = gst_caps_new_simple
-    ("application/x-rtp", NULL);
 
 
 
 
-    /*create capability for encoder sink pad*/
-    pipe->video_caps[CUDA_CONVERT] = gst_caps_new_simple
-    ("video/x-raw",
-        "format", G_TYPE_STRING, "I420",
-        "width", G_TYPE_INT, qoe_get_screen_width(qoe),
-        "height", G_TYPE_INT, qoe_get_screen_height(qoe),
-        "framerate", GST_TYPE_FRACTION, qoe_get_framerate(qoe), 1,
-        /*"progressive",*/ NULL);
-
-
-
-    /*packetize video encoded byte-stream*/
-    pipe->video_caps[RTP_H264_PAYLOAD] = gst_caps_new_simple
-    ("application/x-rtp",
-        "media", G_TYPE_STRING, "video",
-        "payload", G_TYPE_INT,123,
-        "clock-rate", G_TYPE_INT, 90000,
-        "encoding-name", G_TYPE_STRING, "H264", NULL);
-
-
-}
-
-
-
-
-
-/// <summary>
-/// handle all media stream include both audio and video:
-///add both audioand video pipe into webrtcbin, 
-/// signal handler will we connect in connect_handler
-/// </summary>
-/// <param name="core"></param>
-/// <param name="user_data"></param>
-/// <returns></returns>
-gboolean
-connect_element(SessionCore* core)
-
-{
-    WebRTCHub* hub = session_core_get_rtc_hub(core);
-    SignallingHub* signalling = session_core_get_signalling_hub(core);
-    Pipeline* pipe = session_core_get_pipeline(core);
-
-    gint i = 0;
-    for (gint m = 0; m < AUDIO_ELEMENT_LAST; m++)
-    {
-        if (pipe->audio_element[m] != NULL)
-        {
-            i = m;
-            break;
-        }
-    }
-    while(i<VIDEO_ELEMENT_LAST)
-    {
-        if (pipe->video_element[i] != NULL)
-        {
-            gint j = i + 1;
-            while(j<VIDEO_ELEMENT_LAST)
-            {
-                if (pipe->video_element[j] != NULL)
-                {
-                    if (!gst_element_link(pipe->video_element[i], pipe->video_element[j]))// ||
-                         //gst_element_link(pipe->video_element[i], pipe->video_element_filtered[j]))
-                        return FALSE;
-                    i = j;
-                    goto end;
-                }
-                j++;
-            }
-            /*link element with webrtcbin if this is the last element*/
-            if (!gst_element_link(pipe->video_element[i], pipe->webrtcbin))
-                return FALSE;
-        }
-        i++;
-    end:;
-    }
-
-
-    gint a = 0;
-    for (gint l = 0; l < AUDIO_ELEMENT_LAST; l++)
-    {
-        if (pipe->audio_element[l] != NULL)
-        {
-            a = l;
-            break;
-        }
-    }
-    while (a < AUDIO_ELEMENT_LAST)
-    {
-        if (pipe->audio_element[a] != NULL)
-        {
-            gint b = a + 1;
-            while (b < AUDIO_ELEMENT_LAST)
-            {
-                if (pipe->audio_element[b] != NULL)
-                {
-                    if (!gst_element_link(pipe->audio_element[a], pipe->audio_element[b]))// ||
-                         //gst_element_link(pipe->audio_element[a], pipe->audio_element_filtered[b]))
-                        return FALSE;
-                    a = b;
-                    goto end_;
-                }
-                b++;
-            }
-            /*link element with webrtcbin if this is the last element*/
-            if (!gst_element_link(pipe->audio_element[a], pipe->webrtcbin))
-                return FALSE;
-        }
-        a++;
-    end_:;
-    }
-    return TRUE;
-
-} 
 
 void
 connect_signalling_handler(SessionCore* core)
@@ -538,11 +328,11 @@ connect_signalling_handler(SessionCore* core)
     g_main_context_push_thread_default(session_core_get_main_context(core));
 
     /*set policy-bundle*/
-    //if (pipe->webrtcbin) { 
-    //    g_object_set(pipe->webrtcbin, "bundle-policy", "max-bundle", NULL); }
+    if (pipe->webrtcbin) { 
+        g_object_set(pipe->webrtcbin, "bundle-policy", "max-bundle", NULL); }
     /* Add stun server */
-    //if (pipe->webrtcbin) { 
-    //    g_object_set(pipe->webrtcbin, "stun-server", signalling_hub_get_stun_server(hub), NULL); }
+    if (pipe->webrtcbin) { 
+        g_object_set(pipe->webrtcbin, "stun-server", signalling_hub_get_stun_server(hub), NULL); }
 
     /* This is the gstwebrtc entry point where we create the offer and so on. It
      * will be called when the pipeline goes to PLAYING. */
@@ -555,15 +345,6 @@ connect_signalling_handler(SessionCore* core)
     g_main_context_pop_thread_default(session_core_get_main_context(core));
 }
 
-
-void
-stop_pipeline(Pipeline* pipe)
-{
-    if (pipe->pipeline != NULL)
-    {
-        gst_element_change_state(pipe->pipeline, GST_STATE_NULL);
-    }
-}
 
 
 

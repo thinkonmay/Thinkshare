@@ -5,10 +5,14 @@
 #include <agent-device.h>
 #include <agent-state-disconnected.h>
 #include <agent-state-open.h>
-
-#include <json-glib/json-glib.h>
 #include <agent-object.h>
+
+#include <error-code.h>
+#include <logging.h>
+#include <general-constant.h>
+
 #include <glib-object.h>
+#include <json-glib/json-glib.h>
 #include <libsoup/soup.h>
 
 /// <summary>
@@ -64,7 +68,7 @@ get_string_from_json_object(JsonObject* object)
 void
 socket_close(Socket* socket)
 {
-    g_print("socket closed");
+    write_to_log_file(AGENT_NETWORK_LOG,"socket closed");
 
     if (socket->ws != NULL)
     {
@@ -115,13 +119,9 @@ on_server_connected(SoupSession* session,
     /*if error happen during connection, restart agent_connect_to_host*/
     if (error)
     {
-        g_print("cannot connect to websocket server, error: %s\n", error->message);
+        write_to_log_file(AGENT_NETWORK_LOG,error->message);
         return;
     }
-    //g_assert_nonnull(socket->ws);
-
-    g_print("Connected to host\n");
-
     g_main_context_push_thread_default(g_main_loop_get_context(agent_get_main_loop(agent)));
 
     /*connect websocket connection signal with signal handler*/
@@ -143,7 +143,7 @@ connect_to_host_async(AgentObject* self)
     Socket* socket = 
         agent_get_socket(self);
 
-    g_print("Connecting to server...\n");
+    write_to_log_file(AGENT_GENERAL_LOG,"Connecting to server");
 
     /* Once connected, we will register */
     soup_session_websocket_connect_async(socket->session,
@@ -164,7 +164,7 @@ on_server_message(SoupWebsocketConnection* conn,
     switch (type) 
     {
     case SOUP_WEBSOCKET_DATA_BINARY:
-        g_printerr("Received unknown binary message, ignoring\n");
+        write_to_log_file(AGENT_MESSAGE_LOG,"Received unknown binary message, ignoring\n");
         return;
     case SOUP_WEBSOCKET_DATA_TEXT: 
     {
@@ -175,7 +175,8 @@ on_server_message(SoupWebsocketConnection* conn,
         break;
     }
     default:
-        g_assert_not_reached();
+        write_to_log_file(AGENT_MESSAGE_LOG,"Received unknown binary message, ignoring\n");
+        return;
     }
     on_agent_message(self, text);
     g_free(text);
@@ -187,18 +188,29 @@ on_server_message(SoupWebsocketConnection* conn,
 gboolean
 register_with_host(AgentObject* agent)
 {
-    GFile* handle = agent_get_slave_id(agent);
+    JsonParser* parser = json_parser_new();
 
-    GBytes* bytes = g_file_load_bytes(handle,NULL,NULL,NULL);
+    GError* error =NULL;
+    json_parser_load_from_file(parser,HOST_CONFIG_FILE,&error);
 
-    gchar* buffer = g_bytes_get_data(bytes, NULL);
+    if(error != NULL)
+    {
+        JsonObject* object = json_object_new();
+        json_object_set_string_member(object,UNDEFINED_ERROR,error->message);
 
+        agent_send_message(agent,
+            message_init(AGENT_MODULE,HOST_MODULE,ERROR_REPORT,object));
+    }
 
-    g_print("register with host with ID %s \n", buffer);
+    JsonNode* root = json_parser_get_root(parser);
+    JsonObject* object = json_node_get_object(root);
 
+    gint ID = json_object_get_int_member(object, DEVICE_ID);
+
+    write_to_log_file(AGENT_GENERAL_LOG,"Registering with host");
     Message* package =
         message_init(AGENT_MODULE, HOST_MODULE, 
-            REGISTER_SLAVE, get_json_message_from_device_information());
+            REGISTER_SLAVE, get_registration_message(ID));
 
     agent_send_message(agent, package); 
     return TRUE;     
@@ -220,12 +232,32 @@ socket_get_connection(Socket* socket)
 gchar*
 socket_get_host_url(AgentObject* agent)
 {
-    GBytes* buffer = g_file_load_bytes(agent_get_host_configuration(agent) , NULL, NULL, NULL);
+    JsonParser* parser = json_parser_new();
 
-    return g_bytes_get_data(buffer, NULL);
+    GError* error = NULL;
+    json_parser_load_from_file(parser,HOST_CONFIG_FILE,error);
+    if(error != NULL)
+    {
+        // TODO: agent error report
+    }
+    JsonNode* root = json_parser_get_root(parser);
+    JsonObject* obj = json_node_get_object(root);
+
+    return json_object_get_string_member(obj,HOST_URL);
 }
 
 
+
+
+void
+agent_logger(SoupLogger* logger,
+            SoupLoggerLogLevel  level,
+            char                direction,
+            const char         *data,
+            gpointer            user_data)
+{
+    write_to_log_file(AGENT_NETWORK_LOG,data);
+}
 
 
 
@@ -233,19 +265,29 @@ Socket*
 initialize_socket(AgentObject* agent)
 {
 
-    const gchar* https_aliases[] = { "wss", NULL };
-
+    const gchar* https_aliases[] = { "ws", NULL };
     static Socket socket;
 
-    GFile* config = agent_get_host_configuration(agent);
+    JsonParser* parser = json_parser_new();
 
-    GBytes* bytes = g_file_load_bytes(config,NULL,NULL,NULL);
+    GError* error = NULL;
+    json_parser_load_from_file(parser,HOST_CONFIG_FILE,&error);
+    if(error != NULL)
+    {
+        JsonObject* object = json_object_new();
+        json_object_set_string_member(object,UNDEFINED_ERROR,error->message);
 
-    const gchar* host_url = g_bytes_get_data(bytes,NULL);
-    gboolean disable_ssl = TRUE;
+        write_to_log_file(AGENT_GENERAL_LOG,get_string_from_json_object(object));
+        return;
+    }
+
+    JsonNode* root = json_parser_get_root(parser);
+    JsonObject* obj = json_node_get_object(root);
+
 
     socket.session =
-        soup_session_new_with_options(SOUP_SESSION_SSL_STRICT, !disable_ssl,
+        soup_session_new_with_options(
+            SOUP_SESSION_SSL_STRICT, json_object_get_boolean_member(obj,DISABLE_SSL),
             SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
             //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
             SOUP_SESSION_HTTPS_ALIASES, https_aliases, NULL);
@@ -254,9 +296,10 @@ initialize_socket(AgentObject* agent)
     soup_session_add_feature(socket.session, SOUP_SESSION_FEATURE(socket.logger));
     g_object_unref(socket.logger);
 
-    socket.message = soup_message_new(SOUP_METHOD_GET, host_url);
+    soup_logger_set_printer(socket.logger,agent_logger,NULL,NULL);
+
+    socket.message = soup_message_new(SOUP_METHOD_GET,
+        json_object_get_string_member(obj,HOST_URL));
 
     return &socket;
 }
-
-/*END get-set-function for Socket*/

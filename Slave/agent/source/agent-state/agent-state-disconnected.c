@@ -3,7 +3,9 @@
 #include <glib.h>
 #include <agent-socket.h>
 
-
+#include <state-indicator.h>
+#include <logging.h>
+#include <general-constant.h>
 
 void
 disconnected_connect_to_host(AgentObject* agent)
@@ -13,6 +15,11 @@ disconnected_connect_to_host(AgentObject* agent)
 
 
 
+static gchar* 
+disconnected_get_state(void)
+{
+    return AGENT_DISCONNECTED;
+}
 
 
 
@@ -27,8 +34,10 @@ transition_to_disconnected_state(void)
         default_method(&disconnected_state);
         disconnected_state.send_message_to_host = disconnected_connect_to_host;
         disconnected_state.connect_to_host = disconnected_connect_to_host;
+        disconnected_state.get_current_state = disconnected_get_state;
 
         initialized = TRUE; 
     }
+    write_to_log_file(AGENT_GENERAL_LOG,disconnected_get_state());
     return &disconnected_state;
 }

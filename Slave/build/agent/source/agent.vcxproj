@@ -59,25 +59,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\agent\source\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">agent.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\agent\source\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">agent.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\agent\source\MinSizeRel\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\MinSizeRel\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">agent.dir\MinSizeRel\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\agent\source\RelWithDebInfo\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\RelWithDebInfo\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">agent.dir\RelWithDebInfo\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">agent</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
@@ -120,7 +120,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/agent/source/Debug/agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/agent/source/Debug/agent.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/Debug/agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -163,7 +163,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/agent/source/Release/agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/agent/source/Release/agent.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/Release/agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -206,7 +206,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/agent/source/MinSizeRel/agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/agent/source/MinSizeRel/agent.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/MinSizeRel/agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -248,7 +248,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/agent/source/RelWithDebInfo/agent.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/agent/source/RelWithDebInfo/agent.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/RelWithDebInfo/agent.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -327,6 +327,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-state\agent-state-unregistered.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-state\agent-state.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\program.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\shared-items\logging.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\ZERO_CHECK.vcxproj">

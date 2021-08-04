@@ -1,17 +1,20 @@
 #include <agent-message.h>
-#include <glib.h>
 #include <agent-socket.h>
 #include <agent-session-initializer.h>
-#include <json-glib/json-glib.h>
 #include <agent-object.h>
-#include <glib.h>
 #include <agent-type.h>
 #include <agent-state-open.h>
 #include <agent-state.h>
 #include <agent-cmd.h>
 #include <agent-child-process.h>
 
-#include <string.h>
+#include <general-constant.h>
+#include <logging.h>
+#include <error-code.h>
+
+
+#include <glib.h>
+#include <json-glib/json-glib.h>
 
 
 
@@ -54,15 +57,19 @@ send_message(AgentObject* self,
 	case HOST_MODULE:
 	    agent_send_message_to_host(self, 
 			get_string_from_json_object(message));
+		break;
 	case CORE_MODULE:
 		agent_send_message_to_session_core(self,
 			get_string_from_json_object(message));
+		break;
 	case LOADER_MODULE:
 		agent_send_message_to_session_loader(self,
 			get_string_from_json_object(message));
+		break;
 	case CLIENT_MODULE:
 		agent_send_message_to_session_core(self,
 			get_string_from_json_object(message));
+		break;
 	}
 }
 
@@ -71,34 +78,57 @@ setup_slave_device(AgentObject* agent, gchar* slave)
 {
 
 	AgentState* open_state = transition_to_on_open_state();
-	agent_set_state(agent, open_state);
-	GFile* file = agent_get_slave_id(agent);
-	
-	if(g_file_replace_contents(file, 
-		slave, sizeof(slave),NULL,TRUE, G_FILE_COPY_NONE,NULL, NULL, NULL))
-		g_print("set %d as SlaveID\n", atoi(slave));
-
-//	g_thread_new("information update",
-//		(GThreadFunc*)update_device_with_host, agent);
+	agent_set_state(agent, open_state);	
 }
+
+void
+agent_reset_qoe(AgentObject* agent, JsonObject* qoe)
+{
+	JsonParser* parser;
+	GError* error;
+	json_parser_load_from_file(parser,SESSION_SLAVE_FILE,&error);
+	if(error != NULL)
+	{
+		agent_report_error(agent, error->message);
+		write_to_log_file(AGENT_GENERAL_LOG,error->message);
+	}
+
+	JsonNode* root = json_parser_get_root(parser);
+	JsonObject* obj = json_node_get_object(root);
+
+	JsonObject* new_session_config = json_object_new();
+
+	json_object_set_string_member	(new_session_config,"SignallingUrl",
+		json_object_get_string_member(obj,"SignallingUrl"));
+	json_object_set_int_member		(new_session_config,"SessionSlaveID",
+		json_object_get_string_member(obj,"SessionSlaveID"));
+	json_object_set_boolean_member	(new_session_config,"ClientOffer",	
+		json_object_get_string_member(obj,"ClientOffer"));
+	json_object_set_string_member	(new_session_config,"StunServer",		
+		json_object_get_string_member(obj,"StunServer"));
+
+	json_object_set_object_member(new_session_config,"QoE",qoe);
+	gchar* buffer = get_string_from_json_object(new_session_config);
+
+	GError* error;
+	GFile* config = g_file_parse_name(SESSION_SLAVE_FILE);
+	g_file_replace_contents(config,buffer,sizeof(buffer),NULL,
+		TRUE,G_FILE_CREATE_NONE,NULL,NULL,&error);
+	g_free(buffer);
+	if(error != NULL)
+	{
+		agent_report_error(agent,error->message);
+		write_to_log_file(AGENT_GENERAL_LOG,error->message);
+	}
+
+} 
+
 
 void
 on_agent_message(AgentObject* agent,
 				 gchar* data)
 {
-	static gboolean initialized = FALSE;
-	static GFileOutputStream* stream;
-	if (!initialized)
-	{
-		GFile* log_file = 
-			g_file_parse_name("C:\\ThinkMay\\AgentMessageLog.txt");
-
-
-		stream = 
-			g_file_append_to(log_file, G_FILE_CREATE_NONE, NULL, NULL);
-	}
-	g_output_stream_write(stream, data, sizeof(data), NULL, NULL);
-
+	write_to_log_file(AGENT_MESSAGE_LOG,data);
 
 	JsonNode* root;
 	JsonObject* object, * json_data;
@@ -146,9 +176,9 @@ on_agent_message(AgentObject* agent,
 			}
 			else if (opcode == SESSION_INITIALIZE)
 			{
-				GFile* handle = agent_get_session(agent);
+				GFile* file = g_file_parse_name(SESSION_SLAVE_FILE);
 
-				g_file_replace_contents(handle, data_string,sizeof(data_string),
+				g_file_replace_contents(file, data_string,sizeof(data_string),
 					NULL,FALSE,G_FILE_CREATE_NONE,NULL,NULL, NULL,NULL);
 
 				agent_session_initialize(agent);
@@ -186,8 +216,12 @@ on_agent_message(AgentObject* agent,
 		{
 			switch (opcode)
 			{
-				case EXIT_CODE_REPORT:
-					agent_session_terminate(agent);
+				case FILE_TRANSFER_SERVICE:
+
+				case CLIPBOARD_SERVICE:
+
+				case RESET_QOE:
+					agent_reset_qoe(agent,json_data);
 			}
 		}
 	}

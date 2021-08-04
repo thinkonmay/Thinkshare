@@ -1,8 +1,4 @@
 ﻿#include <agent-object.h>
-
-#include <Windows.h>
-#include <stdio.h>
-
 #include <agent-type.h>
 #include <agent-session-initializer.h>
 #include <agent-socket.h>
@@ -13,7 +9,15 @@
 #include <agent-state.h>
 #include <agent-state-unregistered.h>
 
-#define CMD_MAX 8
+
+
+#include <Windows.h>
+#include <stdio.h>
+
+
+#include <child-process-constant.h>
+#include <general-constant.h>
+#include <logging.h>
 
 /// <summary>
 /// agent object 
@@ -22,19 +26,11 @@ struct _AgentObject
 {
 	Socket* socket;
 
-	GFile* device;
-
-	GFile* session;
-
-	GFile* SlaveID;
-
-	GFile* Host;
-
 	GMainLoop* loop;
 
 	AgentState* state;
 
-	ChildProcess* child_process[CMD_MAX];
+	ChildProcess* child_process[LAST_CHILD_PROCESS];
 };
 
 
@@ -58,24 +54,12 @@ agent_new(gchar* url)
 	AgentState* unregistered = transition_to_unregistered_state();
 	agent.state = unregistered;
 
-
-	agent.device = g_file_parse_name("C:\\ThinkMay\\DeviceLog.txt");
-
-	agent.session = g_file_parse_name("C:\\ThinkMay\\Session.txt");
-
-	agent.SlaveID = g_file_parse_name("C:\\ThinkMay\\SlaveID.txt");
-
-	agent.Host = g_file_parse_name("C:\\ThinkMay\\Host.txt");
-
-
-
-
 	g_thread_new("update device", (GThreadFunc)update_device, &agent);
 
 	agent.socket=initialize_socket(&agent);
-	session_initialize(&agent);
-	//connect_to_host_async(&agent);
-
+	
+	
+	connect_to_host_async(&agent);
 	agent.loop = g_main_loop_new(NULL, FALSE);
 	g_main_loop_run(agent.loop);
 
@@ -115,7 +99,23 @@ agent_send_command_line(AgentObject* self,
 
 
 
+void
+agent_report_error(AgentObject* self,
+				   gchar* message)
+{
+	JsonObject* obj = json_object_new();
 
+	json_object_set_int_member(obj,
+		"Time",g_get_real_time());
+	json_object_set_string_member(obj,
+		"ErrorMessage",message);
+	json_object_set_string_member(obj,
+		"AgentState",agent_set_current_state(self));
+
+	message_init(AGENT_MODULE,HOST_MODULE,ERROR_REPORT,obj);
+
+	write_to_log_file(AGENT_GENERAL_LOG, get_string_from_json_object(obj));
+}
 
 
 void
@@ -160,7 +160,6 @@ agent_send_message_to_session_loader(AgentObject* self,
 	self->state->send_message_to_session_loader(self, message);
 }
 
-
 void
 agent_session_initialize(AgentObject* self)
 {
@@ -185,6 +184,17 @@ agent_remote_control_reconnect(AgentObject* self)
 	self->state->remote_control_reconnect(self);
 }
 
+void
+agent_on_session_core_exit(AgentObject* self)
+{
+	self->state->on_session_core_exit(self);
+}
+
+gchar*
+agent_get_current_state_string(AgentObject* self)
+{
+	return self->state->get_current_state();
+}
 
 
 
@@ -225,30 +235,6 @@ agent_set_socket(AgentObject* self, Socket* socket)
 	self->socket = socket;
 }
 
-GFile*
-agent_get_device_log(AgentObject* self)
-{
-	return self->device;
-}
-
-
-GFile*
-agent_get_session(AgentObject* self)
-{
-	return self->session;
-}
-
-GFile*
-agent_get_slave_id(AgentObject* self)
-{
-	return self->SlaveID;
-}
-
-GFile* 
-agent_get_host_configuration(AgentObject* self)
-{
-	return self->Host;
-}
 
 void
 agent_set_state(AgentObject* object, AgentState* state)

@@ -25,7 +25,8 @@ void			session_core_send_message				(SessionCore* self,
 SessionCore*	session_core_initialize					();
 
 void			session_core_finalize					(SessionCore* self,
-														gint exit_code);
+														gint exit_code,
+														GError* error);
 
 Pipeline*		session_core_get_pipeline				(SessionCore* self);
 
@@ -50,12 +51,6 @@ IPC*			session_core_get_ipc					(SessionCore* core);
 void			report_session_core_error				(SessionCore* self,
 														 ErrorCode code);
 
-GFile*			session_core_get_session				(SessionCore* core);
-
 GMainContext*	session_core_get_main_context			(SessionCore* core);
-
-GFile*			session_core_get_log_file				(SessionCore* self);
-
-GFile*			session_core_get_device_config			(SessionCore* core);
 
 #endif 

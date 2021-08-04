@@ -3,6 +3,8 @@
 #include <session-core-type.h>
 #include <session-core.h>
 #include <session-core-ipc.h>
+#include <session-core-logging.h>
+
 #include <module.h>
 #include <opcode.h>
 
@@ -34,6 +36,8 @@ void
 session_core_on_message(SessionCore* core,
 						 gchar* data)
 {
+
+	write_to_log_file(core,data);
 
 	JsonNode* root;
 	JsonObject* object, * json_data;
@@ -125,15 +129,15 @@ get_string_from_json_object(JsonObject* object)
 }
 
 
-
-
 void
 send_message(SessionCore* self,
 			 Message* message)
 {
-	gint to = json_object_get_int_member(message, "To");
+	Module to = json_object_get_int_member(message, "To");
 
 	gchar* string_data = get_string_from_json_object(message);
+	write_to_log_file(self,string_data);
+
 	switch(to)
 	{
 	case CLIENT_MODULE:

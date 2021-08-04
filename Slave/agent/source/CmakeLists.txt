@@ -8,12 +8,17 @@ pkg_check_modules(JSON_GLIB REQUIRED json-glib-1.0)
 pkg_check_modules(LIBSOUP REQUIRED libsoup-2.4)
 
 
-file(GLOB SOURCE ${CMAKE_SOURCE_DIR}/agent/source/*.c ${CMAKE_SOURCE_DIR}/agent/source/agent-state/*.c)
+file(GLOB SOURCE 
+${CMAKE_SOURCE_DIR}/agent/source/*.c 
+${CMAKE_SOURCE_DIR}/agent/source/agent-state/*.c
+${CMAKE_SOURCE_DIR}/shared-items/*.c)
 
 
 add_executable(agent ${SOURCE})
 
 
+set_target_properties(agent PROPERTIES 
+ RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 
 

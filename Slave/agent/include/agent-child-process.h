@@ -27,7 +27,7 @@ void				close_child_process							(ChildProcess* proc);
 /// <returns></returns>
 ChildProcess*		create_new_child_process					(gchar* process_name,
 																 gint id,
-																 gchar** command_array,
+																 gchar* parsed_command,
 																 ChildHandleFunc func,
 																 AgentObject* agent);
 

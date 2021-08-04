@@ -5,19 +5,14 @@
 #include <opcode.h>
 
 
+#include <logging.h>
+#include <general-constant.h>
+#include <state-indicator.h>
 
 void
 unregistered_connect_to_host(AgentObject* agent)
 {
-    static gint i = 0;
-
-    if (i == 5)
-    {
-        agent_finalize(agent);
-    }
     connect_to_host_async(agent);
-    Sleep(1000);
-    i++;
 }
 
 void
@@ -40,9 +35,16 @@ unregistered_send_message_to_host(AgentObject* agent, char* message)
     int i= json_object_get_int_member(object, "Opcode");
 
     if (i != REGISTER_SLAVE)
-        g_print("We haven't registered yet \n");
+        write_to_log_file(AGENT_GENERAL_LOG,"Unknown message send to host while not configured");
     else
         send_message_to_host(agent, message);
+}
+
+
+static gchar* 
+unregistered_get_state(void)
+{
+    return AGENT_UNREGISTERED;
 }
 
 AgentState* 
@@ -59,8 +61,11 @@ transition_to_unregistered_state(void)
         unregistered_state.register_to_host = unregistered_register_with_host;
         unregistered_state.send_message_to_host = unregistered_send_message_to_host;
         unregistered_state.session_terminate = unregistered_connect_to_host;
+        unregistered_state.get_current_state = unregistered_get_state;
 
         initialized = TRUE; 
     }
+    
+    write_to_log_file(AGENT_GENERAL_LOG,unregistered_get_state());
     return &unregistered_state;
 }

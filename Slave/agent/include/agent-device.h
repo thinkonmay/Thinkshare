@@ -23,7 +23,7 @@
 /// <returns></returns>
 gpointer				update_device					(AgentObject* data);
 
-Message*				get_json_message_from_device_information();
+Message*                get_registration_message        (gint id);
 
 
 

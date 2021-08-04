@@ -10,9 +10,6 @@
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core-ipc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core-logging.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core-message.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -26,6 +23,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\shared-items\logging.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

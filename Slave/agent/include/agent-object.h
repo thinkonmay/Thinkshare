@@ -131,28 +131,7 @@ void											agent_send_message_to_session_loader(AgentObject* self,
 /// <param name="self"></param>
 void											agent_register_with_host			(AgentObject* self);
 
-/// <summary>
-/// settle device information update thread and other stuff,
-/// only invoked when SLAVE_ACCEPT message is received,
-/// </summary>
-/// <param name="self"></param>
-/// <returns></returns>
-gboolean										agent_register_settled				(AgentObject* self);
 
-/// <summary>
-/// get mutex for device state(shared resource)
-/// </summary>
-/// <param name="self"></param>
-/// <returns></returns>
-HANDLE*											agent_get_mutex_handle_ptr			(AgentObject* self);
-
-GFile*											agent_get_slave_id					(AgentObject* self);
-
-GFile*											agent_get_device_log				(AgentObject* self);
-
-GFile*											agent_get_socket_configuration		(AgentObject* self);
-
-GFile*											agent_get_host_configuration		(AgentObject* self);	
 /// <summary>
 /// 
 /// </summary>
@@ -163,27 +142,26 @@ void											agent_send_command_line				(AgentObject* self,
 																					 gchar* command,
 																					 gint order);
 
+void											agent_on_session_core_exit		(AgentObject* self);
 
 
 /*get-set function for agent object*/
 
-
 Socket*											agent_get_socket					(AgentObject* self);
 
 
-GFile*											agent_get_session					(AgentObject* self);
 
-GFile*											agent_get_host_configuration		(AgentObject* self);
-
-GFile*											agent_get_slave_id					(AgentObject* self);
-
-GFile*											agent_get_device_log				(AgentObject* self);
+void											agent_report_error					(AgentObject* self,
+				   																	 gchar* message);
 
 
 AgentState*										agent_get_state						(AgentObject* self);
 
 void											agent_set_state						(AgentObject* self,
 																					 AgentState* state);
+
+
+gchar*											agent_get_current_state_string		(AgentObject* self);
 
 ChildProcess*									agent_get_child_process				(AgentObject* self, 
 																					 gint position);

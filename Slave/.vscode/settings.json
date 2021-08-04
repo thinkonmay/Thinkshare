@@ -1,5 +1,12 @@
 {
     "files.associations": {
-        "session-core-data-channel.h": "c"
+        "session-core-data-channel.h": "c",
+        "agent-state-open.h": "c",
+        "bit": "cpp",
+        "compare": "cpp",
+        "cstddef": "cpp",
+        "limits": "cpp",
+        "type_traits": "cpp",
+        "xutility": "cpp"
     }
 }

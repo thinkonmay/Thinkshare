@@ -59,25 +59,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\session-core\source\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">session-core.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">session-core</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\session-core\source\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">session-core.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">session-core</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\session-core\source\MinSizeRel\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\MinSizeRel\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">session-core.dir\MinSizeRel\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">session-core</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\session-core\source\RelWithDebInfo\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\RelWithDebInfo\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">session-core.dir\RelWithDebInfo\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">session-core</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
@@ -120,7 +120,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/Debug/session-core.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/Debug/session-core.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/Debug/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -163,7 +163,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/Release/session-core.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/Release/session-core.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/Release/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -206,7 +206,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/MinSizeRel/session-core.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/MinSizeRel/session-core.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/MinSizeRel/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -248,7 +248,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/RelWithDebInfo/session-core.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/RelWithDebInfo/session-core.pdb</ProgramDataBaseFile>
+      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/RelWithDebInfo/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -316,12 +316,12 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\Program.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core-data-channel.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core-ipc.c" />
-    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core-logging.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core-message.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core-pipeline.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core-remote-config.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core-signalling.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\session-core.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\shared-items\logging.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\ZERO_CHECK.vcxproj">

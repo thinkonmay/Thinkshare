@@ -23,6 +23,10 @@ typedef void            (*ConnectToHost)                (AgentObject* agent);
 
 typedef void            (*RegisterToHost)               ( AgentObject* agent);
 
+typedef void            (*OnSessionCoreExit)       (AgentObject* agent);
+
+typedef gchar*          (*GetCurrentState)              (void);
+
 void                    default_method                  (AgentState* state);
 
 struct _AgentState
@@ -41,10 +45,13 @@ struct _AgentState
 
     SendMessageToSessionLoader send_message_to_session_loader;
 
+    OnSessionCoreExit on_session_core_exit;
+
     ConnectToHost connect_to_host;
 
     RegisterToHost register_to_host;
 
+    GetCurrentState get_current_state;
 };
 
 #endif

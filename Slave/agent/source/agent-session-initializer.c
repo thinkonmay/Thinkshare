@@ -4,6 +4,8 @@
 #include <agent-message.h>
 #include <agent-child-process.h>
 
+#include <general-constant.h>
+#include <child-process-constant.h>
 
 #include <gmodule.h>
 #include <Windows.h>
@@ -22,7 +24,6 @@ handle_session_core_function(GBytes* buffer,
     AgentObject* agent)
 {
     gchar* message = g_bytes_get_data(buffer, NULL);
-
     on_agent_message(agent, message);
 }
 
@@ -31,22 +32,22 @@ gboolean
 session_terminate(AgentObject* agent)
 {
     close_child_process(
-        agent_get_child_process(agent, 0));
+        agent_get_child_process(agent, SESSION_CORE_PROCESS_ID));
 }
 
 gboolean
-session_initialize(AgentObject* object)
+session_initialize(AgentObject* agent)
 {
     ChildProcess* session_core = 
-    create_new_child_process("D:\\OneDrive - VINACADEMY LLC\\Desktop\\personal-cloud-computing\\bin\\SessionCore.exe",
-        0, NULL,(ChildHandleFunc)handle_session_core_function, object);
-    agent_set_child_process(object, 0, session_core);
+    create_new_child_process(SESSION_CORE_BINARY,
+        SESSION_CORE_PROCESS_ID, NULL,(ChildHandleFunc)handle_session_core_function, agent);
+    agent_set_child_process(agent, SESSION_CORE_PROCESS_ID, session_core);
 }
 
 gboolean
 send_message_to_core(AgentObject* self, gchar* buffer)
 {
     send_message_to_child_process(
-        agent_get_child_process(self, 0), 
+        agent_get_child_process(self, SESSION_CORE_PROCESS_ID), 
             buffer, strlen(buffer) * sizeof(gchar));
 }

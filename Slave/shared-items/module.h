@@ -3,11 +3,11 @@
 
 typedef enum
 {
-        CORE_MODULE	,
+        CORE_MODULE,
         CLIENT_MODULE,
         LOADER_MODULE,
         AGENT_MODULE,
-        HOST_MODULE	,
+        HOST_MODULE,
 }Module;
 
 #endif

@@ -1,5 +1,15 @@
 #include <agent-child-process.h>
 #include <agent-type.h>
+#include <agent-object.h>
+
+
+#include <exit-code.h>
+#include <child-process-constant.h>
+#include <state-indicator.h>
+#include <logging.h>
+#include <general-constant.h>
+#include <child-process-constant.h>
+
 #include <glib.h>
 #include <Windows.h>
 
@@ -16,18 +26,25 @@
 /// </summary>
 struct _ChildPipe
 {
+    
+#ifdef G_OS_WIN32
     HANDLE standard_in;
     HANDLE standard_out;
+#endif
+
 };
 
 struct _ChildProcess
 {
     AgentObject* agent;
-    HANDLE process;
     gint process_id;
 
+#ifdef G_OS_WIN32
+    HANDLE process;
     HANDLE standard_in;
     HANDLE standard_out;
+#endif
+
     ChildHandleFunc func;
 };
 
@@ -56,7 +73,6 @@ handle_child_process_thread(ChildProcess* proc)
             bSuccess = ReadFile(proc->standard_out, chBuf, BUFSIZE, &dwRead, NULL);
             if (!bSuccess || dwRead == 0) break;
 
-
             GBytes* data = g_bytes_new(chBuf, strlen(chBuf));
             proc->func(data, proc->process_id, proc->agent);
             ZeroMemory(chBuf, BUFSIZE);
@@ -65,9 +81,32 @@ handle_child_process_thread(ChildProcess* proc)
 
         DWORD ret;
         GetExitCodeProcess(proc->process, &ret);
+
+
+        /*
+        *if child process terminated is session core
+        *let agent handle that
+        */
         if (ret != STILL_ACTIVE)
         {
+            if(proc->process_id  == SESSION_CORE_PROCESS_ID)
+            {
+                agent_on_session_core_exit(proc->agent);
+            }
             return;
+        }
+
+        /*
+        *if child process is session core, check for current state of agent,
+        *Terminate process if agent is not in session,
+        */
+        if(proc->process_id == SESSION_CORE_PROCESS_ID)
+        {
+            if(!g_strcmp0(agent_get_current_state_string(proc->agent) , AGENT_ON_SESSION))
+            {
+                TerminateProcess(proc->process,FORCE_EXIT);
+                return;
+            }
         }
     }
 
@@ -75,8 +114,33 @@ handle_child_process_thread(ChildProcess* proc)
 
 
 
-ChildPipe*
-initialize_process_handle(ChildProcess* self);
+static ChildPipe*
+initialize_process_handle(ChildProcess* self,
+                          AgentObject* agent)
+{
+    static ChildPipe hdl;
+
+    SECURITY_ATTRIBUTES attr;
+    attr.nLength = sizeof(SECURITY_ATTRIBUTES);
+    attr.bInheritHandle = TRUE;
+    attr.lpSecurityDescriptor = NULL;
+
+    if (!CreatePipe(&self->standard_out, &hdl.standard_out, &attr, 0))
+    {
+        agent_report_error(agent,"cannot create session core pipe");
+        return NULL;
+    }
+    if (!CreatePipe(&hdl.standard_in, &self->standard_in, &attr, 0))
+    {
+        agent_report_error(agent,"cannot create session core pipe");
+        return NULL;
+    }
+
+    SetHandleInformation(self->standard_in, HANDLE_FLAG_INHERIT, 0);
+    SetHandleInformation(self->standard_out, HANDLE_FLAG_INHERIT, 0);
+    return &hdl;
+}
+
 
 
 gboolean
@@ -86,16 +150,9 @@ send_message_to_child_process(ChildProcess* self,
 {
     DWORD written;
     gboolean success = FALSE;
-    for (;;)
-    {
-        success = WriteFile(self->standard_in,
-            buffer, size, &written, NULL);
 
-        if (success)
-        {
-            return TRUE;
-        }
-    }
+    success = WriteFile(self->standard_in,
+        buffer, size, &written, NULL);
 }
 
 
@@ -104,18 +161,21 @@ close_child_process(ChildProcess* proc)
 {
     DWORD exit_code = STILL_ACTIVE;
     GetExitCodeProcess(proc->process, exit_code);
+
     if (exit_code == STILL_ACTIVE)
     {
-        TerminateProcess(proc->process, 0);
+        write_to_log_file(AGENT_GENERAL_LOG,"Child process closed");
+        TerminateProcess(proc->process, FORCE_EXIT);
     }
     CloseHandle(proc->standard_out);
     CloseHandle(proc->standard_in);
+    ZeroMemory(proc,sizeof(ChildProcess));
 }
 
 ChildProcess*
 create_new_child_process(gchar* process_name,
     gint process_id,
-    gchar** command_array,
+    gchar* parsed_command,
     ChildHandleFunc func,
     AgentObject* agent)
 {
@@ -125,7 +185,13 @@ create_new_child_process(gchar* process_name,
     child_process[process_id].func = func;
 
 
-    ChildPipe* hdl = initialize_process_handle(&child_process[process_id]);
+    ChildPipe* hdl = initialize_process_handle(&child_process[process_id],agent);
+    if(hdl == NULL)
+    {
+        agent_report_error(agent,"Fail to create child process handle");
+        write_to_log_file(AGENT_GENERAL_LOG,"Fail co create child process");
+        return NULL;
+    }
 
     PROCESS_INFORMATION pi;
     ZeroMemory(&pi, sizeof(pi));
@@ -141,10 +207,8 @@ create_new_child_process(gchar* process_name,
 
 
 
-    if(command_array != NULL)
-    {
-        strcat(process_name, *command_array);
-    }
+    strcat(process_name, parsed_command);
+    
 
 
 
@@ -160,9 +224,17 @@ create_new_child_process(gchar* process_name,
         NULL,
         &startup_infor, &pi);
 
-    memcpy(&child_process[process_id].process, &pi.hProcess, sizeof(HANDLE));
-    CloseHandle(pi.hThread);
+    if(!output)
+    {
+        GetLastError();
+        agent_report_error(agent,"Fail to create child process ");
+        write_to_log_file(AGENT_GENERAL_LOG,"Fail co create child");
+        return NULL;        
+    }
 
+    memcpy(&child_process[process_id].process, &pi.hProcess, sizeof(HANDLE));
+
+    CloseHandle(pi.hThread);
     CloseHandle(hdl->standard_out);
     CloseHandle(hdl->standard_in);
 
@@ -175,27 +247,4 @@ create_new_child_process(gchar* process_name,
 }
 
 
-static ChildPipe*
-initialize_process_handle(ChildProcess* self)
-{
-    static ChildPipe hdl;
-
-    SECURITY_ATTRIBUTES attr;
-    attr.nLength = sizeof(SECURITY_ATTRIBUTES);
-    attr.bInheritHandle = TRUE;
-    attr.lpSecurityDescriptor = NULL;
-
-    if (!CreatePipe(&self->standard_out, &hdl.standard_out, &attr, 0))
-    {
-        g_printerr("cannot create session core pipe");
-    }
-    if (!CreatePipe(&hdl.standard_in, &self->standard_in, &attr, 0))
-    {
-        g_printerr("cannot create session core pipe");
-    }
-
-    SetHandleInformation(self->standard_in, HANDLE_FLAG_INHERIT, 0);
-    SetHandleInformation(self->standard_out, HANDLE_FLAG_INHERIT, 0);
-    return &hdl;
-}
 

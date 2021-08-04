@@ -1,13 +1,16 @@
 #include <agent-device.h>
-#include <tchar.h>
-#include <json-glib/json-glib.h>
 #include <agent-object.h>
+#include <agent-message.h>
 #include <agent-cmd.h>
 
+#include <logging.h>
+#include <general-constant.h>
+
 #include <sysinfoapi.h>
-#include <agent-message.h>
 #include <Windows.h>
 #include <stdio.h>
+#include <tchar.h>
+#include <json-glib/json-glib.h>
 
 #define DIV 1048576
 #define ID  0
@@ -38,8 +41,6 @@ GetCPULoad()
 /// </summary>
 struct _DeviceInformation
 {
-	gint id;
-
 	gchar cpu[100];
 	gchar gpu[512];
 	gint ram_capacity;
@@ -73,21 +74,7 @@ track_device();
 DeviceInformation*
 get_device_information() 
 {
-
 	DeviceInformation* device_info = malloc(sizeof(DeviceInformation));
-	ZeroMemory(device_info, sizeof(DeviceInformation));
-
-	static GFile* file;
-	static gboolean initialized = FALSE;
-	if (!initialized)
-	{ 
-		file = g_file_parse_name("C:\\ThinkMay\\SlaveID.txt");
-		initialized = TRUE;
-	}
-	GBytes* buffer = g_file_load_bytes(file, NULL, NULL, NULL);
-	gchar* data = g_bytes_get_data(buffer, NULL);
-
-	device_info->id = atoi(data);
 
 	int CPUInfo[4] = { -1 };
 	unsigned nExIds, i = 0;
@@ -154,7 +141,7 @@ get_device_information()
 
 
 Message*
-get_json_message_from_device_information()
+get_registration_message(gint id)
 {
 	DeviceInformation* infor = get_device_information();
 	JsonObject* information = json_object_new();
@@ -163,7 +150,7 @@ get_json_message_from_device_information()
 	json_object_set_string_member(information,	"GPU", infor->gpu);
 	json_object_set_string_member(information,	"OS", infor->OS);
 	json_object_set_int_member(information,		"RAMcapacity", infor->ram_capacity);
-	json_object_set_int_member(information,		"ID", infor->id);
+	json_object_set_int_member(information,		"ID", id);
 	return information;
 }
 
@@ -179,7 +166,6 @@ update_device(AgentObject* agent)
 	while (TRUE)
 	{
 		JsonObject* device = track_device();
-		json_object_set_int_member(device, "Time", g_get_real_time());
 
 		JsonNode* root;
 		JsonGenerator* generator;
@@ -191,13 +177,7 @@ update_device(AgentObject* agent)
 		json_generator_set_root(generator, root);
 		text = json_generator_to_data(generator, NULL);
 
-		strcat(text, "\n");
-
-		GFile* file = agent_get_device_log(agent);
-
-		GFileOutputStream* stream = g_file_append_to(file, G_FILE_CREATE_NONE, NULL, NULL);
-		g_output_stream_write(stream, text, strlen(text), NULL, NULL);
-
+		write_to_log_file(DEVICE_LOG,text);
 		Sleep(1000);
 	}
 	return NULL;
@@ -230,27 +210,15 @@ get_device_state()
 JsonObject*
 track_device()
 {
-	DeviceInformation* infor =	get_device_information();
 	DeviceState* state =		get_device_state();
 
-	JsonObject* information = json_object_new();
 	JsonObject* device_state = json_object_new();
-
-	json_object_set_string_member(information, "CPU", infor->cpu);
-	json_object_set_string_member(information, "GPU", infor->gpu);
-	json_object_set_string_member(information, "OS", infor->OS);
-	json_object_set_int_member(information, "RAMcapacity", infor->ram_capacity);
-	json_object_set_int_member(information, "ID", infor->id);
 
 	json_object_set_int_member(device_state, "CPUusage", state->cpu_usage);
 	json_object_set_int_member(device_state, "GPUusage", state->gpu_usage);
 	json_object_set_int_member(device_state, "RAMusage", state->ram_usage);
 
-	Message* message = json_object_new();
-
-	json_object_set_object_member(message, "DeviceState", device_state);
-	json_object_set_object_member(message, "DeviceInformation", information);
-	return message;
+	return device_state;
 }
 
 

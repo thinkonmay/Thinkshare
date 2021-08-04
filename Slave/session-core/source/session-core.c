@@ -6,12 +6,12 @@
 #include <session-core-message.h>
 #include <session-core-type.h>
 #include <session-core-ipc.h>
-#include <session-core-logging.h>
 
 #include <exit-code.h>
 #include <error-code.h>
 #include <module.h>
 #include <opcode.h>
+#include <general-constant.h>
 
 
 #include <glib.h>
@@ -33,12 +33,6 @@ struct _SessionCore
 	QoE* qoe;
 
 	IPC* ipc;
-
-	GFile* session;
-
-	GFile* log;
-
-	GFile* config;
 };
 
 
@@ -50,21 +44,59 @@ typedef struct
 	PipelineState			pipeline_state;
 	SignallingServerState	signalling_state;
 	PeerCallState			peer_state;
+	GError*					error;
 }ExitState;
 
 
 
 void
-session_core_setup_session(SessionCore* self);
+session_core_setup_session(SessionCore* self)
+{
+	JsonNode* root;
+	JsonObject* object;
+	JsonParser* parser = json_parser_new();
+
+	GError* error = NULL;
+	json_parser_load_from_file(parser, SESSION_SLAVE_FILE, &error);
+	if (error != NULL)
+	{
+		session_core_finalize(self, CORRUPTED_CONFIG_FILE_EXIT, error);
+		return;
+	}
+
+
+	root = json_parser_get_root(parser);
+	object = json_node_get_object(root);
+
+	signalling_hub_setup(self->signalling,
+		json_object_get_string_member(object, "SignallingUrl"),
+		json_object_get_boolean_member(object, "ClientOffer"),
+		json_object_get_string_member(object, "StunServer"),
+		json_object_get_int_member(object, "SessionSlaveID"));
+
+	JsonNode* qoe = json_object_get_object_member(object, "QoE");
+
+	qoe_setup(self->qoe,
+		json_object_get_int_member(qoe, "ScreenWidth"),
+		json_object_get_int_member(qoe, "ScreenHeight"),
+		json_object_get_int_member(qoe, "Framerate"),
+		json_object_get_int_member(qoe, "Bitrate"),
+		json_object_get_int_member(qoe, "AudioCodec"),
+		json_object_get_int_member(qoe, "VideoCodec"),
+		json_object_get_int_member(qoe, "QoEMode"));
+
+
+	signalling_hub_set_signalling_state(self->signalling, SIGNALLING_SERVER_READY);
+	signalling_hub_set_peer_call_state(self->signalling, PEER_CALL_READY);
+	pipeline_set_state(self->pipe, PIPELINE_READY);
+	self->state = SESSION_INFORMATION_SETTLED;
+}
 
 SessionCore*
 session_core_initialize()
 {
 	static SessionCore core;
 
-	core.config = g_file_parse_name("C:\\ThinkMay\\DeviceConfig.txt");
-	core.log = g_file_parse_name("C:\\ThinkMay\\SessionCoreLogging.txt");
-	core.session = g_file_parse_name("C:\\ThinkMay\\Session.txt");
 
 	core.ipc =				ipc_initialize(&core);
 	core.hub =				webrtchub_initialize();
@@ -159,56 +191,7 @@ get_session_information_from_message(Message* object)
 }
 
 
-void
-session_core_setup_session(SessionCore* self)
-{
-	GFile* session = session_core_get_session(self);
 
-	GBytes* bytes = g_file_load_bytes(session, NULL, NULL, NULL);
-
-	gchar* text = g_bytes_get_data(bytes, NULL);
-
-	JsonNode* root;
-	JsonObject* object;
-	JsonParser* parser = json_parser_new();
-	json_parser_load_from_data(parser, text, -1, NULL);
-
-	root = json_parser_get_root(parser);
-	if (!JSON_NODE_HOLDS_OBJECT(root))
-	{
-		report_session_core_error(self, CORRUPTED_SESSION_INFORMATION);
-		return;
-	}
-
-	object = json_node_get_object(root);
-
-	signalling_hub_setup(self->signalling,
-		json_object_get_string_member(object,	"SignallingUrl"),
-		json_object_get_boolean_member(object, "ClientOffer"),
-		json_object_get_string_member(object, "StunServer"),
-		json_object_get_int_member(object, "SessionSlaveID"));
-
-	JsonNode* qoe = json_object_get_object_member(object, "QoE");
-
-	qoe_setup(self->qoe,
-		json_object_get_int_member(qoe, "ScreenWidth"),
-		json_object_get_int_member(qoe, "ScreenHeight"),
-		json_object_get_int_member(qoe, "Framerate"),
-		json_object_get_int_member(qoe, "Bitrate"),
-		json_object_get_int_member(qoe, "AudioCodec"),
-		json_object_get_int_member(qoe, "VideoCodec"),
-		json_object_get_int_member(qoe, "QoEMode"));
-
-	/*session core setup step have done,
-	* new step into pipeline setup and 
-	* signalling register
-	*/
-
-	signalling_hub_set_signalling_state(self->signalling, SIGNALLING_SERVER_READY);
-	signalling_hub_set_peer_call_state(self->signalling, PEER_CALL_READY);
-	pipeline_set_state(self->pipe, PIPELINE_READY);
-	self->state = SESSION_INFORMATION_SETTLED;
-}
 
 
 
@@ -229,11 +212,18 @@ get_json_exit_state(ExitState* state)
 {
 	Message* message = json_object_new();
 
+
 	json_object_set_int_member(message, "ExitCode", state->code);
 	json_object_set_int_member(message, "CoreState", state->core_state);
 	json_object_set_int_member(message, "PipelineState", state->pipeline_state);
 	json_object_set_int_member(message, "SignallingState", state->signalling_state);
 	json_object_set_int_member(message, "PeerCallState", state->peer_state);
+	json_object_set_int_member(message, "ExitTime", g_get_real_time());
+
+	if(state->error != NULL){
+		json_object_set_int_member(message, "Message", state->error->message);}
+
+	json_object_set_null_member(message, "Message");
 
 	return message;
 }
@@ -242,41 +232,17 @@ get_json_exit_state(ExitState* state)
 
 
 void
-session_core_finalize(SessionCore* self, ExitCode exit_code)
+session_core_finalize(SessionCore* self, 
+					ExitCode exit_code, 
+					GError* error)
 {
 	PipelineState pipeline_state = pipeline_get_state(self->pipe);
 
-	ExitState state;
+	Pipeline* pipe = self->pipe;
+		GstElement* pipeline = pipeline_get_pipline(pipe);
 
-	state.code = exit_code;
-	state.core_state = self->state;
-	state.pipeline_state = pipeline_state;
-
-	state.signalling_state = 
-		signalling_hub_get_signalling_state(self->signalling);
-	state.peer_state = 
-		signalling_hub_get_peer_call_state(self->signalling);
-
-
-	write_to_log_file(self,"session core ended");
-
-	gchar* buffer = malloc(10);
-	itoa(g_get_real_time(),buffer,10);
-	write_to_log_file(self, buffer);
-
-	write_to_log_file(self, "\n");
-
-
-	Message* msg_host = message_init(CORE_MODULE, 
-		HOST_MODULE, EXIT_CODE_REPORT, get_json_exit_state(&state));
-	Message* msg_agent = message_init(CORE_MODULE,
-		AGENT_MODULE, EXIT_CODE_REPORT, get_json_exit_state(&state));
-
-	session_core_send_message(self, msg_host);
-	session_core_send_message(self, msg_agent);
-
-
-
+	gst_element_set_state(
+		GST_ELEMENT(pipeline), GST_STATE_NULL);
 
 	SignallingHub* signalling = 
 		session_core_get_signalling_hub(self);
@@ -284,18 +250,32 @@ session_core_finalize(SessionCore* self, ExitCode exit_code)
 	SoupWebsocketConnection* connection = 
 		signalling_hub_get_websocket_connection(signalling);
 
+	ExitState state;
+
+	state.code = exit_code;
+	state.core_state = self->state;
+	state.pipeline_state = pipeline_state;
+	state.error = error;
+
+	state.signalling_state = 
+		signalling_hub_get_signalling_state(self->signalling);
+	state.peer_state = 
+		signalling_hub_get_peer_call_state(self->signalling);
+
+	
 	if (connection != NULL) {
 		soup_websocket_connection_close(connection, 0, "");
 	}
 
+	write_to_log_file(self,"session core exited\n");
 
-	Pipeline* pipe = self->pipe;
-	GstElement* pipeline = pipeline_get_pipline(pipe);
+	Message* msg_host = message_init(CORE_MODULE, 
+		HOST_MODULE, EXIT_CODE_REPORT, get_json_exit_state(&state));
 
-	gst_element_set_state(
-		GST_ELEMENT(pipeline), GST_STATE_NULL);
+	session_core_send_message(self, msg_host);
 
-	ExitProcess(0);
+	/*agent will catch session core exit code to restart session*/
+	ExitProcess(exit_code);
 }
 
 
@@ -305,7 +285,7 @@ report_session_core_error(SessionCore* self,
 						  ErrorCode code)
 {
 	Message* msg = json_object_new();
-	json_object_set_int_member(msg, "ErrorCode", code);
+	json_object_set_string_member(msg, "ErrorCode", code);
 
 	Message* msg_host = message_init(CORE_MODULE,
 		HOST_MODULE, ERROR_REPORT, msg);
@@ -339,12 +319,6 @@ session_core_get_qoe(SessionCore* self)
 	return self->qoe;
 }
 
-GFile*
-session_core_get_log_file(SessionCore* self)
-{
-	return self->log;
-}
-
 
 CoreState
 session_core_get_state(SessionCore* self)
@@ -368,18 +342,6 @@ IPC*
 session_core_get_ipc(SessionCore* core)
 {
 	return core->ipc;
-}
-
-GFile* 
-session_core_get_session(SessionCore* core)
-{
-	return core->session;
-}
-
-GFile*
-session_core_get_device_config(SessionCore* core)
-{
-	return core->config;
 }
 
 GMainContext*

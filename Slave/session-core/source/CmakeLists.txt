@@ -13,7 +13,9 @@ pkg_check_modules(CONTROLLER REQUIRED gstreamer-controller-1.0)
 
 
 
-file(GLOB SOURCE_LIST ${CMAKE_SOURCE_DIR}/session-core/source/*.c)
+file(GLOB SOURCE_LIST 
+${CMAKE_SOURCE_DIR}/session-core/source/*.c
+${CMAKE_SOURCE_DIR}/shared-items/*.c)
 
 add_executable(session-core ${SOURCE_LIST})
 
@@ -34,6 +36,10 @@ PUBLIC
     ${JSON_GLIB_INCLUDE_DIRS}
     ${WEBRTC_INCLUDE_DIRS}
     ${CONTROLLER_INCLUDE_DIRS})
+
+
+set_target_properties(session-core PROPERTIES 
+ RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 target_compile_options(session-core PUBLIC ${GLIB_CFLAGS})
 target_compile_options(session-core PUBLIC ${GIO_CFLAGS})

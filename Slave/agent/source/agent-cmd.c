@@ -1,3 +1,5 @@
+
+
 #include <agent-cmd.h>
 #include <agent-type.h>
 #include <agent-message.h>
@@ -5,7 +7,8 @@
 #include <agent-socket.h>
 
 
-
+#include <logging.h>
+#include <general-constant.h>
 
 
 
@@ -17,17 +20,16 @@ command_line_output_handle(GBytes* data,
     AgentObject* agent)
 {
     gchar* message = g_bytes_get_data(data,NULL);
-    g_print(message);
+
+    write_to_log_file(AGENT_CMD_LOG,message);
+
     Message* object = json_object_new();
-    json_object_set_int_member(object, "\nProcessID", process_id);
+    json_object_set_int_member(object, "ProcessID", process_id);
     json_object_set_string_member(object, "Command", message);
 
-    //Message* msg = message_init(AGENT_MODULE, HOST_MODULE,
-    //    COMMAND_LINE_FORWARD, object);
-
-    //g_print(get_string_from_json_object(msg));
-
-    //agent_send_message(agent, msg);
+    Message* msg = message_init(AGENT_MODULE, HOST_MODULE,
+        COMMAND_LINE_FORWARD, object);
+    agent_send_message(agent, msg);
 }
 
 
@@ -35,7 +37,7 @@ command_line_output_handle(GBytes* data,
 void
 create_new_cmd_process(gint position, 
     AgentObject* agent, 
-    gchar** first_command)
+    gchar* first_command)
 {
 
     ChildProcess* child_process = create_new_child_process(

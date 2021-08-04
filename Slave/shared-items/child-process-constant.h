@@ -1,0 +1,19 @@
+#ifndef __CHILD_PROCESS_CONSTANT_H__
+#define __CHILD_PROCESS_CONSTANT_H__
+
+typedef enum
+{
+ SESSION_CORE_PROCESS_ID ,
+ SESSION_LOADER_PROCESS_ID ,
+
+
+ 
+
+
+
+
+ LAST_CHILD_PROCESS = 7
+}ChildProcessId;
+
+
+#endif
