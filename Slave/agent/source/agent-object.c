@@ -106,11 +106,9 @@ agent_report_error(AgentObject* self,
 	JsonObject* obj = json_object_new();
 
 	json_object_set_int_member(obj,
-		"Time",g_get_real_time());
+		"ErrorTime",g_get_real_time());
 	json_object_set_string_member(obj,
 		"ErrorMessage",message);
-	json_object_set_string_member(obj,
-		"AgentState",agent_set_current_state(self));
 
 	message_init(AGENT_MODULE,HOST_MODULE,ERROR_REPORT,obj);
 

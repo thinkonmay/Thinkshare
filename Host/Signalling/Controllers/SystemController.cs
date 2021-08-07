@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Signalling.Interfaces;
+using Signalling.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,16 +23,18 @@ namespace Signalling.Controllers
         }
 
         [HttpPost("Generate")]
-        public IActionResult AddSessionPair(int slaveID, int clientID)
+        public IActionResult AddSessionPair(string sspair)
         {
-            _queue.AddSessionPair(slaveID, clientID);
+            var sessionPair = JsonConvert.DeserializeObject<SessionPair>(sspair);
+            _queue.AddSessionPair(sessionPair.SessionSlaveID, sessionPair.SessionClientID);
             return Ok("Added session pair");
         }
 
         [HttpDelete("Terminate")]
-        public IActionResult TerminateSessionPair(int slaveID, int clientID)
+        public IActionResult TerminateSessionPair(string sspair)
         {
-            _queue.RemoveIDPair(slaveID, clientID);
+            var sessionPair = JsonConvert.DeserializeObject<SessionPair>(sspair);
+            _queue.RemoveIDPair(sessionPair.SessionSlaveID, sessionPair.SessionClientID);
             return Ok("Terminated session pair");
         }
 
@@ -44,7 +48,6 @@ namespace Signalling.Controllers
         [HttpGet("GetOnlineDevice")]
         public List<int> GetOnlineDevice()
         {
-
             return _queue.GetOnlineList();
         }
     }

@@ -3,7 +3,6 @@
 #include <session-core-type.h>
 #include <session-core.h>
 #include <session-core-ipc.h>
-#include <session-core-logging.h>
 
 #include <module.h>
 #include <opcode.h>

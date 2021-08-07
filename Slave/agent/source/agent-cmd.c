@@ -26,7 +26,8 @@ command_line_output_handle(GBytes* data,
     Message* object = json_object_new();
     json_object_set_int_member(object, "ProcessID", process_id);
     json_object_set_string_member(object, "Command", message);
-
+    json_object_set_int_member(object, "Time",g_get_real_name());
+    
     Message* msg = message_init(AGENT_MODULE, HOST_MODULE,
         COMMAND_LINE_FORWARD, object);
     agent_send_message(agent, msg);

@@ -12,16 +12,6 @@ namespace SharedHost.Models
         /// <summary>
         /// 
         /// </summary>
-        public int ClientID { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int SlaveID { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public string SignallingUrl { get; set; }
 
         /// <summary>

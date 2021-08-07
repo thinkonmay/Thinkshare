@@ -13,7 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\StorageBlockIdentification.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientSession.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Command.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ForwardCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Message.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\QoE.cs" />

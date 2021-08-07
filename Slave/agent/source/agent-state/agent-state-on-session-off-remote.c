@@ -93,7 +93,6 @@ transition_to_off_remote_state(void)
         off_remote_state.session_terminate = off_remote_session_terminate;
         off_remote_state.remote_control_reconnect = off_remote_remote_control_reconnect;
         off_remote_state.send_message_to_host = send_message_to_host;
-        //off_remote_state.send_message_to_session_loader = send_message_to_loader;
         off_remote_state.send_message_to_session_core = send_message_to_core;
         off_remote_state.get_current_state = on_session_off_remote_get_state;
 

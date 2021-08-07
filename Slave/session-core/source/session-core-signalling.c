@@ -51,7 +51,7 @@ SignallingHub*
 signalling_hub_initialize(SessionCore* core)
 {
     static SignallingHub hub;
-    GFile* config = session_core_get_device_config(core);
+    GFile* config = g_file_parse_name(HOST_CONFIG_FILE);
     GBytes* byte_config = g_file_load_bytes(config, NULL, NULL, NULL);
 
 
@@ -534,10 +534,6 @@ on_sdp_exchange(gchar* _text, SessionCore* core)
     if (!g_strcmp0(sdptype, "request"))
     {
         Pipeline* pipe = session_core_get_pipeline(core);
-        if (pipe != NULL)
-        {
-            stop_pipeline(pipe);
-        }
         pipeline_initialize(core);
         setup_pipeline(core);
         return;

@@ -26,56 +26,33 @@
 
     public enum Opcode
     {
-        /// <summary>
-        /// 
-        /// </summary>
         SESSION_INFORMATION,
 
-        /// <summary>
-        /// 
-        /// </summary>
         REGISTER_SLAVE,
 
-        /// <summary>
-        /// 
-        /// </summary>
         SLAVE_ACCEPTED,
         DENY_SLAVE,
 
         REJECT_SLAVE,
 
-        /// <summary>
-        /// 
-        /// </summary>
         SESSION_INITIALIZE,
-        SESSION_TERMINATION,
+        SESSION_TERMINATE,
         RECONNECT_REMOTE_CONTROL,
         DISCONNECT_REMOTE_CONTROL,
 
-        /// <summary>
-        /// 
-        /// </summary>
-        CHANGE_MEDIA_MODE,
-        CHANGE_RESOLUTION,
-        CHANGE_FRAMERATE,
-        BITRATE_CALIBRATE,
+        QOE_REPORT,
+        RESET_QOE,
 
-        /// <summary>
-        /// 
-        /// </summary>
         COMMAND_LINE_FORWARD,
 
-        /// <summary>
-        /// 
-        /// </summary>
         EXIT_CODE_REPORT,
         ERROR_REPORT,
 
-        /// <summary>
-        /// 
-        /// </summary>
         NEW_COMMAND_LINE_SESSION,
         END_COMMAND_LINE_SESSION,
+
+        FILE_TRANSFER_SERVICE,
+        CLIPBOARD_SERVICE
     }
 
     public enum Module

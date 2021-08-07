@@ -23,22 +23,23 @@
 
 Message*
 message_init(Module from,
-             Module to,
-             Opcode opcode,
-             Message* data)
+	Module to,
+	Opcode opcode,
+	Message* data)
 {
 	Message* object = json_object_new();
-	gchar* data_string = get_string_from_json_object(data);
-	gchar* data_string_ = g_strndup( data_string,sizeof(data_string) );
 
-	json_object_set_int_member		(object, "From",	from);
-	json_object_set_int_member		(object, "To",		to);
-	json_object_set_int_member		(object, "Opcode",	opcode);
-	if(data == NULL)
+	json_object_set_int_member(object, "From", from);
+	json_object_set_int_member(object, "To", to);
+	json_object_set_int_member(object, "Opcode", opcode);
+	if (data == NULL)
+	{
 		return object;
+	}
 	else
 	{
-		json_object_set_string_member	(object, "Data", data_string_);
+		gchar* data_string = get_string_from_json_object(data);
+		json_object_set_string_member	(object, "Data", data_string);
 		return object;
 	}
 }
@@ -110,7 +111,6 @@ agent_reset_qoe(AgentObject* agent, JsonObject* qoe)
 	json_object_set_object_member(new_session_config,"QoE",qoe);
 	gchar* buffer = get_string_from_json_object(new_session_config);
 
-	GError* error;
 	GFile* config = g_file_parse_name(SESSION_SLAVE_FILE);
 	g_file_replace_contents(config,buffer,sizeof(buffer),NULL,
 		TRUE,G_FILE_CREATE_NONE,NULL,NULL,&error);
@@ -186,19 +186,19 @@ on_agent_message(AgentObject* agent,
 			else if (opcode == NEW_COMMAND_LINE_SESSION)
 			{
 				create_new_cmd_process(
-					json_object_get_int_member(json_data, "Order"), agent,
-						json_object_get_string_member(json_data, "CommandLine"));
+					json_object_get_int_member(json_data, "ProcessID"), agent,
+						json_object_get_string_member(json_data, "Command"));
 			}
 			else if (opcode == END_COMMAND_LINE_SESSION)
 			{
 				close_child_process(
 					agent_get_child_process(agent,
-						json_object_get_int_member(json_data, "Order")));
+						json_object_get_int_member(json_data, "ProcessID")));
 			}
 			else if (opcode == COMMAND_LINE_FORWARD)
 			{
 				agent_send_command_line(agent,
-					json_object_get_int_member(json_data, "Order"),
+					json_object_get_int_member(json_data, "ProcessID"),
 						json_object_get_int_member(json_data, "Command"));
 			}
 			else if (opcode == DENY_SLAVE){

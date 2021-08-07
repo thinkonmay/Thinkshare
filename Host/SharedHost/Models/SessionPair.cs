@@ -1,6 +1,6 @@
 ﻿namespace SharedHost.Models
 {
-    class SessionPair
+    public class SessionPair
     {
         public int SessionClientID { get; set; }
 

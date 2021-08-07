@@ -2,6 +2,17 @@
 {
     public class QoE
     {
+        public QoE() { }
+        public QoE(ClientDeviceCapabilities cap)
+        {
+
+            ScreenHeight = cap.screenHeight;
+            ScreenWidth = cap.screenWidth;
+            Bitrate = cap.bitrate;
+            VideoCodec = cap.videoCodec;
+            AudioCodec = cap.audioCodec;
+            QoEMode = cap.mode;
+        }
         public int ScreenWidth { get; set; }
 
         public int ScreenHeight { get; set; }

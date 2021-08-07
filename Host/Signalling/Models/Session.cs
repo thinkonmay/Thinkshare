@@ -18,11 +18,11 @@ namespace Signalling.Models
 
         /*provide both created time and closed time for better management*/
 
-        public Session(SessionRequest req)
-        {
-            ClientId = req.ClientId;
-            SlaveId = req.SlaveId;
-        }
+        //public Session(SessionRequest req)
+        // {
+        //    ClientId = req.ClientId;
+        //    SlaveId = req.SlaveId;
+        //}
     }
 
     public class SessionRequest

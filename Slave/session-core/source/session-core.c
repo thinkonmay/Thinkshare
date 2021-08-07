@@ -285,7 +285,8 @@ report_session_core_error(SessionCore* self,
 						  ErrorCode code)
 {
 	Message* msg = json_object_new();
-	json_object_set_string_member(msg, "ErrorCode", code);
+	json_object_set_string_member(msg, "ErrorMessage", code);
+	json_object_set_int_member(msg,"ErrorTime",g_get_real_time());
 
 	Message* msg_host = message_init(CORE_MODULE,
 		HOST_MODULE, ERROR_REPORT, msg);

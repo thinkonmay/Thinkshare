@@ -287,7 +287,7 @@ initialize_socket(AgentObject* agent)
 
     socket.session =
         soup_session_new_with_options(
-            SOUP_SESSION_SSL_STRICT, json_object_get_boolean_member(obj,DISABLE_SSL),
+            SOUP_SESSION_SSL_STRICT, !json_object_get_boolean_member(obj,DISABLE_SSL),
             SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
             //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
             SOUP_SESSION_HTTPS_ALIASES, https_aliases, NULL);
@@ -296,7 +296,7 @@ initialize_socket(AgentObject* agent)
     soup_session_add_feature(socket.session, SOUP_SESSION_FEATURE(socket.logger));
     g_object_unref(socket.logger);
 
-    soup_logger_set_printer(socket.logger,agent_logger,NULL,NULL);
+    //soup_logger_set_printer(socket.logger,agent_logger,NULL,NULL);
 
     socket.message = soup_message_new(SOUP_METHOD_GET,
         json_object_get_string_member(obj,HOST_URL));

@@ -75,6 +75,7 @@ DeviceInformation*
 get_device_information() 
 {
 	DeviceInformation* device_info = malloc(sizeof(DeviceInformation));
+	ZeroMemory(device_info, sizeof(DeviceInformation));
 
 	int CPUInfo[4] = { -1 };
 	unsigned nExIds, i = 0;
@@ -116,7 +117,8 @@ get_device_information()
 
 #ifdef WIN32
 
-	gchar OS[100] = "Window10 Version ";
+	gchar OS[100] ;
+	ZeroMemory(&OS, sizeof(OS));
 	DWORD minor_version = (HIBYTE(LOWORD(GetVersion())));
 	DWORD major_version = (LOBYTE(LOWORD(GetVersion())));
 
@@ -127,6 +129,7 @@ get_device_information()
 	itoa(major_version, major, 10);
 	itoa(minor_version, minor, 10);
 
+	strcat(OS, "Window10 Version ");
 	strcat(OS, major);
 	strcat(OS, ".");
 	strcat(OS, minor);
