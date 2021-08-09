@@ -7,7 +7,6 @@ using SlaveManager.Models;
 using SlaveManager.Services;
 using System;
 using System.Collections.Generic;
-using System.Web.Http.Cors;
 
 namespace SlaveManager.Controllers
 {

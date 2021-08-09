@@ -54,7 +54,7 @@ namespace SlaveManager.Services
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Claims = (IDictionary<string, object>)claims.ToDictionary(k => k.Type)
+                Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

@@ -33,6 +33,7 @@ namespace SlaveManager.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [Route("Login")]
         public async Task<AuthResponse> Login([FromBody] LoginModel model)
         {
             if (ModelState.IsValid)

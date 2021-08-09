@@ -49,11 +49,11 @@ namespace SlaveManager
                     });
             });
 
-
-
+            //services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer($"Server={GeneralConstants.sql_server},{GeneralConstants.sql_port};Initial Catalog={GeneralConstants.sql_database};User ID={GeneralConstants.sql_user};Password={GeneralConstants.sql_password}"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer($"Server={GeneralConstants.sql_server},{GeneralConstants.sql_port};Initial Catalog={GeneralConstants.sql_database};User ID={GeneralConstants.sql_user};Password={GeneralConstants.sql_password}"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -69,6 +69,7 @@ namespace SlaveManager
                 options.Password.RequireLowercase = true;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
+                options.SignIn.RequireConfirmedAccount = false; //TODO: To be removed in production
             });
 
             services.AddAuthentication(options =>
