@@ -22,7 +22,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4155D8B0-DFF0-3A28-932F-BDAD35525928}</ProjectGuid>
+    <ProjectGuid>{B0F453EF-AC53-3F9C-B549-DB50EFB260B4}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <Keyword>Win32Proj</Keyword>
     <Platform>x64</Platform>
@@ -114,12 +114,12 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;intl.lib;gio-2.0.lib;glib-2.0.lib;gobject-2.0.lib;gmodule-2.0.lib;gstreamer-1.0.lib;json-glib-1.0.lib;soup-2.4.lib;gstsdp-1.0.lib;gstrtp-1.0.lib;gstcontroller-1.0.lib;gstwebrtc-1.0.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;intl.lib;gio-2.0.lib;glib-2.0.lib;gobject-2.0.lib;gmodule-2.0.lib;gstreamer-1.0.lib;json-glib-1.0.lib;soup-2.4.lib;gstsdp-1.0.lib;gstrtp-1.0.lib;gstcontroller-1.0.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:/gstreamer/1.0/msvc_x86_64/lib;C:/gstreamer/1.0/msvc_x86_64/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/Debug/session-core.lib</ImportLibrary>
+      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/Debug/session-core.lib</ImportLibrary>
       <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/Debug/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -157,12 +157,12 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;intl.lib;gio-2.0.lib;glib-2.0.lib;gobject-2.0.lib;gmodule-2.0.lib;gstreamer-1.0.lib;json-glib-1.0.lib;soup-2.4.lib;gstsdp-1.0.lib;gstrtp-1.0.lib;gstcontroller-1.0.lib;gstwebrtc-1.0.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;intl.lib;gio-2.0.lib;glib-2.0.lib;gobject-2.0.lib;gmodule-2.0.lib;gstreamer-1.0.lib;json-glib-1.0.lib;soup-2.4.lib;gstsdp-1.0.lib;gstrtp-1.0.lib;gstcontroller-1.0.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:/gstreamer/1.0/msvc_x86_64/lib;C:/gstreamer/1.0/msvc_x86_64/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/Release/session-core.lib</ImportLibrary>
+      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/Release/session-core.lib</ImportLibrary>
       <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/Release/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -200,12 +200,12 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;intl.lib;gio-2.0.lib;glib-2.0.lib;gobject-2.0.lib;gmodule-2.0.lib;gstreamer-1.0.lib;json-glib-1.0.lib;soup-2.4.lib;gstsdp-1.0.lib;gstrtp-1.0.lib;gstcontroller-1.0.lib;gstwebrtc-1.0.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;intl.lib;gio-2.0.lib;glib-2.0.lib;gobject-2.0.lib;gmodule-2.0.lib;gstreamer-1.0.lib;json-glib-1.0.lib;soup-2.4.lib;gstsdp-1.0.lib;gstrtp-1.0.lib;gstcontroller-1.0.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:/gstreamer/1.0/msvc_x86_64/lib;C:/gstreamer/1.0/msvc_x86_64/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/MinSizeRel/session-core.lib</ImportLibrary>
+      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/MinSizeRel/session-core.lib</ImportLibrary>
       <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/MinSizeRel/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -242,12 +242,12 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;intl.lib;gio-2.0.lib;glib-2.0.lib;gobject-2.0.lib;gmodule-2.0.lib;gstreamer-1.0.lib;json-glib-1.0.lib;soup-2.4.lib;gstsdp-1.0.lib;gstrtp-1.0.lib;gstcontroller-1.0.lib;gstwebrtc-1.0.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;intl.lib;gio-2.0.lib;glib-2.0.lib;gobject-2.0.lib;gmodule-2.0.lib;gstreamer-1.0.lib;json-glib-1.0.lib;soup-2.4.lib;gstsdp-1.0.lib;gstrtp-1.0.lib;gstcontroller-1.0.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:/gstreamer/1.0/msvc_x86_64/lib;C:/gstreamer/1.0/msvc_x86_64/lib/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/RelWithDebInfo/session-core.lib</ImportLibrary>
+      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/RelWithDebInfo/session-core.lib</ImportLibrary>
       <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/RelWithDebInfo/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
@@ -260,7 +260,7 @@
       <UseUtf8Encoding>Always</UseUtf8Encoding>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/CMakeFiles/generate.stamp"
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -269,11 +269,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\session-core\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/CMakeFiles/generate.stamp"
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -282,11 +282,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\session-core\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/CMakeFiles/generate.stamp"
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -295,11 +295,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\session-core\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/CMakeFiles/generate.stamp"
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" "-BD:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave" --check-stamp-file "D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core/source/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -308,7 +308,7 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPackageMessage.cmake;C:\Program Files\CMake\share\cmake-3.21\Modules\FindPkgConfig.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\session-core\source\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\session-core\source\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
@@ -324,8 +324,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\shared-items\logging.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\ZERO_CHECK.vcxproj">
-      <Project>{27253C08-AC3C-351F-A24E-F71B98583DF7}</Project>
+    <ProjectReference Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\ZERO_CHECK.vcxproj">
+      <Project>{1DD3D781-A358-3874-9FBD-5C9DA12586DB}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

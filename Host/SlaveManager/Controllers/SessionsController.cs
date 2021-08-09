@@ -24,7 +24,7 @@ namespace SlaveManager.Controllers
     [ApiController]
     //user
     // TODO: Add URL routing for REST requests for signalling & slave manager servers
-    public class SessionsController : ControllerBase
+    public class SessionsController : Controller
     {
         private readonly ApplicationDbContext _db;
 
@@ -50,14 +50,14 @@ namespace SlaveManager.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_slavePool.GetSlaveState(req.SlaveId) != "Device Open") { return BadRequest("Device Not Available"); }
+                if (_slavePool.GetSlaveState(req.SlaveId) != "DEVICE_OPEN") { return BadRequest("Device Not Available"); }
                 await _admin.ReportNewSession(req.SlaveId, req.ClientId);
 
                 /*create session id pair randomly*/
                 int sessionSlaveId = Randoms.Next();
                 int sessionClientId = Randoms.Next();
 
-                /*create session from */
+                /*create session from client device capability*/
                 var _QoE = new QoE(req.cap);
 
                 /*create new session with gevin session request from user*/
@@ -81,7 +81,11 @@ namespace SlaveManager.Controllers
 
                 _slavePool.SessionInitialize(sessionSlaveId, slaveSes);
 
-                return Ok(JsonConvert.SerializeObject(clientSes));
+                SessionViewModel view = new SessionViewModel();
+                view.clientSession = clientSes; 
+                view.HostUrl = GeneralConstants.SLAVE_MANAGER;
+                view.ClientID = sess.ClientID;
+                return View("RemoteControl.cshtml",view);
             }
 
             return BadRequest();
@@ -96,6 +100,7 @@ namespace SlaveManager.Controllers
         public async Task<IActionResult> Terminate(int sessionClientId)
         {
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
+
             ses.EndTime = DateTime.UtcNow;
             await _db.SaveChangesAsync();
 
@@ -156,7 +161,12 @@ namespace SlaveManager.Controllers
             /*slavepool send terminate session signal*/
             if (_slavePool.RemoteControlReconnect(ses.SessionSlaveID))
             {
-                return Ok();
+                ClientSession clientSes = new ClientSession(ses);                
+                SessionViewModel view = new SessionViewModel();
+                view.clientSession = clientSes; 
+                view.HostUrl = GeneralConstants.SLAVE_MANAGER;
+                view.ClientID = ses.ClientID;
+                return View("RemoteControl.cshtml",view);
             }
             else
             {

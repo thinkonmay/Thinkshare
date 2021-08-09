@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,8 +14,6 @@ namespace SlaveManager.Models
         public GeneralError(GeneralErrorAbsTime abs)
         {
             ErrorTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ErrorTime);
-
-            Id = abs.Id;
 
             ErrorMessage = abs.ErrorMessage;
 
@@ -42,10 +41,9 @@ namespace SlaveManager.Models
         public virtual Slave Machine { get; set; }
     }
 
-
-    public class SessionCoreExitBase
+    public class SessionCoreExitAbsTime 
     {
-        public int Id { get; set; }
+        public int ExitTime { get; set; }
 
         public int ExitCode { get; set; }
 
@@ -54,18 +52,11 @@ namespace SlaveManager.Models
         public string PipelineState { get; set; }
 
         public string PeerCallState { get; set; }
-            
-        public string Message { get; set; } 
 
-
+        public string Message { get; set; }
     }
 
-    public class SessionCoreExitAbsTime : SessionCoreExitBase
-    {
-        public int ExitTime { get; set; }
-    }
-
-    public class SessionCoreExit : SessionCoreExitBase
+    public class SessionCoreExit
     {
         public SessionCoreExit()
         { }
@@ -73,15 +64,27 @@ namespace SlaveManager.Models
         public SessionCoreExit(SessionCoreExitAbsTime abs )
         {
             ExitTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ExitTime);
-            Id = abs.Id;
-            ExitCode = abs.Id;
+            ExitCode = abs.ExitCode;
             CoreState = abs.CoreState;
             PipelineState = abs.PipelineState;
             PeerCallState = abs.PeerCallState;
             Message = abs.Message;
         }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
         public DateTime ExitTime { get; set; }
+
+        public int ExitCode { get; set; }
+
+        public string CoreState { get; set; }
+
+        public string PipelineState { get; set; }
+
+        public string PeerCallState { get; set; }
+
+        public string Message { get; set; }
     }
 
 

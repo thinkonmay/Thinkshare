@@ -76,7 +76,7 @@ namespace SlaveManager.Services
                 accept.From = Module.HOST_MODULE;
                 accept.To = Module.AGENT_MODULE;
                 accept.Opcode = Opcode.SLAVE_ACCEPTED;
-                accept.Data = " ";
+                accept.Data = "ACCEPTED";
                 await Send(ws, JsonConvert.SerializeObject(accept));
                 return true;
             }
@@ -94,29 +94,43 @@ namespace SlaveManager.Services
         public async Task<bool> KeepReceiving(WebSocket ws)
         {
             WebSocketReceiveResult message;
-            do
+            SlaveDeviceInformation registeredInfor = null;
+            SlaveDevice slave = null;
+            try
             {
-                using (var memoryStream = new MemoryStream())
+                do
                 {
-                    message = await ReceiveMessage(ws, memoryStream);
-                    if (message.Count > 0)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                        var message_json = JsonConvert.DeserializeObject<Message>(receivedMessage);
-                        if (message_json.Opcode == Opcode.REGISTER_SLAVE)
+                        message = await ReceiveMessage(ws, memoryStream);
+                        if (message.Count > 0)
                         {
-                            //perform slave registration, break this loop and go to slave connection loop if registration return successfully 
-                            var result = await UpgradeToSlave(ws, JsonConvert.DeserializeObject<SlaveDeviceInformation>(message_json.Data));
-                            if(result)
-                            { break; }
-                            else
-                            { return false; }
+                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                            var message_json = JsonConvert.DeserializeObject<Message>(receivedMessage);
+                            if (message_json.Opcode == Opcode.REGISTER_SLAVE)
+                            {
+                                //perform slave registration, break this loop and go to slave connection loop if registration return successfully
+                                registeredInfor =  JsonConvert.DeserializeObject<SlaveDeviceInformation>(message_json.Data);
+                                bool result = await UpgradeToSlave(ws, registeredInfor);
+                                if(result)
+                                { break; }
+                                else
+                                { return false; }
+                            }
                         }
                     }
-                }
-            } while (ws.State == WebSocketState.Open);
+                } while (ws.State == WebSocketState.Open);
+            } catch (WebSocketException)
+            {
+                return true;
+            }
 
             await _connection.KeepReceiving(ws);
+
+            slave = _slavePool.GetSlaveDevice(registeredInfor.ID);
+            slave.ChangeState(new DeviceDisconnected());
+            _slavePool.AddSlaveDeviceWithKey(registeredInfor.ID, slave);            
+
             return true;
         }
 
@@ -155,7 +169,14 @@ namespace SlaveManager.Services
         /// <returns></returns>
         public async Task Close(WebSocket ws)
         {
-            await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            try
+            {
+                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            }
+            catch (WebSocketException)
+            {
+                return;
+            }
         }
     }
 }

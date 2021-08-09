@@ -74,4 +74,5 @@ target_link_libraries(session-core PUBLIC
     gstsdp-1.0.lib
     gstrtp-1.0.lib
     gstcontroller-1.0.lib
+    gstwebrtc-1.0.lib
 )

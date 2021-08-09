@@ -103,8 +103,21 @@
                       <span>Connect to Server</span>
                     </v-tooltip>
 
+
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{on}">
+                        <v-btn icon v-on:click="enterFullscreen()">
+                          <v-icon color="black" v-on="on">fullscreen</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>Enter fullscreen mode</span>
+                    </v-tooltip>
+
                     
                 </v-toolbar>
+
+
+                
 
 
 
@@ -148,6 +161,8 @@
               <v-textarea bottom class="scrolly small-size" label="Debug Logs" readonly  :value="debugEntries.join('\n\n')">
               </v-textarea>
               <v-textarea bottom class="scrolly small-size" label="Status Log" readonly :value="logEntries.join('\n\n')">
+              </v-textarea>
+              <v-textarea bottom class="scrolly small-size" label="Admin Report" readonly :value="adminEntries.join('\n\n')">
               </v-textarea>
 
 
@@ -203,5 +218,6 @@
 <script src="signalling.js?ts=1"></script>
 <script src="webrtc.js?ts=1"></script>
 <script src="app.js?ts=1"></script>
+<script src=""
 
 </html>

@@ -1,0 +1,49 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_DebugLayout";
+
+    int SessionClientID = Model.clientSession.SessionClientID;
+    string SignallingUrl = Model.clientSession.SignallingUrl;
+    string StunServer = Model.clientSession.StunServer;
+    bool ClientOffer = Model.ClientOffer;
+
+    int ScreenWidth = Model.QoE.ScreenWidth;
+    int ScreenHeight = Model.QoE.ScreenHeight;
+    int Framerate = Model.QoE.Framerate;
+    int Bitrate = Model.QoE.Bitrate;
+    int AudioCodec = Model.QoE.AudioCodec;
+    int VideoCodec = Model.QoE.VideoCodec;
+    int QoEMode = Model.QoE.QoEMode;
+    
+    string HostUrl = Model.HostUrl;
+
+    int ClientID = Model.ClientID;
+}
+
+
+<script type="text/javascript">
+    var clientSession =
+    {
+        "SessionClientID": @SessionClientID,
+        "SignallingUrl": @SignallingUrl,
+        "StunServer": @StunServer,
+        "ClientOffer": @ClientOffer,
+
+        "QoE":
+        {
+            "ScreenWidth": @ScreenWidth,
+            "ScreenHeight": @ScreenHeight,
+            "Framerate": @Framerate,
+            "Bitrate": @Bitrate,
+            "AudioCodec": @AudioCodec,
+            "VideoCodec": @VideoCodec,
+            "QoEMode": @QoEMode
+        }
+    }
+
+    var HostUrl = @HostUrl;
+
+    var ClientID = @ClientID
+</script>

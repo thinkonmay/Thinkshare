@@ -32,10 +32,9 @@ namespace SlaveManager.Controllers
 
             if (context.WebSockets.IsWebSocketRequest)
             {
-                var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                var webSocket = await context.WebSockets.AcceptWebSocketAsync();    
                 await _connection.KeepReceiving(webSocket);
                 await _connection.Close(webSocket);
-
                 return new EmptyResult();
             }
             else

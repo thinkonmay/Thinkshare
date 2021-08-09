@@ -42,7 +42,6 @@ namespace SlaveManager.Controllers
                 var device = _db.Devices.Find(i.Item1);
                 resp.Add(new Tuple<Slave, string>(device, i.Item2));
             }
-
             return Ok(JsonConvert.SerializeObject(resp));
         }
 
@@ -55,7 +54,6 @@ namespace SlaveManager.Controllers
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpPost("ForwardCommand")]
-        //admin
         public IActionResult CommandLine(int slave_id, int process_id, string command)
         {
             return (_slavePool.SendCommand(slave_id, process_id, command) ? Ok() : BadRequest());

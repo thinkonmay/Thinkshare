@@ -37,6 +37,7 @@ namespace SlaveManager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRazorPages();
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
@@ -127,6 +128,7 @@ namespace SlaveManager
             app.UseRouting();
 
             app.UseCors();
+            app.UseStaticFiles();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -135,6 +137,9 @@ namespace SlaveManager
 
             app.UseEndpoints(endpoints =>
             {
+
+                endpoints.MapRazorPages();
+
                 endpoints.MapHub<AdminHub>("/Admin");
                 endpoints.MapControllerRoute(
                     name: "default",

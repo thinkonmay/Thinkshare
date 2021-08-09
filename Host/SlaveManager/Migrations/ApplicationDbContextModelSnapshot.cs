@@ -183,7 +183,6 @@ namespace SlaveManager.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -198,9 +197,6 @@ namespace SlaveManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Id")
-                        .IsUnique();
-
                     b.HasIndex("MachineID");
 
                     b.ToTable("GeneralErrors");
@@ -208,10 +204,11 @@ namespace SlaveManager.Migrations
 
             modelBuilder.Entity("SlaveManager.Models.Session", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("SessionSlaveID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SessionClientID")
+                        .HasColumnType("int");
 
                     b.Property<int>("ClientID")
                         .HasColumnType("int");
@@ -221,12 +218,6 @@ namespace SlaveManager.Migrations
 
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("SessionClientID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SessionSlaveID")
-                        .HasColumnType("int");
 
                     b.Property<string>("SignallingUrl")
                         .HasColumnType("nvarchar(max)");
@@ -242,12 +233,9 @@ namespace SlaveManager.Migrations
                     b.Property<string>("StunServer")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("SessionSlaveID", "SessionClientID");
 
                     b.HasIndex("SlaveID");
-
-                    b.HasIndex("SessionClientID", "SessionSlaveID")
-                        .IsUnique();
 
                     b.ToTable("Sessions");
                 });
@@ -256,7 +244,6 @@ namespace SlaveManager.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -283,9 +270,6 @@ namespace SlaveManager.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Id")
-                        .IsUnique();
-
                     b.HasIndex("SlaveID");
 
                     b.ToTable("SessionCoreExits");
@@ -294,9 +278,7 @@ namespace SlaveManager.Migrations
             modelBuilder.Entity("SlaveManager.Models.Slave", b =>
                 {
                     b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<string>("CPU")
                         .HasColumnType("nvarchar(max)");
@@ -309,6 +291,11 @@ namespace SlaveManager.Migrations
 
                     b.Property<int>("RAMcapacity")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("Register")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getUtcDate()");
 
                     b.HasKey("ID");
 

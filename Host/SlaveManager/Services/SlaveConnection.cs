@@ -24,68 +24,74 @@ namespace SlaveManager.Services
         public async Task<bool> KeepReceiving(WebSocket ws)
         {
             WebSocketReceiveResult message;
-            do
+            try
             {
-                using (var memoryStream = new MemoryStream())
+                do
                 {
-                    message = await ReceiveMessage(ws, memoryStream);
-                    if (message.Count > 0)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                        var json_message = JsonConvert.DeserializeObject<MessageWithID>(receivedMessage);
-
-                        if (json_message != null)
+                        message = await ReceiveMessage(ws, memoryStream);
+                        if (message.Count > 0)
                         {
-                            if (json_message.To != Module.HOST_MODULE)
+                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                            var json_message = JsonConvert.DeserializeObject<MessageWithID>(receivedMessage);
+
+                            if (json_message != null)
                             {
-                                if (json_message.From == Module.AGENT_MODULE)
+                                if (json_message.To != Module.HOST_MODULE)
                                 {
-                                    switch (json_message.Opcode)
+                                    if (json_message.From == Module.AGENT_MODULE)
                                     {
-                                        case Opcode.COMMAND_LINE_FORWARD:
-                                            {
-                                                var cmd = JsonConvert.DeserializeObject<ReceiveCommand>(json_message.Data);
-                                                await _admin.LogSlaveCommandLine(json_message.SlaveID, cmd);    
-                                                /*send command to admin here*/
-                                                break;
-                                            }
-                                        case Opcode.ERROR_REPORT:
-                                            {
-                                                GeneralError err = new GeneralError(JsonConvert.DeserializeObject<GeneralErrorAbsTime>(json_message.Data));
-                                                await _admin.ReportAgentError(err);
-                                                break;
-                                            }
+                                        switch (json_message.Opcode)
+                                        {
+                                            case Opcode.COMMAND_LINE_FORWARD:
+                                                {
+                                                    var cmd = JsonConvert.DeserializeObject<ReceiveCommand>(json_message.Data);
+                                                    await _admin.LogSlaveCommandLine(json_message.SlaveID, cmd);    
+                                                    /*send command to admin here*/
+                                                    break;
+                                                }
+                                            case Opcode.ERROR_REPORT:
+                                                {
+                                                    GeneralError err = new GeneralError(JsonConvert.DeserializeObject<GeneralErrorAbsTime>(json_message.Data));
+                                                    await _admin.ReportAgentError(err);
+                                                    break;
+                                                }
 
+                                        }
                                     }
-                                }
-                                else if (json_message.From == Module.CORE_MODULE)
-                                {
-                                    switch (json_message.Opcode)
+                                    else if (json_message.From == Module.CORE_MODULE)
                                     {
-                                        case Opcode.ERROR_REPORT:
-                                            {
-                                                var errabs = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(json_message.Data);
-                                                var err = new GeneralError(errabs);
-                                                await _admin.ReportSessionCoreError(err);
-                                                break;
-                                            }
-                                        case Opcode.EXIT_CODE_REPORT:
-                                            {
-                                                var abs = JsonConvert.DeserializeObject<SessionCoreExitAbsTime> ( json_message.Data );
-                                                var err = new SessionCoreExit(abs);
+                                        switch (json_message.Opcode)
+                                        {
+                                            case Opcode.ERROR_REPORT:
+                                                {
+                                                    var errabs = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(json_message.Data);
+                                                    var err = new GeneralError(errabs);
+                                                    await _admin.ReportSessionCoreError(err);
+                                                    break;
+                                                }
+                                            case Opcode.EXIT_CODE_REPORT:
+                                                {
+                                                    var abs = JsonConvert.DeserializeObject<SessionCoreExitAbsTime> ( json_message.Data );
+                                                    var err = new SessionCoreExit(abs);
 
-                                                await _admin.ReportSessionCoreExit(json_message.SlaveID, err);
+                                                    await _admin.ReportSessionCoreExit(json_message.SlaveID, err);
 
-                                                //TODO: add to db
-                                                break;
-                                            }
+                                                    //TODO: add to db
+                                                    break;
+                                                }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
-            } while (ws.State == WebSocketState.Open);
+                } while (ws.State == WebSocketState.Open);
+            } catch (WebSocketException)
+            {
+                return true;
+            }
 
             return false;
         }

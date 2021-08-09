@@ -1,2 +1,0 @@
-sudo docker pull pigeatgarlic/slavemanager:slavemanager_v1.0.0
-sudo docker run -p 81:80 pigeatgarlic/slavemanager:slavemanager_v1.0.0

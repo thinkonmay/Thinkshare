@@ -15,10 +15,10 @@ var app = new Vue({
             /**
              * Client configuration
              */
-            devMode: ClientConfig.DevMode,
-            hostUrl: ClientConfig.HostUrl,
 
 
+            hostUrl: HostUrl,
+            ClientID: ClientID,
             
 
             showStart: false,
@@ -42,19 +42,17 @@ var app = new Vue({
             connectionVideoCodecName: "unknown",
             connectionResolution: "",
 
-            debug: ClientConfig.DevMode,
-            displayStatus : ClientConfig.DevMode,
             turnSwitch: (window.localStorage.getItem("turnSwitch") === "true"),
 
 
             /*parameter serve for session initialization */
             Clientoffer: clientSession.Clientoffer,
-            ClientID: clientSession.SessionClientID,
+            SessionClientID: clientSession.SessionClientID,
             SignallingUrl: clientSession.SignallingUrl,
             StunServer: clientSession.StunServer,
 
             /*default value from client session fetch from server*/
-            defaultQoEMode: clientSession.QoE.QoEMode,
+            QoEMode: clientSession.QoE.QoEMode,
             AudioCodec: clientSession.QoE.AudioCodec,
             VideoCodec: clientSession.QoE.VideoCodec,
 
@@ -113,6 +111,23 @@ var app = new Vue({
             webrtc.input.detach();
             webrtc._close();
         },
+        addSlaveID()
+        {            
+            var value = document.getElementsByClassName("huyhoang")[index].value;
+            console.log(value);
+
+            const data = {
+                id: value 
+            }
+
+            axios.post('/Admin/AddSlave', data)
+            .then(function (response) {
+              console.log(response);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        },
         showDrawer(newValue){
             if(newValue) {
                 webrtc.input.detach();
@@ -152,16 +167,15 @@ var app = new Vue({
 });
 
 
-
-
-
 var videoElement = document.getElementById("stream");
 
-var signalling = new Signalling(new URL(app.SignallingUrl), app.ClientID, app.Clientoffer);
+var signalling = new Signalling(new URL(app.SignallingUrl), app.SessionClientID, app.Clientoffer);
 
 var webrtc = new WebRTC(signalling, videoElement, ClientConfig.RTPpeerconfig);
 
+-
 
+signalling.connect();
 
 
 // Function to add timestamp to logs.
@@ -172,7 +186,7 @@ var applyTimestamp = (msg) => {
 }
 
 signalling.onstatus = (message) => {
-     app.logEntries.push(applyTimestamp("[signalling] " + message));
+     app.logEntries.push(applyTimestamp("[signalling]" + message));
 };
 
 webrtc.onstatus = (message) => {
@@ -192,6 +206,7 @@ webrtc.ondebug = (message) => {
 
 
 
+
 //STATUS
 // Bind vue status to connection state.
 webrtc.onconnectionstatechange = (state) => {
@@ -199,12 +214,6 @@ webrtc.onconnectionstatechange = (state) => {
 
     if (state === "connected") 
     {
-        
-        var now = new Date();
-        // Start watching stats.
-
-
-
         var bytesReceivedStart = 0;
         var audiobytesReceivedStart = 0;
         var statsStart = new Date().getTime() / 1000;

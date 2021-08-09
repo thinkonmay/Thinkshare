@@ -38,6 +38,9 @@ namespace Signalling.Controllers
             return Ok("Terminated session pair");
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         [HttpGet("GetCurrentSession")]
         public List<Tuple<int,int>> GetCurrentSession()
         {

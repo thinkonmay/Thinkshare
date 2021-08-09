@@ -1,6 +1,9 @@
 ﻿using SharedHost.Models;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SlaveManager.Models
 {
@@ -23,7 +26,6 @@ namespace SlaveManager.Models
             SignallingUrl = GeneralConstants.SIGNALLING_SERVER;
             StunServer = GeneralConstants.STUN_SERVER_GSTREAMER_FORMAT;
         }
-        public int Id { get; set; }
 
 
         /// <summary>
@@ -39,11 +41,15 @@ namespace SlaveManager.Models
         /// <summary>
         /// 
         /// </summary>
+        [Key, Column(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int SessionSlaveID { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
+        [Key, Column(Order = 2)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int SessionClientID { get; set; }
 
         /// <summary>

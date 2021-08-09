@@ -12,6 +12,7 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedHost\SharedHost.projitems*{6e362b62-5b06-4a28-98ae-9fdc94495bb9}*SharedItemsImports = 13
+		SharedHost\SharedHost.projitems*{b8a9573e-234b-4387-b7bd-e7c46fa2111c}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

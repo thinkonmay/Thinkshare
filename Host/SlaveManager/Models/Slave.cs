@@ -1,7 +1,9 @@
 using MersenneTwister;
 using SharedHost.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SlaveManager.Models
 {
@@ -27,7 +29,12 @@ namespace SlaveManager.Models
         /// Each slave device defined with an unique ID 
         /// </summary>
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
+
+
+        public DateTime Register{get;set;}
+
 
         /// <summary>
         /// slave device hardware configuration

@@ -2,6 +2,7 @@
 using SharedHost.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SlaveManager.Models
 {
@@ -24,6 +25,7 @@ namespace SlaveManager.Models
         /// ID is primary key for command log
         /// </summary>
         /// [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
         /// <summary>
@@ -48,7 +50,4 @@ namespace SlaveManager.Models
         /// </summary>
         public virtual Slave  Slave { get; set; }
     }
-
-
-
 }

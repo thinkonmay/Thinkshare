@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SlaveManager.Migrations
 {
-    public partial class Second : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -55,8 +55,8 @@ namespace SlaveManager.Migrations
                 name: "Devices",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ID = table.Column<int>(type: "int", nullable: false),
+                    Register = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getUtcDate()"),
                     CPU = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GPU = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RAMcapacity = table.Column<int>(type: "int", nullable: false),
@@ -199,7 +199,7 @@ namespace SlaveManager.Migrations
                 name: "GeneralErrors",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", maxLength: 50, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ErrorTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -220,15 +220,15 @@ namespace SlaveManager.Migrations
                 name: "SessionCoreExits",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", maxLength: 50, nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ExitTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SlaveID = table.Column<int>(type: "int", nullable: true),
                     ExitCode = table.Column<int>(type: "int", nullable: false),
                     CoreState = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PipelineState = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PeerCallState = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SlaveID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -245,12 +245,10 @@ namespace SlaveManager.Migrations
                 name: "Sessions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ClientID = table.Column<int>(type: "int", nullable: false),
-                    SlaveID = table.Column<int>(type: "int", nullable: false),
                     SessionSlaveID = table.Column<int>(type: "int", nullable: false),
                     SessionClientID = table.Column<int>(type: "int", nullable: false),
+                    ClientID = table.Column<int>(type: "int", nullable: false),
+                    SlaveID = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getUtcDate()"),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     SignallingUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -259,7 +257,7 @@ namespace SlaveManager.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sessions", x => x.Id);
+                    table.PrimaryKey("PK_Sessions", x => new { x.SessionSlaveID, x.SessionClientID });
                     table.ForeignKey(
                         name: "FK_Sessions_Devices_SlaveID",
                         column: x => x.SlaveID,
@@ -313,32 +311,14 @@ namespace SlaveManager.Migrations
                 column: "SlaveID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GeneralErrors_Id",
-                table: "GeneralErrors",
-                column: "Id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GeneralErrors_MachineID",
                 table: "GeneralErrors",
                 column: "MachineID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SessionCoreExits_Id",
-                table: "SessionCoreExits",
-                column: "Id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SessionCoreExits_SlaveID",
                 table: "SessionCoreExits",
                 column: "SlaveID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Sessions_SessionClientID_SessionSlaveID",
-                table: "Sessions",
-                columns: new[] { "SessionClientID", "SessionSlaveID" },
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sessions_SlaveID",

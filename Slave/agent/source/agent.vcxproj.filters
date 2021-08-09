@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-child-process.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-cmd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-device.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-message.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-object.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-session-initializer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-socket.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-state\agent-state-disconnected.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-state\agent-state-on-session-off-remote.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-state\agent-state-on-session.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-state\agent-state-open.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-state\agent-state-unregistered.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\agent-state\agent-state.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\program.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\shared-items\logging.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\agent\source\CmakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{38B5F09F-4B3E-34C5-8945-CFB02D3F6F99}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

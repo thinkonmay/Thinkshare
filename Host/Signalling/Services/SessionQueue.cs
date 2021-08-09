@@ -16,8 +16,6 @@ namespace Signalling.Services
             onlineList = new ConcurrentDictionary<int, WebSocket>();
 
             sessionPair = new ConcurrentDictionary<int, int>();
-
-            sessionPair.TryAdd(456, 123);
         }
 
         private ConcurrentDictionary<int, WebSocket> onlineList;
