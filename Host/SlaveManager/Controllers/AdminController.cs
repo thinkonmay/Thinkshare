@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Data;
@@ -7,6 +8,7 @@ using SlaveManager.Models;
 using SlaveManager.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SlaveManager.Controllers
 {
@@ -22,6 +24,12 @@ namespace SlaveManager.Controllers
         {
             _slavePool = slavePool;
             _db = db;
+
+            /*var list = _db.Devices.ToList();
+            foreach (var i in list)
+            {
+                slavePool.AddSlaveId(i.ID);
+            }*/
         }
 
 

@@ -11,12 +11,7 @@ var app = new Vue({
     data() 
     {
         return {
-
-            /**
-             * Client configuration
-             */
-
-
+            
             hostUrl: HostUrl,
             ClientID: ClientID,
             
@@ -29,8 +24,6 @@ var app = new Vue({
 
             status: 'connecting',
             loadingText: '',
-
-            audioEnabled: ClientConfig.AudioEnable,
 
             /**
              * list contain window resolution [width,height]
@@ -155,8 +148,6 @@ var app = new Vue({
             window.localStorage.setItem("audioBitRate", newValue.toString());
         },
         debug(newValue) {
-            if(ClientConfig.devMode === false){return;}
-
             window.localStorage.setItem("debug", newValue.toString());
             // Reload the page to force read of stored value on first load.
             setTimeout(() => {
@@ -171,9 +162,7 @@ var videoElement = document.getElementById("stream");
 
 var signalling = new Signalling(new URL(app.SignallingUrl), app.SessionClientID, app.Clientoffer);
 
-var webrtc = new WebRTC(signalling, videoElement, ClientConfig.RTPpeerconfig);
-
--
+var webrtc = new WebRTC(signalling, videoElement, RTPpeerconfig);
 
 signalling.connect();
 

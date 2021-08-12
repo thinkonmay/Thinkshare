@@ -464,9 +464,9 @@ class WebRTC
         };
     }
 
-    send_escape_key() 
-    {
-        this.sendDataChannelMessage("kd,65307");
-        this.sendDataChannelMessage("ku,65307");
-    }
+    // send_escape_key() 
+    // {
+    //     this.sendDataChannelMessage("kd,65307");
+    //     this.sendDataChannelMessage("ku,65307");
+    // }
 }

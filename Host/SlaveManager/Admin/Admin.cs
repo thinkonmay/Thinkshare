@@ -43,8 +43,9 @@ namespace SlaveManager.Administration
         {
             await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
 
-
+            var now = DateTime.Now;
             Slave device = new Slave(information);
+            device.Register = now.ToString("dd/MM/yyyy HH:mm:ss");
             _db.Devices.Add(device);
             await _db.SaveChangesAsync();
 

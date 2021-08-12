@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using static System.Environment;
 
 namespace SlaveManager.Models
 {
@@ -13,7 +14,7 @@ namespace SlaveManager.Models
     public class Session : SessionBase
     { 
         public Session() { }
-        public Session(ClientRequest req,QoE qoe, int sessionSlaveId, int sessionClientId )
+        public Session(ClientRequest req,QoE qoe, int sessionSlaveId, int sessionClientId, string signalling, string stun)
         {
             ClientID = req.ClientId;
             SlaveID = req.SlaveId;
@@ -23,8 +24,8 @@ namespace SlaveManager.Models
 
             QoE = qoe;
             ClientOffer = false;
-            SignallingUrl = GeneralConstants.SIGNALLING_SERVER;
-            StunServer = GeneralConstants.STUN_SERVER_GSTREAMER_FORMAT;
+            SignallingUrl = signalling;
+            StunServer = stun;
         }
 
 
@@ -55,11 +56,11 @@ namespace SlaveManager.Models
         /// <summary>
         /// 
         /// </summary>
-        public DateTime StartTime { get; set; }
+        public string StartTime { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public DateTime? EndTime { get; set; }
+        public string? EndTime { get; set; }
     }
 }

@@ -23,22 +23,34 @@ namespace Signalling.Services
         private ConcurrentDictionary<int, int> sessionPair; //<ClientID, SlaveID>
 
 
-        public void AddSessionPair(int slaveID, int clientID)
+        public bool AddSessionPair(int slaveID, int clientID)
         {
-            sessionPair.TryAdd(clientID, slaveID);
-            return;
+
+            return sessionPair.TryAdd(clientID, slaveID);
         }
 
-        public void RemoveIDPair(int SlaveID, int ClientID)
+        public bool RemoveIDPair(int SlaveID, int ClientID)
         {
+
+            var ret = sessionPair.TryRemove(ClientID, out SlaveID);
+
             WebSocket ws1, ws2;
             onlineList.TryRemove(SlaveID, out ws2);
             onlineList.TryRemove(ClientID, out ws1);
+            try
+            {
+                if (ws1 != null) { ws1.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
+                if (ws2 != null) { ws2.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
+            }catch (WebSocketException){  }
 
-            if (ws1 != null) { ws1.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
-            if (ws2 != null) { ws2.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
-
-            sessionPair.TryRemove(ClientID, out SlaveID);
+            if(ret)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public WebSocket GetSlaveSocket(int ClientID)

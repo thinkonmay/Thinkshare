@@ -12,7 +12,9 @@ using SlaveManager.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
+using SlaveManager;
+using static System.Environment;
+using System.Configuration;
 
 
 
@@ -30,13 +32,17 @@ namespace SlaveManager.Controllers
 
         private readonly ISlavePool _slavePool;
 
+        private readonly SystemConfig Configuration;
+
         private readonly IAdmin _admin;
 
-        public SessionsController(ApplicationDbContext db, ISlavePool slavePool, IAdmin admin)
+        public SessionsController(ApplicationDbContext db,SystemConfig config, ISlavePool slavePool, IAdmin admin)
         {
             _db = db;
             _admin = admin;
             _slavePool = slavePool;
+            Configuration = config;
+
         }
 
         /// <summary>
@@ -61,8 +67,12 @@ namespace SlaveManager.Controllers
                 var _QoE = new QoE(req.cap);
 
                 /*create new session with gevin session request from user*/
-                Session sess = new Session(req, _QoE, sessionSlaveId, sessionClientId);
+                Session sess = new Session(req, _QoE, sessionSlaveId, sessionClientId,
+                    "ws://" + Configuration.BaseUrl + Configuration.SignallingPort,
+                    Configuration.StunServer);
 
+                var now = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+                sess.StartTime = now;
                 _db.Sessions.Add(sess);
                 await _db.SaveChangesAsync();
 
@@ -73,19 +83,21 @@ namespace SlaveManager.Controllers
                 };
 
                 /*generate rest post to signalling server*/
-                var client = new RestClient(GeneralConstants.SIGNALLING_SERVER+"/System/Generate");
-                client.Post(new RestRequest(JsonConvert.SerializeObject(signalPair), DataFormat.Json));
+                var client = new RestClient("http://"+
+                    Configuration.BaseUrl+
+                    Configuration.SignallingPort+ 
+                    "/System/Generate");
+                client.Execute(new RestRequest(JsonConvert.SerializeObject(signalPair),Method.POST));
 
-                SlaveSession slaveSes = new SlaveSession(sess);
-                ClientSession clientSes = new ClientSession(sess);
+                SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
+                ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
 
                 _slavePool.SessionInitialize(sessionSlaveId, slaveSes);
 
                 SessionViewModel view = new SessionViewModel();
                 view.clientSession = clientSes; 
-                view.HostUrl = GeneralConstants.SLAVE_MANAGER;
                 view.ClientID = sess.ClientID;
-                return View("RemoteControl.cshtml",view);
+                return View("RemoteControl",view);
             }
 
             return BadRequest();
@@ -101,7 +113,7 @@ namespace SlaveManager.Controllers
         {
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
 
-            ses.EndTime = DateTime.UtcNow;
+            ses.EndTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
             await _db.SaveChangesAsync();
 
             if (ses == null) return BadRequest();
@@ -113,7 +125,10 @@ namespace SlaveManager.Controllers
             };
 
             /*create rest delete to signalling server*/
-            var client = new RestClient(GeneralConstants.SIGNALLING_SERVER+ "/System​/Terminate");
+            var client = new RestClient("http://"+
+                Configuration.BaseUrl+
+                Configuration.SignallingPort+
+                "/System​/Terminate");
             client.Delete(new RestRequest(JsonConvert.SerializeObject(deletion), DataFormat.Json));
 
             /*slavepool send terminate session signal*/
@@ -161,12 +176,11 @@ namespace SlaveManager.Controllers
             /*slavepool send terminate session signal*/
             if (_slavePool.RemoteControlReconnect(ses.SessionSlaveID))
             {
-                ClientSession clientSes = new ClientSession(ses);                
+                ClientSession clientSes = new ClientSession(ses,Configuration.StunServer);                
                 SessionViewModel view = new SessionViewModel();
                 view.clientSession = clientSes; 
-                view.HostUrl = GeneralConstants.SLAVE_MANAGER;
                 view.ClientID = ses.ClientID;
-                return View("RemoteControl.cshtml",view);
+                return View("RemoteControl",view);
             }
             else
             {

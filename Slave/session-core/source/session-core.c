@@ -175,7 +175,7 @@ get_session_information_from_message(Message* object)
 
 	JsonObject* session_object =		json_object_get_member(object, "Data");
 	gint SessionSlaveID =				json_object_get_int_member(session_object, "SessionSlaveID");
-	gchar* signalling_url =				json_object_get_string_member(session_object, "SignallingURL");
+	gchar* SIGNALLING_SERVER =				json_object_get_string_member(session_object, "SignallingURL");
 	gchar* client_offer =				json_object_get_boolean_member(session_object, "ClientOffer");
 	gchar* stun_server =				json_object_get_string_member(session_object, "StunServer");
 

@@ -6,12 +6,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using SlaveManager.Interfaces;
+using SlaveManager.Data;
 
 namespace SlaveManager.Services
 {
-
-
-
     public class SlavePool : ISlavePool
     {
         ConcurrentDictionary<int, SlaveDevice> SlaveList;

@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SignalRChat.Hubs;
 using SlaveManager.Administration;
 using SlaveManager.Data;
 using SlaveManager.Interfaces;
@@ -18,10 +17,10 @@ using SlaveManager.Models.User;
 using SlaveManager.Services;
 using System;
 using System.IO;
-using Microsoft.AspNetCore.SignalR;
 using System.Reflection;
 using System.Text;
-using SlaveManager.Models;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
+using static System.Environment;
 
 namespace SlaveManager
 {
@@ -37,23 +36,27 @@ namespace SlaveManager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
             services.AddCors(options =>
             {
-                options.AddDefaultPolicy(
-                    builder =>
-                    {
-                        builder.WithOrigins(GeneralConstants.WEBHOST_LANDING_PAGE_SERVER);
-                        builder.WithOrigins(GeneralConstants.WEBHOST_ADMIN_SERVER);
-                        builder.WithOrigins(GeneralConstants.SIGNALLING_SERVER);
-                    });
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder => builder.WithOrigins(
+                        "http://"+Configuration.GetSection("BaseUrl")+Configuration.GetSection("SignallingPort"),
+                        "http://"+Configuration.GetSection("BaseUrl")+Configuration.GetSection("FlutterPort")
+                    ));
             });
 
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //    options.UseSqlServer($"Server={GeneralConstants.sql_server},{GeneralConstants.sql_port};Initial Catalog={GeneralConstants.sql_database};User ID={GeneralConstants.sql_user};Password={GeneralConstants.sql_password}"));
 
+            
+
+            //for postgresql
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection"))
+            );
+            
+
+            ///for sql server
+            /// services.AddDbContext<ApplicationDbContext>(options =>
+            //     options.UseSQLServer());
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -69,8 +72,10 @@ namespace SlaveManager
                 options.Password.RequireLowercase = true;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
-                options.SignIn.RequireConfirmedAccount = false; //TODO: To be removed in production
             });
+
+
+            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
             services.AddAuthentication(options =>
             {
@@ -89,7 +94,6 @@ namespace SlaveManager
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtOptions:Key"]))
                     };
                 });
-
             services.AddSignalR();
             services.AddSwaggerGen(c =>
             {
@@ -116,43 +120,32 @@ namespace SlaveManager
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SlaveManager v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "slavemanager v1"));
             }
 
-            //app.UseHttpsRedirection();
-            app.UseRouting();
-
             app.UseCors();
-            app.UseStaticFiles();
-
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.UseWebSockets();
-
             app.UseEndpoints(endpoints =>
             {
-
-                endpoints.MapRazorPages();
-
-                endpoints.MapHub<AdminHub>("/Admin");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
 
-
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.OAuthClientId("swagger");
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SlaveManager");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling");
             }
             );
         }

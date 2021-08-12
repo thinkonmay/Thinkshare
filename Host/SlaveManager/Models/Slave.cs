@@ -33,7 +33,7 @@ namespace SlaveManager.Models
         public int ID { get; set; }
 
 
-        public DateTime Register{get;set;}
+        public string Register{get;set;}
 
 
         /// <summary>

@@ -57,12 +57,16 @@ namespace SlaveManager.Controllers
         {
             if (ModelState.IsValid)
             {
+                
+                var now = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+
                 var user = new UserAccount()
                 {
                     UserName = model.Email,
                     Email = model.Email,
                     FullName = model.FullName,
-                    DateOfBirth = model.DateOfBirth
+                    DateOfBirth = model.DateOfBirth,
+                    Created = now
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);

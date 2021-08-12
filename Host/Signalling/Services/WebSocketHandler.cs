@@ -16,7 +16,7 @@ namespace Signalling.Services
     public class WebSocketHandler : IWebSocketHandler
     {
 
-        const int MAX_TIMEOUT_MS = 10000000;
+        const int MAX_TIMEOUT_MS = 10000;
 
         private readonly ISessionQueue Queue;
 

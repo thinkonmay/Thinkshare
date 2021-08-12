@@ -26,16 +26,29 @@ namespace Signalling.Controllers
         public IActionResult AddSessionPair(string sspair)
         {
             var sessionPair = JsonConvert.DeserializeObject<SessionPair>(sspair);
-            _queue.AddSessionPair(sessionPair.SessionSlaveID, sessionPair.SessionClientID);
-            return Ok("Added session pair");
+            var ret = _queue.AddSessionPair(sessionPair.SessionSlaveID, sessionPair.SessionClientID);
+            if (ret)
+            {
+                return Ok("Added session pair");
+            }else
+            {
+                return BadRequest("Session pair already contain in queue");
+            }
         }
 
         [HttpDelete("Terminate")]
         public IActionResult TerminateSessionPair(string sspair)
         {
             var sessionPair = JsonConvert.DeserializeObject<SessionPair>(sspair);
-            _queue.RemoveIDPair(sessionPair.SessionSlaveID, sessionPair.SessionClientID);
-            return Ok("Terminated session pair");
+            var ret = _queue.RemoveIDPair(sessionPair.SessionSlaveID, sessionPair.SessionClientID);
+            if (ret)
+            {
+                return Ok("Terminated session pair");
+            }
+            else
+            {
+                return BadRequest("Session pair not exist");
+            }
         }
 
         /// <summary>
@@ -43,8 +56,7 @@ namespace Signalling.Controllers
         /// </summary>
         [HttpGet("GetCurrentSession")]
         public List<Tuple<int,int>> GetCurrentSession()
-        {
-            
+        {            
             return _queue.GetSessionPair();
         }
 

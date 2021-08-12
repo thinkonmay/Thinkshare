@@ -165,7 +165,7 @@ class Signalling{
             }
         }
 
-        if(this.RTCpeerConnection === null)
+        if(this.RTCpeerConnection == null)
         {
             this.WebRTCconnect();
         }

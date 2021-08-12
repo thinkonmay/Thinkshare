@@ -8,10 +8,8 @@ namespace Signalling.Interfaces
 {
     public interface ISessionQueue
     {
-        public void AddSessionPair(int slaveID, int clientID);
-
-
-        public void RemoveIDPair(int SlaveID, int ClientID);
+        public bool AddSessionPair(int slaveID, int clientID);
+        public bool RemoveIDPair(int SlaveID, int ClientID);
         public WebSocket GetSlaveSocket(int ClientID);
         public WebSocket GetClientSocket(int SlaveID);
         public bool SlaveInQueue(int ClientID);

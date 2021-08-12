@@ -7,15 +7,15 @@
     int SessionClientID = Model.clientSession.SessionClientID;
     string SignallingUrl = Model.clientSession.SignallingUrl;
     string StunServer = Model.clientSession.StunServer;
-    bool ClientOffer = Model.ClientOffer;
+    bool ClientOffer = Model.clientSession.ClientOffer;
 
-    int ScreenWidth = Model.QoE.ScreenWidth;
-    int ScreenHeight = Model.QoE.ScreenHeight;
-    int Framerate = Model.QoE.Framerate;
-    int Bitrate = Model.QoE.Bitrate;
-    int AudioCodec = Model.QoE.AudioCodec;
-    int VideoCodec = Model.QoE.VideoCodec;
-    int QoEMode = Model.QoE.QoEMode;
+    int ScreenWidth = Model.clientSession.QoE.ScreenWidth;
+    int ScreenHeight = Model.clientSession.QoE.ScreenHeight;
+    int Framerate = Model.clientSession.QoE.Framerate;
+    int Bitrate = Model.clientSession.QoE.Bitrate;
+    int AudioCodec = (int) Model.clientSession.QoE.AudioCodec;
+    int VideoCodec = (int) Model.clientSession.QoE.VideoCodec;
+    int QoEMode = (int) Model.clientSession.QoE.QoEMode;
     
     string HostUrl = Model.HostUrl;
 
@@ -41,6 +41,15 @@
             "VideoCodec": @VideoCodec,
             "QoEMode": @QoEMode
         }
+    }
+
+    var RTPconfig =     
+    {"iceServers":    
+        [
+            {
+                urls: @StunServer 
+            }
+        ]
     }
 
     var HostUrl = @HostUrl;

@@ -28,16 +28,11 @@ namespace SlaveManager.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Session>().Property(s => s.StartTime).HasDefaultValueSql("getUtcDate()");
+            
+
             builder.Entity<Session>().HasKey(o => new { o.SessionSlaveID, o.SessionClientID });
-
-            builder.Entity<UserAccount>().Property(u => u.Created).HasDefaultValueSql("getUtcDate()");
-
-
             builder.Entity<GeneralError>().HasKey(s => new { s.Id });
             builder.Entity<SessionCoreExit>().HasKey(s => new { s.Id });
-
-            builder.Entity<Slave>().Property(s => s.Register).HasDefaultValueSql("getUtcDate()");
         }
 
 

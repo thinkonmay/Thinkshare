@@ -17,6 +17,6 @@ namespace SlaveManager.Models.Auth
         [Required]
         public string FullName { get; set; }
         [Required]
-        public DateTime DateOfBirth { get; set; }
+        public string DateOfBirth { get; set; }
     }
 }

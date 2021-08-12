@@ -12,7 +12,7 @@ namespace SlaveManager.Models.User
         //public virtual ICollection<StorageBlock> currentStorage { get; set; }
 
         public string FullName { get; set; }
-        public DateTime? DateOfBirth { get; set; }
-        public DateTime? Created { get; set; }
+        public string? DateOfBirth { get; set; }
+        public string? Created { get; set; }
     }
 }

@@ -5,13 +5,13 @@ namespace SharedHost.Models
 {
     public class SlaveSession : SessionBase
     {
-        public SlaveSession(Session session)
+        public SlaveSession(Session session,string stun)
         {
             SessionSlaveID = session.SessionSlaveID;
 
             SignallingUrl = session.SignallingUrl;
 
-            StunServer = GeneralConstants.STUN_SERVER_GSTREAMER_FORMAT;
+            StunServer = stun;
 
             QoE = session.QoE;
 

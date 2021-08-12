@@ -16,7 +16,7 @@ namespace SlaveManager.Models
             ID = Randoms.Next();
             ProcessID = receive.ProcessID;
             Command = receive.Command;
-            Time = new DateTime(1970, 1, 1).AddMilliseconds(receive.Time);
+            Time = new DateTime(1970, 1, 1).AddMilliseconds(receive.Time).ToString("dd/MM/yyyy HH:mm:ss");
             Slave = _Slave;
         }
 
@@ -38,7 +38,7 @@ namespace SlaveManager.Models
         /// together with order and ID, 
         /// Emitted time define unique identification of CommandLine
         /// </summary>
-        public DateTime Time { get; set; }
+        public string Time { get; set; }
 
         /// <summary>
         /// Output of an commandline

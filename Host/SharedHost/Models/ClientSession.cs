@@ -5,14 +5,14 @@ namespace SharedHost.Models
 {
     public class ClientSession : SessionBase
     {
-        public ClientSession(Session session)
+        public ClientSession(Session session, string stun)
         {
 
             SessionClientID = session.SessionClientID;
 
             SignallingUrl = session.SignallingUrl;
 
-            StunServer = GeneralConstants.STUN_SERVER_GSTREAMER_FORMAT;
+            StunServer = stun;
 
             QoE = session.QoE;
 

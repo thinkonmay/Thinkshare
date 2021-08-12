@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using Signalling.Interfaces;
 using Signalling.Services;
 using System;
@@ -14,6 +15,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using static Signalling.GeneralConstants;
+using static System.Environment;
 
 
 namespace Signalling
@@ -34,14 +37,17 @@ namespace Signalling
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+
+
+            var config = Configuration.GetSection("SystemConfig").Get<SystemConfig>();
+
             services.AddCors(options =>
             {
-                options.AddDefaultPolicy(
-                    builder =>
-                    {
-                        //enable slave manager to connect to signalling server
-                        builder.WithOrigins(GeneralConstants.SlaveManagerUrl);
-                    });
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder => builder.WithOrigins(
+                        "http://"+config.BaseUrl+config.FlutterPort,
+                        "http://"+config.BaseUrl+config.SlaveManagerPort
+                    ));
             });
 
 
@@ -76,6 +82,8 @@ namespace Signalling
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
             }
 
+
+            app.UseCors();
             app.UseRouting();
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
@@ -84,8 +92,6 @@ namespace Signalling
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            app.UseCors();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>

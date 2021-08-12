@@ -33,7 +33,7 @@ struct _SignallingHub
 
     gint SessionSlaveID;
 
-	gchar* signalling_url;
+	gchar* SIGNALLING_SERVER;
 
 	gboolean disable_ssl;
 
@@ -76,7 +76,7 @@ signalling_hub_setup(SignallingHub* hub,
                      gchar* stun_server,
                      gint session_slave_id)
 {
-    hub->signalling_url = url;
+    hub->SIGNALLING_SERVER = url;
     hub->client_offer = client_offer;
     hub->stun_server = stun_server;
     hub->SessionSlaveID = session_slave_id;
@@ -429,7 +429,7 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
     soup_session_add_feature(hub->session, SOUP_SESSION_FEATURE(logger));
     g_object_unref(logger);
 
-    message = soup_message_new(SOUP_METHOD_GET, hub->signalling_url);
+    message = soup_message_new(SOUP_METHOD_GET, hub->SIGNALLING_SERVER);
 
 
     g_main_context_push_thread_default(session_core_get_main_context(core));
