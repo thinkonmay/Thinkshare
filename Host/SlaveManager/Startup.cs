@@ -38,11 +38,8 @@ namespace SlaveManager
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowSpecificOrigin",
-                    builder => builder.WithOrigins(
-                        "http://"+Configuration.GetSection("BaseUrl")+Configuration.GetSection("SignallingPort"),
-                        "http://"+Configuration.GetSection("BaseUrl")+Configuration.GetSection("FlutterPort")
-                    ));
+                options.AddPolicy("AllowAllOrigins",
+                    builder => builder.AllowAnyOrigin());
             });
 
 

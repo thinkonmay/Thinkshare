@@ -42,7 +42,6 @@ var app = new Vue({
             Clientoffer: clientSession.Clientoffer,
             SessionClientID: clientSession.SessionClientID,
             SignallingUrl: clientSession.SignallingUrl,
-            StunServer: clientSession.StunServer,
 
             /*default value from client session fetch from server*/
             QoEMode: clientSession.QoE.QoEMode,

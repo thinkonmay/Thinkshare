@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using RestSharp;
 using SharedHost.Models;
 using SlaveManager.Administration;
 using SlaveManager.Data;
@@ -15,7 +14,8 @@ using System.Threading.Tasks;
 using SlaveManager;
 using static System.Environment;
 using System.Configuration;
-
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 
 // TODO: authentification
@@ -36,12 +36,16 @@ namespace SlaveManager.Controllers
 
         private readonly IAdmin _admin;
 
+        private readonly RestClient Client;
+
         public SessionsController(ApplicationDbContext db,SystemConfig config, ISlavePool slavePool, IAdmin admin)
         {
             _db = db;
             _admin = admin;
             _slavePool = slavePool;
             Configuration = config;
+            
+            Client = new RestClient("http://"+Configuration.BaseUrl+":"+ Configuration.SignallingPort);
 
         }
 
@@ -56,7 +60,7 @@ namespace SlaveManager.Controllers
 
             if (ModelState.IsValid)
             {
-                if (_slavePool.GetSlaveState(req.SlaveId) != "DEVICE_OPEN") { return BadRequest("Device Not Available"); }
+                if (_slavePool.GetSlaveState(req.SlaveId) != SlaveServiceState.Open) { return BadRequest("Device Not Available"); }
                 await _admin.ReportNewSession(req.SlaveId, req.ClientId);
 
                 /*create session id pair randomly*/
@@ -68,7 +72,7 @@ namespace SlaveManager.Controllers
 
                 /*create new session with gevin session request from user*/
                 Session sess = new Session(req, _QoE, sessionSlaveId, sessionClientId,
-                    "ws://" + Configuration.BaseUrl + Configuration.SignallingPort,
+                    "ws://" + Configuration.BaseUrl +":"+ Configuration.SignallingPort,
                     Configuration.StunServer);
 
                 _db.Sessions.Add(sess);
@@ -81,11 +85,22 @@ namespace SlaveManager.Controllers
                 };
 
                 /*generate rest post to signalling server*/
-                var client = new RestClient("http://"+
-                    Configuration.BaseUrl+
-                    Configuration.SignallingPort+ 
-                    "/System/Generate");
-                client.Execute(new RestRequest(JsonConvert.SerializeObject(signalPair),Method.POST));
+
+                var signalling_post = new RestRequest("/System​/Generate");
+
+                signalling_post.AddQueryParameter("SessionClientID",sessionClientId);
+                signalling_post.AddQueryParameter("SessionSlaveID",sessionSlaveId);
+                
+                var reply = await Client.PostAsync(signalling_post);
+                if(reply == null || reply.IsSuccessful)
+                {
+                    return BadRequest(reply.ErrorMessage );
+                }
+
+                var signalling_get = new RestRequest("​/System​/GetCurrentSession");
+                var currentsession_res = await Client.PostAsync(signalling_get);
+                
+
 
                 SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
                 ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
@@ -109,6 +124,7 @@ namespace SlaveManager.Controllers
         [HttpDelete("Terminate")]
         public async Task<IActionResult> Terminate(int sessionClientId)
         {
+            
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
 
             ses.EndTime = DateTime.UtcNow;
@@ -123,11 +139,7 @@ namespace SlaveManager.Controllers
             };
 
             /*create rest delete to signalling server*/
-            var client = new RestClient("http://"+
-                Configuration.BaseUrl+
-                Configuration.SignallingPort+
-                "/System​/Terminate");
-            client.Delete(new RestRequest(JsonConvert.SerializeObject(deletion), DataFormat.Json));
+            Client.Delete(new RestRequest(JsonConvert.SerializeObject(deletion), DataFormat.Json));
 
             /*slavepool send terminate session signal*/
             _slavePool.SessionTerminate(ses.SessionSlaveID);

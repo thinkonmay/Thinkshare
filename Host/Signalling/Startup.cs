@@ -43,11 +43,8 @@ namespace Signalling
 
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowSpecificOrigin",
-                    builder => builder.WithOrigins(
-                        "http://"+config.BaseUrl+config.FlutterPort,
-                        "http://"+config.BaseUrl+config.SlaveManagerPort
-                    ));
+                options.AddPolicy("AllowAllOrigins",
+                    builder => builder.AllowAnyOrigin());
             });
 
 

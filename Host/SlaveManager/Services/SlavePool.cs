@@ -115,7 +115,6 @@ namespace SlaveManager.Services
             SlaveDevice slave;
             if (!SearchForSlaveID(slaveid)) { return false; }
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
-
             if (slave.GetSlaveState() != "Device Open") { return false; }
 
             slave.SessionInitialize(session);

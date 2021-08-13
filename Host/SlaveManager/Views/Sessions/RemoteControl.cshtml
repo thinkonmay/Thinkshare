@@ -5,8 +5,8 @@
     Layout = "_DebugLayout";
 
     int SessionClientID = Model.clientSession.SessionClientID;
-    string SignallingUrl = Model.clientSession.SignallingUrl;
-    string StunServer = Model.clientSession.StunServer;
+    string SignallingUrl = string.Format("\"{0}\"", Model.clientSession.SignallingUrl); //@"""Model.clientSession.SignallingUrl""";
+    string StunServer = string.Format("\"{0}\"", Model.clientSession.StunServer);
     bool ClientOffer = Model.clientSession.ClientOffer;
 
     int ScreenWidth = Model.clientSession.QoE.ScreenWidth;
@@ -17,7 +17,7 @@
     int VideoCodec = (int) Model.clientSession.QoE.VideoCodec;
     int QoEMode = (int) Model.clientSession.QoE.QoEMode;
     
-    string HostUrl = Model.HostUrl;
+    string HostUrl = "\""+Model.HostUrl+"\"";
 
     int ClientID = Model.ClientID;
 }
@@ -26,9 +26,8 @@
 <script type="text/javascript">
     var clientSession =
     {
-        "SessionClientID": @SessionClientID,
-        "SignallingUrl": @SignallingUrl,
-        "StunServer": @StunServer,
+        "SessionClientID":  @SessionClientID ,
+        "SignallingUrl": @Html.Raw(SignallingUrl),
         "ClientOffer": @ClientOffer,
 
         "QoE":
@@ -47,7 +46,7 @@
     {"iceServers":    
         [
             {
-                urls: @StunServer 
+                "urls": @Html.Raw(StunServer) 
             }
         ]
     }

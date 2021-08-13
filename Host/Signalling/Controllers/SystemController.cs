@@ -23,10 +23,9 @@ namespace Signalling.Controllers
         }
 
         [HttpPost("Generate")]
-        public IActionResult AddSessionPair(string sspair)
+        public IActionResult AddSessionPair(int SessionSlaveID, int SessionClientID)
         {
-            var sessionPair = JsonConvert.DeserializeObject<SessionPair>(sspair);
-            var ret = _queue.AddSessionPair(sessionPair.SessionSlaveID, sessionPair.SessionClientID);
+            var ret = _queue.AddSessionPair(SessionSlaveID, SessionClientID);
             if (ret)
             {
                 return Ok("Added session pair");
@@ -37,10 +36,9 @@ namespace Signalling.Controllers
         }
 
         [HttpDelete("Terminate")]
-        public IActionResult TerminateSessionPair(string sspair)
+        public IActionResult TerminateSessionPair(int SessionSlaveID, int SessionClientID)
         {
-            var sessionPair = JsonConvert.DeserializeObject<SessionPair>(sspair);
-            var ret = _queue.RemoveIDPair(sessionPair.SessionSlaveID, sessionPair.SessionClientID);
+            var ret = _queue.RemoveIDPair(SessionSlaveID, SessionClientID);
             if (ret)
             {
                 return Ok("Terminated session pair");

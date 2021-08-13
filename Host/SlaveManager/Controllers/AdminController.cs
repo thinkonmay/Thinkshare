@@ -25,11 +25,11 @@ namespace SlaveManager.Controllers
             _slavePool = slavePool;
             _db = db;
 
-            /*var list = _db.Devices.ToList();
+            var list = _db.Devices.ToList();
             foreach (var i in list)
             {
                 slavePool.AddSlaveId(i.ID);
-            }*/
+            }
         }
 
 
