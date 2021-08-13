@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SlaveManager.Data;
@@ -9,9 +10,10 @@ using SlaveManager.Data;
 namespace SlaveManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210813035052_RemoveDateTimeStringCols")]
+    partial class RemoveDateTimeStringCols
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,9 +170,6 @@ namespace SlaveManager.Migrations
                     b.Property<int?>("SlaveID")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("timestamp without time zone");
-
                     b.HasKey("ID");
 
                     b.HasIndex("SlaveID");
@@ -187,9 +186,6 @@ namespace SlaveManager.Migrations
 
                     b.Property<string>("ErrorMessage")
                         .HasColumnType("text");
-
-                    b.Property<DateTime>("ErrorTime")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("MachineID")
                         .HasColumnType("integer");
@@ -215,17 +211,11 @@ namespace SlaveManager.Migrations
                     b.Property<bool>("ClientOffer")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("EndTime")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<string>("SignallingUrl")
                         .HasColumnType("text");
 
                     b.Property<int>("SlaveID")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime?>("StartTime")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("StunServer")
                         .HasColumnType("text");
@@ -249,9 +239,6 @@ namespace SlaveManager.Migrations
 
                     b.Property<int>("ExitCode")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime>("ExitTime")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Message")
                         .HasColumnType("text");
@@ -288,11 +275,6 @@ namespace SlaveManager.Migrations
 
                     b.Property<int>("RAMcapacity")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime?>("Register")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
-                        .HasDefaultValueSql("current_timestamp");
 
                     b.HasKey("ID");
 

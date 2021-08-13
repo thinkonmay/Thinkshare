@@ -11,7 +11,7 @@ namespace SlaveManager.Models.Auth
         public string UserEmail { get; set; }
         public string Message { get; set; }
         public string Token { get; set; }
-        public string ValidUntil { get; set; }
+        public DateTime ValidUntil { get; set; }
 
         public static AuthResponse GenerateSuccessful(string email, string token, DateTime expiry)
         {
@@ -21,7 +21,7 @@ namespace SlaveManager.Models.Auth
                 UserEmail = email,
                 Message = "Login successful",
                 Token = token,
-                ValidUntil = expiry.ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql
+                ValidUntil = expiry
             };
         }
 

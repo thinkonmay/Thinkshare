@@ -28,7 +28,8 @@ namespace SlaveManager.Data
         {
             base.OnModelCreating(builder);
 
-            
+            builder.Entity<UserAccount>().Property(u => u.Created).HasDefaultValueSql("current_timestamp");
+            builder.Entity<Slave>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
 
             builder.Entity<Session>().HasKey(o => new { o.SessionSlaveID, o.SessionClientID });
             builder.Entity<GeneralError>().HasKey(s => new { s.Id });

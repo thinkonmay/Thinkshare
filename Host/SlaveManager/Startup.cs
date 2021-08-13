@@ -60,7 +60,7 @@ namespace SlaveManager
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<UserAccount>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<UserAccount>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole<int>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 

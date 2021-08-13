@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SlaveManager.Data;
@@ -9,9 +10,10 @@ using SlaveManager.Data;
 namespace SlaveManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210813033419_AddDateTimeUser")]
+    partial class AddDateTimeUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -168,8 +170,8 @@ namespace SlaveManager.Migrations
                     b.Property<int?>("SlaveID")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<string>("Time")
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -188,8 +190,8 @@ namespace SlaveManager.Migrations
                     b.Property<string>("ErrorMessage")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("ErrorTime")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<string>("ErrorTime")
+                        .HasColumnType("text");
 
                     b.Property<int?>("MachineID")
                         .HasColumnType("integer");
@@ -215,8 +217,8 @@ namespace SlaveManager.Migrations
                     b.Property<bool>("ClientOffer")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("EndTime")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<string>("EndTime")
+                        .HasColumnType("text");
 
                     b.Property<string>("SignallingUrl")
                         .HasColumnType("text");
@@ -224,8 +226,8 @@ namespace SlaveManager.Migrations
                     b.Property<int>("SlaveID")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("StartTime")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<string>("StartTime")
+                        .HasColumnType("text");
 
                     b.Property<string>("StunServer")
                         .HasColumnType("text");
@@ -250,8 +252,8 @@ namespace SlaveManager.Migrations
                     b.Property<int>("ExitCode")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("ExitTime")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<string>("ExitTime")
+                        .HasColumnType("text");
 
                     b.Property<string>("Message")
                         .HasColumnType("text");
@@ -289,10 +291,8 @@ namespace SlaveManager.Migrations
                     b.Property<int>("RAMcapacity")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Register")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
-                        .HasDefaultValueSql("current_timestamp");
+                    b.Property<string>("Register")
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -316,7 +316,7 @@ namespace SlaveManager.Migrations
                     b.Property<DateTime?>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasDefaultValueSql("current_timestamp");
+                        .HasDefaultValueSql("getUtcDate()");
 
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("timestamp without time zone");

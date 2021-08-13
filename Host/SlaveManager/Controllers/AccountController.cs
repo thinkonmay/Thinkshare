@@ -58,15 +58,14 @@ namespace SlaveManager.Controllers
             if (ModelState.IsValid)
             {
                 
-                var now = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
+                //var now = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
 
                 var user = new UserAccount()
                 {
                     UserName = model.Email,
                     Email = model.Email,
                     FullName = model.FullName,
-                    DateOfBirth = model.DateOfBirth,
-                    Created = now
+                    DateOfBirth = model.DateOfBirth
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);

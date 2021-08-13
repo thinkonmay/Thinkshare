@@ -45,7 +45,6 @@ namespace SlaveManager.Administration
 
             var now = DateTime.Now;
             Slave device = new Slave(information);
-            device.Register = now.ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
             _db.Devices.Add(device);
             await _db.SaveChangesAsync();
 

@@ -13,14 +13,14 @@ namespace SlaveManager.Models
 
         public GeneralError(GeneralErrorAbsTime abs)
         {
-            ErrorTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ErrorTime).ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
+            //ErrorTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ErrorTime).ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
 
             ErrorMessage = abs.ErrorMessage;
 
             Machine = abs.Machine;
         }
 
-        public string ErrorTime { get; set; } //port to string for compability with postgresql timestamp
+        public DateTime ErrorTime { get; set; }
 
         public int Id { get; set; }
 
@@ -63,7 +63,7 @@ namespace SlaveManager.Models
 
         public SessionCoreExit(SessionCoreExitAbsTime abs )
         {
-            ExitTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ExitTime).ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
+            //ExitTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ExitTime).ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
             ExitCode = abs.ExitCode;
             CoreState = abs.CoreState;
             PipelineState = abs.PipelineState;
@@ -74,7 +74,7 @@ namespace SlaveManager.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public string ExitTime { get; set; }//port to string for compability with postgresql timestamp
+        public DateTime ExitTime { get; set; }
 
         public int ExitCode { get; set; }
 
