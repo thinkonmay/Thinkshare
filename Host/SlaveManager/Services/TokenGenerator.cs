@@ -52,7 +52,7 @@ namespace SlaveManager.Services
                 Audience = _jwt.Audience,
                 Issuer = _jwt.Issuer,
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
-                Expires = DateTime.Now,
+                Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
             };

@@ -73,7 +73,7 @@ namespace SlaveManager.Controllers
                 {
                     UserAccount u = await _userManager.FindByEmailAsync(model.Email);
                     string token = await _tokenGenerator.GenerateJwt(u);
-                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.UtcNow.AddDays(7));
+                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now);
                 }
             }
 

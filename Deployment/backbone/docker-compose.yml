@@ -16,13 +16,6 @@ services:
   #   volumes: 
   #     - /home/host/database:/var/lib/mysql
   #     - /home/host/dbconf:/etc/mysql 
-
-  ngrok:
-    iamge: shkoliar/ngrok:latest
-    ports:
-      - 4551:4551
-    link: 
-      -
   postgres:
       image: postgres:latest
       restart: always

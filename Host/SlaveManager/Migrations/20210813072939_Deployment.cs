@@ -30,8 +30,8 @@ namespace SlaveManager.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FullName = table.Column<string>(type: "text", nullable: true),
-                    DateOfBirth = table.Column<string>(type: "text", nullable: true),
-                    Created = table.Column<string>(type: "text", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, defaultValueSql: "current_timestamp"),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -57,7 +57,7 @@ namespace SlaveManager.Migrations
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "integer", nullable: false),
-                    Register = table.Column<string>(type: "text", nullable: true),
+                    Register = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, defaultValueSql: "current_timestamp"),
                     CPU = table.Column<string>(type: "text", nullable: true),
                     GPU = table.Column<string>(type: "text", nullable: true),
                     RAMcapacity = table.Column<int>(type: "integer", nullable: false),
@@ -181,7 +181,7 @@ namespace SlaveManager.Migrations
                     ID = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ProcessID = table.Column<int>(type: "integer", nullable: false),
-                    Time = table.Column<string>(type: "text", nullable: true),
+                    Time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Command = table.Column<string>(type: "text", nullable: true),
                     SlaveID = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -202,7 +202,7 @@ namespace SlaveManager.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ErrorTime = table.Column<string>(type: "text", nullable: true),
+                    ErrorTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     ErrorMessage = table.Column<string>(type: "text", nullable: true),
                     MachineID = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -223,7 +223,7 @@ namespace SlaveManager.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ExitTime = table.Column<string>(type: "text", nullable: true),
+                    ExitTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     ExitCode = table.Column<int>(type: "integer", nullable: false),
                     CoreState = table.Column<string>(type: "text", nullable: true),
                     PipelineState = table.Column<string>(type: "text", nullable: true),
@@ -250,8 +250,8 @@ namespace SlaveManager.Migrations
                     SessionClientID = table.Column<int>(type: "integer", nullable: false),
                     ClientID = table.Column<int>(type: "integer", nullable: false),
                     SlaveID = table.Column<int>(type: "integer", nullable: false),
-                    StartTime = table.Column<string>(type: "text", nullable: true),
-                    EndTime = table.Column<string>(type: "text", nullable: true),
+                    StartTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    EndTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     SignallingUrl = table.Column<string>(type: "text", nullable: true),
                     StunServer = table.Column<string>(type: "text", nullable: true),
                     ClientOffer = table.Column<bool>(type: "boolean", nullable: false)
