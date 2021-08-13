@@ -4,6 +4,11 @@ using SlaveManager.Interfaces;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using SlaveManager.Data;
+using SlaveManager.Services;
+using SharedHost.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 
 
@@ -20,9 +25,24 @@ namespace SlaveManager.Controllers
     {
         private readonly IWebSocketConnection _connection;
 
-        public WebSocketApiController(IWebSocketConnection connection)
+        private readonly ApplicationDbContext _db;
+
+        static private bool initialized = false;
+
+        public WebSocketApiController(IWebSocketConnection connection, ISlavePool slavePool, ApplicationDbContext db )
         {
             _connection = connection;
+            _db = db;
+
+            //initialize device from database, only used in the first connection to slave manager
+            if(!initialized)
+            {
+                var list = _db.Devices.ToList();
+                foreach (var i in list)
+                {
+                    slavePool.AddSlaveId(i.ID);
+                }
+            }
         }
 
         [HttpGet("/Register")]

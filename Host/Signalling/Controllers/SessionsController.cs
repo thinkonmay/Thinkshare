@@ -36,7 +36,6 @@ namespace Signalling.Controllers
             if (context.WebSockets.IsWebSocketRequest)
             {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                Console.WriteLine($"Accepted connection '{context.Connection.Id}'");
                 Task t = _wsHandler.Handle(webSocket);
 
                 t.Wait();

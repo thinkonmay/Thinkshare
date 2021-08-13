@@ -1,9 +1,14 @@
+
+
 cd ..
 cd Host
 cd Signalling
 
 
+
+
 dotnet build .
+
 
 copy Dockerfile ..
 cd ..

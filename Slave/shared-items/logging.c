@@ -28,6 +28,7 @@ write_to_log_file(gchar* file_name,
                   gchar* text)
 {
     g_print(text);
+    g_print("\n");
     GFile* log = g_file_parse_name(file_name);
 
     GFileOutputStream* output_stream = 

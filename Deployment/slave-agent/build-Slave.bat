@@ -1,5 +1,4 @@
-set PATH=%PATH%;C:\gstreamer\1.0\msvc_x86_64\bin
-set PATH=%PATH%;C:\Program Files\CMake\bin
+
 
 cd ..\..\Slave
 rmdir /Q /S build

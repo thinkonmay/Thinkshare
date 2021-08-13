@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 using SlaveManager;
 using static System.Environment;
 using System.Configuration;
-using System.Net.Http;
-using System.Net.Http.Headers;
+using RestSharp;
+using System.Collections.Generic;
 
 
 // TODO: authentification
@@ -36,7 +36,7 @@ namespace SlaveManager.Controllers
 
         private readonly IAdmin _admin;
 
-        private readonly RestClient Client;
+        private readonly RestClient Signalling;
 
         public SessionsController(ApplicationDbContext db,SystemConfig config, ISlavePool slavePool, IAdmin admin)
         {
@@ -45,8 +45,7 @@ namespace SlaveManager.Controllers
             _slavePool = slavePool;
             Configuration = config;
             
-            Client = new RestClient("http://"+Configuration.BaseUrl+":"+ Configuration.SignallingPort);
-
+            Signalling = new RestClient("http://"+Configuration.BaseUrl+":"+ Configuration.SignallingPort);
         }
 
         /// <summary>
@@ -85,20 +84,26 @@ namespace SlaveManager.Controllers
                 };
 
                 /*generate rest post to signalling server*/
-
                 var signalling_post = new RestRequest("/System​/Generate");
 
-                signalling_post.AddQueryParameter("SessionClientID",sessionClientId);
-                signalling_post.AddQueryParameter("SessionSlaveID",sessionSlaveId);
+                signalling_post.AddParameter("SessionClientID",sessionClientId.ToString());
+                signalling_post.AddParameter("SessionSlaveID",sessionSlaveId.ToString());
                 
-                var reply = await Client.PostAsync(signalling_post);
-                if(reply == null || reply.IsSuccessful)
+                var reply = Signalling.Post(signalling_post);
+                if(reply == null || !reply.IsSuccessful)
                 {
-                    return BadRequest(reply.ErrorMessage );
+                    return BadRequest(signalling_post.ToString());
                 }
 
+                /*Check for session pair in session */
                 var signalling_get = new RestRequest("​/System​/GetCurrentSession");
-                var currentsession_res = await Client.PostAsync(signalling_get);
+                var currentsession_res = Signalling.Get(signalling_get);
+
+                var respond = JsonConvert.DeserializeObject<List<Tuple<int, int>>>(currentsession_res.Content);
+                if(respond.Where(o => o.Item1 == sessionClientId && o.Item2 == sessionSlaveId).Count() == 0)
+                {
+                    return BadRequest("Session key pair not found after generate");
+                }
                 
 
 
@@ -139,7 +144,25 @@ namespace SlaveManager.Controllers
             };
 
             /*create rest delete to signalling server*/
-            Client.Delete(new RestRequest(JsonConvert.SerializeObject(deletion), DataFormat.Json));
+            var signalling_delete = new RestRequest("/System​/Terminate");
+
+            signalling_delete.AddParameter("SessionClientID", deletion.SessionClientID.ToString());
+            signalling_delete.AddParameter("SessionSlaveID", deletion.SessionSlaveID.ToString());
+
+            var reply = Signalling.Delete(signalling_delete);
+            if (reply == null || !reply.IsSuccessful)
+            {
+                return BadRequest("Fail to remove session key pair");
+            }
+
+            var signalling_get = new RestRequest("​/System​/GetCurrentSession");
+            var currentsession_res = Signalling.Get(signalling_get);
+
+            var respond = JsonConvert.DeserializeObject<List<Tuple<int, int>>>(currentsession_res.Content);
+            if (respond.Where(o => o.Item1 == sessionClientId && o.Item2 == deletion.SessionSlaveID).Count() == 1)
+            {
+                return BadRequest("Fail to delete session key pair");
+            }
 
             /*slavepool send terminate session signal*/
             _slavePool.SessionTerminate(ses.SessionSlaveID);
