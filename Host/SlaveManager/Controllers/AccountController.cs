@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MersenneTwister;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -43,10 +44,9 @@ namespace SlaveManager.Controllers
                 {
                     UserAccount user = await _userManager.FindByEmailAsync(model.Email);
                     string token = await _tokenGenerator.GenerateJwt(user);
-                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.UtcNow.AddDays(7));
+                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now, user.ClientID );
                 }
             }
-
             return AuthResponse.GenerateFailure(model.Email, "Login failed", -1);
         }
 
@@ -65,7 +65,8 @@ namespace SlaveManager.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     FullName = model.FullName,
-                    DateOfBirth = model.DateOfBirth
+                    DateOfBirth = model.DateOfBirth,
+                    ClientID = Randoms.Next()
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -73,7 +74,7 @@ namespace SlaveManager.Controllers
                 {
                     UserAccount u = await _userManager.FindByEmailAsync(model.Email);
                     string token = await _tokenGenerator.GenerateJwt(u);
-                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now);
+                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now, user.ClientID);
                 }
             }
 

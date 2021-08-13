@@ -10,7 +10,7 @@ using SlaveManager.Data;
 namespace SlaveManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210813072939_Deployment")]
+    [Migration("20210813080550_Deployment")]
     partial class Deployment
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -309,6 +309,9 @@ namespace SlaveManager.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ClientID")
                         .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")

@@ -13,7 +13,10 @@ namespace SlaveManager.Models.Auth
         public string Token { get; set; }
         public DateTime ValidUntil { get; set; }
 
-        public static AuthResponse GenerateSuccessful(string email, string token, DateTime expiry)
+        public int ClientID {get;set;}
+
+
+        public static AuthResponse GenerateSuccessful(string email, string token, DateTime expiry, int _clientID)
         {
             return new AuthResponse()
             {
@@ -21,7 +24,8 @@ namespace SlaveManager.Models.Auth
                 UserEmail = email,
                 Message = "Login successful",
                 Token = token,
-                ValidUntil = expiry
+                ValidUntil = expiry,
+                ClientID = _clientID,
             };
         }
 
