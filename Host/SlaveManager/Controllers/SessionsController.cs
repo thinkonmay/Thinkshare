@@ -71,7 +71,7 @@ namespace SlaveManager.Controllers
                     "ws://" + Configuration.BaseUrl + Configuration.SignallingPort,
                     Configuration.StunServer);
 
-                var now = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+                var now = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
                 sess.StartTime = now;
                 _db.Sessions.Add(sess);
                 await _db.SaveChangesAsync();
@@ -113,7 +113,7 @@ namespace SlaveManager.Controllers
         {
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
 
-            ses.EndTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+            ses.EndTime = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
             await _db.SaveChangesAsync();
 
             if (ses == null) return BadRequest();

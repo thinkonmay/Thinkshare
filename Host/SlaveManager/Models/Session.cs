@@ -56,11 +56,11 @@ namespace SlaveManager.Models
         /// <summary>
         /// 
         /// </summary>
-        public string StartTime { get; set; }
+        public string StartTime { get; set; }//port to string for compability with postgresql timestamp
 
         /// <summary>
         /// 
         /// </summary>
-        public string? EndTime { get; set; }
+        public string? EndTime { get; set; }//port to string for compability with postgresql timestamp
     }
 }

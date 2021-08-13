@@ -33,7 +33,7 @@ namespace SlaveManager.Models
         public int ID { get; set; }
 
 
-        public string Register{get;set;}
+        public string Register{get;set;}//port to string for compability with postgresql timestamp
 
 
         /// <summary>

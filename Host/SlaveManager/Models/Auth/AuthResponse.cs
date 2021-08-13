@@ -21,7 +21,7 @@ namespace SlaveManager.Models.Auth
                 UserEmail = email,
                 Message = "Login successful",
                 Token = token,
-                ValidUntil = expiry.ToString("dd/MM/yyyy HH:mm:ss")
+                ValidUntil = expiry.ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql
             };
         }
 
