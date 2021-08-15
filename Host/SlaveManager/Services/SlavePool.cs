@@ -14,9 +14,16 @@ namespace SlaveManager.Services
     {
         ConcurrentDictionary<int, SlaveDevice> SlaveList;
 
-        public SlavePool()
+        /// <summary>
+        /// use to inject connection to slave device
+        /// </summary>
+        private readonly ISlaveConnection _connection;
+
+        public SlavePool(ISlaveConnection connection)
         {
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
+
+            _connection = connection;
         }
 
 
@@ -29,6 +36,7 @@ namespace SlaveManager.Services
             slave.RejectSlave();
             var disconnected = new DeviceDisconnected();
             slave.ChangeState(disconnected);
+            AddSlaveDeviceWithKey(slaveid,slave); 
             return true;
         }
 
@@ -84,7 +92,7 @@ namespace SlaveManager.Services
             SlaveDevice slave;
             if (!SearchForSlaveID(slaveid)) { return false; }
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
-            if (this.GetSlaveState(slaveid) != "On Session") { return false; }
+            if (this.GetSlaveState(slaveid) != SlaveServiceState.OnSession) { return false; }
 
             slave.RemoteControlDisconnect();
             return true;
@@ -95,7 +103,7 @@ namespace SlaveManager.Services
             SlaveDevice slave;
             if (!SearchForSlaveID(slaveid)) { return false; }
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
-            if (this.GetSlaveState(slaveid) != "Off Remote") { return false; }
+            if (this.GetSlaveState(slaveid) != SlaveServiceState.OffRemote) { return false; }
             slave.RemoteControlReconnect();
             return true;
         }
@@ -115,7 +123,7 @@ namespace SlaveManager.Services
             SlaveDevice slave;
             if (!SearchForSlaveID(slaveid)) { return false; }
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
-            if (slave.GetSlaveState() != "Device Open") { return false; }
+            if (!String.Equals(slave.GetSlaveState(),SlaveServiceState.Open)) { return false; }
 
             slave.SessionInitialize(session);
             return true;
@@ -135,8 +143,7 @@ namespace SlaveManager.Services
 
         public bool AddSlaveId(int slaveid)
         {
-            SlaveDevice slave = new SlaveDevice(null,null);
-            slave.State = new DeviceDisconnected();
+            SlaveDevice slave = new SlaveDevice(_connection);
             var ret = SlaveList.TryAdd(slaveid, slave);
             return ret;
         }

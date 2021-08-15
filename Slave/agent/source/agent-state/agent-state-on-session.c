@@ -26,7 +26,7 @@ on_session_session_terminate(AgentObject* agent)
     agent_set_state(agent, open_state);
 }
 
-void
+static void
 on_session_remote_control_disconnect(AgentObject* agent)
 {
     session_terminate(agent);
@@ -76,6 +76,7 @@ static void
 on_session_session_core_exit(AgentObject* agent)
 {
     agent_report_error(agent,UNKNOWN_SESSION_CORE_EXIT);
+    Sleep(1000);
     session_initialize(agent);
 }
 

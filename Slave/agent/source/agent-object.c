@@ -50,6 +50,7 @@ AgentObject*
 agent_new(gchar* url)
 {
 	static AgentObject agent;
+	ZeroMemory(&agent, sizeof(AgentObject));
 
 	AgentState* unregistered = transition_to_unregistered_state();
 	agent.state = unregistered;
@@ -59,10 +60,9 @@ agent_new(gchar* url)
 	agent.socket=initialize_socket(&agent);
 	
 	
-	connect_to_host_async(&agent);
+	agent_connect_to_host(&agent);
 	agent.loop = g_main_loop_new(NULL, FALSE);
 	g_main_loop_run(agent.loop);
-
 	return NULL;
 }
 
@@ -89,7 +89,13 @@ agent_send_command_line(AgentObject* self,
 						gchar* command, 
 						gint order)
 {
-	send_message_to_child_process(self->child_process[order], 
+	if (self->child_process[order] == NULL)
+	{
+		agent_report_error(self,"Foward command to uninitialzed process, initializing new one");
+		create_new_cmd_process(self,order,command);
+		return;
+	}
+	send_message_to_child_process(self->child_process[order],
 		command,strlen(command)*sizeof(gchar));
 }
 

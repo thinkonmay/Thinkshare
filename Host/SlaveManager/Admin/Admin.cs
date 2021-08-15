@@ -28,14 +28,12 @@ namespace SlaveManager.Administration
     {
         private readonly ApplicationDbContext _db;
 
-        private readonly ISlavePool _slavePool;
 
         private readonly IHubContext<AdminHub, IAdminHub> _adminHubctx;
 
-        public Admin(ApplicationDbContext db, IHubContext<AdminHub, IAdminHub> adminHub, ISlavePool slavePool)
+        public Admin(ApplicationDbContext db, IHubContext<AdminHub, IAdminHub> adminHub)
         {
             _db = db;
-            _slavePool = slavePool;
             _adminHubctx = adminHub;
         }
 

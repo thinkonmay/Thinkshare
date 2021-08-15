@@ -12,5 +12,4 @@ namespace SlaveManager
         public string StunServerLibsoup { get; set; }
     }
 
-
 }

@@ -15,6 +15,4 @@
 
         public string Command { get; set; }
     }
-
-
 }

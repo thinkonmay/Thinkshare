@@ -40,7 +40,7 @@ session_initialize(AgentObject* agent)
 {
     ChildProcess* session_core = 
     create_new_child_process(SESSION_CORE_BINARY,
-        SESSION_CORE_PROCESS_ID, NULL,(ChildHandleFunc)handle_session_core_function, agent);
+        SESSION_CORE_PROCESS_ID, " ", (ChildHandleFunc)handle_session_core_function, agent);
     agent_set_child_process(agent, SESSION_CORE_PROCESS_ID, session_core);
 }
 

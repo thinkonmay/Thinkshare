@@ -9,13 +9,13 @@
 #include <general-constant.h>
 #include <state-indicator.h>
 
-void
+static void
 unregistered_connect_to_host(AgentObject* agent)
 {
     connect_to_host_async(agent);
 }
 
-void
+static void
 unregistered_register_with_host(AgentObject* agent)
 {
     register_with_host(agent);

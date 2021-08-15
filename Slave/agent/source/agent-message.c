@@ -159,7 +159,7 @@ on_agent_message(AgentObject* agent,
 
 	JsonParser* parser_ = json_parser_new();
 	json_parser_load_from_data(parser_, data_string, -1, NULL);
-	JsonNode* root_ = json_parser_get_root(parser);
+	JsonNode* root_ = json_parser_get_root(parser_);
 
 	if (JSON_NODE_TYPE(root_) == JSON_NODE_OBJECT)
 	{
@@ -178,28 +178,28 @@ on_agent_message(AgentObject* agent,
 			{
 				GFile* file = g_file_parse_name(SESSION_SLAVE_FILE);
 
-				g_file_replace_contents(file, data_string,sizeof(data_string),
+				g_file_replace_contents(file, data_string,strlen(data_string),
 					NULL,FALSE,G_FILE_CREATE_NONE,NULL,NULL, NULL,NULL);
 
 				agent_session_initialize(agent);
 			}
 			else if (opcode == NEW_COMMAND_LINE_SESSION)
 			{
-				create_new_cmd_process(
-					json_object_get_int_member(json_data, "ProcessID"), agent,
-						json_object_get_string_member(json_data, "Command"));
+				create_new_cmd_process(agent,
+					json_object_get_int_member(json_data, "ProcessID"), 
+						json_object_get_string_member(json_data, "CommandLine"));
 			}
 			else if (opcode == END_COMMAND_LINE_SESSION)
 			{
 				close_child_process(
 					agent_get_child_process(agent,
-						json_object_get_int_member(json_data, "ProcessID")));
+						json_object_get_string_member(json_data, "ProcessID")));
 			}
 			else if (opcode == COMMAND_LINE_FORWARD)
 			{
 				agent_send_command_line(agent,
-					json_object_get_int_member(json_data, "ProcessID"),
-						json_object_get_int_member(json_data, "Command"));
+					json_object_get_string_member(json_data, "CommandLine"),
+						json_object_get_int_member(json_data, "ProcessID"));
 			}
 			else if (opcode == DENY_SLAVE){
 				agent_finalize(agent);}

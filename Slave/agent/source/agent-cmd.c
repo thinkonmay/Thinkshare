@@ -36,14 +36,14 @@ command_line_output_handle(GBytes* data,
 
 
 void
-create_new_cmd_process(gint position, 
-    AgentObject* agent, 
-    gchar* first_command)
+create_new_cmd_process(AgentObject* agent, 
+                       gint position,
+                       gchar* first_command)
 {
 
     ChildProcess* child_process = create_new_child_process(
         "C:\\Windows\\System32\\cmd.exe /k ", position, first_command,
-        command_line_output_handle, &agent);
+        command_line_output_handle, agent);
 
    agent_set_child_process(agent,position, 
         child_process);

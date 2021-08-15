@@ -7,58 +7,58 @@
 #include <error-code.h>
 
 
-void  
+static void  
 default_session_initialize  ( AgentObject* agent)
 {
     agent_report_error(agent,AGENT_STATE_CONFLICT);
 }
 
-void
+static void
 default_session_terminate   (AgentObject* agent)
 {
     agent_report_error(agent,AGENT_STATE_CONFLICT);
 }                             
 
-void
+static void
 default_remote_control_disconnect( AgentObject* agent)
 {
     agent_report_error(agent,AGENT_STATE_CONFLICT);
 }
 
-void
+static void
 default_remote_control_reconnect(AgentObject* agent)
 {
     agent_report_error(agent,AGENT_STATE_CONFLICT);
 }
 
 
-void 
+static void
 default_send_message_to_host(AgentObject* agent,
                              Message* message)
 {
     agent_report_error(agent,AGENT_STATE_CONFLICT);
 }
 
-void
+static void
 default_send_message_to_local_module(AgentObject* agent,
                                      Message* message)
 {
     agent_report_error(agent,AGENT_STATE_CONFLICT);
 }
 
-void
+static void
 default_connect_to_host(AgentObject* agent)
 {
     agent_report_error(agent,AGENT_STATE_CONFLICT);
 }
 
-void
+static void
 default_register_to_host(AgentObject* agent)
 {
     agent_report_error(agent,AGENT_STATE_CONFLICT);
 }
 
-void
+static void
 default_on_session_core_exit(AgentObject* agent)
 {
     return;

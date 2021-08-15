@@ -30,7 +30,6 @@ typedef enum
 
     FILE_TRANSFER_SERVICE,
     CLIPBOARD_SERVICE
-
 }Opcode;
 
 #endif

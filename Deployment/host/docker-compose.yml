@@ -35,3 +35,8 @@ services:
 
     ports:
       - "81:80"
+    
+    coturn:
+      image: ogolosovskiy/docker-coturn
+
+

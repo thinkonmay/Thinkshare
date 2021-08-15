@@ -7,7 +7,7 @@
 #include <logging.h>
 #include <general-constant.h>
 
-void
+static void
 disconnected_connect_to_host(AgentObject* agent)
 {
     connect_to_host_async(agent);

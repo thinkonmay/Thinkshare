@@ -4,8 +4,8 @@
 
 #define CURRENT_DIR                   "C:\\ThinkMay"
 
-#define SESSION_CORE_BINARY           CURRENT_DIR"\\Release\\session-core.exe"
-#define AGENT_BINARY                  CURRENT_DIR"\\Release\\agent.exe"
+#define SESSION_CORE_BINARY           CURRENT_DIR"\\bin\\session-core.exe"
+#define AGENT_BINARY                  CURRENT_DIR"\\bin\\agent.exe"
 
 #define HOST_CONFIG_FILE              CURRENT_DIR"\\config\\host_configuration.json"
 #define SESSION_SLAVE_FILE            CURRENT_DIR"\\config\\session_slave.json"

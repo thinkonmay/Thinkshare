@@ -26,19 +26,16 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
         public async Task SessionTerminate(ISlaveDevice slave)
         {
-            Console.WriteLine("Not In Session");
             return;
         }
 
         public async Task RemoteControlDisconnect(ISlaveDevice slave)
         {
-            Console.WriteLine("Not In Session");
             return;
         }
 
         public async Task RemoteControlReconnect(ISlaveDevice slave)
         {
-            Console.WriteLine("Not In Session");
             return;
         }
 

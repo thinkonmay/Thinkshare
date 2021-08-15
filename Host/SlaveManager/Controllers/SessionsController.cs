@@ -83,38 +83,39 @@ namespace SlaveManager.Controllers
                     SessionClientID = sessionClientId
                 };
 
-                /*generate rest post to signalling server*/
-                var signalling_post = new RestRequest("/System​/Generate");
 
-                signalling_post.AddParameter("SessionClientID",sessionClientId.ToString());
-                signalling_post.AddParameter("SessionSlaveID",sessionSlaveId.ToString());
+                /*generate rest post to signalling server*/
+                var signalling_post = new RestRequest(
+                    $"System/Generate?SessionSlaveID={signalPair.SessionSlaveID}&SessionClientID={signalPair.SessionClientID}");
                 
                 var reply = Signalling.Post(signalling_post);
-                if(reply == null || !reply.IsSuccessful)
-                {
-                    return BadRequest(signalling_post.ToString());
-                }
+                // if(reply.Content != "Added session pair")
+                // {
+                //     return BadRequest(reply.Content);
+                // }
 
                 /*Check for session pair in session */
-                var signalling_get = new RestRequest("​/System​/GetCurrentSession");
-                var currentsession_res = Signalling.Get(signalling_get);
+                // var signalling_get = new RestRequest("​/System​/GetCurrentSession");
+                // var currentsession_res = Signalling.Get(signalling_get);
 
-                var respond = JsonConvert.DeserializeObject<List<Tuple<int, int>>>(currentsession_res.Content);
-                if(respond.Where(o => o.Item1 == sessionClientId && o.Item2 == sessionSlaveId).Count() == 0)
-                {
-                    return BadRequest("Session key pair not found after generate");
-                }
-                
-
+                // var respond = JsonConvert.DeserializeObject<List<Tuple<int, int>>>(currentsession_res.Content);
+                // if(respond.Where(o => o.Item1 == sessionClientId && o.Item2 == sessionSlaveId).Count() == 0)
+                // {
+                //     return BadRequest("Session key pair not found after generate");
+                // }             
 
                 SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
                 ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
 
-                _slavePool.SessionInitialize(sessionSlaveId, slaveSes);
+                if(!_slavePool.SessionInitialize(req.SlaveId, slaveSes))
+                {
+                    return BadRequest("Cannot send session initialize signal to slave");
+                }
 
                 SessionViewModel view = new SessionViewModel();
                 view.clientSession = clientSes; 
                 view.ClientID = sess.ClientID;
+                view.HostUrl = "http://"+Configuration.BaseUrl+":"+ Configuration.SlaveManagerPort;
                 return View("RemoteControl",view);
             }
 
@@ -144,28 +145,30 @@ namespace SlaveManager.Controllers
             };
 
             /*create rest delete to signalling server*/
-            var signalling_delete = new RestRequest("/System​/Terminate");
 
-            signalling_delete.AddParameter("SessionClientID", deletion.SessionClientID.ToString());
-            signalling_delete.AddParameter("SessionSlaveID", deletion.SessionSlaveID.ToString());
+            /*generate rest post to signalling server*/
+            var signalling_delete = new RestRequest($"System/Terminate?SessionSlaveID=${deletion.SessionSlaveID}&SessionClientID=${deletion.SessionClientID}");
 
             var reply = Signalling.Delete(signalling_delete);
-            if (reply == null || !reply.IsSuccessful)
-            {
-                return BadRequest("Fail to remove session key pair");
-            }
+            // if (reply.Content != "Terminated session pair")
+            // {
+            //     return BadRequest("Fail to remove session key pair");
+            // }
 
-            var signalling_get = new RestRequest("​/System​/GetCurrentSession");
-            var currentsession_res = Signalling.Get(signalling_get);
+            // var signalling_get = new RestRequest("​/System​/GetCurrentSession");
+            // var currentsession_res = Signalling.Get(signalling_get);
 
-            var respond = JsonConvert.DeserializeObject<List<Tuple<int, int>>>(currentsession_res.Content);
-            if (respond.Where(o => o.Item1 == sessionClientId && o.Item2 == deletion.SessionSlaveID).Count() == 1)
-            {
-                return BadRequest("Fail to delete session key pair");
-            }
+            // var respond = JsonConvert.DeserializeObject<List<Tuple<int, int>>>(currentsession_res.Content);
+            // if (respond.Where(o => o.Item1 == sessionClientId && o.Item2 == deletion.SessionSlaveID).Count() == 1)
+            // {
+            //     return BadRequest("Fail to delete session key pair");
+            // }
 
             /*slavepool send terminate session signal*/
-            _slavePool.SessionTerminate(ses.SessionSlaveID);
+            if(_slavePool.SessionTerminate(ses.SlaveID))
+            {
+                return BadRequest("Cannot send terminate session signal to slave");
+            }
             return Ok();
         }
 
@@ -184,7 +187,7 @@ namespace SlaveManager.Controllers
 
 
             /*slavepool send terminate session signal*/
-            if (_slavePool.RemoteControlDisconnect(ses.SessionSlaveID))
+            if (_slavePool.RemoteControlDisconnect(ses.SlaveID))
             {
                 return Ok();
             }
@@ -207,12 +210,13 @@ namespace SlaveManager.Controllers
             if (ses == null) return BadRequest();
 
             /*slavepool send terminate session signal*/
-            if (_slavePool.RemoteControlReconnect(ses.SessionSlaveID))
+            if (_slavePool.RemoteControlReconnect(ses.SlaveID))
             {
                 ClientSession clientSes = new ClientSession(ses,Configuration.StunServer);                
                 SessionViewModel view = new SessionViewModel();
                 view.clientSession = clientSes; 
                 view.ClientID = ses.ClientID;
+                view.HostUrl = "http://"+Configuration.BaseUrl+":"+ Configuration.SlaveManagerPort;
                 return View("RemoteControl",view);
             }
             else

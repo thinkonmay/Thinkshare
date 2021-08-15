@@ -26,25 +26,19 @@
 
     public enum Opcode
     {
-        SESSION_INFORMATION,
-
-        REGISTER_SLAVE,
-
-        SLAVE_ACCEPTED,
-        DENY_SLAVE,
-
+        SESSION_INFORMATION	,
+        REGISTER_SLAVE	,
+        SLAVE_ACCEPTED	,
+        DENY_SLAVE	,
         REJECT_SLAVE,
 
         SESSION_INITIALIZE,
         SESSION_TERMINATE,
         RECONNECT_REMOTE_CONTROL,
         DISCONNECT_REMOTE_CONTROL,
-
         QOE_REPORT,
         RESET_QOE,
-
         COMMAND_LINE_FORWARD,
-
         EXIT_CODE_REPORT,
         ERROR_REPORT,
 
@@ -56,11 +50,21 @@
     }
 
     public enum Module
-    {
+    {        
         CORE_MODULE,
         CLIENT_MODULE,
         LOADER_MODULE,
         AGENT_MODULE,
-        HOST_MODULE
+        HOST_MODULE,
+    }
+
+    public enum HidOpcode
+    {
+        KEYUP,
+        KEYDOWN,
+        MOUSE_WHEEL,
+        MOUSE_MOVE,
+        MOUSE_UP,
+        MOUSE_DOWN,
     }
 }

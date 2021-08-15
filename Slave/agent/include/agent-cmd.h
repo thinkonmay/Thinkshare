@@ -14,8 +14,8 @@
 /// <param name="position"></param>
 /// <param name="agent"></param>
 /// <param name="first_command"></param>
-void				create_new_cmd_process						(gint position,
-																AgentObject* agent,
+void				create_new_cmd_process						(AgentObject* agent, 
+																gint position,
 																gchar* first_command);
 
 #endif

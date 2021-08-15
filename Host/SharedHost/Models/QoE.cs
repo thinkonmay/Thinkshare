@@ -30,16 +30,16 @@
 
     public enum Codec
     {
-        CODEC_NVH265,
-        CODEC_NVH264,
+        CODEC_H265,
+        CODEC_H264,
         CODEC_VP9,
-
-        CODEC_OPUS_ENC
+        OPUS_ENC,
+        AAC_ENC
     }
 
     public enum QoEMode
     {
-        AUDIO_PIORITIZE,
-        VIDEO_PIORITIZE
+        AUDIO_PIORITY,
+        VIDEO_PIORITY
     }
 }

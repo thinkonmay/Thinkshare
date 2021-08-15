@@ -94,9 +94,17 @@ on_server_closed(SoupWebsocketConnection* conn,
     /*close websocket connection*/
     Socket* socket = agent_get_socket(agent);
     socket_close(socket);
-    /*then attemp to reconnect*/
+
+
+
+    
     AgentState* disconnected = transition_to_disconnected_state();
     agent_set_state(agent, disconnected);
+
+    Sleep(10000);
+    /*then attemp to reconnect*/
+    agent_set_socket(agent,initialize_socket(&agent));	
+	agent_connect_to_host(agent);
 }
 
 /// <summary>
@@ -267,6 +275,7 @@ initialize_socket(AgentObject* agent)
 
     const gchar* https_aliases[] = { "ws", NULL };
     static Socket socket;
+    ZeroMemory(&socket,sizeof(Socket));
 
     JsonParser* parser = json_parser_new();
 

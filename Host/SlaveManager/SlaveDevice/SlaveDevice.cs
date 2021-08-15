@@ -2,6 +2,7 @@
 using SharedHost.Models;
 using SlaveManager.Interfaces;
 using System.Net.WebSockets;
+using SlaveManager.Services;
 using System.Threading.Tasks;
 using SlaveManager.SlaveDevices.SlaveStates;
 
@@ -33,14 +34,11 @@ namespace SlaveManager.SlaveDevices
         public ISlaveState State { get; set; }
         public IConnection connection { get; set; }
         public WebSocket ws { get; set; }
-        public SlaveSession session { get; set; }
-        public SlaveDevice(WebSocket _ws, IConnection conn)
+        public SlaveDevice(ISlaveConnection _connection)
         {
-            ws = _ws;
-            /*when slave device are created in registration step, device state are set to open*/
-            State = new DeviceOpen();
-            connection = conn;
-            session = null;
+            ws = null;
+            State = new DeviceDisconnected();
+            connection = _connection;
         }
 
 

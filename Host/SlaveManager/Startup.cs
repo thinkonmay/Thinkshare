@@ -109,8 +109,8 @@ namespace SlaveManager
 
             services.AddSingleton<ISlavePool, SlavePool>();
             services.AddScoped<IAdmin, Admin>();
-            services.AddScoped<IWebSocketConnection, WebSocketConnection>();
-            services.AddScoped<ISlaveConnection, SlaveConnection>();
+            services.AddSingleton<IWebSocketConnection, WebSocketConnection>();
+            services.AddSingleton<ISlaveConnection, SlaveConnection>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
 
             services.AddMvc();
@@ -126,7 +126,14 @@ namespace SlaveManager
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "slavemanager v1"));
             }
 
-            app.UseCors();
+
+           // global cors policy
+            app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true)); // allow any origin
+            
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

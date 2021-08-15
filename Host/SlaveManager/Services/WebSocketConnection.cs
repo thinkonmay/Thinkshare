@@ -64,6 +64,7 @@ namespace SlaveManager.Services
                 }
                 var state = new DeviceOpen();
                 slave.ChangeState(state);
+                slave.ws = ws;
                 _slavePool.AddSlaveDeviceWithKey(device_information.ID, slave);
 
                 //Add Slave into database if SlaveID is not found in database
@@ -127,6 +128,7 @@ namespace SlaveManager.Services
 
             await _connection.KeepReceiving(ws);
 
+            //set slave state to disconnected after websocket connection is closed
             slave = _slavePool.GetSlaveDevice(registeredInfor.ID);
             slave.ChangeState(new DeviceDisconnected());
             _slavePool.AddSlaveDeviceWithKey(registeredInfor.ID, slave);            

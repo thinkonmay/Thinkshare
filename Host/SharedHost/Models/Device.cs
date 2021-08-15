@@ -20,12 +20,11 @@ namespace SharedHost.Models
 
     public class SlaveDeviceInformation
     {
-        public string CPU;
-        public string GPU;
-        public int RAMcapacity;
-        public string OS;
-
-        public int ID;
+        public string CPU {get;set;}
+        public string GPU {get;set;}
+        public int RAMcapacity {get;set;}
+        public string OS{get;set;}
+        public int ID{get;set;}
     }
 
     public class ClientDeviceCapabilities
@@ -41,7 +40,5 @@ namespace SharedHost.Models
         public int screenHeight { get; set; }
 
         public int bitrate { get; set; }
-
-
     }
 }

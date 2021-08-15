@@ -59,25 +59,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\ThinkMay\bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">session-core.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">session-core</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\ThinkMay\bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">session-core.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">session-core</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\MinSizeRel\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\ThinkMay\bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">session-core.dir\MinSizeRel\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">session-core</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\bin\RelWithDebInfo\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\ThinkMay\bin\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">session-core.dir\RelWithDebInfo\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">session-core</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
@@ -119,8 +119,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/Debug/session-core.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/Debug/session-core.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/ThinkMay/bin/session-core.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/ThinkMay/bin/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -162,8 +162,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/Release/session-core.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/Release/session-core.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/ThinkMay/bin/session-core.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/ThinkMay/bin/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -205,8 +205,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/MinSizeRel/session-core.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/MinSizeRel/session-core.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/ThinkMay/bin/session-core.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/ThinkMay/bin/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -247,8 +247,8 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/RelWithDebInfo/session-core.lib</ImportLibrary>
-      <ProgramDataBaseFile>D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/bin/RelWithDebInfo/session-core.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/ThinkMay/bin/session-core.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/ThinkMay/bin/session-core.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>

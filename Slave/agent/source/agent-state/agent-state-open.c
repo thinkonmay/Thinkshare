@@ -10,7 +10,7 @@
 #include <general-constant.h>
 #include <logging.h>
 
-void
+static void
 on_open_session_initialize(AgentObject* agent)
 {
     session_initialize(agent);
@@ -33,7 +33,7 @@ open_state_send_message_to_host(AgentObject* agent,
         json_parser_load_from_file(parser, HOST_CONFIG_FILE,&error);
         if(error != NULL)
         {
-            //
+            agent_report_error(agent, "Error reading config file");
         }
         JsonNode* root = json_parser_get_root(parser);
         JsonObject* obj = json_node_get_object(root);
@@ -75,12 +75,10 @@ transition_to_on_open_state(void)
         default_method(&open_state);
         open_state.session_initialize = on_open_session_initialize;
         open_state.send_message_to_host = send_message_to_host;
-        open_state.get_current_state = open_get_state;
-
-        
+        open_state.get_current_state = open_get_state;      
 
         initialized = TRUE; 
     }
-    write_to_log_file(AGENT_GENERAL_LOG,open_get_state());
+    write_to_log_file(AGENT_GENERAL_LOG, open_get_state());    
     return &open_state;
 }

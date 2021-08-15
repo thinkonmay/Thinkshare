@@ -15,5 +15,5 @@ msbuild
 cd ..\..\..\..
 
 cd ./Slave/bin/Debug/
-agent.exe
+C:/ThinkMay/bin/agent.exe
 cd ..\..\..

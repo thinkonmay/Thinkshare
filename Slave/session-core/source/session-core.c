@@ -224,7 +224,6 @@ get_json_exit_state(ExitState* state)
 		json_object_set_int_member(message, "Message", state->error->message);}
 
 	json_object_set_null_member(message, "Message");
-
 	return message;
 }
 
