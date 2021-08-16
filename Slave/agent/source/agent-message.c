@@ -91,7 +91,6 @@ agent_reset_qoe(AgentObject* agent, JsonObject* qoe)
 	if(error != NULL)
 	{
 		agent_report_error(agent, error->message);
-		write_to_log_file(AGENT_GENERAL_LOG,error->message);
 	}
 
 	JsonNode* root = json_parser_get_root(parser);
@@ -112,13 +111,17 @@ agent_reset_qoe(AgentObject* agent, JsonObject* qoe)
 	gchar* buffer = get_string_from_json_object(new_session_config);
 
 	GFile* config = g_file_parse_name(SESSION_SLAVE_FILE);
-	g_file_replace_contents(config,buffer,sizeof(buffer),NULL,
-		TRUE,G_FILE_CREATE_NONE,NULL,NULL,&error);
+
+	if(!g_file_replace_contents(config,buffer,sizeof(buffer),NULL,
+		TRUE,G_FILE_CREATE_NONE,NULL,NULL,&error))
+	{
+		agent_report_error(agent,ERROR_FILE_OPERATION);
+	}	
+
 	g_free(buffer);
 	if(error != NULL)
 	{
 		agent_report_error(agent,error->message);
-		write_to_log_file(AGENT_GENERAL_LOG,error->message);
 	}
 
 } 
@@ -178,8 +181,11 @@ on_agent_message(AgentObject* agent,
 			{
 				GFile* file = g_file_parse_name(SESSION_SLAVE_FILE);
 
-				g_file_replace_contents(file, data_string,strlen(data_string),
-					NULL,FALSE,G_FILE_CREATE_NONE,NULL,NULL, NULL,NULL);
+				if(!g_file_replace_contents(file, data_string,strlen(data_string),
+					NULL,FALSE,G_FILE_CREATE_NONE,NULL,NULL, NULL,NULL))
+				{
+					agent_report_error(agent,ERROR_FILE_OPERATION);					
+				}
 
 				agent_session_initialize(agent);
 			}

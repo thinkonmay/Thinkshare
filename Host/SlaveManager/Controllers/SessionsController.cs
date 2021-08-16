@@ -71,7 +71,7 @@ namespace SlaveManager.Controllers
 
                 /*create new session with gevin session request from user*/
                 Session sess = new Session(req, _QoE, sessionSlaveId, sessionClientId,
-                    "ws://" + Configuration.BaseUrl +":"+ Configuration.SignallingPort,
+                    "ws://" + Configuration.BaseUrl +":"+ Configuration.SignallingPort + "/Session",
                     Configuration.StunServer);
 
                 _db.Sessions.Add(sess);
@@ -88,7 +88,7 @@ namespace SlaveManager.Controllers
                 var signalling_post = new RestRequest(
                     $"System/Generate?SessionSlaveID={signalPair.SessionSlaveID}&SessionClientID={signalPair.SessionClientID}");
                 
-                var reply = Signalling.Post(signalling_post);
+                var reply = Signalling.Post(signalling_post); // TODO post and get confirmation from signalling server
                 // if(reply.Content != "Added session pair")
                 // {
                 //     return BadRequest(reply.Content);
@@ -116,6 +116,7 @@ namespace SlaveManager.Controllers
                 view.clientSession = clientSes; 
                 view.ClientID = sess.ClientID;
                 view.HostUrl = "http://"+Configuration.BaseUrl+":"+ Configuration.SlaveManagerPort;
+                view.DevMode = false;
                 return View("RemoteControl",view);
             }
 
@@ -149,7 +150,7 @@ namespace SlaveManager.Controllers
             /*generate rest post to signalling server*/
             var signalling_delete = new RestRequest($"System/Terminate?SessionSlaveID=${deletion.SessionSlaveID}&SessionClientID=${deletion.SessionClientID}");
 
-            var reply = Signalling.Delete(signalling_delete);
+            var reply = Signalling.Delete(signalling_delete); // TODO delete and get confirmation from signalling server
             // if (reply.Content != "Terminated session pair")
             // {
             //     return BadRequest("Fail to remove session key pair");
@@ -217,6 +218,7 @@ namespace SlaveManager.Controllers
                 view.clientSession = clientSes; 
                 view.ClientID = ses.ClientID;
                 view.HostUrl = "http://"+Configuration.BaseUrl+":"+ Configuration.SlaveManagerPort;
+                view.DevMode = false;
                 return View("RemoteControl",view);
             }
             else

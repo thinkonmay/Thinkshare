@@ -68,7 +68,7 @@ get_string_from_json_object(JsonObject* object)
 void
 socket_close(Socket* socket)
 {
-    write_to_log_file(AGENT_NETWORK_LOG,"socket closed");
+    write_to_log_file(AGENT_NETWORK_LOG, "socket closed");
 
     if (socket->ws != NULL)
     {
@@ -77,8 +77,11 @@ socket_close(Socket* socket)
             soup_websocket_connection_close(socket->ws, 1000, "");
         }
         else
+        {
             g_object_unref(socket->ws);
+        }
     }
+    ZeroMemory(socket,sizeof(Socket));
 }
 
 /// <summary>
@@ -94,16 +97,12 @@ on_server_closed(SoupWebsocketConnection* conn,
     /*close websocket connection*/
     Socket* socket = agent_get_socket(agent);
     socket_close(socket);
-
-
-
     
     AgentState* disconnected = transition_to_disconnected_state();
     agent_set_state(agent, disconnected);
 
-    Sleep(10000);
     /*then attemp to reconnect*/
-    agent_set_socket(agent,initialize_socket(&agent));	
+    agent_set_socket(agent,initialize_socket(agent));	
 	agent_connect_to_host(agent);
 }
 
@@ -246,7 +245,7 @@ socket_get_host_url(AgentObject* agent)
     json_parser_load_from_file(parser,HOST_CONFIG_FILE,error);
     if(error != NULL)
     {
-        // TODO: agent error report
+        agent_report_error(agent, error->message);
     }
     JsonNode* root = json_parser_get_root(parser);
     JsonObject* obj = json_node_get_object(root);
@@ -285,7 +284,6 @@ initialize_socket(AgentObject* agent)
     {
         JsonObject* object = json_object_new();
         json_object_set_string_member(object,UNDEFINED_ERROR,error->message);
-
         write_to_log_file(AGENT_GENERAL_LOG,get_string_from_json_object(object));
         return;
     }

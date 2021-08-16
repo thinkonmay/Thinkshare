@@ -8,6 +8,7 @@
 
 #include <state-indicator.h>
 #include <general-constant.h>
+#include <error-code.h>
 #include <logging.h>
 
 static void
@@ -33,7 +34,7 @@ open_state_send_message_to_host(AgentObject* agent,
         json_parser_load_from_file(parser, HOST_CONFIG_FILE,&error);
         if(error != NULL)
         {
-            agent_report_error(agent, "Error reading config file");
+            agent_report_error(agent, ERROR_FILE_OPERATION);
         }
         JsonNode* root = json_parser_get_root(parser);
         JsonObject* obj = json_node_get_object(root);

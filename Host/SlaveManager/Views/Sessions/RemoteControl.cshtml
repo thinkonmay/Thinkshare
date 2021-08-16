@@ -2,10 +2,17 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    Layout = "_DebugLayout";
+    if(Model.DevMode)
+    {
+        Layout = "_DebugLayout";
+    }
+    else
+    {
+        Layout = "_PublishLayout";
+    }
 
     int SessionClientID = Model.clientSession.SessionClientID;
-    string SignallingUrl = string.Format("\"{0}\"", Model.clientSession.SignallingUrl); //@"""Model.clientSession.SignallingUrl""";
+    string SignallingUrl = string.Format("\"{0}\"", Model.clientSession.SignallingUrl,""); //@"""Model.clientSession.SignallingUrl""";
     string StunServer = string.Format("\"{0}\"", Model.clientSession.StunServer);
     bool ClientOffer = Model.clientSession.ClientOffer;
 
@@ -19,6 +26,12 @@
     
     string HostUrl = "\""+Model.HostUrl+"\"";
 
+
+    string AppSrc = "http://"+Model.HostUrl+"/app.js?ts=1";
+    string InputSrc = "http://"+Model.HostUrl+"/input.js?ts=1";
+    string SignallingSrc = "http://"+Model.HostUrl+"/signalling.js?ts=1";
+    string WebRTCSrc = "http://"+Model.HostUrl+"/webrtc.js?ts=1";
+
     int ClientID = Model.ClientID;
 
 // viewmodel property:
@@ -26,11 +39,172 @@
 
 
 
-<script src="src/enum.js?ts=1"></script>
-<script src="src/input.js?ts=1"></script>
-<script src="src/signalling.js?ts=1"></script>
-<script src="src/webrtc.js?ts=1"></script>
-<script src="src/app.js?ts=1"></script>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    var ScaleLoader = VueSpinner.ScaleLoader;
+    var serverStatus = null;
+    var app = new Vue({
+
+        el: '#app',
+
+        components: {
+            ScaleLoader
+        },
+
+        data() 
+        {
+            return {                
+                hostUrl: @Html.Raw(HostUrl),
+                SessionClientID: @SessionClientID, 
+                ClientID: @ClientID,
+                
+
+                showStart: false,
+                showDrawer: false,
+
+                logEntries: [],
+                debugEntries: [],
+
+                status: 'connecting',
+                loadingText: '',
+
+                /**
+                * list contain window resolution [width,height]
+                */
+                windowResolution: null,
+
+                connectionStatType: "unknown",
+                connectionAudioCodecName: "unknown",
+                connectionVideoCodecName: "unknown",
+                connectionResolution: "",
+
+                turnSwitch: (window.localStorage.getItem("turnSwitch") === "true"),
+
+
+                /*parameter serve for session initialization */
+                Clientoffer: @ClientOffer,
+                SignallingUrl: @Html.Raw(SignallingUrl),
+
+                /*default value from client session fetch from server*/
+                QoEMode: @QoEMode,
+                AudioCodec: @AudioCodec,
+                VideoCodec: @VideoCodec,
+
+                /**
+                * default Value of QoE metric, fetch from server
+                */
+                defaultScreenWidth: @ScreenWidth,
+                defaultScreenHeight: @ScreenHeight,
+                defaultFrameRate: @Framerate,
+                defaultBitrate: @Bitrate,
+
+
+
+                /*Metric serve for adaptive bitrate algorithm */
+                currentTime: 0,
+                adaptiveAudioBitrate: @Bitrate,
+                adaptiveVideoBitrate: @Bitrate,
+                adaptiveFramerate: @Framerate,
+                connectionVideoDecoder: "unknown",
+
+                windowsWidth:0,
+                windowsHeight:0,
+
+                adaptivePacketsLost: 0,
+                adaptiveAudioLatency: 0,
+                adaptiveVideoLatency: 0,
+                adaptiveTotalBandwidth: clientSession.QoE.Bitrate,
+
+                
+            };
+        },
+
+        methods: 
+        {
+            enterFullscreen() {
+                // Request full screen mode.
+                app.logEntries.push(applyTimestamp("[VIDEO] [Switch to full screen mode]"));
+                videoElement.parentElement.requestFullscreen();
+            },
+            playVideo() {
+                app.logEntries.push(applyTimestamp("[VIDEO] [Start remote control]"));
+                webrtc.playVideo();
+                this.showStart = false;
+            },
+            connectServer(){
+                app.logEntries.push("[SIGNALLING] [Connecting to server]");
+                signalling.connect();
+            },
+            getServerStatus(){
+                serverStatus ? app.logEntries.push(serverStatus): app.logEntries.push("Unconnected server");
+            },
+            resetStream(){
+                /**
+                * reset webrtc connection
+                */
+                webrtc.input.detach();
+                webrtc._close();
+            },
+            showDrawer(newValue){
+                if(newValue) {
+                    webrtc.input.detach();
+                }
+                else{
+                    webrtc.input.attach();
+                }
+            
+            }
+        },
+
+        watch: {
+            videoBitRate(newValue) {
+                window.localStorage.setItem("videoBitRate", newValue.toString());
+            },
+            videoFramerate(newValue) {
+                app.logEntries.push("video frame rate changed to " + newValue);
+                window.localStorage.setItem("videoFramerate", newValue.toString());
+            },
+            audioEnabled(newValue, oldValue) {
+                app.logEntries.push("audio enabled changed from " + oldValue + " to " + newValue);
+            },
+            audioBitRate(newValue) {
+                @* webrtc.sendControlChannelMessage('ab,' + newValue); *@
+                window.localStorage.setItem("audioBitRate", newValue.toString());
+            },
+            debug(newValue) {
+                window.localStorage.setItem("debug", newValue.toString());
+                // Reload the page to force read of stored value on first load.
+                setTimeout(() => {
+                    document.location.reload();
+                }, 700);
+            },
+        },
+    });
+
+
+    var videoElement = document.getElementById("stream");
+    var signalling = new Signalling(new URL(app.SignallingUrl), app.SessionClientID, app.Clientoffer);
+
+
+    var RTPconfig =     
+        {"iceServers":    
+            [
+                {
+                    "urls": @Html.Raw(StunServer) 
+                }
+            ]
+        }
+    var webrtc = new WebRTC(signalling, videoElement, RTPconfig);
+
+    signalling.connect();
+</script>
 
 <script type="text/javascript">
     var Module = @Html.Raw(Model.ModuleJson);
@@ -38,40 +212,4 @@
     var Opcode = @Html.Raw(Model.OpcodeJson);
     var QoEMode = @Html.Raw(Model.QoEModeJson);
     var Codec = @Html.Raw(Model.CodecJson);
-</script>
-
-
-<script type="text/javascript">
-
-
-    var clientSession =
-    {
-        "SessionClientID":  @SessionClientID ,
-        "SignallingUrl": @Html.Raw(SignallingUrl),
-        "ClientOffer": @ClientOffer,
-
-        "QoE":
-        {
-            "ScreenWidth": @ScreenWidth,
-            "ScreenHeight": @ScreenHeight,
-            "Framerate": @Framerate,
-            "Bitrate": @Bitrate,
-            "AudioCodec": @AudioCodec,
-            "VideoCodec": @VideoCodec,
-            "QoEMode": @QoEMode
-        }
-    }
-
-    var RTPconfig =     
-    {"iceServers":    
-        [
-            {
-                "urls": @Html.Raw(StunServer) 
-            }
-        ]
-    }
-
-    var HostUrl = @Html.Raw(HostUrl);
-
-    var ClientID = @ClientID
 </script>

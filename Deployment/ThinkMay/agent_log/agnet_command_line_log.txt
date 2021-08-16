@@ -1,0 +1,44 @@
+[947623242]   :    Must specify package names on the command line
+
+[1113342652]   :    Must specify package names on the command line
+\
+[1294650902]   :    Must specify package names on the command line
+x
+[1456258744]   :    Must specify package names on the command line
+
+[1872596325]   :    Must specify package names on the command line
+x
+[2026011318]   :    Must specify package names on the command line
+x
+[-1954789919]   :    Must specify package names on the command line
+
+[-1405706187]   :    Must specify package names on the command line
+
+[-680592526]   :    Must specify package names on the command line
+x
+[-485900175]   :    Must specify package names on the command line
+x
+[4468989]   :    Must specify package names on the command line
+x
+[33460947]   :    Must specify package names on the command line
+
+[38935525]   :    
+D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\agent\source>
+[110176209]   :    Must specify package names on the command line
+
+[110180209]   :    
+D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\agent\source>ÐŽ‘¡„
+[161652478]   :    Must specify package names on the command line
+x
+[168943971]   :    
+D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\agent\source>
+[205544276]   :    'pkg-configpkg-config' is not recognized as an internal or external command,
+operable program or batch file.
+
+[214797183]   :    
+D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\agent\source>ÐŽèò
+[228731864]   :    'pkg-configpkg-configpkg-config' is not recognized as an internal or external command,
+operable program or batch file.
+
+[255690149]   :    
+D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing-master\Slave\build\agent\source>

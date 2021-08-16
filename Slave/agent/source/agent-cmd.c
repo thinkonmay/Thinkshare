@@ -45,7 +45,7 @@ create_new_cmd_process(AgentObject* agent,
         "C:\\Windows\\System32\\cmd.exe /k ", position, first_command,
         command_line_output_handle, agent);
 
-   agent_set_child_process(agent,position, 
+    agent_set_child_process(agent,position, 
         child_process);
 }
 

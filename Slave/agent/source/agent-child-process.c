@@ -1,6 +1,7 @@
 #include <agent-child-process.h>
 #include <agent-type.h>
 #include <agent-object.h>
+#include <agent-state-on-session-off-remote.h>
 
 
 #include <exit-code.h>
@@ -9,6 +10,7 @@
 #include <logging.h>
 #include <general-constant.h>
 #include <child-process-constant.h>
+#include <error-code.h>
 
 #include <glib.h>
 #include <Windows.h>
@@ -17,6 +19,7 @@
 #include <tchar.h>
 #include <stdio.h> 
 #include <strsafe.h>
+#include <error-code.h>
 
 #define BUFSIZE 100000
 
@@ -92,6 +95,14 @@ handle_child_process_thread(ChildProcess* proc)
             if(proc->process_id  == SESSION_CORE_PROCESS_ID)
             {
                 agent_on_session_core_exit(proc->agent);
+                
+                //switch to off remote state if session-core terminate durin session
+                if(!g_strcmp0(agent_get_current_state_string(proc->agent) , AGENT_ON_SESSION))
+                {
+                    // TODO : off remote report to slavemanager
+                    AgentState* off_remote = transition_to_off_remote_state();
+                    agent_set_state(proc->agent,off_remote);
+                }
             }
             return;
         }
@@ -102,7 +113,7 @@ handle_child_process_thread(ChildProcess* proc)
         */
         if(proc->process_id == SESSION_CORE_PROCESS_ID)
         {
-            if(!g_strcmp0(agent_get_current_state_string(proc->agent) , AGENT_ON_SESSION))
+            if(g_strcmp0(agent_get_current_state_string(proc->agent) , AGENT_ON_SESSION))
             {
                 TerminateProcess(proc->process,FORCE_EXIT);
                 return;
@@ -227,8 +238,8 @@ create_new_child_process(gchar* process_name,
     if(!output)
     {
         GetLastError();
-        agent_report_error(agent,"Fail to create child process ");
-        write_to_log_file(AGENT_GENERAL_LOG,"Fail co create child");
+        agent_report_error(agent,ERROR_PROCESS_OPERATION);
+        write_to_log_file(AGENT_GENERAL_LOG,ERROR_PROCESS_OPERATION);
         return NULL;        
     }
 

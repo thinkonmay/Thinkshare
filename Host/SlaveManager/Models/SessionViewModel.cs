@@ -17,6 +17,8 @@ namespace SlaveManager.Models
 
         public int ClientID {get;set;}
 
+        public bool DevMode {get;set;}
+
 
         private string ExportJavaEnum<T>()
         {

@@ -28,13 +28,15 @@ namespace SlaveManager.Administration
     {
         private readonly ApplicationDbContext _db;
 
-
+        private readonly ISlavePool _slavePool;
         private readonly IHubContext<AdminHub, IAdminHub> _adminHubctx;
 
-        public Admin(ApplicationDbContext db, IHubContext<AdminHub, IAdminHub> adminHub)
+        public Admin(ApplicationDbContext db, IHubContext<AdminHub, IAdminHub> adminHub, ISlavePool slavePool)
         {
             _db = db;
             _adminHubctx = adminHub;
+            _slavePool = slavePool;
+
         }
 
         public async Task ReportSlaveRegistered(SlaveDeviceInformation information)
@@ -70,6 +72,11 @@ namespace SlaveManager.Administration
         {
             _db.SessionCoreExits.Add(exit);
             await _db.SaveChangesAsync();
+
+            var slave = _slavePool.GetSlaveDevice(slaveID);
+            var state = new OnSessionOffRemote();
+            slave.ChangeState(state);
+            _slavePool.AddSlaveDeviceWithKey(slaveID,slave);
 
             await _adminHubctx.Clients.All.ReportSessionCoreExit(slaveID, exit);
         }

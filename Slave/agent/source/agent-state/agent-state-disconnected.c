@@ -7,10 +7,20 @@
 #include <logging.h>
 #include <general-constant.h>
 
+
+#define RECONNECT_INTERVAL       10000
+
+
+
 static void
 disconnected_connect_to_host(AgentObject* agent)
 {
-    connect_to_host_async(agent);
+    //attemp to connect to host until connection return successfully
+    while(TRUE)
+    {
+        connect_to_host_async(agent);
+        Sleep(RECONNECT_INTERVAL);
+    }
 }
 
 

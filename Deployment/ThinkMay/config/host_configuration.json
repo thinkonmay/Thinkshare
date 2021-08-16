@@ -1,0 +1,5 @@
+{
+  "SlaveID": 123345,
+  "HostUrl": "ws://192.168.1.6:81/Register",
+  "DisableSSL": true
+}

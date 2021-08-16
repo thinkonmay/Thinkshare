@@ -2,94 +2,11 @@
 <html>
 
 <head>
+    
+    <link href="material-floating-button/dist/mfb.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.css" rel="stylesheet" />
-    <style>
-        html {
-            font-family: Roboto, Arial, sans;
-            overflow: hidden;
-        }
-
-        .scrolly textarea {
-            min-height: 300px;
-            white-space: pre;
-            overflow: scroll;
-        }
-
-        .fab-container {
-            top: 50%;
-            right: -25px;
-        }
-
-        .video-container {
-            background-color: black;
-            width: 100%;
-            height: 100%;
-        }
-
-            .video-container video {
-                width: 100%;
-                height: 100%;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-            }
-
-        .loading {
-            position: absolute;
-            top: 50%;
-            width: 100%;
-            text-align: center;
-            color: #E0E0E0;
-        }
-
-        .loading-text {
-            margin-top: 1em;
-        }
-
-        canvas {
-            background: black;
-        }
-
-        ul {
-            border: 1px solid #000000;
-            border-radius: 8px;
-        }
-
-        .small-size {
-            font-size: 10px;
-        }
-
-        .wrapper {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-        }
-
-            .wrapper .button {
-                border: 1px solid #000000;
-                border-radius: 8px;
-                margin: 0.5rem 2rem;
-                padding: 0.5rem 1rem;
-                background: pink;
-            }
-
-                .wrapper .button:hover {
-                    opacity: 0.7;
-                    cursor: pointer;
-                }
-
-            .wrapper input {
-                border: 1px solid #595959;
-                border-radius: 8px;
-                height: 2.5rem;
-            }
-
-                .wrapper input:focus {
-                    outline: none;
-                }
-    </style>
+    <link href="http://192.168.1.6:81/css/dev.css" rel="stylesheet" />
     <title>WebRTC</title>
 </head>
 
@@ -190,6 +107,7 @@
                 </v-container>
             </v-navigation-drawer>
 
+
             <div id="video_container" class="video-container">
                 <video id="stream" preload="none" playsinline>
                     Your browser doesn't support video
@@ -232,12 +150,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-spinner@1.0.3/dist/vue-spinner.min.js"></script>
 
-<script src="src/enum.js?ts=1"></script>
-<script src="src/input.js?ts=1"></script>
-<script src="src/signalling.js?ts=1"></script>
-<script src="src/webrtc.js?ts=1"></script>
-<script src="src/app.js?ts=1"></script>
+<script src="http://192.168.1.6:81/src/input.js?ts=1"></script>
+<script src="http://192.168.1.6:81/src/signalling.js?ts=1"></script>
+<script src="http://192.168.1.6:81/src/webrtc.js?ts=1"></script>
+<script src="http://192.168.1.6:81/src/app.js?ts=1"></script>
 
 @RenderBody()
+
+
 
 </html>

@@ -73,9 +73,7 @@ void
 agent_finalize(AgentObject* self)
 {
 	socket_close(self->socket);
-
 	agent_session_terminate(self);
-
 	if (self->loop)
 	{
 		g_main_loop_quit(self->loop);
@@ -89,6 +87,13 @@ agent_send_command_line(AgentObject* self,
 						gchar* command, 
 						gint order)
 {
+	//append new line to the end of commandline by copying command to new cmd_with_enter
+	gchar* cmd_with_enter = malloc(strlen(command)+1);
+	ZeroMemory(cmd_with_enter,strlen(cmd_with_enter));
+	strcat(cmd_with_enter,command);
+	strcat(cmd_with_enter,"\n");
+
+
 	if (self->child_process[order] == NULL)
 	{
 		agent_report_error(self,"Foward command to uninitialzed process, initializing new one");
@@ -96,7 +101,8 @@ agent_send_command_line(AgentObject* self,
 		return;
 	}
 	send_message_to_child_process(self->child_process[order],
-		command,strlen(command)*sizeof(gchar));
+		cmd_with_enter,strlen(cmd_with_enter));
+	g_free(cmd_with_enter);
 }
 
 
@@ -147,7 +153,7 @@ void
 agent_send_message_to_host(AgentObject* self,
 	gchar* message)
 {
-	self->state->send_message_to_host(self, message);
+		self->state->send_message_to_host(self, message);
 }  
 
 void

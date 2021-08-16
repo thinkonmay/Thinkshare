@@ -97,7 +97,6 @@ session_core_initialize()
 {
 	static SessionCore core;
 
-
 	core.ipc =				ipc_initialize(&core);
 	core.hub =				webrtchub_initialize();
 	core.signalling =		signalling_hub_initialize(&core);
@@ -114,7 +113,6 @@ session_core_initialize()
 	session_core_connect_signalling_server(&core);
 	g_main_loop_run(core.loop);
 	g_main_loop_unref(core.loop);
-
 	return &core;	
 }
 
@@ -160,45 +158,6 @@ session_core_setup_data_channel(SessionCore* core)
 
 
 
-/// <summary>
-/// (PRIVATE function)
-/// get_session_information from host message, 
-/// used to set session information
-/// </summary>
-/// <param name="object"></param>
-/// <returns></returns>
-Session*
-get_session_information_from_message(Message* object)
-{
-	Session* session;
-	SessionQoE* qoe;
-
-	JsonObject* session_object =		json_object_get_member(object, "Data");
-	gint SessionSlaveID =				json_object_get_int_member(session_object, "SessionSlaveID");
-	gchar* SIGNALLING_SERVER =				json_object_get_string_member(session_object, "SignallingURL");
-	gchar* client_offer =				json_object_get_boolean_member(session_object, "ClientOffer");
-	gchar* stun_server =				json_object_get_string_member(session_object, "StunServer");
-
-	JsonObject* qoe_object =			json_object_get_member(session_object, "SessionQoE");
-	gint screen_width =					json_object_get_int_member(qoe_object, "ScreenWidth");
-	gint screen_height =				json_object_get_int_member(qoe_object, "ScreenHeight");
-	gint framerate =					json_object_get_int_member(qoe_object, "FrameRate");
-	gint bitrate =						json_object_get_int_member(qoe_object, "Bitrate");
-
-
-
-	return session;
-}
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -220,10 +179,14 @@ get_json_exit_state(ExitState* state)
 	json_object_set_int_member(message, "PeerCallState", state->peer_state);
 	json_object_set_int_member(message, "ExitTime", g_get_real_time());
 
-	if(state->error != NULL){
-		json_object_set_int_member(message, "Message", state->error->message);}
-
-	json_object_set_null_member(message, "Message");
+	if(state->error != NULL)
+	{
+		json_object_set_int_member(message, "Message", state->error->message);
+	}
+	else
+	{
+		json_object_set_string_member(message, "Message"," ");
+	}
 	return message;
 }
 

@@ -19,8 +19,11 @@ on_session_session_terminate(AgentObject* agent)
 {
     GFile* hdl = g_file_parse_name(SESSION_SLAVE_FILE);
 
-    g_file_replace_contents(hdl, "EmptySession", sizeof("EmptySession"), NULL, TRUE,
-        G_FILE_CREATE_NONE, NULL, NULL, NULL);
+    if(!g_file_replace_contents(hdl, "EmptySession", strlen("EmptySession"), NULL, TRUE,
+        G_FILE_CREATE_NONE, NULL, NULL, NULL))
+    {
+		agent_report_error(agent,ERROR_FILE_OPERATION);        
+    }
 
     AgentState* open_state = transition_to_on_open_state();
     agent_set_state(agent, open_state);

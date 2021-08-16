@@ -1,0 +1,67 @@
+**
+ERRO< HTTP/1**
+ERRO**
+ERRO< HTTP/1-711505018À»õÂ609357694@ö7¶658263009`Ôïü1181549666àÉ´ž1335385558ç§‹>1590601314€{241628108606 ¿2ÓÉ1653556813…d¨"2057346484PË%-991822817€¦Zê1212059511ÀàA×®1304374515@é4­¾2131563826-1607840613°'¯©K17186130500€-1427920514P­Jô-933341518 ÕW¨-232707986 ~-ßY1197975065Àü§ü-1030926186p£m--874859465-759373800 åë¯Û-631019767`6m'¾-502455515ð°v-473014594 ÑžŒ-247442905°þ-179121784€¯åê-133884985P{Ò¹l409319162ðÅ!Ñ739872795 £±¥N-64735003°à€1992957881ÀôÈíö-2115781813pÃ·7Ò-679717508Ð@ýÙ¼-2115006485-854725035 ·r“²-505860570p<Ð138120859P+ðI337325763@ÆwžO1039735345Ð‡‘”…163860620ðÆÔ¾251435542à¹£ú691532862°îTp1025261858plÆ1318835413 ›Ènú-12454445740ÐÓ-605399475°½s5672218 xX½1513098741°*1Â-1126981760ppQçR-896173074P¦ô-336967209p'/æ427587776 íè"£795190080`¦ºBò1380681526€XJ"o1558315741-1197674409ð9rÇ-868351464¼MÔh-748808332°~èY1-6329729240c!s-605811805À¤*ÐS-420803808àrèÁì-293159470€Eø¨-1673066330pfÇ•™145860008 8EoV-1654676668°MW²F231107061;sz,-1528082436À¦Jg-476188447àËê²b-184273215à=ó{£382278744ð›¤?558255939PºÊJ8103505985#+_1444730445@Ž r1986724092pª21433155568óã™-1701137908ÀCÝ¶¡255066175°OË2820755540|,Ë788234069Ð¡±†810138854p\±†1043285077 uæ2Í1062180142ða¥2Í1129301758ðË1ì|1133347366píãë|1133753366Ðƒãë|1133881297ÐŒãë|1134010745 ãë|1134135157àª4ì|1134263158P³4ì|1134389156°¶4ì|1134516158µ4ì|1134640158À©4ì|1134768797à¡4ì|1134893799¾4ì|1135022244 º4ì|1135154382Ð·4ì|1135280381£4ì|1135404379 ¤4ì|1135531380Ð¥4ì|11356553800»4ì|1135782382`¦4ì|1135906334À»4ì|1136031336¬4ì|1136154337€°4ì|1136281337°¤4ì|1136407334 ¶4ì|113653133485ì|11366533341136782337 A5ì|1136906241@,5ì|1137032242p;5ì|1137155241005ì|1137281242`-5ì|1137406239 85ì|11375302391137652162ÀB5ì|1137783460 +5ì|1137907750ð65ì|1529989020Àý²v1536333447àêcv1592949980 »µv1594088004Ð¼µv1595215108àÁµv15963408941597479174ÀÀµv1598606945pÂµv1599741885@ªµv1600867185Ðªµv1601996241@Åµv16031340570Àµv1604268231ð«µv1605392049€¾µv1606534009 ¶µv-1969829771€êI-1968026936àåø-187246387204Ü&-18681105890Ü&[-1167324015]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-1036016404]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-944007159]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-864904121]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-862824148]   :    {"From":4,"To":3,"Opcode":5,"Data":"{\"SessionSlaveID\":1570871121,\"SignallingUrl\":\"ws://192.168.1.6:82\",\"StunServer\":\"stun://stun.l.google.com:19302\",\"ClientOffer\":false,\"QoE\":{\"ScreenWidth\":0,\"ScreenHeight\":0,\"Framerate\":0,\"Bitrate\":0,\"AudioCodec\":0,\"VideoCodec\":0,\"QoEMode\":0}}"}
+[-804129811]   :    {"From":4,"To":3,"Opcode":6,"Data":null}
+[-735513554]   :    {"From":4,"To":3,"Opcode":5,"Data":"{\"SessionSlaveID\":1211118557,\"SignallingUrl\":\"ws://192.168.1.6:82\",\"StunServer\":\"stun://stun.l.google.com:19302\",\"ClientOffer\":false,\"QoE\":{\"ScreenWidth\":0,\"ScreenHeight\":0,\"Framerate\":0,\"Bitrate\":0,\"AudioCodec\":0,\"VideoCodec\":0,\"QoEMode\":0}}"}
+[-695499060]   :    {"From":4,"To":3,"Opcode":6,"Data":null}
+[-643379685]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config --list-all\"}"}
+[-458319805]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-435089138]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[-342615834]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-328285671]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[-204176472]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-169070455]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-163679247]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[-120046891]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-116739772]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[-84597697]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-80554042]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[6130779]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[27023975]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[276156887]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[285807539]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[292188021]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[930576225]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[947514681]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[1106906477]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[1113307652]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[1219033764]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[1294610903]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[1434061259]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[1456223741]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[1787524008]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[1872557935]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[1938724385]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[2025969317]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[-1957683585]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-1954827923]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[-1429252884]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-1405745219]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[-851550417]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-804430940]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-680632526]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[-600547347]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-502375719]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[-485933171]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[-41034957]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[4429989]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[31351804]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[33421950]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[97933537]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[109412827]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[110141209]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[111583041]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[128561104]   :    {"From":4,"To":3,"Opcode":2,"Data":"ACCEPTED"}
+[161617482]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[174608164]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[178894634]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[189045029]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[196515929]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":5,\"CommandLine\":\"pkg-config\"}"}
+[205526278]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":6,\"CommandLine\":\"pkg-config\"}"}
+[225326472]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":6,\"CommandLine\":\"pkg-config\"}"}
+[228717864]   :    {"From":4,"To":3,"Opcode":11,"Data":"{\"SlaveID\":0,\"ProcessID\":4,\"CommandLine\":\"pkg-config\"}"}
