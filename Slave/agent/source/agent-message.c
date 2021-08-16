@@ -157,18 +157,6 @@ on_agent_message(AgentObject* agent,
 		return;
 	}
 
-
-
-
-	JsonParser* parser_ = json_parser_new();
-	json_parser_load_from_data(parser_, data_string, -1, NULL);
-	JsonNode* root_ = json_parser_get_root(parser_);
-
-	if (JSON_NODE_TYPE(root_) == JSON_NODE_OBJECT)
-	{
-		json_data = json_node_get_object(root_);
-	}
-
 	if (to == AGENT_MODULE)
 	{
 		if (from == HOST_MODULE)
@@ -189,7 +177,26 @@ on_agent_message(AgentObject* agent,
 
 				agent_session_initialize(agent);
 			}
-			else if (opcode == NEW_COMMAND_LINE_SESSION)
+			else if (opcode == DENY_SLAVE){
+				agent_finalize(agent);}
+			else if (opcode == REJECT_SLAVE) {
+				agent_finalize(agent);}
+			else if (opcode == SESSION_TERMINATE) {
+				agent_session_terminate(agent);}
+			else if (opcode == RECONNECT_REMOTE_CONTROL) {
+				agent_remote_control_reconnect(agent);}
+			else if (opcode == DISCONNECT_REMOTE_CONTROL) {
+				agent_remote_control_disconnect(agent);}
+			
+
+
+			///message data with actual json object
+			JsonParser* parser_ = json_parser_new();
+			json_parser_load_from_data(parser_, data_string, -1, NULL);
+			JsonNode* root_ = json_parser_get_root(parser_);
+			json_data = json_node_get_object(root_);
+					
+			if (opcode == NEW_COMMAND_LINE_SESSION)
 			{
 				create_new_cmd_process(agent,
 					json_object_get_int_member(json_data, "ProcessID"), 
@@ -207,28 +214,22 @@ on_agent_message(AgentObject* agent,
 					json_object_get_string_member(json_data, "CommandLine"),
 						json_object_get_int_member(json_data, "ProcessID"));
 			}
-			else if (opcode == DENY_SLAVE){
-				agent_finalize(agent);}
-			else if (opcode == REJECT_SLAVE) {
-				agent_finalize(agent);}
-			else if (opcode == SESSION_TERMINATE) {
-				agent_session_terminate(agent);}
-			else if (opcode == RECONNECT_REMOTE_CONTROL) {
-				agent_remote_control_reconnect(agent);}
-			else if (opcode == DISCONNECT_REMOTE_CONTROL) {
-				agent_remote_control_disconnect(agent);}
 		}
 		else if(from == CORE_MODULE)
-		{
-			switch (opcode)
-			{
-				case FILE_TRANSFER_SERVICE:
+		{		
+			JsonParser* parser_ = json_parser_new();
+			json_parser_load_from_data(parser_, data_string, -1, NULL);
+			JsonNode* root_ = json_parser_get_root(parser_);
+			json_data = json_node_get_object(root_);
 
-				case CLIPBOARD_SERVICE:
+			if(FILE_TRANSFER_SERVICE){
 
-				case RESET_QOE:
-					agent_reset_qoe(agent,json_data);
+			}else if(CLIPBOARD_SERVICE){
+
+			}else if(RESET_QOE){
+				agent_reset_qoe(agent,json_data);
 			}
+			
 		}
 	}
 	else

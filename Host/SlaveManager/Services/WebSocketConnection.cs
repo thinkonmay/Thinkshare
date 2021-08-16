@@ -23,20 +23,16 @@ namespace SlaveManager.Services
 
         private readonly IAdmin _admin;
 
-        private readonly ISlaveConnection _connection;
-
         private readonly ApplicationDbContext _db;
 
 
 
         public WebSocketConnection(ISlavePool slavePool,
                                     IAdmin admin,
-                                    ISlaveConnection connection,
                                     ApplicationDbContext db)
         {
             _slavePool = slavePool;
             _admin = admin;
-            _connection = connection;
             _db = db;
         }
 
@@ -126,13 +122,14 @@ namespace SlaveManager.Services
                 return true;
             }
 
-            await _connection.KeepReceiving(ws);
+            slave = _slavePool.GetSlaveDevice(registeredInfor.ID);
+            slave.ws = ws;
+            await slave.KeepReceiving();
 
             //set slave state to disconnected after websocket connection is closed
-            slave = _slavePool.GetSlaveDevice(registeredInfor.ID);
             slave.ChangeState(new DeviceDisconnected());
-            _slavePool.AddSlaveDeviceWithKey(registeredInfor.ID, slave);            
-
+            _slavePool.AddSlaveDeviceWithKey(registeredInfor.ID, slave);     
+ 
             return true;
         }
 

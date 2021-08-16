@@ -16,7 +16,7 @@ namespace SlaveManager.Interfaces
         /// </summary>
         /// <param name="slaveid"></param>
         /// <returns></returns>
-        public bool AddSlaveId(int slaveid);
+        public bool AddSlaveId(int slaveid,SlaveDevice slave);
 
         /// <summary>
         /// Get SlaveDevice correspond to a ID in slave pool, 

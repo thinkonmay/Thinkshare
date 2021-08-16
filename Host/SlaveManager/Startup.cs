@@ -15,6 +15,7 @@ using SlaveManager.Interfaces;
 using SlaveManager.Models.Auth;
 using SlaveManager.Models.User;
 using SlaveManager.Services;
+using SlaveManager.SlaveDevices;
 using System;
 using System.IO;
 using System.Reflection;
@@ -107,10 +108,10 @@ namespace SlaveManager
                 c.IncludeXmlComments(xmlFilePath);
             });
 
+
             services.AddSingleton<ISlavePool, SlavePool>();
-            services.AddScoped<IAdmin, Admin>();
+            services.AddSingleton<IAdmin, Admin>();
             services.AddSingleton<IWebSocketConnection, WebSocketConnection>();
-            services.AddSingleton<ISlaveConnection, SlaveConnection>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
 
             services.AddMvc();

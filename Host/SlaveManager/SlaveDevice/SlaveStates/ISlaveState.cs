@@ -6,18 +6,18 @@ namespace SlaveManager.Interfaces
 {
     public interface ISlaveState
     {
-        public Task SessionInitialize(ISlaveDevice slave, SlaveSession session);
+        Task SessionInitialize(ISlaveDevice slave, SlaveSession session);
 
-        public Task SessionTerminate(ISlaveDevice slave);
+        Task SessionTerminate(ISlaveDevice slave);
 
-        public Task RemoteControlDisconnect(ISlaveDevice slave);
+        Task RemoteControlDisconnect(ISlaveDevice slave);
 
-        public Task RemoteControlReconnect(ISlaveDevice slave);
+        Task RemoteControlReconnect(ISlaveDevice slave);
 
-        public Task SendCommand(ISlaveDevice slave, int order, string command);
+        Task SendCommand(ISlaveDevice slave, int order, string command);
 
-        public Task RejectSlave(ISlaveDevice slave);
+        Task RejectSlave(ISlaveDevice slave);
 
-        public string GetSlaveState();
+        string GetSlaveState();
     }
 }

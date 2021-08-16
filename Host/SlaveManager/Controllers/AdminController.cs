@@ -7,8 +7,14 @@ using SlaveManager.Interfaces;
 using SlaveManager.Models;
 using SlaveManager.Services;
 using System;
+using MersenneTwister;
 using System.Collections.Generic;
 using System.Linq;
+using SlaveManager;
+using System.Threading.Tasks;
+using System.Configuration;
+using RestSharp;
+using SlaveManager.SlaveDevices;
 
 namespace SlaveManager.Controllers
 {
@@ -20,15 +26,25 @@ namespace SlaveManager.Controllers
 
         private readonly ApplicationDbContext _db;
 
-        public AdminController(ISlavePool slavePool, ApplicationDbContext db)
+        private readonly SystemConfig Configuration;
+
+        private readonly RestClient Signalling;
+
+        private readonly IAdmin _admin;
+
+        public AdminController(ISlavePool slavePool, ApplicationDbContext db, IAdmin admin, SystemConfig config)
         {
+            _admin = admin;
+            Configuration = config;
             _slavePool = slavePool;
             _db = db;
+            Signalling = new RestClient("http://" + Configuration.BaseUrl + ":" + Configuration.SignallingPort);
 
             var list = _db.Devices.ToList();
             foreach (var i in list)
             {
-                slavePool.AddSlaveId(i.ID);
+                var Slave = new SlaveDevice(_admin);
+                _slavePool.AddSlaveId(i.ID,Slave);
             }
         }
 
@@ -74,7 +90,8 @@ namespace SlaveManager.Controllers
         [HttpPost("AddSlave")]
         public IActionResult AddSlaveDevice(int ID)
         {
-            return _slavePool.AddSlaveId(ID) ? Ok() : BadRequest();
+            SlaveDevice slave = new SlaveDevice(_admin);
+            return _slavePool.AddSlaveId(ID,slave) ? Ok() : BadRequest();
         }
 
         /// <summary>
@@ -100,107 +117,105 @@ namespace SlaveManager.Controllers
             return _slavePool.DisconnectSlave(ID) ? Ok() : BadRequest();        
         }
 
-        //         /// <summary>
-        // /// initialize session
-        // /// </summary>
-        // /// <param name="req"></param>
-        // /// <returns></returns>
-        // [HttpPost("Initialize")]
-        // public async Task<IActionResult> Create(ClientRequest req)
-        // {
+        
+        /// <summary>
+        /// initialize session
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        [HttpPost("Initialize")]
+        public async Task<IActionResult> Create(ClientRequest req)
+        {
 
-        //     if (ModelState.IsValid)
-        //     {
-        //         if (_slavePool.GetSlaveState(req.SlaveId) != SlaveServiceState.Open) { return BadRequest("Device Not Available"); }
-        //         await _admin.ReportNewSession(req.SlaveId, 0);
+            if (ModelState.IsValid)
+            {
+                if (_slavePool.GetSlaveState(req.SlaveId) != SlaveServiceState.Open) { return BadRequest("Device Not Available"); }
+                await _admin.ReportNewSession(req.SlaveId, 0);
 
-        //         /*create session id pair randomly*/
-        //         int sessionSlaveId = Randoms.Next();
-        //         int sessionClientId = Randoms.Next();
+                /*create session id pair randomly*/
+                int sessionSlaveId = Randoms.Next();
+                int sessionClientId = Randoms.Next();
 
-        //         /*create session from client device capability*/
-        //         var _QoE = new QoE(req.cap);
+                /*create session from client device capability*/
+                var _QoE = new QoE(req.cap);
 
-        //         /*create new session with gevin session request from user*/
-        //         Session sess = new Session(req, _QoE, sessionSlaveId, sessionClientId,
-        //             "ws://" + Configuration.BaseUrl +":"+ Configuration.SignallingPort + "/Session",
-        //             Configuration.StunServer);
+                /*create new session with gevin session request from user*/
+                Session sess = new Session(req, _QoE, sessionSlaveId, sessionClientId,
+                    "ws://" + Configuration.BaseUrl +":"+ Configuration.SignallingPort + "/Session",
+                    Configuration.StunServer);
 
-        //         _db.Sessions.Add(sess);
-        //         await _db.SaveChangesAsync();
+                _db.Sessions.Add(sess);
+                await _db.SaveChangesAsync();
 
-        //         var signalPair = new SessionPair()
-        //         {
-        //             SessionSlaveID = sessionSlaveId,
-        //             SessionClientID = sessionClientId
-        //         };
+                var signalPair = new SessionPair()
+                {
+                    SessionSlaveID = sessionSlaveId,
+                    SessionClientID = sessionClientId
+                };
 
 
-        //         /*generate rest post to signalling server*/
-        //         var signalling_post = new RestRequest(
-        //             $"System/Generate?SessionSlaveID={signalPair.SessionSlaveID}&SessionClientID={signalPair.SessionClientID}");
+                /*generate rest post to signalling server*/
+                var signalling_post = new RestRequest(
+                    $"System/Generate?SessionSlaveID={signalPair.SessionSlaveID}&SessionClientID={signalPair.SessionClientID}");
                 
-        //         var reply = Signalling.Post(signalling_post);
+                var reply = Signalling.Post(signalling_post);
 
-        //         SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
-        //         ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
+                SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
+                ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
 
-        //         if(!_slavePool.SessionInitialize(req.SlaveId, slaveSes))
-        //         {
-        //             return BadRequest("Cannot send session initialize signal to slave");
-        //         }
+                if(!_slavePool.SessionInitialize(req.SlaveId, slaveSes))
+                {
+                    return BadRequest("Cannot send session initialize signal to slave");
+                }
 
-        //         SessionViewModel view = new SessionViewModel();
-        //         view.clientSession = clientSes; 
-        //         view.ClientID = sess.ClientID;
-        //         view.HostUrl = "http://"+Configuration.BaseUrl+":"+ Configuration.SlaveManagerPort;
-        //         view.DevMode = true;
-        //         return View("RemoteControl",view);
-        //     }
+                SessionViewModel view = new SessionViewModel();
+                view.clientSession = clientSes; 
+                view.ClientID = sess.ClientID;
+                view.HostUrl = "http://"+Configuration.BaseUrl+":"+ Configuration.SlaveManagerPort;
+                view.DevMode = true;
+                return View("RemoteControl",view);
+            }
 
-        //     return BadRequest();
-        // }
+            return BadRequest();
+        }
 
 
-        // /// <summary>
-        // /// Terminate session 
-        // /// </summary>
-        // /// <param name="sessionClientId"></param>
-        // /// <returns></returns>
-        // [HttpDelete("Terminate")]
-        // public async Task<IActionResult> Terminate(int sessionClientId)
-        // {
+        /// <summary>
+        /// Terminate session 
+        /// </summary>
+        /// <param name="sessionClientId"></param>
+        /// <returns></returns>
+        [HttpDelete("Terminate")]
+        public async Task<IActionResult> Terminate(int sessionClientId)
+        {
             
-        //     Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
+            Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
 
-        //     ses.EndTime = DateTime.UtcNow;
-        //     await _db.SaveChangesAsync();
+            ses.EndTime = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
 
-        //     if (ses == null) return BadRequest();
+            if (ses == null) return BadRequest();
 
-        //     var deletion = new SessionPair()
-        //     {
-        //         SessionClientID = ses.SessionClientID,
-        //         SessionSlaveID = ses.SessionSlaveID
-        //     };
+            var deletion = new SessionPair()
+            {
+                SessionClientID = ses.SessionClientID,
+                SessionSlaveID = ses.SessionSlaveID
+            };
 
-        //     /*create rest delete to signalling server*/
+            /*create rest delete to signalling server*/
 
-        //     /*generate rest post to signalling server*/
-        //     var signalling_delete = new RestRequest($"System/Terminate?SessionSlaveID=${deletion.SessionSlaveID}&SessionClientID=${deletion.SessionClientID}");
+            /*generate rest post to signalling server*/
+            var signalling_delete = new RestRequest($"System/Terminate?SessionSlaveID=${deletion.SessionSlaveID}&SessionClientID=${deletion.SessionClientID}");
 
-        //     var reply = Signalling.Delete(signalling_delete);
+            var reply = Signalling.Delete(signalling_delete);
 
-        //     /*slavepool send terminate session signal*/
-        //     if(_slavePool.SessionTerminate(ses.SlaveID))
-        //     {
-        //         return BadRequest("Cannot send terminate session signal to slave");
-        //     }
-        //     return Ok();
-        // }
-
-
-
+            /*slavepool send terminate session signal*/
+            if(_slavePool.SessionTerminate(ses.SlaveID))
+            {
+                return BadRequest("Cannot send terminate session signal to slave");
+            }
+            return Ok();
+        }
 
     }
 }

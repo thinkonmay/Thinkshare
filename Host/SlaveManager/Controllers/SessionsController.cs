@@ -89,10 +89,10 @@ namespace SlaveManager.Controllers
                     $"System/Generate?SessionSlaveID={signalPair.SessionSlaveID}&SessionClientID={signalPair.SessionClientID}");
                 
                 var reply = Signalling.Post(signalling_post); // TODO post and get confirmation from signalling server
-                if (reply.Content != "Added session pair")
-                {
-                    return BadRequest(reply.Content);
-                }
+                // if(reply.Content != "Added session pair")
+                // {
+                //     return BadRequest(reply.Content);
+                // }
 
                 /*Check for session pair in session */
                 // var signalling_get = new RestRequest("​/System​/GetCurrentSession");
@@ -102,7 +102,7 @@ namespace SlaveManager.Controllers
                 // if(respond.Where(o => o.Item1 == sessionClientId && o.Item2 == sessionSlaveId).Count() == 0)
                 // {
                 //     return BadRequest("Session key pair not found after generate");
-                // }
+                // }             
 
                 SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
                 ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
@@ -151,10 +151,10 @@ namespace SlaveManager.Controllers
             var signalling_delete = new RestRequest($"System/Terminate?SessionSlaveID=${deletion.SessionSlaveID}&SessionClientID=${deletion.SessionClientID}");
 
             var reply = Signalling.Delete(signalling_delete); // TODO delete and get confirmation from signalling server
-            if (reply.Content != "Terminated session pair")
-            {
-                return BadRequest("Fail to remove session key pair");
-            }
+            // if (reply.Content != "Terminated session pair")
+            // {
+            //     return BadRequest("Fail to remove session key pair");
+            // }
 
             // var signalling_get = new RestRequest("​/System​/GetCurrentSession");
             // var currentsession_res = Signalling.Get(signalling_get);
@@ -166,7 +166,7 @@ namespace SlaveManager.Controllers
             // }
 
             /*slavepool send terminate session signal*/
-            if (_slavePool.SessionTerminate(ses.SlaveID))
+            if(_slavePool.SessionTerminate(ses.SlaveID))
             {
                 return BadRequest("Cannot send terminate session signal to slave");
             }

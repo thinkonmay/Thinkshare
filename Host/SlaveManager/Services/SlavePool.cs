@@ -14,16 +14,9 @@ namespace SlaveManager.Services
     {
         ConcurrentDictionary<int, SlaveDevice> SlaveList;
 
-        /// <summary>
-        /// use to inject connection to slave device
-        /// </summary>
-        private readonly ISlaveConnection _connection;
-
-        public SlavePool(ISlaveConnection connection)
+        public SlavePool()
         {
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
-
-            _connection = connection;
         }
 
 
@@ -141,9 +134,8 @@ namespace SlaveManager.Services
 
 
 
-        public bool AddSlaveId(int slaveid)
+        public bool AddSlaveId(int slaveid, SlaveDevice slave)
         {
-            SlaveDevice slave = new SlaveDevice(_connection);
             var ret = SlaveList.TryAdd(slaveid, slave);
             return ret;
         }

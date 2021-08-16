@@ -9,13 +9,7 @@ using SlaveManager.Services;
 using SharedHost.Models;
 using System.Collections.Generic;
 using System.Linq;
-
-
-
-
-
-
-
+using SlaveManager.SlaveDevices;
 
 namespace SlaveManager.Controllers
 {
@@ -24,6 +18,8 @@ namespace SlaveManager.Controllers
     public class WebSocketApiController : ControllerBase
     {
         private readonly IWebSocketConnection _connection;
+
+        private readonly IAdmin _admin;
 
         private readonly ApplicationDbContext _db;
 
@@ -40,7 +36,8 @@ namespace SlaveManager.Controllers
                 var list = _db.Devices.ToList();
                 foreach (var i in list)
                 {
-                    slavePool.AddSlaveId(i.ID);
+                    var slave = new SlaveDevice(_admin);
+                    slavePool.AddSlaveId(i.ID,slave);
                 }
             }
         }

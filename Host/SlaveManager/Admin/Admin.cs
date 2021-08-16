@@ -9,34 +9,16 @@ using SignalRChat.Hubs;
 using SlaveManager.SlaveDevices.SlaveStates;
 
 namespace SlaveManager.Administration
-{
-    public interface IAdmin
-    {
-        public Task ReportSlaveRegistered(SlaveDeviceInformation information);
-
-        public Task LogSlaveCommandLine(int slaveID, ReceiveCommand result);
-
-        public Task ReportSessionCoreError(GeneralError err);
-
-        public Task ReportAgentError(GeneralError err);
-
-        public Task ReportSessionCoreExit(int slaveID, SessionCoreExit exit);
-
-        public Task ReportNewSession(int SlaveID, int ClientID);
-    }
-
-    public class Admin : IAdmin
+{    public class Admin : IAdmin
     {
         private readonly ApplicationDbContext _db;
-
         private readonly ISlavePool _slavePool;
         private readonly IHubContext<AdminHub, IAdminHub> _adminHubctx;
 
-        public Admin(ApplicationDbContext db, IHubContext<AdminHub, IAdminHub> adminHub, ISlavePool slavePool)
+        public Admin(ApplicationDbContext db, IHubContext<AdminHub, IAdminHub> adminHub) //, ISlavePool slavePool
         {
             _db = db;
             _adminHubctx = adminHub;
-            _slavePool = slavePool;
 
         }
 
