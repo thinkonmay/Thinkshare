@@ -6,6 +6,7 @@ using System;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using SignalRChat.Hubs;
+using SlaveManager.SlaveDevices.SlaveStates;
 
 namespace SlaveManager.Administration
 {

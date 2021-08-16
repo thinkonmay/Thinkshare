@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Signalling.Filters;
 using Signalling.Interfaces;
 using Signalling.Models;
 using System;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace Signalling.Controllers
 {
     [Route("/System")]
+    [ServiceFilter(typeof(ClientIpFilter))]
     [ApiController]
     public class SystemController : ControllerBase
     {
