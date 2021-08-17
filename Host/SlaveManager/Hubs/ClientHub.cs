@@ -13,6 +13,10 @@ namespace SignalRChat.Hubs
         Task ReportSlaveObtained(int slaveID);
 
         Task ReportNewSlaveAvailable(SlaveDeviceInformation device);
+
+        Task ReportSessionDisconnected(int slaveID);
+
+        Task ReportSessionReconnected(int slaveID);
     }
 
 
