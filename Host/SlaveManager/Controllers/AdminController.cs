@@ -138,7 +138,7 @@ namespace SlaveManager.Controllers
             var req = new ClientRequest();
             req.cap = cap;
             req.ClientId = 0;
-            req.SlaveId = SlaveId;
+            req.SlaveId = SlaveID;
 
 
             if (_slavePool.GetSlaveState(req.SlaveId) != SlaveServiceState.Open) { return BadRequest("Device Not Available"); }
