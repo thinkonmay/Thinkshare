@@ -25,7 +25,7 @@ namespace Signalling.Controllers
             _queue = queue;
         }
 
-        [HttpPost("Generate")]
+        [HttpGet("Generate")]
         public IActionResult AddSessionPair(int SessionSlaveID, int SessionClientID)
         {
             var ret = _queue.AddSessionPair(SessionSlaveID, SessionClientID);
@@ -38,7 +38,7 @@ namespace Signalling.Controllers
             }
         }
 
-        [HttpDelete("Terminate")]
+        [HttpGet("Terminate")]
         public IActionResult TerminateSessionPair(int SessionSlaveID, int SessionClientID)
         {
             var ret = _queue.RemoveIDPair(SessionSlaveID, SessionClientID);

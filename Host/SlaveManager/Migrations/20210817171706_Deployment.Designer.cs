@@ -10,7 +10,7 @@ using SlaveManager.Data;
 namespace SlaveManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210817070032_Deployment")]
+    [Migration("20210817171706_Deployment")]
     partial class Deployment
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

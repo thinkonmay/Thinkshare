@@ -16,6 +16,7 @@ using static System.Environment;
 using System.Configuration;
 using RestSharp;
 using System.Collections.Generic;
+using System.Net;
 
 
 // TODO: authentification
@@ -45,7 +46,7 @@ namespace SlaveManager.Controllers
             _slavePool = slavePool;
             Configuration = config;
             
-            Signalling = new RestClient("http://"+Configuration.BaseUrl+":"+ Configuration.SignallingPort);
+            Signalling = new RestClient("http://"+Configuration.BaseUrl+":"+ Configuration.SignallingPort+"/System");
         }
 
         /// <summary>
@@ -103,31 +104,27 @@ namespace SlaveManager.Controllers
 
 
             /*generate rest post to signalling server*/
-            var signalling_post = new RestRequest(
-                $"System/Generate?SessionSlaveID={signalPair.SessionSlaveID}&SessionClientID={signalPair.SessionClientID}");
-            
-            var reply = Signalling.Post(signalling_post); // TODO post and get confirmation from signalling server
-            // if(reply.Content != "Added session pair")
-            // {
-            //     return BadRequest(reply.Content);
-            // }
-
-            /*Check for session pair in session */
-            // var signalling_get = new RestRequest("​/System​/GetCurrentSession");
-            // var currentsession_res = Signalling.Get(signalling_get);
-
-            // var respond = JsonConvert.DeserializeObject<List<Tuple<int, int>>>(currentsession_res.Content);
-            // if(respond.Where(o => o.Item1 == sessionClientId && o.Item2 == sessionSlaveId).Count() == 0)
-            // {
-            //     return BadRequest("Session key pair not found after generate");
-            // }             
+            var get_req = new RestRequest("Generate")
+                .AddParameter("SessionSlaveID", sessionSlaveId.ToString())
+                .AddParameter("SessionClientID", sessionClientId.ToString());            
+            var reply = Signalling.Get(get_req); // TODO post and get confirmation from signalling server
+            if(reply.StatusCode != HttpStatusCode.OK)
+            {
+                return BadRequest(reply.Content.ToString());
+            }
+           
 
             SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
             ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
 
             if(!_slavePool.SessionInitialize(SlaveId, slaveSes))
             {
+                var error = new GeneralErrorAbsTime();
+                error.ErrorMessage = "Cannot send initialize signal to agent";
+                error.ErrorTime = 0;
+                _admin.ReportAgentError(error,SlaveId);
                 return BadRequest("Cannot send session initialize signal to slave");
+
             }
 
             SessionViewModel view = new SessionViewModel();
@@ -160,38 +157,24 @@ namespace SlaveManager.Controllers
 
             if (ses == null) return BadRequest();
 
-            var deletion = new SessionPair()
-            {
-                SessionClientID = ses.SessionClientID,
-                SessionSlaveID = ses.SessionSlaveID
-            };
-
-            /*create rest delete to signalling server*/
-
             /*generate rest post to signalling server*/
-            var signalling_delete = new RestRequest($"System/Terminate?SessionSlaveID=${deletion.SessionSlaveID}&SessionClientID=${deletion.SessionClientID}");
+            /*generate rest post to signalling server*/
+            var get_req = new RestRequest("Terminate")
+                .AddParameter("SessionSlaveID", ses.SessionSlaveID.ToString())
+                .AddParameter("SessionClientID", ses.SessionClientID.ToString());            
+            var reply = Signalling.Get(get_req); // TODO post and get confirmation from signalling server
+            if(reply.StatusCode != HttpStatusCode.OK)
+            {
+                return BadRequest(reply.Content.ToString());
+            }
 
-            var reply = Signalling.Delete(signalling_delete); // TODO delete and get confirmation from signalling server
-            // if (reply.Content != "Terminated session pair")
-            // {
-            //     return BadRequest("Fail to remove session key pair");
-            // }
-
-            // var signalling_get = new RestRequest("​/System​/GetCurrentSession");
-            // var currentsession_res = Signalling.Get(signalling_get);
-
-            // var respond = JsonConvert.DeserializeObject<List<Tuple<int, int>>>(currentsession_res.Content);
-            // if (respond.Where(o => o.Item1 == sessionClientId && o.Item2 == deletion.SessionSlaveID).Count() == 1)
-            // {
-            //     return BadRequest("Fail to delete session key pair");
-            // }
 
             /*slavepool send terminate session signal*/
-            if(_slavePool.SessionTerminate(ses.SlaveID))
+            if(!_slavePool.SessionTerminate(ses.SlaveID))
             {
                 return BadRequest("Cannot send terminate session signal to slave");
             }
-            return Ok();
+            return Ok($"Session {ses.SessionClientID} termination done");
         }
 
 

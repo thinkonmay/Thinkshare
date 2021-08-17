@@ -8,6 +8,11 @@ namespace SlaveManager.Interfaces
 {
     public interface ITokenGenerator
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         Task<string> GenerateJwt(UserAccount user);
     }
 }
