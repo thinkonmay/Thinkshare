@@ -10,9 +10,9 @@
 #define HOST_CONFIG_FILE              CURRENT_DIR"\\config\\host_configuration.json"
 #define SESSION_SLAVE_FILE            CURRENT_DIR"\\config\\session_slave.json"
 
-#define SESSION_CORE_GENERAL_LOG      CURRENT_DIR"\\slave_log\\session_core_general_log.txt"
-#define SESSION_CORE_MESSAGE_LOG      CURRENT_DIR"\\slave_log\\session_core_message_log.txt"
-#define SESSION_CORE_NETWORK_LOG      CURRENT_DIR"\\slave_log\\session_core_network_log.txt"
+#define SESSION_CORE_GENERAL_LOG      CURRENT_DIR"\\session_core_log\\session_core_general_log.txt"
+#define SESSION_CORE_MESSAGE_LOG      CURRENT_DIR"\\session_core_log\\session_core_message_log.txt"
+#define SESSION_CORE_NETWORK_LOG      CURRENT_DIR"\\session_core_log\\session_core_network_log.txt"
 
 #define AGENT_NETWORK_LOG             CURRENT_DIR"\\agent_log\\agent_network_log.txt"
 #define AGENT_GENERAL_LOG             CURRENT_DIR"\\agent_log\\agent_general_log.txt"

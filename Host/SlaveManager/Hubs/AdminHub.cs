@@ -22,6 +22,8 @@ namespace SignalRChat.Hubs
 
         Task LogSlaveCommandLine(int SlaveID, int ProcessID, string Command);
 
+        Task ReportSessionTermination(int SlaveID, int ClietnID);
+
     }
 
 

@@ -14,12 +14,13 @@ namespace SlaveManager.Administration
         private readonly ApplicationDbContext _db;
         private readonly ISlavePool _slavePool;
         private readonly IHubContext<AdminHub, IAdminHub> _adminHubctx;
+        private readonly IHubContext<ClientHub, IClientHub> _clientHubctx;
 
-        public Admin(ApplicationDbContext db, IHubContext<AdminHub, IAdminHub> adminHub) //, ISlavePool slavePool
+        public Admin(ApplicationDbContext db, IHubContext<AdminHub, IAdminHub> adminHub, IHubContext<ClientHub,IClientHub> clientHub) //, ISlavePool slavePool
         {
             _db = db;
             _adminHubctx = adminHub;
-
+            _clientHubctx = clientHub;
         }
 
         public async Task ReportSlaveRegistered(SlaveDeviceInformation information)
@@ -51,9 +52,11 @@ namespace SlaveManager.Administration
             return;
         }
 
-        public async Task ReportSessionCoreExit(int slaveID, SessionCoreExit exit)
+        public async Task ReportSessionCoreExit(int slaveID, SessionCoreExitAbsTime exit)
         {
-            _db.SessionCoreExits.Add(exit);
+            var slavedb = _db.Devices.Find(slaveID);
+            var exit_report = new SessionCoreExit(exit, slavedb);
+            _db.SessionCoreExits.Add(exit_report);
             await _db.SaveChangesAsync();
 
             var slave = _slavePool.GetSlaveDevice(slaveID);
@@ -61,29 +64,49 @@ namespace SlaveManager.Administration
             slave.ChangeState(state);
             _slavePool.AddSlaveDeviceWithKey(slaveID,slave);
 
-            await _adminHubctx.Clients.All.ReportSessionCoreExit(slaveID, exit);
+            await _adminHubctx.Clients.All.ReportSessionCoreExit(slaveID, exit_report);
         }
 
 
-        public async Task ReportSessionCoreError(GeneralError err)
+        public async Task ReportSessionCoreError(GeneralErrorAbsTime err, int SlaveID)
         {
-            _db.GeneralErrors.Add(err);
+            var slave = _db.Devices.Find(SlaveID);
+            var error = new GeneralError(err, slave);
+            _db.GeneralErrors.Add(error);
             await _db.SaveChangesAsync();
 
-            await _adminHubctx.Clients.All.ReportSessionCoreError(err);        
+            await _adminHubctx.Clients.All.ReportSessionCoreError(error);        
         }
 
-        public async Task ReportAgentError(GeneralError err)
+        public async Task ReportAgentError(GeneralErrorAbsTime err, int SlaveID)
         {
-            _db.GeneralErrors.Add(err);
+            var slave = _db.Devices.Find(SlaveID);
+            var error = new GeneralError(err, slave);
+            _db.GeneralErrors.Add(error);
             await _db.SaveChangesAsync();
 
-            await _adminHubctx.Clients.All.ReportAgentError(err);
+            await _adminHubctx.Clients.All.ReportAgentError(error);
         }
 
         public async Task ReportNewSession(int SlaveID, int ClientID)
         {
             await _adminHubctx.Clients.All.ReportSessionStart(SlaveID, ClientID);
+            await _clientHubctx.Clients.All.ReportSlaveObtained(SlaveID);
+        }
+
+        public async Task ReportSessionTermination(int SlaveID, int ClientID)
+        {
+            var slave = _db.Devices.Find(SlaveID);
+            var device_infor = new SlaveDeviceInformation()
+            {
+                CPU = slave.CPU,
+                GPU = slave.GPU,
+                RAMcapacity = slave.RAMcapacity,
+                OS = slave.OS,
+                ID = slave.ID
+            };
+            await _adminHubctx.Clients.All.ReportSessionTermination(SlaveID, ClientID);
+            await _clientHubctx.Clients.All.ReportNewSlaveAvailable(device_infor);
         }
     }
 }

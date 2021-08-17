@@ -2,11 +2,11 @@
 <html>
 
 <head>    
-    <link href="material-floating-button/dist/mfb.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.css" rel="stylesheet" />
+    <link href="http://192.168.1.6:81/material-floating-button/dist/mfb.css" rel="stylesheet">
+    <link href="http://192.168.1.6:81/css/googleapi.css" rel="stylesheet" />
+    <link href="http://192.168.1.6:81/css/vuetify.css" rel="stylesheet" />
     <link href="http://192.168.1.6:81/css/dev.css" rel="stylesheet" />
-    <title>WebRTC</title>
+    <title>Remote control page</title>
 </head>
 
 <body>
@@ -15,37 +15,43 @@
             <ul class="mfb-component--br mfb-slidein" data-mfb-toggle="hover">
                 <li class="mfb-component__wrap">
                         <!-- the main menu button -->
-                        <a data-mfb-label="Terminate session"  class="mfb-component__button--main">
+                        <a data-mfb-label=""  class="mfb-component__button--main">
                         <!-- the main button icon visibile by default -->
-                            <i class="mfb-component__main-icon--resting ion-social-github">
+                            <i class="mfb-component__main-icon--resting ion-social-github">                                
+                                <v-icon x-large>home</v-icon>
                             </i>
-                        <!-- the main button icon visibile when the user is hovering/interacting with the menu -->
                             <i class="mfb-component__main-icon--active ion-social-github"> 
-                                <v-icon color="black">chevron_left</v-icon>
+                                <v-btn icon v-on:click="terminateSession()">
+                                    <v-icon dark>mdi-minus-circle</v-icon>
+                                </v-btn>
+                                <v-icon x-large color="black"></v-icon>
                             </i>
                         </a>
                     <ul class="mfb-component__list">
                         <li>
-                            <a data-mfb-label="Disconnect remote control" class="mfb-component__button--child">                    
+                            <a data-mfb-label="Terminate session" class="mfb-component__button--child">                    
                                 <i class="mfb-component__child-icon ion-social-twitter">                   
-                                <v-btn icon v-on:click="showDrawer=!showDrawer">
-                                <v-icon color="black">chevron_left</v-icon>
+                                    <v-btn icon v-on:click="terminateSession()">
+                                        <v-icon dark>mdi-minus-circle</v-icon>
+                                    </v-btn>
                                 </i>
                             </a>
                         </li>
                         <li>
-                            <a data-mfb-label="Disconnect remote control" class="mfb-component__button--child">
+                            <a data-mfb-label="Full screen mode" class="mfb-component__button--child">
                                 <i class="mfb-component__child-icon ion-social-twitter">                            
-                                <v-btn icon v-on:click="enterFullscreen()">
-                                <v-icon color="black">fullscreen</v-icon>
+                                    <v-btn icon v-on:click="enterFullscreen()">
+                                        <v-icon color="black">fullscreen</v-icon>
+                                    </v-btn>
                                 </i>
                             </a>
                         </li>
                         <li>
-                            <a data-mfb-label="Disconnect remote control" class="mfb-component__button--child">
+                            <a data-mfb-label="File transfer" class="mfb-component__button--child">
                                 <i class="mfb-component__child-icon ion-social-twitter">                   
-                                <v-btn icon v-on:click="showDrawer=!showDrawer">
-                                <v-icon color="black">chevron_left</v-icon>
+                                    <v-btn icon v-on:click="fileTransfer()">
+                                        <v-icon color="black">mdi-cloud-upload</v-icon>
+                                    </v-btn>
                                 </i>
                             </a>
                         </li>
@@ -76,7 +82,7 @@
 
                 <div v-else>
                     <scale-loader size="200px" :loading="(status !== 'connected')" color="#E0E0E0"></scale-loader>
-                    <div v-if="(status !== 'connected')" class="loading-text">{{ loadingText }}</div>
+                    <div v-if="(status !== 'connected')" class="loading-text"></div>
                 </div>
             </div>
         </v-app>
@@ -87,6 +93,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-spinner@1.0.3/dist/vue-spinner.min.js"></script>
+
+
+
+
 @RenderBody()
 
 <script>

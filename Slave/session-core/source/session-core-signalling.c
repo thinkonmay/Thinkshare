@@ -413,10 +413,13 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
     gchar* text;
 
 
-    if (session_core_get_state(core) != SESSION_INFORMATION_SETTLED)
+    if (!g_strcmp0(session_core_get_state(core),SESSION_INFORMATION_SETTLED))
     {
-        if(hub->signalling_state != SIGNALLING_SERVER_READY)
+        if (!g_strcmp0(hub->signalling_state,SIGNALLING_SERVER_READY))
+        {
+            session_core_finalize(core, CORE_STATE_CONFLICT_EXIT, NULL);
             return;
+        }
     }
 
     hub->session =

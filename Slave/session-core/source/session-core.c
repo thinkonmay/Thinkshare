@@ -15,7 +15,7 @@
 
 
 #include <glib.h>
-
+#include <logging.h>
 
 
 struct _SessionCore
@@ -96,6 +96,7 @@ SessionCore*
 session_core_initialize()
 {
 	static SessionCore core;
+	write_to_log_file(SESSION_CORE_GENERAL_LOG,"Session core process started");
 
 	core.ipc =				ipc_initialize(&core);
 	core.hub =				webrtchub_initialize();
@@ -229,7 +230,7 @@ session_core_finalize(SessionCore* self,
 		soup_websocket_connection_close(connection, 0, "");
 	}
 
-	write_to_log_file(self,"session core exited\n");
+	write_to_log_file(SESSION_CORE_GENERAL_LOG,"session core exited\n");
 
 	Message* msg_host = message_init(CORE_MODULE, 
 		HOST_MODULE, EXIT_CODE_REPORT, get_json_exit_state(&state));
@@ -247,8 +248,11 @@ report_session_core_error(SessionCore* self,
 						  ErrorCode code)
 {
 	Message* msg = json_object_new();
-	json_object_set_string_member(msg, "ErrorMessage", code);
-	json_object_set_int_member(msg,"ErrorTime",g_get_real_time());
+
+	json_object_set_string_member(msg, 
+		"ErrorMessage", code);
+	json_object_set_int_member(msg,
+		"ErrorTime",g_get_real_time());
 
 	Message* msg_host = message_init(CORE_MODULE,
 		HOST_MODULE, ERROR_REPORT, msg);

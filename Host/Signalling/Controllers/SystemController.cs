@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 
 namespace Signalling.Controllers
 {
+    
+    // [ServiceFilter(typeof(ClientIpFilter))]
     [Route("/System")]
-    [ServiceFilter(typeof(ClientIpFilter))]
     [ApiController]
     public class SystemController : ControllerBase
     {

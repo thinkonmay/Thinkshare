@@ -51,76 +51,92 @@ namespace SlaveManager.Controllers
         /// <summary>
         /// initialize session
         /// </summary>
-        /// <param name="req"></param>
+        /// <param name="ClientId"></param>
+        /// <param name="SlaveId"></param>
+        /// <param name="ScreenWidth"></param>
+        /// <param name="ScreenHeight"></param>
+        /// <param name="bitrate"></param>
+        /// <param name="QoEMode"></param>
+        /// <param name="VideoCodec"></param>
+        /// <param name="AudioCodec"></param>
         /// <returns></returns>
-        [HttpPost("Initialize")]
-        public async Task<IActionResult> Create(ClientRequest req)
+        [HttpGet("Initialize")]
+        public async Task<IActionResult> Create(int ClientId, int SlaveId, int ScreenWidth, int ScreenHeight,int bitrate, int QoEMode, int VideoCodec, int AudioCodec)
         {
+            var cap = new ClientDeviceCapabilities();
+            cap.screenWidth= ScreenWidth;
+            cap.screenHeight = ScreenHeight;
+            cap.bitrate = bitrate;
+            cap.audioCodec = (Codec)AudioCodec;
+            cap.videoCodec = (Codec)VideoCodec;
+            cap.mode = (QoEMode)QoEMode;
 
-            if (ModelState.IsValid)
+            var req = new ClientRequest();
+            req.cap = cap;
+            req.ClientId = ClientId;
+            req.SlaveId = SlaveId;
+
+            ///search for availability of slave device
+            if (_slavePool.GetSlaveState(SlaveId) != SlaveServiceState.Open) { return BadRequest("Device Not Available"); }
+            await _admin.ReportNewSession(SlaveId, ClientId);
+
+            /*create session id pair randomly*/
+            int sessionSlaveId = Randoms.Next();
+            int sessionClientId = Randoms.Next();
+
+            /*create session from client device capability*/
+            var _QoE = new QoE(cap);
+
+            /*create new session with gevin session request from user*/
+            Session sess = new Session(req, _QoE, sessionSlaveId, sessionClientId,
+                "ws://" + Configuration.BaseUrl +":"+ Configuration.SignallingPort + "/Session",
+                Configuration.StunServer);
+
+            _db.Sessions.Add(sess);
+            await _db.SaveChangesAsync();
+
+            var signalPair = new SessionPair()
             {
-                if (_slavePool.GetSlaveState(req.SlaveId) != SlaveServiceState.Open) { return BadRequest("Device Not Available"); }
-                await _admin.ReportNewSession(req.SlaveId, req.ClientId);
-
-                /*create session id pair randomly*/
-                int sessionSlaveId = Randoms.Next();
-                int sessionClientId = Randoms.Next();
-
-                /*create session from client device capability*/
-                var _QoE = new QoE(req.cap);
-
-                /*create new session with gevin session request from user*/
-                Session sess = new Session(req, _QoE, sessionSlaveId, sessionClientId,
-                    "ws://" + Configuration.BaseUrl +":"+ Configuration.SignallingPort + "/Session",
-                    Configuration.StunServer);
-
-                _db.Sessions.Add(sess);
-                await _db.SaveChangesAsync();
-
-                var signalPair = new SessionPair()
-                {
-                    SessionSlaveID = sessionSlaveId,
-                    SessionClientID = sessionClientId
-                };
+                SessionSlaveID = sessionSlaveId,
+                SessionClientID = sessionClientId
+            };
 
 
-                /*generate rest post to signalling server*/
-                var signalling_post = new RestRequest(
-                    $"System/Generate?SessionSlaveID={signalPair.SessionSlaveID}&SessionClientID={signalPair.SessionClientID}");
-                
-                var reply = Signalling.Post(signalling_post); // TODO post and get confirmation from signalling server
-                // if(reply.Content != "Added session pair")
-                // {
-                //     return BadRequest(reply.Content);
-                // }
+            /*generate rest post to signalling server*/
+            var signalling_post = new RestRequest(
+                $"System/Generate?SessionSlaveID={signalPair.SessionSlaveID}&SessionClientID={signalPair.SessionClientID}");
+            
+            var reply = Signalling.Post(signalling_post); // TODO post and get confirmation from signalling server
+            // if(reply.Content != "Added session pair")
+            // {
+            //     return BadRequest(reply.Content);
+            // }
 
-                /*Check for session pair in session */
-                // var signalling_get = new RestRequest("​/System​/GetCurrentSession");
-                // var currentsession_res = Signalling.Get(signalling_get);
+            /*Check for session pair in session */
+            // var signalling_get = new RestRequest("​/System​/GetCurrentSession");
+            // var currentsession_res = Signalling.Get(signalling_get);
 
-                // var respond = JsonConvert.DeserializeObject<List<Tuple<int, int>>>(currentsession_res.Content);
-                // if(respond.Where(o => o.Item1 == sessionClientId && o.Item2 == sessionSlaveId).Count() == 0)
-                // {
-                //     return BadRequest("Session key pair not found after generate");
-                // }             
+            // var respond = JsonConvert.DeserializeObject<List<Tuple<int, int>>>(currentsession_res.Content);
+            // if(respond.Where(o => o.Item1 == sessionClientId && o.Item2 == sessionSlaveId).Count() == 0)
+            // {
+            //     return BadRequest("Session key pair not found after generate");
+            // }             
 
-                SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
-                ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
+            SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
+            ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
 
-                if(!_slavePool.SessionInitialize(req.SlaveId, slaveSes))
-                {
-                    return BadRequest("Cannot send session initialize signal to slave");
-                }
-
-                SessionViewModel view = new SessionViewModel();
-                view.clientSession = clientSes; 
-                view.ClientID = sess.ClientID;
-                view.HostUrl = "http://"+Configuration.BaseUrl+":"+ Configuration.SlaveManagerPort;
-                view.DevMode = false;
-                return View("RemoteControl",view);
+            if(!_slavePool.SessionInitialize(SlaveId, slaveSes))
+            {
+                return BadRequest("Cannot send session initialize signal to slave");
             }
 
-            return BadRequest();
+            SessionViewModel view = new SessionViewModel();
+            view.clientSession = clientSes; 
+            view.ClientID = sess.ClientID;
+            view.HostUrl = "http://"+Configuration.BaseUrl+":"+ Configuration.SlaveManagerPort;
+            view.DevMode = false;
+            return View("RemoteControl",view);
+
         }
 
         /// <summary>
@@ -133,6 +149,11 @@ namespace SlaveManager.Controllers
         {
             
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
+            if(ses == null)
+            {
+                return BadRequest("session not found");
+            }
+            await _admin.ReportSessionTermination(ses.SlaveID, ses.ClientID);
 
             ses.EndTime = DateTime.UtcNow;
             await _db.SaveChangesAsync();

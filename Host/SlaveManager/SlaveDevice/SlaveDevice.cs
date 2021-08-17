@@ -35,6 +35,7 @@ namespace SlaveManager.SlaveDevices
         public ISlaveState State { get; set; }
         public IConnection connection { get; set; }
         public WebSocket ws { get; set; }
+
         private readonly IAdmin _admin;
         public SlaveDevice(IAdmin admin)
         {
@@ -78,8 +79,8 @@ namespace SlaveManager.SlaveDevices
                                                 }
                                             case Opcode.ERROR_REPORT:
                                                 {
-                                                    GeneralError err = new GeneralError(JsonConvert.DeserializeObject<GeneralErrorAbsTime>(json_message.Data));
-                                                    await _admin.ReportAgentError(err);
+                                                    var error = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(json_message.Data);
+                                                    await _admin.ReportAgentError(error, json_message.SlaveID);
                                                     break;
                                                 }
 
@@ -92,16 +93,13 @@ namespace SlaveManager.SlaveDevices
                                             case Opcode.ERROR_REPORT:
                                                 {
                                                     var errabs = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(json_message.Data);
-                                                    var err = new GeneralError(errabs);
-                                                    await _admin.ReportSessionCoreError(err);
+                                                    await _admin.ReportSessionCoreError(errabs, json_message.SlaveID);
                                                     break;
                                                 }
                                             case Opcode.EXIT_CODE_REPORT:
                                                 {
                                                     var abs = JsonConvert.DeserializeObject<SessionCoreExitAbsTime> ( json_message.Data );
-                                                    var err = new SessionCoreExit(abs);
-
-                                                    await _admin.ReportSessionCoreExit(json_message.SlaveID, err);
+                                                    await _admin.ReportSessionCoreExit(json_message.SlaveID, abs);
 
                                                     //TODO: add to db
                                                     break;

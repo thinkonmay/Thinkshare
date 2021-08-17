@@ -65,10 +65,10 @@ namespace Signalling
                 c.IncludeXmlComments(xmlFilePath);
             });
 
-            services.AddScoped(container =>
-            {
-                return new ClientIpFilter(Configuration["AdminSafeList"]);
-            });
+            // services.AddScoped(container =>
+            // {
+            //     return new ClientIpFilter(Configuration["AdminSafeList"]);
+            // });
 
             services.AddSingleton<ISessionQueue, SessionQueue>();
             services.AddTransient<IWebSocketHandler, WebSocketHandler>();

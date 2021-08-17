@@ -22,6 +22,7 @@ using System.Reflection;
 using System.Text;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using static System.Environment;
+using SignalRChat.Hubs;
 
 namespace SlaveManager
 {
@@ -110,8 +111,8 @@ namespace SlaveManager
 
 
             services.AddSingleton<ISlavePool, SlavePool>();
-            services.AddSingleton<IAdmin, Admin>();
-            services.AddSingleton<IWebSocketConnection, WebSocketConnection>();
+            services.AddScoped<IAdmin, Admin>();
+            services.AddTransient<IWebSocketConnection, WebSocketConnection>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
 
             services.AddMvc();
@@ -136,6 +137,7 @@ namespace SlaveManager
             
             app.UseStaticFiles();
             app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseWebSockets();
@@ -144,6 +146,9 @@ namespace SlaveManager
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                    
+                endpoints.MapHub<AdminHub>("/AdminHub");
+                endpoints.MapHub<ClientHub>("/ClientHub");
             });
 
             app.UseSwagger();

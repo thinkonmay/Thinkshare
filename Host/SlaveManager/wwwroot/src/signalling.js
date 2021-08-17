@@ -1,5 +1,6 @@
 
-class Signalling{
+class Signalling
+{
     constructor(server,             // URL of signalling server
                 SessionClientID,    // SessionClientID to register with server 
                 clientoffer)        // TRUE if client offer SDP to server

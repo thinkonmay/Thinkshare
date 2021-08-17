@@ -6,16 +6,18 @@ namespace SlaveManager.Interfaces
 {
     public interface IAdmin
     {
-        public Task ReportSlaveRegistered(SlaveDeviceInformation information);
+        Task ReportSlaveRegistered(SlaveDeviceInformation information);
 
-        public Task LogSlaveCommandLine(int slaveID, ReceiveCommand result);
+        Task LogSlaveCommandLine(int slaveID, ReceiveCommand result);
 
-        public Task ReportSessionCoreError(GeneralError err);
+        Task ReportSessionCoreError(GeneralErrorAbsTime err, int SlaveID);
 
-        public Task ReportAgentError(GeneralError err);
+        Task ReportAgentError(GeneralErrorAbsTime error, int SlaveID);
 
-        public Task ReportSessionCoreExit(int slaveID, SessionCoreExit exit);
+        Task ReportSessionCoreExit(int slaveID, SessionCoreExitAbsTime exit);
 
-        public Task ReportNewSession(int SlaveID, int ClientID);
+        Task ReportNewSession(int SlaveID, int ClientID);
+
+        Task ReportSessionTermination(int SlaveID, int ClientID);
     }
 }

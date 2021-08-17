@@ -14,7 +14,7 @@
     int SessionClientID = Model.clientSession.SessionClientID;
     string SignallingUrl = string.Format("\"{0}\"", Model.clientSession.SignallingUrl,""); //@"""Model.clientSession.SignallingUrl""";
     string StunServer = string.Format("\"{0}\"", Model.clientSession.StunServer);
-    bool ClientOffer = Model.clientSession.ClientOffer;
+    string ClientOffer = Model.clientSession.ClientOffer? "true":"false";
 
     int ScreenWidth = Model.clientSession.QoE.ScreenWidth;
     int ScreenHeight = Model.clientSession.QoE.ScreenHeight;
@@ -40,13 +40,10 @@
 
 
 
-
-
-
-
-
-
-
+<script src="http://192.168.1.6:81/src/key-translate.js?ts=1"></script>
+<script src="http://192.168.1.6:81/src/input.js?ts=1"></script>
+<script src="http://192.168.1.6:81/src/signalling.js?ts=1"></script>
+<script src="http://192.168.1.6:81/src/webrtc.js?ts=1"></script>
 <script type="text/javascript">
     var ScaleLoader = VueSpinner.ScaleLoader;
     var serverStatus = null;
@@ -120,7 +117,7 @@
                 adaptivePacketsLost: 0,
                 adaptiveAudioLatency: 0,
                 adaptiveVideoLatency: 0,
-                adaptiveTotalBandwidth: clientSession.QoE.Bitrate,
+                adaptiveTotalBandwidth:  @Bitrate,
 
                 
             };
@@ -160,6 +157,17 @@
                     webrtc.input.attach();
                 }
             
+            },
+            fileTransfer()
+            {
+                
+            },
+            terminateSession()
+            {
+                axios.delete(
+                    app.hostUrl+
+                        '/Session/Initialize?sessionClientId='+
+                            app.SessionClientID);
             }
         },
 
@@ -175,7 +183,6 @@
                 app.logEntries.push("audio enabled changed from " + oldValue + " to " + newValue);
             },
             audioBitRate(newValue) {
-                @* webrtc.sendControlChannelMessage('ab,' + newValue); *@
                 window.localStorage.setItem("audioBitRate", newValue.toString());
             },
             debug(newValue) {
@@ -188,24 +195,20 @@
         },
     });
 
+    var RTPconfig =     
+    {"iceServers":    
+        [
+            {
+                "urls": @Html.Raw(StunServer) 
+            }
+        ]
+    }
 
     var videoElement = document.getElementById("stream");
     var signalling = new Signalling(new URL(app.SignallingUrl), app.SessionClientID, app.Clientoffer);
-
-
-    var RTPconfig =     
-        {"iceServers":    
-            [
-                {
-                    "urls": @Html.Raw(StunServer) 
-                }
-            ]
-        }
     var webrtc = new WebRTC(signalling, videoElement, RTPconfig);
-
-    signalling.connect();
 </script>
-
+<script src="http://192.168.1.6:81/src/app.js?ts=1"></script>
 <script type="text/javascript">
     var Module = @Html.Raw(Model.ModuleJson);
     var HidOpcode = @Html.Raw(Model.HidOpcodeJson);
@@ -213,3 +216,4 @@
     var QoEMode = @Html.Raw(Model.QoEModeJson);
     var Codec = @Html.Raw(Model.CodecJson);
 </script>
+

@@ -1,5 +1,3 @@
-
-
 // Function to add timestamp to logs.
 var applyTimestamp = (msg) => {
     var now = new Date();

@@ -33,7 +33,7 @@ handle_thread(gpointer data)
          {
              HANDLE input = ipc->input_pipe;
              success = ReadFile(input, buffer, BUFFER_SIZE, &dwread, NULL);
-             if (success && dwread > 0) goto send;
+             if (success && dwread > 0) {goto send;}
          }
     send:
          session_core_on_message(core, buffer);        

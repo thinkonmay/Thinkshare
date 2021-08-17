@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlaveManager.SlaveDevices;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -11,17 +12,19 @@ namespace SlaveManager.Models
         public GeneralError()
         { }
 
-        public GeneralError(GeneralErrorAbsTime abs)
+        public GeneralError(GeneralErrorAbsTime abs, Slave _Slave)
         {
-            //ErrorTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ErrorTime).ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
+            ErrorTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ErrorTime);
 
             ErrorMessage = abs.ErrorMessage;
 
-            Machine = abs.Machine;
+            Machine = _Slave;
         }
 
         public DateTime ErrorTime { get; set; }
 
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public string ErrorMessage { get; set; }
@@ -31,14 +34,8 @@ namespace SlaveManager.Models
 
     public class GeneralErrorAbsTime
     {
-
         public int ErrorTime { get; set; }
-
-        public int Id { get; set; }
-
         public string ErrorMessage { get; set; }
-
-        public virtual Slave Machine { get; set; }
     }
 
     public class SessionCoreExitAbsTime 
@@ -61,14 +58,15 @@ namespace SlaveManager.Models
         public SessionCoreExit()
         { }
 
-        public SessionCoreExit(SessionCoreExitAbsTime abs )
+        public SessionCoreExit(SessionCoreExitAbsTime abs, Slave _Slave)
         {
-            //ExitTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ExitTime).ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
+            ExitTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ExitTime);
             ExitCode = abs.ExitCode;
             CoreState = abs.CoreState;
             PipelineState = abs.PipelineState;
             PeerCallState = abs.PeerCallState;
             Message = abs.Message;
+            Slave = _Slave;
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -85,6 +83,8 @@ namespace SlaveManager.Models
         public string PeerCallState { get; set; }
 
         public string Message { get; set; }
+
+        public virtual Slave Slave {get;set;}
     }
 
 

@@ -161,32 +161,18 @@ on_agent_message(AgentObject* agent,
 	{
 		if (from == HOST_MODULE)
 		{
-			if (opcode == SLAVE_ACCEPTED)
-			{
-				setup_slave_device(agent, data_string);
-			}
-			else if (opcode == SESSION_INITIALIZE)
-			{
-				GFile* file = g_file_parse_name(SESSION_SLAVE_FILE);
-
-				if(!g_file_replace_contents(file, data_string,strlen(data_string),
-					NULL,FALSE,G_FILE_CREATE_NONE,NULL,NULL, NULL,NULL))
-				{
-					agent_report_error(agent,ERROR_FILE_OPERATION);					
-				}
-
-				agent_session_initialize(agent);
-			}
+			if (opcode == SLAVE_ACCEPTED){
+				setup_slave_device(agent, data_string);	return;}
 			else if (opcode == DENY_SLAVE){
-				agent_finalize(agent);}
+				agent_finalize(agent); return;}
 			else if (opcode == REJECT_SLAVE) {
-				agent_finalize(agent);}
-			else if (opcode == SESSION_TERMINATE) {
-				agent_session_terminate(agent);}
-			else if (opcode == RECONNECT_REMOTE_CONTROL) {
-				agent_remote_control_reconnect(agent);}
+				agent_finalize(agent); return;}
+			else if (opcode == SESSION_TERMINATE){
+				agent_session_terminate(agent); return;}
+			else if (opcode == RECONNECT_REMOTE_CONTROL){
+				agent_remote_control_reconnect(agent); return;}
 			else if (opcode == DISCONNECT_REMOTE_CONTROL) {
-				agent_remote_control_disconnect(agent);}
+				agent_remote_control_disconnect(agent); return;}
 			
 
 
@@ -213,6 +199,20 @@ on_agent_message(AgentObject* agent,
 				agent_send_command_line(agent,
 					json_object_get_string_member(json_data, "CommandLine"),
 						json_object_get_int_member(json_data, "ProcessID"));
+			}			
+			else if (opcode == SESSION_INITIALIZE)
+			{
+				GFile* file = g_file_parse_name(SESSION_SLAVE_FILE);
+				gchar* session_slave = get_string_from_json_object(json_data);
+				
+				if(!g_file_replace_contents(file, session_slave,strlen(session_slave),
+					NULL,FALSE,G_FILE_CREATE_NONE,NULL,NULL, NULL,NULL))
+				{
+					agent_report_error(agent,ERROR_FILE_OPERATION);					
+				}
+
+				agent_session_initialize(agent);
+				return;
 			}
 		}
 		else if(from == CORE_MODULE)
