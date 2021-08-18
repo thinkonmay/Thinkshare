@@ -81,7 +81,7 @@ socket_close(Socket* socket)
             g_object_unref(socket->ws);
         }
     }
-    ZeroMemory(socket,sizeof(Socket));
+    ZeroMemory(socket->ws,sizeof(SoupWebsocketConnection));
 }
 
 /// <summary>
@@ -102,7 +102,6 @@ on_server_closed(SoupWebsocketConnection* conn,
     agent_set_state(agent, disconnected);
 
     /*then attemp to reconnect*/
-    agent_set_socket(agent,initialize_socket(agent));	
 	agent_connect_to_host(agent);
 }
 

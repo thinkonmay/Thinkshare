@@ -14,8 +14,8 @@ time_stamp(GFileOutputStream* stream,
 
     guint64 time = g_get_real_time();
 
-    gchar timebuffer[1000];
-    ZeroMemory(&timebuffer, 1000);
+    gchar timebuffer[5000];
+    ZeroMemory(&timebuffer, 5000);
 
     strcat(timebuffer, "[");
     itoa(time,timebuffer+1,10);

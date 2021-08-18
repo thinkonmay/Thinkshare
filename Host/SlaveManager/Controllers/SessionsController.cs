@@ -17,6 +17,7 @@ using System.Configuration;
 using RestSharp;
 using System.Collections.Generic;
 using System.Net;
+using System.Net;
 
 
 // TODO: authentification
@@ -162,11 +163,12 @@ namespace SlaveManager.Controllers
             var get_req = new RestRequest("Terminate")
                 .AddParameter("SessionSlaveID", ses.SessionSlaveID.ToString())
                 .AddParameter("SessionClientID", ses.SessionClientID.ToString());            
-            var reply = Signalling.Get(get_req); // TODO post and get confirmation from signalling server
-            if(reply.StatusCode != HttpStatusCode.OK)
+            var deletion_reply = Signalling.Get(get_req); // TODO post and get confirmation from signalling server
+            if(deletion_reply.StatusCode != HttpStatusCode.OK)
             {
-                return BadRequest(reply.Content.ToString());
+                return BadRequest(deletion_reply.Content.ToString());
             }
+
 
 
             /*slavepool send terminate session signal*/

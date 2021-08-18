@@ -1,4 +1,4 @@
-# Install script for directory: D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/session-core
+# Install script for directory: D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/Slave/session-core
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build/session-core/source/cmake_install.cmake")
+  include("D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/Slave/build/session-core/source/cmake_install.cmake")
 
 endif()
 

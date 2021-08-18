@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html>
+
+<head>    
+    <link href="http://192.168.1.6:81/material-floating-button/dist/mfb.css" rel="stylesheet">
+    <link href="http://192.168.1.6:81/css/googleapi.css" rel="stylesheet" />
+    <link href="http://192.168.1.6:81/css/vuetify.css" rel="stylesheet" />
+    <link href="http://192.168.1.6:81/css/dev.css" rel="stylesheet" />
+    <title>Remote control page</title>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <ul class="mfb-component--br mfb-slidein" data-mfb-toggle="hover">
+                <li class="mfb-component__wrap">
+                        <!-- the main menu button -->
+                        <a data-mfb-label=""  class="mfb-component__button--main">
+                        <!-- the main button icon visibile by default -->
+                            <i class="mfb-component__main-icon--resting ion-social-github">                                
+                                <v-icon x-large>home</v-icon>
+                            </i>
+                            <i class="mfb-component__main-icon--active ion-social-github"> 
+                                <v-btn icon v-on:click="terminateSession()">
+                                    <v-icon dark>mdi-minus-circle</v-icon>
+                                </v-btn>
+                                <v-icon x-large color="black"></v-icon>
+                            </i>
+                        </a>
+                    <ul class="mfb-component__list">
+                        <li>
+                            <a data-mfb-label="Terminate session" class="mfb-component__button--child">                    
+                                <i class="mfb-component__child-icon ion-social-twitter">                   
+                                    <v-btn icon v-on:click="terminateSession()">
+                                        <v-icon dark>mdi-minus-circle</v-icon>
+                                    </v-btn>
+                                </i>
+                            </a>
+                        </li>
+                        <li>
+                            <a data-mfb-label="Full screen mode" class="mfb-component__button--child">
+                                <i class="mfb-component__child-icon ion-social-twitter">                            
+                                    <v-btn icon v-on:click="enterFullscreen()">
+                                        <v-icon color="black">fullscreen</v-icon>
+                                    </v-btn>
+                                </i>
+                            </a>
+                        </li>
+                        <li>
+                            <a data-mfb-label="File transfer" class="mfb-component__button--child">
+                                <i class="mfb-component__child-icon ion-social-twitter">                   
+                                    <v-btn icon v-on:click="fileTransfer()">
+                                        <v-icon color="black">mdi-cloud-upload</v-icon>
+                                    </v-btn>
+                                </i>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div id="video_container" class="video-container">
+                <video id="stream" autoplay playsinline>
+                    Your browser doesn't support video
+                </video>
+            </div>
+
+            <!-- <canvas id="capture"></canvas> -->
+
+
+
+
+            <!-- <div class="loading">
+                <div v-if="status === 'failed'">
+                    <v-btn v-on:click="location.reload()" color="#E0E0E0">
+                        reload
+                    </v-btn>
+                    <div class="loading-text">Connection failed.</div>
+                </div>
+
+
+
+                <div v-else>
+                    <scale-loader size="200px" :loading="(status !== 'connected')" color="#E0E0E0"></scale-loader>
+                    <div v-if="(status !== 'connected')" class="loading-text"></div>
+                </div>
+            </div> -->
+        </v-app>
+    </div>
+</body>
+
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-spinner@1.0.3/dist/vue-spinner.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="http://192.168.1.6:81/src/key-translate.js?ts=1"></script>
+
+
+<script>
+
+var mousePosition_X = 0;
+var mousePosition_Y = 0;
+
+
+// internal variables used by resize start/end functions.
+var resize_timeout_start = null;
+var resize_window_timeout = false;
+var resize_timeout_interval = 200;
+
+
+/**
+ * Handle mouse up event and send to slave device
+ * @param {Mouse up event} event 
+ */
+function 
+mouseButtonUp(event) 
+{
+    mousePosition_X = clientToServerX(event.clientX);
+    mousePosition_Y = clientToServerY(event.clientY);              
+
+    var INPUT =
+    {
+        "Opcode":HidOpcode.MOUSE_UP,
+        "button":event.button,
+        "dX":mousePosition_X,
+        "dY":mousePosition_Y,
+    }
+
+    SendHID(JSON.stringify(INPUT));
+}
+
+/**
+ * Handle mouse down event and send to slave device
+ * @param {Mouse event} event 
+ */
+function 
+mouseButtonDown(event) 
+{
+    mousePosition_X = clientToServerX(event.clientX);
+    mousePosition_Y = clientToServerY(event.clientY);
+
+    var INPUT =
+    {
+        "Opcode":HidOpcode.MOUSE_DOWN,
+        "button":event.button,
+        "dX":mousePosition_X,
+        "dY":mousePosition_Y
+    }
+
+    SendHID(JSON.stringify(INPUT));
+}
+
+/**
+ * Handle mouse movement and send to slave
+ * @param {Mouse movement} event 
+ */
+function 
+mouseButtonMovement(event) 
+{
+    mousePosition_X = clientToServerX(event.clientX);
+    mousePosition_Y = clientToServerY(event.clientY);
+
+
+    var INPUT =
+    {
+        "Opcode": HidOpcode.MOUSE_MOVE,
+        "dX":mousePosition_X,
+        "dY":mousePosition_Y,
+    }
+    SendHID(JSON.stringify(INPUT));
+}
+
+/**
+ * handle mouse wheel and send to slave
+ * @param {Mouse wheel event} event 
+ */
+function 
+mouseWheel(event)
+{             
+
+    var INPUT =
+    {
+        "Opcode":HidOpcode.MOUSE_WHEEL,
+        "dX":event.deltaX,
+        "dY":event.deltaY
+    }
+
+    SendHID(JSON.stringify(INPUT));
+}
+
+
+function contextMenu(event) 
+{ //disble context menu on remote control
+    event.preventDefault();
+}
+
+function keyup(event) 
+{  // disable problematic browser shortcuts
+    if (event.code === 'F5' && event.ctrlKey ||
+        event.code === 'KeyI' && event.ctrlKey && event.shiftKey ||
+        event.code === 'F11') {
+        event.preventDefault();
+        return;
+    }
+
+    var Keyboard =
+    {
+        "Opcode":HidOpcode.KEYUP,
+        "wVk":convertJavaScriptKeyToWindowKey(event.code),
+    }
+
+    SendHID(JSON.stringify(Keyboard));
+
+}
+
+
+function keydown(event) 
+{
+
+    // disable problematic browser shortcuts
+    if (event.code === 'F5' && event.ctrlKey ||
+        event.code === 'KeyI' && event.ctrlKey && event.shiftKey ||
+        event.code === 'F11') {
+        event.preventDefault();
+        return;
+    }
+
+    // capture menu hotkey
+    if (event.code === 'KeyM' && event.ctrlKey && event.shiftKey) 
+    {
+        if (document.fullscreenElement === null) 
+        {
+            onMenuHotkey();
+            event.preventDefault();
+        }
+        return;
+    }
+
+    // capture fullscreen hotkey
+    if (event.code === 'KeyF' && event.ctrlKey && event.shiftKey) 
+    {
+        if (document.fullscreenElement === null) 
+        {
+            onfullscreenhotkey();
+            event.preventDefault();
+        }
+        return;
+    }
+    
+    var Keyboard =
+    {
+        "Opcode":HidOpcode.KEYDOWN,
+        "wVk":convertJavaScriptKeyToWindowKey(event.code),
+    }
+
+    SendHID(JSON.stringify(Keyboard));
+}
+
+// /**
+//  * Sends WebRTC app command to toggle display of the remote mouse pointer.
+//  */
+function pointerLock() 
+{
+    var Toggle = 
+    {
+        "Opcode":HidOpcode.DISPLAY_POINTER,
+        "IsLock":document.pointerLockElement
+    } 
+    SendHID(JSON.stringify(Toggle));
+}
+
+/**
+ * 
+ */
+function exitPointerLock() 
+{
+    document.exitPointerLock();
+    // hide the pointer.
+    // app._pointerLock();
+}
+
+/**
+ * Captures display and video dimensions required for computing mouse pointer position.
+ * app should be fired whenever the window size changes.
+ */
+function windowMath() 
+{
+    /**
+     * size of offset window (not the actual video size)
+     */
+    const windowW = app.VideoElement.offsetWidth;
+    const windowH = app.VideoElement.offsetHeight;
+
+    /**
+     * actual video width and height
+     */
+    const frameW = app.VideoElement.videoWidth;
+    const frameH = app.VideoElement.videoHeight;
+
+
+    const multi = Math.min(windowW / frameW, windowH / frameH);
+
+
+    const vpWidth = frameW * multi;
+    const vpHeight = (frameH * multi);
+
+    app.Mouse = 
+    {
+        /**
+         * relation between frame size and actual window size
+         */
+        mouseMultiX: frameW / vpWidth,
+        mouseMultiY: frameH / vpHeight,
+
+        /**
+         * 
+         */
+        mouseOffsetX: Math.max((windowW - vpWidth) / 2.0, 0),
+        mouseOffsetY: Math.max((windowH - vpHeight) / 2.0, 0),
+
+        centerOffsetX: (document.documentElement.clientWidth - app.VideoElement.offsetWidth) / 2.0,
+        centerOffsetY: (document.documentElement.clientHeight - app.VideoElement.offsetHeight) / 2.0,
+
+        scrollX: window.scrollX,
+        scrollY: window.scrollY,
+
+        frameW,
+        frameH,
+    };
+}
+
+/**
+ * Translates pointer position X based on current window math.
+ * @param {Integer} clientX
+ */
+function clientToServerX(clientX) 
+{
+    let serverX = Math.round
+    (
+        (clientX - app.Mouse.mouseOffsetX - app.Mouse.centerOffsetX + app.Mouse.scrollX)
+            * app.Mouse.mouseMultiX
+    );
+
+    if (serverX === app.Mouse.frameW - 1) serverX = app.Mouse.frameW;
+    if (serverX > app.Mouse.frameW) serverX = app.Mouse.frameW;
+    if (serverX < 0) serverX = 0;
+
+    return serverX;
+}
+
+/**
+ * Translates pointer position Y based on current window math.
+ * @param {Integer} clientY
+ */
+function clientToServerY(clientY) 
+{
+    let serverY = Math.round(
+        (clientY - app.Mouse.mouseOffsetY - app.Mouse.centerOffsetY + app.Mouse.scrollY)
+            * app.Mouse.mouseMultiY);
+
+    if (serverY === app.Mouse.frameH - 1) serverY = app.Mouse.frameH;
+    if (serverY > app.Mouse.frameH) serverY = app.Mouse.frameH;
+    if (serverY < 0) serverY = 0;
+
+    return app.Mouse.frameH - serverY;
+}
+
+
+/**
+ * When fullscreen is entered, request keyboard and pointer lock.
+ */
+function onFullscreenChange() 
+{
+    if (document.fullscreenElement !== null) 
+    {
+        // Enter fullscreen
+        requestKeyboardLock();
+        app.VideoElement.requestPointerLock();
+    }
+}
+
+/**
+ * Called when window is being resized, used to detect when resize ends so new resolution can be sent.
+ */
+function resizeStart() 
+{
+    resize_timeout_start = new Date();
+
+    if (resize_window_timeout === false) 
+    {
+        resize_window_timeout = true;
+        setTimeout(() => { resizeEnd() }, resize_timeout_interval);
+    }
+}
+
+/**
+ * Called in setTimeout loop to detect if window is done being resized.
+ */
+function 
+resizeEnd() 
+{
+    if (new Date() - resize_timeout_start < resize_timeout_interval) 
+    {
+        setTimeout(() => { resizeEnd() }, resize_timeout_interval);
+    } else 
+    {
+        resize_window_timeout = false;
+        ResizeWindow();        
+    }
+}
+
+/**
+ * Attaches input event handles to docuemnt, window and element.
+ */
+function 
+AttachEvent() 
+{
+    /**
+     * full screen event
+     */
+    app.EventListeners.push(addListener(app.VideoElement.parentElement, 'fullscreenchange', onFullscreenChange, app));
+
+    /**
+     * video event
+     */
+    app.EventListeners.push(addListener(app.VideoElement, 'resize', windowMath, app));
+    app.EventListeners.push(addListener(app.VideoElement, 'wheel', mouseWheel, app));
+    app.EventListeners.push(addListener(app.VideoElement, 'contextmenu', contextMenu, app)); ///disable content menu key on remote control
+
+    /**
+     * mouse event
+     */
+    app.EventListeners.push(addListener(app.VideoElement, 'mousemove', mouseButtonMovement, app));
+    app.EventListeners.push(addListener(app.VideoElement, 'mousedown', mouseButtonDown, app));
+    app.EventListeners.push(addListener(app.VideoElement, 'mouseup', mouseButtonUp, app));
+
+
+    /**
+     * mouse lock event
+     */
+    app.EventListeners.push(addListener(document, 'pointerlockchange', pointerLock, app));
+    
+    /**
+     * keyboard event
+     */
+    app.EventListeners.push(addListener(window, 'keydown', keydown, app));
+    app.EventListeners.push(addListener(window, 'keyup', keyup, app));
+
+    /**
+     * window resize event
+     */
+    app.EventListeners.push(addListener(window, 'resize', windowMath, app));
+    app.EventListeners.push(addListener(window, 'resize', resizeStart, app));
+
+
+    /**
+     * scroll event
+     */
+    app.EventListeners.push(addListener(window, 'scroll', () => 
+    {
+        app.Mouse.scrollX = window.scrollX;
+        app.Mouse.scrollY = window.scrollY;
+    }, app));
+
+}
+
+function 
+DetachEvent() 
+{
+    removeListeners(app.EventListeners);
+    exitPointerLock();
+}
+
+/**
+ * Request keyboard lock, must be in fullscreen mode to work.
+ */
+function 
+requestKeyboardLock() 
+{
+    /**
+     * control key on window
+     */
+    const keys = [
+        "AltLeft",
+        "AltRight",
+        "Tab",
+        "Escape",
+        "ContextMenu",
+        "MetaLeft",
+        "MetaRight"
+    ];
+    console.log("requesting keyboard lock");
+
+
+    navigator.keyboard.lock(keys).then(
+        () => {
+            console.log("keyboard lock success");
+        }
+    ).catch(
+        (e) => {
+            console.log("keyboard lock failed: ", e);
+        }
+    )
+}
+
+
+/**
+ * get window resolution
+ * @returns 2 element list control screen width and height
+ */
+function 
+getWindowResolution() 
+{
+    return [
+        parseInt(app.VideoElement.offsetWidth * window.devicePixelRatio),
+        parseInt(app.VideoElement.offsetHeight * window.devicePixelRatio)
+    ];
+}
+
+
+
+
+
+/**
+ * Helper function to keep track of attached event listeners.
+ * @param {Object} obj
+ * @param {string} name
+ * @param {function} func
+ * @param {Object} ctx
+ */
+function 
+addListener(obj, name, func, ctx) 
+{
+    const newFunc = ctx ? func.bind(ctx) : func;
+    obj.addEventListener(name, newFunc);
+
+    return [obj, name, newFunc];
+}
+
+/**
+ * Helper function to remove all attached event listeners.
+ * @param {Array} listeners
+ */
+function 
+removeListeners(listeners) 
+{
+    for (const listener of listeners)
+        listener[0].removeEventListener(listener[1], listener[2]);
+}
+</script>
+<script>
+
+
+
+    
+
+
+
+
+// Local description was set, send it to peer
+function onLocalDescription(desc) {
+    console.log("Got local description: " + JSON.stringify(desc));
+    app.Webrtc.setLocalDescription(desc).then(function() {
+        app.setStatus("Sending SDP " + desc.type);
+        sdp = {'sdp': app.Webrtc.localDescription}
+        app.Ws.send(JSON.stringify(sdp));
+    });
+}
+
+
+function generateOffer() {
+    app.Webrtc.createOffer().then(onLocalDescription).catch(setError);
+}
+
+
+// ICE candidate received from peer, add it to the peer connection
+function onIncomingICE(ice) {
+    var candidate = new RTCIceCandidate(ice);
+    app.Webrtc.addIceCandidate(candidate).catch(setError);
+}
+
+
+/**
+ * Fired whenever the signalling websocket is opened.
+ * Sends the peer id to the signalling server.
+ */
+function    
+onServerOpen(event)
+{
+    app.signalling_state = 'connected';
+    app.setDebug("[REGISTERING]")
+    SignallingSend("CLIENTREQUEST",null)            
+}
+
+function   
+SignallingSend(request_type, content)
+{
+    var json_message = {"RequestType":request_type,
+                        "SubjectId": app.SessionClientID,
+                        "Content":content,
+                        "Result":"SESSION_ACCEPTED"}
+
+    app.Ws.send(JSON.stringify(json_message));
+}
+
+/**
+ * Fired whenever the signalling websocket emits and error.
+ * Reconnects after 3 seconds.
+ */
+function    
+onServerError() 
+{
+    app.setDebug("Connection error, retry in 3 seconds.");
+    if (app.Ws.readyState === app.Ws.CLOSED) {
+        setTimeout(() => {
+            
+        }, 3000);
+    }
+}
+
+
+function   
+onServerMessage(event) 
+{
+    try {
+    var message_json = JSON.parse(event.data);
+    } catch (e) {
+        if (e instanceof SyntaxError) {
+            app.setDebug("Error parsing incoming JSON: " + event.data);
+        } else {
+            app.setDebug("Unknown error parsing response: " + event.data);
+        }
+        return;
+    }
+
+
+    if (message_json.Result == "SESSION_REJECTED" || message_json.Result == "SESSION_TIMEOUT")
+    {
+        app.Ws.close();
+        app.setStatus("Session Denied");
+    }
+
+
+    if(message_json.RequestType === "CLIENTREQUEST")
+    {
+        app.setStatus("Registered with server.");
+        app.setDebug("[signalling] " + message_json.Result)
+
+        if(app.ClientOffer) {
+            //TODO : in case client want to offer fist
+        }
+        else {
+            app.setStatus("Requesting for video stream.");
+            var sdp = { "type":"request" }
+            sendSDP(sdp);
+            return;
+        }
+    }
+
+    if(app.Webrtc == null)
+    {
+        WebrtcConnect(JSON.parse(message_json.Content));
+    }
+
+    if(message_json.RequestType === "OFFER_SDP")
+    {
+        app.setDebug("[SDP RECEIVED]"+JSON.stringify(message_json.Content));
+        onIncomingSDP(JSON.parse(message_json.Content).sdp);
+    }
+    else if(message_json.RequestType === "OFFER_ICE")
+    {
+        app.setDebug("[ICE RECEIVED]"+message_json.Content);
+        onIncomingICE(JSON.parse(message_json.Content).ice);
+    }   
+    else
+    {
+        app.setDebug("unknown message", event.data);
+    } 
+    
+}
+
+/**
+ * Fired whenever the signalling websocket is closed.
+ * Reconnects after 1 second.
+ */
+function    
+onServerClose() {
+    app.signalling_state = 'disconnected';
+    app.setError("Server disconnected");
+
+}
+
+/**
+ * Initiates the connection to the signalling server.
+ */
+function
+SignallingConnect() 
+{
+    app.signalling_state = 'connecting';
+    app.setStatus("Connecting to server.");
+
+    app.Ws = new WebSocket(app.SignallingUrl);
+
+    // Bind event handlers.
+    app.Ws.addEventListener('open', onServerOpen);
+    app.Ws.addEventListener('error', onServerError);
+    app.Ws.addEventListener('message', onServerMessage);
+    app.Ws.addEventListener('close', onServerClose);
+}
+
+/**
+ * Closes connection to signalling server.
+ * Triggers onServerClose event.
+ */
+function    
+SignallingDisconnect() 
+{
+    app.Ws.close();
+}
+
+/**
+ * Send ICE candidate.
+ * @param {RTCIceCandidate} ice
+ */
+function    
+sendICE(ice)
+{
+    var data = 
+    {
+        "ice":ice
+    }
+    app.setDebug("[ICEOUT]   "+JSON.stringify(data))
+    SignallingSend("OFFER_ICE",JSON.stringify(data));
+}
+
+/**
+ * Send local session description.
+ * @param {RTCSessionDescription} sdp
+ */
+function    
+sendSDP(sdp)
+{
+    var data = 
+    {
+        "sdp":sdp
+    }
+    app.setDebug("[SDPOUT]   "+JSON.stringify(data))
+    SignallingSend("OFFER_SDP",JSON.stringify(data));
+}
+
+</script>
+<script>
+
+
+
+
+
+
+
+// /**
+//  * Sets connection state
+//  * @param {String} state
+//  */
+// function 
+// setConnectionState(state) {
+//     if (app.onconnectionstatechange !== null) {
+//         app.onconnectionstatechange(state);
+//     }
+// }
+
+// ICE candidate received from peer, add it to the peer connection
+function onIncomingICE(ice) {
+    var candidate = new RTCIceCandidate(ice);
+    app.Webrtc.addIceCandidate(candidate).catch(app.setError);
+}
+
+
+
+
+
+
+
+
+
+/**
+ * Handles incoming SDP from signalling server.
+ * Sets the remote description on the peer connection,
+ * creates an answer with a local description and sends that to the peer.
+ *
+ * @param {RTCSessionDescription} sdp
+ */
+ function onIncomingSDP(sdp) {
+    app.Webrtc.setRemoteDescription(sdp).then(() => {
+        app.setStatus("Remote SDP set");
+        if (sdp.type != "offer")
+            return;
+        app.setStatus("Got SDP offer");
+
+        app.local_stream_promise.then((stream) => {
+            app.setStatus("Got local stream, creating answer");
+            app.Webrtc.createAnswer()
+            .then(onLocalDescription).catch(app.setError);
+        }).catch(app.setError);
+
+    
+    }).catch(app.setError);
+}
+
+
+/**
+ * Handles local description creation from createAnswer.
+ *
+ * @param {RTCSessionDescription} local_sdp
+ */
+function onLocalDescription(desc) {
+    app.Webrtc.setLocalDescription(desc).then(function() {
+        app.setStatus("Sending SDP " + desc.type);
+        sdp = {'sdp': app.Webrtc.localDescription}
+    
+    console.log("[Send SDP]: " + JSON.stringify(desc));
+    SignallingSend("OFFER_SDP",JSON.stringify(sdp));
+    });
+}
+
+
+
+
+/**
+ * Handles incoming track event from peer connection.
+ *
+ * @param {Event} event - Track event: https://developer.mozilla.org/en-US/docs/Web/API/RTCTrackEvent
+ */
+ function onRemoteTrack(event) {
+    if (app.VideoElement.srcObject !== event.streams[0]) {
+        console.log('Incoming stream');
+        app.VideoElement.srcObject = event.streams[0];
+    }
+}
+
+
+    
+
+/**
+ * Handles messages from the peer data channel.
+ * @param {MessageEvent} event
+ */
+function  
+onControlDC(event) 
+{
+    // Attempt to parse message as JSON
+    var msg;
+    try {
+        msg = JSON.parse(event.data);
+    } catch (e) {
+        if (e instanceof SyntaxError) {
+            app.setError("error parsing data channel message as JSON: " + event.data);
+        } else {
+            app.setError("failed to parse data channel message: " + event.data);
+        }
+        return;
+    }
+
+    var from = msg.From;
+    var To = msg.To;
+    var Opcode = msg.Opcode;
+    var Data = msg.Data;
+
+    app.setDebug("data channel message: " + event.data);
+}
+     
+
+/**
+ * Handles messages from the peer data channel.
+ * @param {MessageEvent} event
+ */
+function onHidDC(event) 
+{
+    // Attempt to parse message as JSON
+    var msg;
+    try {
+        msg = JSON.parse(event.data);
+    } catch (e) {
+        if (e instanceof SyntaxError) {
+            app.setError("error parsing data channel message as JSON: " + event.data);
+        } else {
+            app.setError("failed to parse data channel message: " + event.data);
+        }
+        return;
+    }
+
+    if (msg.Opcode === HidOpcode.CLIPBOARD) 
+    {
+        if (msg.data !== null) {
+            var content = atob(msg.data.content);
+            app.setStatus("received clipboard contents, length: " + content.length);
+
+            if (app.onclipboardcontent !== null) 
+            {
+                app.onclipboardcontent(content);
+            }
+        }
+    } 
+
+    app.setStatus("HID data channel message: " + event.data);
+}
+
+/**
+ * Handler for peer connection state change.
+ * Possible values for state:
+ *   connected
+ *   disconnected
+ *   failed
+ *   closed
+ * @param {String} state
+ */
+function    
+handleConnectionStateChange(state) 
+{
+    switch (state) {
+        case "connected":
+            app.setStatus("Connection complete");
+            break;
+
+        case "disconnected":
+            app.setError("Peer connection disconnected");
+            app.VideoElement.load();
+            break;
+
+        case "failed":
+            app.setError("Peer connection failed");
+            app.VideoElement.load();
+            break;
+        default:
+    }
+}
+
+/**
+ * Sends message to peer data channel HID. 
+ * @param {String} message
+ */
+function  SendHID(message) 
+{
+    if (app.HidDC.readyState === 'open') 
+    {
+        app.HidDC.send(message);
+    } else {
+        app.setError("attempt to send data channel message before channel was open.");
+    }
+}
+
+/**
+ * Sends message to peer data channel control.
+ */
+function    
+sendControlDC(opcode,to, message) 
+{
+    var message = 
+    {
+        "Opcode":opcode,
+        "From":Module.CLIENT_MODULE,
+        "To":to,
+        "Data":message
+    }
+    
+    app.ControlDC.send(JSON.stringify(message));
+}
+
+
+
+/**
+ * Returns promise that resolves with connection stats.
+ */
+function    getConnectionStats() 
+{
+    var pc = app.Webrtc;
+
+    var connectionDetails = {};   // the final result object.
+
+    if (window.chrome) {  // checking if chrome
+
+        var reqFields = [
+            'googLocalCandidateType',
+            'googRemoteCandidateType',
+            'packetsReceived',
+            'packetsLost',
+            'bytesReceived',
+            'googFrameRateReceived',
+            'googFrameRateOutput',
+            'googCurrentDelayMs',
+            'googFrameHeightReceived',
+            'googFrameWidthReceived',
+            'codecImplementationName',
+            'googCodecName',
+            'googAvailableReceiveBandwidth'
+        ];
+
+        return new Promise(function (resolve, reject) {
+            pc.getStats(function (stats) {
+                var filteredVideo = stats.result().filter(function (e) {
+                    if ((e.id.indexOf('Conn-video') === 0 && e.stat('googActiveConnection') === 'true') ||
+                        (e.id.indexOf('ssrc_') === 0 && e.stat('mediaType') === 'video') ||
+                        (e.id == 'bweforvideo')) return true;
+                });
+                if (!filteredVideo) return reject('Something is wrong...');
+                filteredVideo.forEach((f) => {
+                    reqFields.forEach((e) => {
+                        var statValue = f.stat(e);
+                        if (statValue != "") {
+                            connectionDetails['video' + e.replace('goog', '')] = statValue;
+                        }
+                    });
+                });
+                var filteredAudio = stats.result().filter(function (e) {
+                    if ((e.id.indexOf('Conn-audio') === 0 && e.stat('googActiveConnection') === 'true') ||
+                        (e.id.indexOf('ssrc_') === 0 && e.stat('mediaType') === 'audio') ||
+                        (e.id == 'bweforaudio')) return true;
+                });
+                if (!filteredAudio) return reject('Something is wrong...');
+                filteredAudio.forEach((f) => {
+                    reqFields.forEach((e) => {
+                        var statValue = f.stat(e);
+                        if (statValue != "") {
+                            connectionDetails['audio' + e.replace('goog', '')] = statValue;
+                        }
+                    });
+                });
+                resolve(connectionDetails);
+            });
+        });
+
+    } else {
+        app.setError("unable to fetch connection stats for brower, only Chrome is supported.");
+    }
+}
+
+
+/**
+ * Initiate connection to signalling server.
+ */
+function 
+WebrtcConnect(msg) 
+{
+    console.log('Creating RTCPeerConnection');
+
+    app.Webrtc = new RTCPeerConnection(app.RTPconfig);
+
+    app.HidDC = app.Webrtc.createDataChannel('HID', null);
+
+    app.HidDC.onopen = HidDCConnected;
+
+    app.Webrtc.ondatachannel = CtrlConnected;    
+    app.Webrtc.ontrack = onRemoteTrack;
+
+    var constraint = 
+    {
+        "video":true,
+        "audio":true
+    }
+    app.local_stream_promise = 
+    navigator.mediaDevices.getUserMedia(constraint).then((stream) => {
+        console.log('Adding local stream');
+        app.Webrtc.addStream(stream);
+        return stream;
+    }).catch(app.setError);
+
+
+
+    if (msg != null && !msg.sdp) 
+    {
+        console.log("WARNING: First message wasn't an SDP message!?");
+    }
+
+    app.Webrtc.onicecandidate = (event) => {
+        // We have a candidate, send it to the remote party with the
+        // same uuid
+        if (event.candidate == null) {
+                console.log("ICE Candidate was null, done");
+                return;
+        }
+        app.setDebug("OFFER_ICE" + JSON.stringify({'ice': event.candidate}));
+        SignallingSend("OFFER_ICE",JSON.stringify({'ice': event.candidate}));
+    };
+
+    if (msg != null)
+        app.setStatus("Created peer connection for call, waiting for SDP");     
+}
+
+
+
+</script>
+<script type="text/javascript">
+
+var ScaleLoader = VueSpinner.ScaleLoader;
+var serverStatus = null;
+var app = new Vue({
+
+    el: '#app',
+
+    components: {
+        ScaleLoader
+    },
+
+    data() 
+    {
+        return {                
+            hostUrl: "http://192.168.1.6:81",
+            SessionClientID: 1727474015, 
+            ClientID: 5935953,
+            
+
+            showStart: false,
+            showDrawer: false,
+
+            logEntries: [],
+            debugEntries: [],
+
+            status: 'connecting',
+            loadingText: '',
+
+            /**
+            * list contain window resolution [width,height]
+            */
+            windowResolution: null,
+
+            connectionStatType: "unknown",
+            connectionAudioCodecName: "unknown",
+            connectionVideoCodecName: "unknown",
+            connectionResolution: "",
+
+
+            /*parameter serve for session initialization */
+            Clientoffer: false,
+            SignallingUrl: "ws://192.168.1.6:82/Session",
+
+            /*default value from client session fetch from server*/
+            QoEMode: 0,
+            AudioCodec: 3,
+            VideoCodec: 1,
+
+            /**
+            * default Value of QoE metric, fetch from server
+            */
+            defaultScreenWidth: 2160,
+            defaultScreenHeight: 1341,
+            defaultFrameRate: 0,
+            defaultBitrate: 1000000,
+
+
+
+            /*Metric serve for adaptive bitrate algorithm */
+            currentTime: 0,
+            adaptiveAudioBitrate: 1000000,
+            adaptiveVideoBitrate: 1000000,
+            adaptiveFramerate: 0,
+            connectionVideoDecoder: "unknown",
+
+            windowsWidth:0,
+            windowsHeight:0,
+
+            adaptivePacketsLost: 0,
+            adaptiveAudioLatency: 0,
+            adaptiveVideoLatency: 0,
+            adaptiveTotalBandwidth:  1000000,
+
+
+            RTPconfig:   
+            {"iceServers":    
+                [
+                    {
+                        "urls": ["stun:stun.l.google.com:19302"] 
+                    }
+                ],
+                "bundle-policy":"max-compat"
+            },
+
+
+            /**/
+            Ws: null,
+            Webrtc: null,
+            EventListeners: [],
+            VideoElement: null,
+            Mouse: null,
+            ControlDC: null,
+            HidDC: null,
+            local_stream_promise:null,
+
+            /**/
+            signalling_state: null,
+        };
+    },
+
+    methods: 
+    {
+        enterFullscreen() {
+            // Request full screen mode.
+            app.logEntries.push(applyTimestamp("[VIDEO] [Switch to full screen mode]"));
+            videoElement.parentElement.requestFullscreen();
+        },
+        connectServer(){
+            app.VideoElement =  document.getElementById("stream");
+            app.logEntries.push(applyTimestamp("[SIGNALLING] [Connecting to server]"));
+            SignallingConnect();
+        },
+        showDrawer(newValue){
+            if(newValue) {
+                DetachEvent();
+            }
+            else{
+                AttachEvent();
+            }        
+        },
+        fileTransfer()
+        {
+            
+        },
+        terminateSession()
+        {
+            axios.get(app.hostUrl+'/Session/Terminate?sessionClientId='+app.SessionClientID);
+        },
+        windowResize()
+        {
+            var MESSAGE = 
+            {
+                "Opcode": Opcode.RESET_QOE,
+                "From": Module.CLIENT_MODULE,
+                "To": Module.AGENT_MODULE,
+                "Data": {
+                    
+                }
+            }
+            SendHID(JSON.stringify(MESSAGE));
+        },
+        setDebug(message)
+        {
+            console.log(message);
+            app.debugEntries.push(applyTimestamp(message));
+        },
+        setError(message)
+        {
+            console.log(message);
+            app.debugEntries.push(applyTimestamp(message));
+        },
+        setStatus(message)
+        {
+            console.log(message);
+            app.logEntries.push(applyTimestamp(message));
+        }
+    },
+
+    watch: {
+        videoBitRate(newValue) {
+            window.localStorage.setItem("videoBitRate", newValue.toString());
+        },
+        videoFramerate(newValue) {
+            app.logEntries.push("video frame rate changed to " + newValue);
+            window.localStorage.setItem("videoFramerate", newValue.toString());
+        },
+        audioEnabled(newValue, oldValue) {
+            app.logEntries.push("audio enabled changed from " + oldValue + " to " + newValue);
+        },
+        audioBitRate(newValue) {
+            window.localStorage.setItem("audioBitRate", newValue.toString());
+        },
+        debug(newValue) {
+            window.localStorage.setItem("debug", newValue.toString());
+            // Reload the page to force read of stored value on first load.
+            setTimeout(() => {
+                document.location.reload();
+            }, 700);
+        },
+    },
+});
+
+
+</script>
+
+
+
+<script>
+
+
+// Function to add timestamp to logs.
+var applyTimestamp = (msg) => {
+    var now = new Date();
+    var ts = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+    return "[" + ts + "]" + " " + msg;
+}
+
+
+function  
+getConnectionStats() 
+{
+    var pc = app.Webrtc;
+
+    var connectionDetails = {};   // the final result object.
+
+    if (window.chrome) {  // checking if chrome
+
+        var reqFields = [
+            'googLocalCandidateType',
+            'googRemoteCandidateType',
+            'packetsReceived',
+            'packetsLost',
+            'bytesReceived',
+            'googFrameRateReceived',
+            'googFrameRateOutput',
+            'googCurrentDelayMs',
+            'googFrameHeightReceived',
+            'googFrameWidthReceived',
+            'codecImplementationName',
+            'googCodecName',
+            'googAvailableReceiveBandwidth'
+        ];
+
+        return new Promise(function (resolve, reject) {
+            pc.getStats(function (stats) {
+                var filteredVideo = stats.result().filter(function (e) {
+                    if ((e.id.indexOf('Conn-video') === 0 && e.stat('googActiveConnection') === 'true') ||
+                        (e.id.indexOf('ssrc_') === 0 && e.stat('mediaType') === 'video') ||
+                        (e.id == 'bweforvideo')) return true;
+                });
+                if (!filteredVideo) return reject('Something is wrong...');
+                filteredVideo.forEach((f) => {
+                    reqFields.forEach((e) => {
+                        var statValue = f.stat(e);
+                        if (statValue != "") {
+                            connectionDetails['video' + e.replace('goog', '')] = statValue;
+                        }
+                    });
+                });
+                var filteredAudio = stats.result().filter(function (e) {
+                    if ((e.id.indexOf('Conn-audio') === 0 && e.stat('googActiveConnection') === 'true') ||
+                        (e.id.indexOf('ssrc_') === 0 && e.stat('mediaType') === 'audio') ||
+                        (e.id == 'bweforaudio')) return true;
+                });
+                if (!filteredAudio) return reject('Something is wrong...');
+                filteredAudio.forEach((f) => {
+                    reqFields.forEach((e) => {
+                        var statValue = f.stat(e);
+                        if (statValue != "") {
+                            connectionDetails['audio' + e.replace('goog', '')] = statValue;
+                        }
+                    });
+                });
+                resolve(connectionDetails);
+            });
+        });
+
+    } else {
+        app.setError("unable to fetch connection stats for brower, only Chrome is supported.");
+    }
+}
+
+
+//STATUS
+// Bind vue status to connection state.
+function 
+CtrlConnected(state)
+{
+    app.ControlDC = event.channel;
+
+    var bytesReceivedStart = 0;
+    var audiobytesReceivedStart = 0;
+    var statsStart = new Date().getTime() / 1000;
+
+
+
+    var statsLoop = () => {
+        
+        getConnectionStats().then((stats) => 
+        {
+            if (app.audioEnabled) {
+                app.adaptiveAudioLatency = parseInt(stats.audioCurrentDelayMs);
+
+
+            } else {
+                stats.audiobytesReceived = 0;
+            }
+            
+            // Compute current video bitrate in mbps
+            var now = new Date().getTime() / 1000;
+            /**
+             * time value of an sample
+             */
+            app.currentTime = now - statsStart;
+
+
+            app.connectionStatType = stats.videoLocalCandidateType;
+
+            /**
+             * packets lost
+             */
+            app.adaptivePacketsLost = parseInt(stats.videopacketsLost);
+
+            /**
+             * video codec,ex HEVC
+             */
+            app.connectionVideoCodecName = stats.videoCodecName;
+            /**
+             * video decoder ex:ffmpeg
+             */
+            app.connectionVideoDecoder = stats.videocodecImplementationName;
+
+            app.connectionResolution = stats.videoFrameWidthReceived + "x" + stats.videoFrameHeightReceived;
+
+            /**
+             * (volatile) framerate of the stream
+             */
+            app.adaptiveFramerate = parseInt(stats.videoFrameRateOutput);
+
+            /**
+             * (volatile) total bandwidth of the stream
+             */
+            app.adaptiveTotalBandwidth =  parseInt(stats.videoAvailableReceiveBandwidth);
+
+            
+            /**
+             * (volatile) video latency
+             */
+            app.adaptiveVideoLatency = parseInt(stats.videoCurrentDelayMs);
+
+                /**
+                 * (volatile) video bitrate 
+                 */
+            app.adaptiveVideoBitrate = Math.round(parseInt((stats.videobytesReceived) - bytesReceivedStart) / (now - statsStart));
+            bytesReceivedStart = parseInt(stats.videobytesReceived);
+
+
+            app.adaptiveAudioBitrate = Math.round((parseInt(stats.audiobytesReceived) - audiobytesReceivedStart) / (now - statsStart));
+            audiobytesReceivedStart = parseInt(stats.audiobytesReceived);
+
+            var message =
+            {
+                Opcode:Opcode.QOE_REPORT,
+                FrameRate: app.adaptiveFramerate,
+
+                AudioLatency: app.adaptiveAudioLatency,
+                VideoLatency: app.adaptiveVideoLatency,
+
+                AudioBitrate: app.adaptiveAudioBitrate,
+                VideoBitrate: app.adaptiveVideoBitrate,
+
+                TotalBandwidth: app.adaptiveTotalBandwidth,
+                PacketsLost: app.adaptivePacketsLost
+            }
+
+            sendControlDC
+            (
+                Opcode.QOE_REPORT,
+                Module.CORE_MODULE,
+                JSON.stringify(message)
+            );            
+
+            statsStart = now;
+
+            // Stats refresh loop.
+            setTimeout(statsLoop, 1000);
+        });
+    };
+    statsLoop();
+}
+
+
+
+
+function 
+HidDCConnected(event)  
+{
+    AttachEvent();
+}
+
+
+function 
+onMenuHotkey()
+{
+    app.showDrawer = !app.showDrawer;
+}
+
+function 
+onfullscreenhotkey() 
+{
+    app.enterFullscreen();
+}
+
+function 
+ResizeWindow()
+{
+    app.windowResolution = getWindowResolution();
+    app.logEntries.push(`Window size changed: ${app.windowResolution[0]}x${app.windowResolution[1]}`);
+}
+
+
+
+</script>
+<script type="text/javascript">
+    var Module = {"CORE_MODULE":0,"CLIENT_MODULE":1,"LOADER_MODULE":2,"AGENT_MODULE":3,"HOST_MODULE":4};
+    var HidOpcode = {"KEYUP":0,"KEYDOWN":1,"MOUSE_WHEEL":2,"MOUSE_MOVE":3,"MOUSE_UP":4,"MOUSE_DOWN":5};
+    var Opcode = {"SESSION_INFORMATION":0,"REGISTER_SLAVE":1,"SLAVE_ACCEPTED":2,"DENY_SLAVE":3,"REJECT_SLAVE":4,"SESSION_INITIALIZE":5,"SESSION_TERMINATE":6,"RECONNECT_REMOTE_CONTROL":7,"DISCONNECT_REMOTE_CONTROL":8,"QOE_REPORT":9,"RESET_QOE":10,"COMMAND_LINE_FORWARD":11,"EXIT_CODE_REPORT":12,"ERROR_REPORT":13,"NEW_COMMAND_LINE_SESSION":14,"END_COMMAND_LINE_SESSION":15,"FILE_TRANSFER_SERVICE":16,"CLIPBOARD_SERVICE":17};
+    var QoEMode = {"AUDIO_PIORITY":0,"VIDEO_PIORITY":1};
+    var Codec = {"CODEC_H265":0,"CODEC_H264":1,"CODEC_VP9":2,"OPUS_ENC":3,"AAC_ENC":4};
+</script>
+
+
+
+<script>
+    app.connectServer();
+</script>
+
+</html>

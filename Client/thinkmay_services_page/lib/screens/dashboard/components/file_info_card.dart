@@ -185,8 +185,8 @@ ScreenWidth=${MediaQuery.of(context).size.width.toInt()}&
 ScreenHeight=${MediaQuery.of(context).size.height.toInt()}&
 bitrate=1000000&
 QoEMode=0&
-VideoCodec=2&
-AudioCodec=4
+VideoCodec=1&
+AudioCodec=3
 ''', "Remote Page");
                   },
                   child: Container(

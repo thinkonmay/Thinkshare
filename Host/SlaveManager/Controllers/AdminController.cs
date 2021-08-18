@@ -16,6 +16,7 @@ using System.Configuration;
 using RestSharp;
 using SlaveManager.SlaveDevices;
 using SharedHost.Models;
+using System.Net;
 
 namespace SlaveManager.Controllers
 {
@@ -39,7 +40,7 @@ namespace SlaveManager.Controllers
             Configuration = config;
             _slavePool = slavePool;
             _db = db;
-            Signalling = new RestClient("http://" + Configuration.BaseUrl + ":" + Configuration.SignallingPort);
+            Signalling = new RestClient("http://"+Configuration.BaseUrl+":"+ Configuration.SignallingPort+"/System");
 
             var list = _db.Devices.ToList();
             foreach (var i in list)
@@ -165,20 +166,29 @@ namespace SlaveManager.Controllers
                 SessionClientID = sessionClientId
             };
 
-
             /*generate rest post to signalling server*/
-            var signalling_post = new RestRequest(
-                $"System/Generate?SessionSlaveID={signalPair.SessionSlaveID}&SessionClientID={signalPair.SessionClientID}");
-            
-            var reply = Signalling.Post(signalling_post);
+            var get_req = new RestRequest("Generate")
+                .AddParameter("SessionSlaveID", sessionSlaveId.ToString())
+                .AddParameter("SessionClientID", sessionClientId.ToString());            
+            var reply = Signalling.Get(get_req); // TODO post and get confirmation from signalling server
+            if(reply.StatusCode != HttpStatusCode.OK)
+            {
+                return BadRequest(reply.Content.ToString());
+            }
 
             SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
             ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
 
-            if(!_slavePool.SessionInitialize(req.SlaveId, slaveSes))
+            if(!_slavePool.SessionInitialize(SlaveID, slaveSes))
             {
+                var error = new GeneralErrorAbsTime();
+                error.ErrorMessage = "Cannot send initialize signal to agent";
+                error.ErrorTime = 0;
+                _admin.ReportAgentError(error,SlaveID);
                 return BadRequest("Cannot send session initialize signal to slave");
+
             }
+           
 
             SessionViewModel view = new SessionViewModel();
             view.clientSession = clientSes; 
@@ -212,17 +222,15 @@ namespace SlaveManager.Controllers
                 SessionSlaveID = ses.SessionSlaveID
             };
 
-            /*create rest delete to signalling server*/
 
-            /*generate rest post to signalling server*/
-            var signalling_delete = new RestRequest($"System/Terminate?SessionSlaveID=${deletion.SessionSlaveID}&SessionClientID=${deletion.SessionClientID}");
-
-            var reply = Signalling.Delete(signalling_delete);
-
-            /*slavepool send terminate session signal*/
-            if(_slavePool.SessionTerminate(ses.SlaveID))
+            /*generate rest get to signalling server*/
+            var get_req = new RestRequest("Terminate")
+                .AddParameter("SessionSlaveID", ses.SessionSlaveID.ToString())
+                .AddParameter("SessionClientID", ses.SessionClientID.ToString());            
+            var deletion_reply = Signalling.Get(get_req); // TODO post and get confirmation from signalling server
+            if(deletion_reply.StatusCode != HttpStatusCode.OK)
             {
-                return BadRequest("Cannot send terminate session signal to slave");
+                return BadRequest(deletion_reply.Content.ToString());
             }
             return Ok();
         }

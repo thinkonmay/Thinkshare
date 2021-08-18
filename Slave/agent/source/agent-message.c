@@ -77,7 +77,6 @@ send_message(AgentObject* self,
 static void
 setup_slave_device(AgentObject* agent, gchar* slave)
 {
-
 	AgentState* open_state = transition_to_on_open_state();
 	agent_set_state(agent, open_state);	
 }

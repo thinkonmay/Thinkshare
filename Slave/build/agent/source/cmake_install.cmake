@@ -1,4 +1,4 @@
-# Install script for directory: D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/agent/source
+# Install script for directory: D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/Slave/agent/source
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

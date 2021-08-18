@@ -90,6 +90,8 @@ session_core_setup_session(SessionCore* self)
 	signalling_hub_set_peer_call_state(self->signalling, PEER_CALL_READY);
 	pipeline_set_state(self->pipe, PIPELINE_READY);
 	self->state = SESSION_INFORMATION_SETTLED;
+	
+	write_to_log_file(SESSION_CORE_GENERAL_LOG,"session core setup done");
 }
 
 SessionCore*

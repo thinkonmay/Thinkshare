@@ -33,7 +33,7 @@ struct _SignallingHub
 
     gint SessionSlaveID;
 
-	gchar* SIGNALLING_SERVER;
+	gchar* signalling_server;
 
 	gboolean disable_ssl;
 
@@ -76,7 +76,7 @@ signalling_hub_setup(SignallingHub* hub,
                      gchar* stun_server,
                      gint session_slave_id)
 {
-    hub->SIGNALLING_SERVER = url;
+    hub->signalling_server = url;
     hub->client_offer = client_offer;
     hub->stun_server = stun_server;
     hub->SessionSlaveID = session_slave_id;
@@ -91,13 +91,15 @@ send_message_to_signalling_server(SignallingHub* signalling,
                                 gchar* request_type,
                                 gchar* content)
 {
-        JsonObject* json_object = json_object_new();
-    json_object_set_string_member(json_object, REQUEST_TYPE, "OFFER_ICE");
+    JsonObject* json_object = json_object_new();
+    json_object_set_string_member(json_object, REQUEST_TYPE, request_type);
     json_object_set_int_member(json_object, SUBJECT_ID, signalling->SessionSlaveID);
     json_object_set_string_member(json_object, CONTENT, content);
-    json_object_set_string_member(json_object, RESULT, SESSION_ACCEPTED);
+    json_object_set_string_member(json_object, RESULT, SESSION_ACCEPTED); 
     
     gchar* buffer = get_string_from_json_object(json_object);
+
+    write_to_log_file(SESSION_CORE_NETWORK_LOG, buffer);
     soup_websocket_connection_send_text(signalling->connection,buffer);
 }
 
@@ -114,8 +116,10 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
 
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
-    if (hub->peer_call_state != PEER_CALL_NEGOTIATING) 
-        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);
+    if (g_strcmp0(hub->peer_call_state, PEER_CALL_NEGOTIATING))
+    {
+        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT, NULL);
+    }
 
     ice = json_object_new();
     json_object_set_string_member(ice, "candidate", candidate);
@@ -183,7 +187,10 @@ on_offer_created( GstPromise* promise, SessionCore* core)
     Pipeline* pipe = session_core_get_pipeline(core);
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
-    g_assert_cmphex(hub->peer_call_state, == , PEER_CALL_NEGOTIATING);
+    if (g_strcmp0(hub->peer_call_state, PEER_CALL_NEGOTIATING))
+    {
+        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT, NULL);
+    }
 
     g_assert_cmphex(gst_promise_wait(promise), == , GST_PROMISE_RESULT_REPLIED);
 
@@ -276,18 +283,19 @@ register_with_server(SessionCore* core)
     JsonObject* json_object = json_object_new();
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
-    if (hub->signalling_state != SIGNALLING_SERVER_CONNECTED)
+    
+    if (g_strcmp0(hub->signalling_state, SIGNALLING_SERVER_CONNECTED) || 
+        (soup_websocket_connection_get_state(hub->connection) != SOUP_WEBSOCKET_STATE_OPEN))
+    {
         session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);    
+    }
 
-    if (soup_websocket_connection_get_state(hub->connection) !=
-        SOUP_WEBSOCKET_STATE_OPEN)
-        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);
+    //gchar* buffer = malloc(10);
+    //itoa(hub->SessionSlaveID, buffer, 10);
 
-
+    write_to_log_file(SESSION_CORE_GENERAL_LOG,"registering with signalling server");
     hub->signalling_state = SIGNALLING_SERVER_REGISTERING;
-    send_message_to_signalling_server(hub,SLAVE_REQUEST,hub->SessionSlaveID);
-
-    g_free(hello);
+    send_message_to_signalling_server(hub,SLAVE_REQUEST, SESSION_ACCEPTED);
     return TRUE;
 }
 
@@ -432,17 +440,15 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
     soup_session_add_feature(hub->session, SOUP_SESSION_FEATURE(logger));
     g_object_unref(logger);
 
-    message = soup_message_new(SOUP_METHOD_GET, hub->SIGNALLING_SERVER);
+    message = soup_message_new(SOUP_METHOD_GET, hub->signalling_server);
 
+    write_to_log_file(SESSION_CORE_NETWORK_LOG,"connecting to signalling server");
 
-    g_main_context_push_thread_default(session_core_get_main_context(core));
-    /* Once connected, we will register */
+    hub->signalling_state = SIGNALLING_SERVER_CONNECTING;
     soup_session_websocket_connect_async(hub->session,
         message, NULL, NULL, NULL,
         (GAsyncReadyCallback)on_server_connected, core);
-    g_main_context_pop_thread_default(session_core_get_main_context(core));
-
-    hub->signalling_state = SIGNALLING_SERVER_CONNECTING;
+    
 }
 
 
@@ -451,11 +457,11 @@ on_registering_message(SessionCore* core)
 {
     SignallingHub* signalling = session_core_get_signalling_hub(core);
 
-    if (!signalling->signalling_state == SIGNALLING_SERVER_REGISTERING)
+    if (g_strcmp0(signalling->signalling_state, SIGNALLING_SERVER_REGISTERING))
     {
         session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);
     }
-    if (signalling->signalling_state != SIGNALLING_SERVER_REGISTERING)
+    if (g_strcmp0( signalling->signalling_state , SIGNALLING_SERVER_REGISTERING))
     {
         session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);
     }
@@ -487,7 +493,6 @@ on_ice_exchange(gchar* text,SessionCore* core)
     }
 
     object = json_node_get_object(root);
-
     Pipeline* pipe = session_core_get_pipeline(core);
 
     const gchar* candidate;
@@ -608,7 +613,7 @@ on_server_message(SoupWebsocketConnection* conn,
         /* Convert to NULL-terminated string */
         text = g_strndup(data, size);
         strcat(text, "\n");
-        write_to_log_file(core,text);
+        write_to_log_file(SESSION_CORE_GENERAL_LOG,text);
         break;
     }
     default:
@@ -679,16 +684,16 @@ on_server_connected(SoupSession* session,
     GError* error = NULL;
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
-    if (hub->signalling_state != SIGNALLING_SERVER_CONNECTING)
-        return;
+    if (g_strcmp0(hub->signalling_state, SIGNALLING_SERVER_CONNECTING))  {  return;  }
+    
     hub->connection = soup_session_websocket_connect_finish(session, res, &error);
     if (error != NULL || hub->connection == NULL) 
     {
         session_core_finalize(core, SIGNALLING_SERVER_CONNECTION_ERROR_EXIT,error);
     }
 
+    write_to_log_file(SESSION_CORE_GENERAL_LOG,"connected with signalling server");
     hub->signalling_state = SIGNALLING_SERVER_CONNECTED;
-
     g_signal_connect(hub->connection, "closed", G_CALLBACK(on_server_closed), core);
     g_signal_connect(hub->connection, "message", G_CALLBACK(on_server_message), core);
 

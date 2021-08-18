@@ -115,16 +115,15 @@ start_pipeline(SessionCore* core)
 
     ret = GST_IS_ELEMENT(pipe->pipeline);    
 
-    ret = gst_element_set_state(pipe->pipeline, GST_STATE_PLAYING);
+    ret = gst_element_set_state(GST_ELEMENT(pipe->pipeline), GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE)
     {
         session_core_finalize(core, PIPELINE_ERROR_EXIT,NULL);
     }
-    write_to_log_file(core,"Starting pipeline\n");
+    write_to_log_file(SESSION_CORE_GENERAL_LOG,"Starting pipeline\n");
     return TRUE;
 }
 
-#define STUN_SERVER " stun-server=stun://stun.l.google.com:19302 "
 #define SCREEN_CAP    "video/x-raw,framerate=120/1"
 #define RTP_CAPS_OPUS "application/x-rtp,media=audio,encoding-name=OPUS,payload="
 #define RTP_CAPS_VIDEO "application/x-rtp,media=video,encoding-name=H264,payload="
@@ -142,17 +141,23 @@ setup_element_factory(SessionCore* core,
         if (OPUS_ENC) 
         {
             pipe->pipeline =
-                gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "STUN_SERVER
+                gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv stun-server=stun://stun.l.google.com:19302 "
                     "dx9screencapsrc name=screencap ! "SCREEN_CAP
-                    " ! queue ! videoconvert ! queue ! mfh264enc name=videoencoder ! rtph264pay name=rtp ! "
+                    " ! queue ! videoconvert ! queue ! mfh264enc name=videoencoder ! queue ! rtph264pay name=rtp ! "
                     "queue ! " RTP_CAPS_VIDEO "96 ! sendrecv. "
                     "audiotestsrc is-live=true wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "97 ! sendrecv. ", &error);
 
-            pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
-            pipe->video_element[RTP_H264_PAYLOAD] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
-            pipe->audio_element[OPUS_ENCODER] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
+            pipe->webrtcbin = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "sendrecv");
+            pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
+            pipe->video_element[RTP_H264_PAYLOAD] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
+            pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
+            pipe->audio_element[OPUS_ENCODER] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
         }
     }
     else if (video == CODEC_H265)
@@ -167,10 +172,14 @@ setup_element_factory(SessionCore* core,
                     "audiotestsrc is-live=true wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "97 ! sendrecv. ", &error);
 
-            pipe->video_element[NVIDIA_H265_MEDIA_FOUNDATION] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
-            pipe->video_element[RTP_H265_PAYLOAD] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
-            pipe->audio_element[OPUS_ENCODER] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
+            pipe->video_element[NVIDIA_H265_MEDIA_FOUNDATION] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
+            pipe->video_element[RTP_H265_PAYLOAD] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
+            pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
+            pipe->audio_element[OPUS_ENCODER] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
         }
     }
     else if (video == VP9_ENCODER)
@@ -185,10 +194,14 @@ setup_element_factory(SessionCore* core,
                     "audiotestsrc is-live=true wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "97 ! sendrecv. ", &error);
 
-            pipe->video_element[VP9_ENCODER] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
-            pipe->video_element[RTP_VP9_PAYLOAD] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
-            pipe->audio_element[OPUS_ENCODER] = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
+            pipe->video_element[VP9_ENCODER] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
+            pipe->video_element[RTP_VP9_PAYLOAD] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
+            pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
+            pipe->audio_element[OPUS_ENCODER] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
         }
     }
 
@@ -196,7 +209,6 @@ setup_element_factory(SessionCore* core,
         session_core_finalize(core,PIPELINE_ERROR_EXIT,error);
     }
 
-    pipe->webrtcbin = gst_bin_get_by_name(GST_BIN(pipe->pipeline), "sendrecv");
 }
 
 gpointer
@@ -212,17 +224,17 @@ setup_pipeline(SessionCore* core)
 
     
     
-    setup_element_factory(pipe, 
+    setup_element_factory(core, 
         qoe_get_video_codec(qoe),
         qoe_get_audio_codec(qoe));
 
-
-    
-    pipe->state = PIPELINE_SETTING_UP_ELEMENT;
-    setup_element_property( core);
-
     pipe->state = PIPELINE_CONNECT_ELEMENT_SIGNAL;
     connect_signalling_handler(core);
+    
+    pipe->state = PIPELINE_SETTING_UP_ELEMENT;
+    //setup_element_property( core);
+
+
 
     gst_element_change_state(pipe->pipeline, GST_STATE_READY);
 
@@ -284,7 +296,7 @@ setup_element_property(SessionCore* core)
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "zerolatency", TRUE, NULL);}
 
     /*set zero latency aggregate mode*/
-    if (pipe->video_element[RTP_H264_PAYLOAD]) { g_object_set(pipe->video_element[RTP_H264_PAYLOAD], "aggregate-mode", 1, NULL);}
+    //if (pipe->video_element[RTP_H264_PAYLOAD]) { g_object_set(pipe->video_element[RTP_H264_PAYLOAD], "aggregate-mode", 1, NULL);}
 
     /*handle dynamic control bitrate*/
     //if (!pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION])
@@ -305,17 +317,21 @@ setup_element_property(SessionCore* core)
     * will be dropped.
     * This helps buffer out latency in the audio source.
     */
-    if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-time", 16000000, NULL);}
+    //if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-time", 16000000, NULL);}
 
     /*
     Set the other queue sizes to 0 to make it only time-based.*/
-    if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-packet", 0, NULL);}
+    //if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-packet", 0, NULL);}
 
 
 }
 
 
-
+void
+incoming_stream(GstElement* element, GstPad* pad, gpointer data)
+{
+    return;
+}
 
 
 
@@ -325,14 +341,11 @@ connect_signalling_handler(SessionCore* core)
     Pipeline* pipe = session_core_get_pipeline(core);
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
-    g_main_context_push_thread_default(session_core_get_main_context(core));
+    //g_main_context_push_thread_default(session_core_get_main_context(core));
 
-    /*set policy-bundle*/
-    if (pipe->webrtcbin) { 
-        g_object_set(pipe->webrtcbin, "bundle-policy", "max-bundle", NULL); }
     /* Add stun server */
-    if (pipe->webrtcbin) { 
-        g_object_set(pipe->webrtcbin, "stun-server", signalling_hub_get_stun_server(hub), NULL); }
+    //g_object_set(pipe->webrtcbin, "stun-server", 
+    //    signalling_hub_get_stun_server(hub), NULL); 
 
     /* This is the gstwebrtc entry point where we create the offer and so on. It
      * will be called when the pipeline goes to PLAYING. */
@@ -342,7 +355,9 @@ connect_signalling_handler(SessionCore* core)
         G_CALLBACK(send_ice_candidate_message), core);
     g_signal_connect(pipe->webrtcbin, "notify::ice-gathering-state",
         G_CALLBACK(on_ice_gathering_state_notify), core);
-    g_main_context_pop_thread_default(session_core_get_main_context(core));
+    //g_signal_connect(pipe->webrtcbin, "pad-added", 
+    //    G_CALLBACK(incoming_stream), NULL);
+    //g_main_context_pop_thread_default(session_core_get_main_context(core));
 }
 
 

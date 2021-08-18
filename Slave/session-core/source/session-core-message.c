@@ -15,6 +15,7 @@
 
 
 #include <stdio.h>
+#include <general-constant.h>
 
 
 
@@ -36,7 +37,7 @@ session_core_on_message(SessionCore* core,
 						 gchar* data)
 {
 
-	write_to_log_file(core,data);
+	write_to_log_file(SESSION_CORE_NETWORK_LOG,data);
 
 	JsonNode* root;
 	JsonObject* object, * json_data;
@@ -135,7 +136,7 @@ send_message(SessionCore* self,
 	Module to = json_object_get_int_member(message, "To");
 
 	gchar* string_data = get_string_from_json_object(message);
-	write_to_log_file(self,string_data);
+	write_to_log_file(SESSION_CORE_NETWORK_LOG,string_data);
 
 	switch(to)
 	{
