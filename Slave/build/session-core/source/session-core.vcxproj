@@ -321,6 +321,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\session-core\source\session-core-remote-config.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\session-core\source\session-core-signalling.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\session-core\source\session-core.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\shared-items\key-convert.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\shared-items\logging.c" />
   </ItemGroup>
   <ItemGroup>

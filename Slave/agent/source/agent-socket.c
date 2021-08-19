@@ -122,10 +122,17 @@ on_server_connected(SoupSession* session,
 
     socket->ws = soup_session_websocket_connect_finish(session, res, &error);
 
+    
+
     /*if error happen during connection, restart agent_connect_to_host*/
     if (error)
     {
         write_to_log_file(AGENT_NETWORK_LOG,error->message);
+        AgentState* disconnected = transition_to_disconnected_state();
+        agent_set_state(agent, disconnected);
+
+        agent_connect_to_host(agent);
+
         return;
     }
     g_main_context_push_thread_default(g_main_loop_get_context(agent_get_main_loop(agent)));

@@ -8,6 +8,7 @@
 #include <logging.h>
 #include <general-constant.h>
 #include <state-indicator.h>
+#include <opcode.h>
 
 static void
 unregistered_connect_to_host(AgentObject* agent)

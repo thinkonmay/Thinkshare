@@ -125,14 +125,14 @@ windowCalculate()
         /**
          * relation between frame size and actual window size
          */
-        "mouseMultiX": frameW / vpWidth,
-        "mouseMultiY": frameH / vpHeight,
+        "mouseMultiX": app.Screen.StreamWidth / vpWidth,
+        "mouseMultiY": app.Screen.StreamHeight / vpHeight,
 
         /**
          * 
          */
-        "mouseOffsetX": Math.max((windowW - vpWidth) / 2.0, 0),
-        "mouseOffsetY": Math.max((windowH - vpHeight) / 2.0, 0),
+        "mouseOffsetX": Math.max((app.Screen.clientWidth  - vpWidth) / 2.0, 0),
+        "mouseOffsetY": Math.max((app.Screen.clientHeight - vpHeight) / 2.0, 0),
 
 
         /**

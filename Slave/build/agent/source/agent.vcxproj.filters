@@ -43,6 +43,9 @@
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\agent\source\program.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\shared-items\key-convert.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\shared-items\logging.c">
       <Filter>Source Files</Filter>
     </ClCompile>

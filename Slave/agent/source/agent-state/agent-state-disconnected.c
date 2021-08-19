@@ -2,13 +2,14 @@
 #include <agent-state.h>
 #include <glib.h>
 #include <agent-socket.h>
+#include <agent-object.h>
 
 #include <state-indicator.h>
 #include <logging.h>
 #include <general-constant.h>
+#include <opcode.h>
 
 
-#define RECONNECT_INTERVAL       10000
 
 
 
@@ -18,11 +19,41 @@ disconnected_connect_to_host(AgentObject* agent)
     //attemp to connect to host until connection return successfully
     while(TRUE)
     {
+        agent_set_socket(initialize_socket(agent));
+
+        g_main_loop_quit(agent_get_main_loop(agent));
         connect_to_host_async(agent);
+        agent_set_main_loop(agent,g_main_loop_new(NULL, FALSE));
         Sleep(RECONNECT_INTERVAL);
+        g_main_loop_run(agent_get_main_loop(agent));
     }
 }
 
+
+static void
+disconnected_register_with_host(AgentObject* agent)
+{
+    register_with_host(agent);
+}
+
+static void
+disconnected_send_message_to_host(AgentObject* agent, char* message)
+{
+    JsonNode* root;
+    JsonObject* object, * json_data;
+
+    JsonParser* parser = json_parser_new();
+    json_parser_load_from_data(parser, message, -1, NULL);
+    root = json_parser_get_root(parser);
+    object = json_node_get_object(root);
+
+    int i= json_object_get_int_member(object, "Opcode");
+
+    if (i != REGISTER_SLAVE)
+        write_to_log_file(AGENT_GENERAL_LOG,"Unknown message send to host while not configured");
+    else
+        send_message_to_host(agent, message);
+}
 
 
 static gchar* 
@@ -43,6 +74,8 @@ transition_to_disconnected_state(void)
     {
         default_method(&disconnected_state);
         disconnected_state.send_message_to_host = disconnected_connect_to_host;
+        disconnected_state.register_to_host = disconnected_register_with_host;
+        disconnected_state.send_message_to_host = disconnected_send_message_to_host;
         disconnected_state.connect_to_host = disconnected_connect_to_host;
         disconnected_state.get_current_state = disconnected_get_state;
 

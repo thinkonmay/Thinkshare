@@ -153,7 +153,7 @@ void
 agent_send_message_to_host(AgentObject* self,
 	gchar* message)
 {
-		self->state->send_message_to_host(self, message);
+	self->state->send_message_to_host(self, message);
 }  
 
 void
@@ -275,7 +275,7 @@ agent_set_child_process(AgentObject* self,
 
 
 void
-agent_object_set_main_loop(AgentObject* self,
+agent_set_main_loop(AgentObject* self,
 	GMainLoop* loop)
 {
 	self->loop = loop;

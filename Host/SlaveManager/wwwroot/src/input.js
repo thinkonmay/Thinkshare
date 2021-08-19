@@ -142,7 +142,7 @@ function keyup(event)
     var Keyboard =
     {
         "Opcode":HidOpcode.KEYUP,
-        "wVk":convertJavaScriptKeyToWindowKey(event.code),
+        "wVk":event.code,
     }
 
     SendHID(JSON.stringify(Keyboard));
@@ -167,7 +167,7 @@ keydown(event)
     var Keyboard =
     {
         "Opcode":HidOpcode.KEYDOWN,
-        "wVk":convertJavaScriptKeyToWindowKey(event.code),
+        "wVk":event.code,
     }
 
     SendHID(JSON.stringify(Keyboard));
@@ -191,7 +191,10 @@ clientToServerX(clientX)
     if (serverX > app.Mouse.frameW) serverX = app.Mouse.frameW;
     if (serverX < 0) serverX = 0;
 
-    return serverX;
+    /**
+     * by window standard, position of mouse will be send from 0 to 65535
+     */
+    return Math.round((serverX / app.Screen.StreamWidth)*65535.0);
 }
 
 /**
@@ -212,7 +215,10 @@ clientToServerY(clientY)
     if (serverY > app.Mouse.frameH) serverY = app.Mouse.frameH;
     if (serverY < 0) serverY = 0;
 
-    return  serverY;
+    /**
+     * by window standard, position of mouse will be send from 0 to 65535
+     */
+    return  Math.round((serverY / app.Screen.StreamHeight)*65535);
 }
 
 

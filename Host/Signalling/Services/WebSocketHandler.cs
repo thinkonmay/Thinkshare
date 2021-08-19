@@ -217,7 +217,12 @@ namespace Signalling.Services
 
         public async Task Close(WebSocket ws)
         {
-            await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            try{
+                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            } catch (WebSocketException) {
+                return;
+            }
+
         }
 
 

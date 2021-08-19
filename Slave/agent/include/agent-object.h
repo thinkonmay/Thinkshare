@@ -160,6 +160,9 @@ AgentState*										agent_get_state						(AgentObject* self);
 void											agent_set_state						(AgentObject* self,
 																					 AgentState* state);
 
+void											agent_set_main_loop					(AgentObject* agent,
+																					 GMainLoop* loop);
+
 
 gchar*											agent_get_current_state_string		(AgentObject* self);
 

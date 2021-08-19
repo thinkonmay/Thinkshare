@@ -1,7 +1,7 @@
 #ifndef __GENERAL_CONSTANT_H__
 #define __GENERAL_CONSTANT_H__
 
-
+#define RECONNECT_INTERVAL            10000
 #define CURRENT_DIR                   "C:\\ThinkMay"
 
 #define SESSION_CORE_BINARY           CURRENT_DIR"\\bin\\session-core.exe"
