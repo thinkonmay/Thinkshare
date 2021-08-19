@@ -37,178 +37,292 @@
 // viewmodel property:
 }
 
-
-
-
-<script src="http://192.168.1.6:81/src/key-translate.js?ts=1"></script>
-<script src="http://192.168.1.6:81/src/input.js?ts=1"></script>
-<script src="http://192.168.1.6:81/src/signalling.js?ts=1"></script>
-<script src="http://192.168.1.6:81/src/webrtc.js?ts=1"></script>
 <script type="text/javascript">
-    var ScaleLoader = VueSpinner.ScaleLoader;
-    var serverStatus = null;
-    var app = new Vue({
+var ScaleLoader = VueSpinner.ScaleLoader;
+var serverStatus = null;
+var app = new Vue({
 
-        el: '#app',
+    el: '#app',
 
-        components: {
-            ScaleLoader
-        },
+    components: {
+        ScaleLoader
+    },
 
-        data() 
-        {
-            return {                
-                hostUrl: @Html.Raw(HostUrl),
-                SessionClientID: @SessionClientID, 
-                ClientID: @ClientID,
-                
+    data() 
+    {
+        return {                
+            hostUrl: @Html.Raw(HostUrl),
+            SessionClientID: @SessionClientID, 
+            ClientID: @ClientID,
 
-                showStart: false,
-                showDrawer: false,
+            showStart: false,
+            showDrawer: false,
 
-                logEntries: [],
-                debugEntries: [],
+            loadingText: '',
 
-                status: 'connecting',
-                loadingText: '',
+            connectionVideoDecoder: "unknown",
+            connectionStatType: "unknown",
+            connectionAudioCodecName: "unknown",
+            connectionVideoCodecName: "unknown",
+            connectionResolution: "",
+
+            /*parameter serve for session initialization */
+            Clientoffer: @ClientOffer,
+            SignallingUrl: @Html.Raw(SignallingUrl),
+
+            /*default value from client session fetch from server*/
+            QoEMode: @QoEMode,
+            AudioCodec: @AudioCodec,
+            VideoCodec: @VideoCodec,
+
+            /**
+            * default Value of QoE metric, fetch from server
+            */
+            Screen:
+            {
+                /*
+                * slave screen (determined in session initialize step)
+                */
+                "SlaveWidth":@ScreenWidth,
+                "SlaveHeight": @ScreenHeight,
+
+                /*
+                * frame resolution used to transport to client
+                */
+                "StreamWidth": 0,
+                "SreamHeight": 0,
+
+
+                /*
+                * client resolution display on client screen
+                */
+                "ClientWidth": 0,
+                "ClientHeight": 0,
+
+                "fraction": 0
+            },
+
+            /**
+            * variable used to convert client and slave mouse position
+            */
+            Mouse: {
+                /**
+                 * relation between frame size and actual window size
+                 * (used to determine relation between client mouse and its position on slave screen)
+                 */
+                "mouseMultiX": 0,
+                "mouseMultiY": 0,
 
                 /**
-                * list contain window resolution [width,height]
-                */
-                windowResolution: null,
-
-                connectionStatType: "unknown",
-                connectionAudioCodecName: "unknown",
-                connectionVideoCodecName: "unknown",
-                connectionResolution: "",
-
-                turnSwitch: (window.localStorage.getItem("turnSwitch") === "true"),
-
-
-                /*parameter serve for session initialization */
-                Clientoffer: @ClientOffer,
-                SignallingUrl: @Html.Raw(SignallingUrl),
-
-                /*default value from client session fetch from server*/
-                QoEMode: @QoEMode,
-                AudioCodec: @AudioCodec,
-                VideoCodec: @VideoCodec,
+                 * 
+                 */
+                "mouseOffsetX": 0,
+                "mouseOffsetY": 0,
 
                 /**
-                * default Value of QoE metric, fetch from server
+                *
                 */
-                defaultScreenWidth: @ScreenWidth,
-                defaultScreenHeight: @ScreenHeight,
-                defaultFrameRate: @Framerate,
-                defaultBitrate: @Bitrate,
+                "centerOffsetX": 0,
+                "centerOffsetY": 0,
 
-
-
-                /*Metric serve for adaptive bitrate algorithm */
-                currentTime: 0,
-                adaptiveAudioBitrate: @Bitrate,
-                adaptiveVideoBitrate: @Bitrate,
-                adaptiveFramerate: @Framerate,
-                connectionVideoDecoder: "unknown",
-
-                windowsWidth:0,
-                windowsHeight:0,
-
-                adaptivePacketsLost: 0,
-                adaptiveAudioLatency: 0,
-                adaptiveVideoLatency: 0,
-                adaptiveTotalBandwidth:  @Bitrate,
-
-                
-            };
-        },
-
-        methods: 
-        {
-            enterFullscreen() {
-                // Request full screen mode.
-                app.logEntries.push(applyTimestamp("[VIDEO] [Switch to full screen mode]"));
-                videoElement.parentElement.requestFullscreen();
-            },
-            playVideo() {
-                app.logEntries.push(applyTimestamp("[VIDEO] [Start remote control]"));
-                webrtc.playVideo();
-                this.showStart = false;
-            },
-            connectServer(){
-                app.logEntries.push("[SIGNALLING] [Connecting to server]");
-                signalling.connect();
-            },
-            getServerStatus(){
-                serverStatus ? app.logEntries.push(serverStatus): app.logEntries.push("Unconnected server");
-            },
-            resetStream(){
-                /**
-                * reset webrtc connection
+                /*
+                *
                 */
-                webrtc.input.detach();
-                webrtc._close();
+                "scrollX": 0
+                "scrollY": 0,
+
+                /*
+                *
+                */
+                "frameW":0,
+                "frameH":0,
             },
-            showDrawer(newValue){
-                if(newValue) {
-                    webrtc.input.detach();
-                }
-                else{
-                    webrtc.input.attach();
-                }
+
+            /*
+            * Metric serve for adaptive streaming algorithm
+            */
+            adaptive:
+            {
+                "currentTime": 0,
+                "AudioBitrate": @Bitrate,
+                "VideoBitrate": @Bitrate,
+                "Framerate": @Framerate,
+
+
+                "PacketsLost": 0,
+                "AudioLatency": 0,
+                "VideoLatency": 0,
+                "TotalBandwidth":  @Bitrate,
+            },
+
+            /**
+             * RTP config, use to establish webrtc connection
+             */
+            RTPconfig:   
+            {"iceServers":    
+                [
+                    {
+                        "urls": ["stun:stun.l.google.com:19302"] 
+                    }
+                ],
+                "bundle-policy":"max-compat"
+            },
+
+
+            /**/
+            Websocket: null,
+            Webrtc: null,
+            VideoElement: null,
+            ControlDC: null,
+            HidDC: null,
+
+            local_stream_promise:null,
+
+            /**
+             * signalling state, use to track state error
+            */
+            signalling_state: null,
+            clipboardStatus: true,
+            adaptiveScreenSize: false, ///on testing feature
+
+            enableAudio: true,
             
-            },
-            fileTransfer()
+            EventListeners: [],
+            logEntries: [],
+            debugEntries: []
+        };
+    },
+
+    methods: 
+    {
+        ///enter full screen mode, all functional keywill be activated
+        enterFullscreen() {
+            // Request full screen mode.
+            app.logEntries.push(applyTimestamp("[VIDEO] [Switch to full screen mode]"));
+            videoElement.parentElement.requestFullscreen();
+        },
+        //connect to server method, this method wil be invoked automatically in publish mode 
+        connectServer(){
+            app.VideoElement =  document.getElementById("stream");
+            app.logEntries.push(applyTimestamp("[SIGNALLING] [Connecting to server]"));
+            SignallingConnect();
+        },
+        ///show debug key, only functional in debug mode
+        showDrawer(newValue){
+            if(newValue) {
+                DetachEvent();
+            }
+            else{
+                AttachEvent();
+            }        
+        },
+        onClipboard(Data)
+        {
+            if (app.clipboardStatus === 'enabled') 
             {
-                
-            },
-            terminateSession()
-            {
-                axios.delete(
-                    app.hostUrl+
-                        '/Session/Initialize?sessionClientId='+
-                            app.SessionClientID);
+                navigator.clipboard.writeText(content).catch(err =>  {
+                        app.setDebug('Could not copy text to clipboard: ' + err);
+                    }
+                );
             }
         },
-
-        watch: {
-            videoBitRate(newValue) {
-                window.localStorage.setItem("videoBitRate", newValue.toString());
-            },
-            videoFramerate(newValue) {
-                app.logEntries.push("video frame rate changed to " + newValue);
-                window.localStorage.setItem("videoFramerate", newValue.toString());
-            },
-            audioEnabled(newValue, oldValue) {
-                app.logEntries.push("audio enabled changed from " + oldValue + " to " + newValue);
-            },
-            audioBitRate(newValue) {
-                window.localStorage.setItem("audioBitRate", newValue.toString());
-            },
-            debug(newValue) {
-                window.localStorage.setItem("debug", newValue.toString());
-                // Reload the page to force read of stored value on first load.
-                setTimeout(() => {
-                    document.location.reload();
-                }, 700);
-            },
+        fileTransfer()
+        {
+            
         },
-    });
-
-    var RTPconfig =     
-    {"iceServers":    
-        [
+        ///terminate remote control session by sending terminate signal to session controller on host
+        terminateSession()
+        {
+            axios.get(app.hostUrl+'/Session/Terminate?sessionClientId='+app.SessionClientID);
+        },
+        ///report qoe reset to slave, after that, slave device will be restarted
+        QoeReset()
+        {
+            var MESSAGE = 
             {
-                "urls": @Html.Raw(StunServer) 
+                "Opcode": Opcode.RESET_QOE,
+                "From": Module.CLIENT_MODULE,
+                "To": Module.AGENT_MODULE,
+                "Data": {
+                    "ScreenHeight": app.ScreenHeight,
+                    "ScreenWidth": app.ScreenWidth,
+                    "QoEMode": app.QoEMode,
+                    "VideoCodec": app.VideoCodec,
+                    "AudioCodec":app.AudioCodec          
+                }
             }
-        ]
-    }
+            sendControlDC(
+                Opcode.RESET_QOE,
+                Module.AGENT_MODULE,
+                JSON.stringify(MESSAGE)
+            );
+        },
+        ///debug entries for monitoring potential error
+        setDebug(message)
+        {
+            console.log(message);
+            app.debugEntries.push(applyTimestamp(message));
+        },
+        ///report errror in debug mode
+        setError(message)
+        {
+            console.log(message);
+            app.debugEntries.push(applyTimestamp(message));
+        },
+        ///method 
+        setStatus(message)
+        {
+            console.log(message);
+            app.logEntries.push(applyTimestamp(message));
+        }
+    },
 
-    var videoElement = document.getElementById("stream");
-    var signalling = new Signalling(new URL(app.SignallingUrl), app.SessionClientID, app.Clientoffer);
-    var webrtc = new WebRTC(signalling, videoElement, RTPconfig);
+    watch: {
+        showDrawer(newValue) {
+            // Detach inputs when menu is shown.
+            if (newValue === true) {
+                webrtc.input.detach();
+            } else {
+                webrtc.input.attach();
+            }
+        },
+        audioEnabled(newValue, oldValue) {
+            if(newValue === true)
+            {
+                                
+            }
+        },
+        signalling_state(newValue) {
+            switch (newValue) {
+                case "connected":
+                    app.setStatus("Connection complete");
+                    break;
+
+                case "disconnected":
+                    app.setError("Peer connection disconnected");
+                    app.VideoElement.load();
+                    break;
+
+                case "failed":
+                    app.setError("Peer connection failed");
+                    app.VideoElement.load();
+                    break;
+                default:
+            }
+        }
+    },
+});
+
+
 </script>
-<script src="http://192.168.1.6:81/src/app.js?ts=1"></script>
+<script>
+var 
+applyTimestamp = (msg) => {
+    var now = new Date();
+    var ts = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+    return "[" + ts + "]" + " " + msg;
+}
+</script>
 <script type="text/javascript">
     var Module = @Html.Raw(Model.ModuleJson);
     var HidOpcode = @Html.Raw(Model.HidOpcodeJson);
@@ -216,4 +330,8 @@
     var QoEMode = @Html.Raw(Model.QoEModeJson);
     var Codec = @Html.Raw(Model.CodecJson);
 </script>
+<script src="http://192.168.1.6:81/src/key-translate.js?ts=1"></script>
+<script src="http://192.168.1.6:81/src/input.js?ts=1"></script>
+<script src="http://192.168.1.6:81/src/signalling.js?ts=1"></script>
+<script src="http://192.168.1.6:81/src/webrtc.js?ts=1"></script>
 

@@ -8,7 +8,6 @@
     <link href="http://192.168.1.6:81/css/dev.css" rel="stylesheet" />
     <title>Remote control page</title>
 </head>
-
 <body>
     <div id="app">
         <v-app>
@@ -60,7 +59,7 @@
             </ul>
 
             <div id="video_container" class="video-container">
-                <video id="stream" preload="none" playsinline>
+                <video id="stream" autoplay playsinline>
                     Your browser doesn't support video
                 </video>
             </div>
@@ -70,7 +69,7 @@
 
 
 
-            <div class="loading">
+            <!-- <div class="loading">
                 <div v-if="status === 'failed'">
                     <v-btn v-on:click="location.reload()" color="#E0E0E0">
                         reload
@@ -84,24 +83,17 @@
                     <scale-loader size="200px" :loading="(status !== 'connected')" color="#E0E0E0"></scale-loader>
                     <div v-if="(status !== 'connected')" class="loading-text"></div>
                 </div>
-            </div>
+            </div> -->
         </v-app>
     </div>
 </body>
-
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-spinner@1.0.3/dist/vue-spinner.min.js"></script>
-
-
-
-
 @RenderBody()
-
 <script>
     app.connectServer();
-
 </script>
 
 </html>
