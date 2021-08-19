@@ -21,14 +21,14 @@ class Header extends StatelessWidget {
           ),
         if (!Responsive.isMobile(context))
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
-        Expanded(child: SearchField()),
+        // Expanded(child: SearchField()),
         ProfileCard() 
       ],
     );
   }
 }
 
-class ProfileCard extends StatelessWidget {
+class   ProfileCard extends StatelessWidget {
   const ProfileCard({
     Key? key,
   }) : super(key: key);

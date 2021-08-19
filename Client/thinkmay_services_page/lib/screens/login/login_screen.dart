@@ -40,8 +40,8 @@ class Menu extends StatelessWidget {
             children: [
               _menuItem(title: 'Home'),
               _menuItem(title: 'About us'),
-              _menuItem(title: 'Contact us'),
-              _menuItem(title: 'Help'),
+              // _menuItem(title: 'Contact us'),
+              // _menuItem(title: 'Help'),
             ],
           ),
           Row(

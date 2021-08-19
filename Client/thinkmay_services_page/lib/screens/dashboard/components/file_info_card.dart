@@ -26,6 +26,8 @@ class FileInfoCard extends StatefulWidget {
 }
 
 class _FileInfoCardState extends State<FileInfoCard> {
+  int stateConnect = 1;
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +63,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                   // color: info.color,
                 ),
               ),
-              Text("Device 1",
+              Text("Slave không thiểu năng",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: Colors.black)),
@@ -78,7 +80,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
           //   percentage: info.percentage,
           // ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
                 "RAM:",
@@ -86,6 +88,9 @@ class _FileInfoCardState extends State<FileInfoCard> {
                     .textTheme
                     .caption!
                     .copyWith(color: Colors.black45),
+              ),
+              SizedBox(
+                width: 10.0,
               ),
               Text(
                 "${widget.slave.RAMcapacity} GB",
@@ -97,27 +102,23 @@ class _FileInfoCardState extends State<FileInfoCard> {
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      "CPU:",
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .copyWith(color: Colors.black45),
-                    ),
-                  ],
-                ),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                "CPU:",
+                style: Theme.of(context)
+                    .textTheme
+                    .caption!
+                    .copyWith(color: Colors.black45),
+              ),
+              SizedBox(
+                width: 10.0,
               ),
               Container(
-                width: 150.0,
-                margin: EdgeInsets.only(right: 5.0),
+                width: MediaQuery.of(context).size.width * 0.12,
                 child: Text(
-                  "${widget.slave.CPU}",
+                  widget.slave.CPU,
                   maxLines: 2,
                   style: Theme.of(context)
                       .textTheme
@@ -128,7 +129,8 @@ class _FileInfoCardState extends State<FileInfoCard> {
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
                 "GPU:",
@@ -137,18 +139,23 @@ class _FileInfoCardState extends State<FileInfoCard> {
                     .caption!
                     .copyWith(color: Colors.black45),
               ),
-              Text(
-                "${widget.slave.GPU}",
-                maxLines: 3,
-                style: Theme.of(context)
-                    .textTheme
-                    .caption!
-                    .copyWith(color: Colors.black),
+              SizedBox(width: 10),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.12,
+                child: Text(
+                  "${widget.slave.GPU}",
+                  maxLines: 2,
+                  style: Theme.of(context)
+                      .textTheme
+                      .caption!
+                      .copyWith(color: Colors.black),
+                ),
               ),
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
                 "OS:",
@@ -157,13 +164,19 @@ class _FileInfoCardState extends State<FileInfoCard> {
                     .caption!
                     .copyWith(color: Colors.black45),
               ),
-              Text(
-                "${widget.slave.OS}",
-                maxLines: 3,
-                style: Theme.of(context)
-                    .textTheme
-                    .caption!
-                    .copyWith(color: Colors.black),
+              SizedBox(
+                width: 16.0,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.12,
+                child: Text(
+                  "${widget.slave.OS}",
+                  maxLines: 2,
+                  style: Theme.of(context)
+                      .textTheme
+                      .caption!
+                      .copyWith(color: Colors.black),
+                ),
               ),
             ],
           ),
@@ -172,15 +185,25 @@ class _FileInfoCardState extends State<FileInfoCard> {
               child: Padding(
                 padding: EdgeInsets.only(top: 5.0),
                 child: new RaisedButton(
-                  color: Colors.greenAccent,
+                  color: stateConnect == 1 ? Colors.greenAccent: Colors.redAccent,
                   shape: new RoundedRectangleBorder(
                       borderRadius:
                           new BorderRadius.all(new Radius.circular(15.0))),
                   onPressed: () async {
+                    setState(() {
+                      switch (stateConnect) {
+                        case 0:
+                          stateConnect = 1;
+                          break;
+                        case 1:
+                          stateConnect = 0;
+                          break;
+                      }
+                    });
                     html.window.open('''
 http://192.168.1.6:81/Session/Initialize?
-ClientId=5935953&
-SlaveId=123345&
+ClientId=$clientID&
+SlaveId=${widget.slave.ID}&
 ScreenWidth=${MediaQuery.of(context).size.width.toInt()}&
 ScreenHeight=${MediaQuery.of(context).size.height.toInt()}&
 bitrate=1000000&
@@ -191,11 +214,11 @@ AudioCodec=4
                   },
                   child: Container(
                     // height: 5.0,
-                    width: 80.0,
+                    width: 90.0,
                     padding: const EdgeInsets.all(8.0),
                     child: Center(
                       child: Text(
-                        "Connect",
+                        stateConnect == 1 ? "Connect" : "Disconnect",
                         style: TextStyle(color: Colors.black, fontSize: 12),
                       ),
                     ),
