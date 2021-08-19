@@ -27,21 +27,6 @@ class MyFiles extends StatelessWidget {
                   .subtitle1!
                   .copyWith(color: Colors.black),
             ),
-            ElevatedButton.icon(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  horizontal: defaultPadding * 1.5,
-                  vertical:
-                      defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
-                ),
-              ),
-              onPressed: () {},
-              icon: Icon(Icons.add),
-              label: Text("Add New",
-                  style: TextStyle(
-                    color: Colors.black,
-                  )),
-            ),
           ],
         ),
         SizedBox(height: defaultPadding),
