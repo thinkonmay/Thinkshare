@@ -150,11 +150,11 @@ send_message(SessionCore* self,
 	}
 	/*write to std out stream if destination is not client module*/
 	case HOST_MODULE:
-		send_message_to_agent(self, &string_data, strlen(string_data));
+		send_message_to_agent(self, string_data, strlen(string_data));
 	case LOADER_MODULE:
-		send_message_to_agent(self, &string_data, strlen(string_data));
+		send_message_to_agent(self, string_data, strlen(string_data));
 	case AGENT_MODULE:
-		send_message_to_agent(self, &string_data, strlen(string_data));
+		send_message_to_agent(self, string_data, strlen(string_data));
 	}
 }
 

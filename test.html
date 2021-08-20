@@ -91,6 +91,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-spinner@1.0.3/dist/vue-spinner.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
 
 <script type="text/javascript">
 var ScaleLoader = VueSpinner.ScaleLoader;
@@ -107,7 +108,7 @@ var app = new Vue({
     {
         return {                
             hostUrl: "http://192.168.1.6:81",
-            SessionClientID: 1178888529, 
+            SessionClientID: 1595344371, 
             ClientID: 5935953,
 
             showStart: false,
@@ -145,7 +146,7 @@ var app = new Vue({
                 * frame resolution used to transport to client
                 */
                 "StreamWidth": 0,
-                "SreamHeight": 0,
+                "StreamHeight": 0,
 
 
                 /*
@@ -253,13 +254,12 @@ var app = new Vue({
         ///enter full screen mode, all functional keywill be activated
         enterFullscreen() {
             // Request full screen mode.
-            app.logEntries.push(applyTimestamp("[VIDEO] [Switch to full screen mode]"));
             app.VideoElement.parentElement.requestFullscreen();
         },
         //connect to server method, this method wil be invoked automatically in publish mode 
         connectServer(){
             app.VideoElement =  document.getElementById("stream");
-            app.logEntries.push(applyTimestamp("[SIGNALLING] [Connecting to server]"));
+            app.setDebug("Connecting to server");
             SignallingConnect();
         },
         ///show debug key, only functional in debug mode
@@ -288,7 +288,7 @@ var app = new Vue({
         ///terminate remote control session by sending terminate signal to session controller on host
         terminateSession()
         {
-            axios.get(app.hostUrl+'/Session/Terminate?sessionClientId='+app.SessionClientID);
+            axios.delete(app.hostUrl+'/Session/Terminate?sessionClientId='+app.SessionClientID);
         },
         ///report qoe reset to slave, after that, slave device will be restarted
         QoeReset()
@@ -393,9 +393,7 @@ applyTimestamp = (msg) => {
 <script src="http://192.168.1.6:81/src/client-message.js?ts=1"></script>
 <script src="http://192.168.1.6:81/src/clipboard.js?ts=1"></script>
 
-
 <script>
     app.connectServer();
 </script>
-
 </html>

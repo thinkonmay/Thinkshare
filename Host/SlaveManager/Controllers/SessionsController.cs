@@ -137,6 +137,9 @@ namespace SlaveManager.Controllers
 
         }
 
+
+    
+
         /// <summary>
         /// Terminate session 
         /// </summary>

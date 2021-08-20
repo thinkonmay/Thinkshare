@@ -184,7 +184,7 @@ get_json_exit_state(ExitState* state)
 
 	if(state->error != NULL)
 	{
-		json_object_set_int_member(message, "Message", state->error->message);
+		json_object_set_string_member(message, "Message", state->error->message);
 	}
 	else
 	{
