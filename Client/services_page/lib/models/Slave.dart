@@ -9,6 +9,7 @@ class Slave {
   final String GPU;
   final int RAMcapacity;
   final String OS;
+  final 
 
   Slave({
     this.ID,

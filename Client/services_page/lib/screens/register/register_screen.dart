@@ -322,19 +322,39 @@ class _BodyState extends State<Body> {
           'fullName': "chuahe",
           'dateOfBirth': "2021-08-13T15:30:22.127Z"
         }),
+        /* 
+          UserName = model.Email,
+                    Email = model.Email,
+                    FullName = model.FullName,
+                    DateOfBirth = model.DateOfBirth
+        */
       );
       print(response.body);
       final Map parsed = json.decode(response.body);
+      /*
+        ErrorCode = 0,
+                UserEmail = email,
+                Message = "Login successful",
+                Token = token,
+                ValidUntil = expiry,
+                ClientID = _clientID,
+      */
+
       print(parsed['errorCode']);
       if (parsed['errorCode'] == 0) {
         print("Register Success");
         closeProgressDialog(context);
+         showMaterialDialog(
+             context,
+           "Đăng ký thành công",
+             "Vui lòng đăng nhập để truy vào Website",
+             "OK");
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => LoginScreen()));
       } else {
         closeProgressDialog(context);
         showMaterialDialog(
-            context, "Đăng ký thất bại", "Tài khoản của bạn đã tồn tại!", "OK");
+            context, parsed['ErrorCode'], parsed['Message'], "OK");
       }
     }
   }

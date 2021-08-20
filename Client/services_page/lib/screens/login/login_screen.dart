@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 int clientID = 0;
+String token = "";
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({Key key}) : super(key: key);
@@ -306,6 +307,19 @@ class _BodyState extends State<Body> {
         }),
       );
       final Map parsed = json.decode(response.body);
+      /*
+      *** Successful
+          ErrorCode = 0,
+          UserEmail = email,
+          Message = "Login successful",
+          Token = token,
+          ValidUntil = expiry,
+          ClientID = _clientID,
+       *** Failure
+         ErrorCode = -1,
+                Message = "Login failed",
+                UserEmail = email 
+      */
       print(parsed);
       clientID = parsed['clientID'];
       print(parsed['errorCode']);
@@ -319,10 +333,7 @@ class _BodyState extends State<Body> {
       } else {
         closeProgressDialog(context);
         showMaterialDialog(
-            context,
-            "Đăng nhập thất bại",
-            "Tài khoản đăng nhập không đúng! \nHoặc bạn chưa xác thực tài khoản của mình!",
-            "OK");
+            context, parsed['ErrorCode'], parsed['Message'], "OK");
       }
     }
   }
