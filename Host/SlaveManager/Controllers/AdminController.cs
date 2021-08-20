@@ -211,7 +211,7 @@ namespace SlaveManager.Controllers
             
             Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
 
-            ses.EndTime = DateTime.UtcNow;
+            ses.EndTime = DateTime.Now;
             await _db.SaveChangesAsync();
 
             if (ses == null) return BadRequest();

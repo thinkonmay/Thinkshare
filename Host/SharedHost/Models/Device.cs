@@ -27,6 +27,7 @@ namespace SharedHost.Models
         public int ID { get; set; }
 
         public int? SessionClientID { get; set; }
+        public string? serviceState { get; set; }
     }
 
     public class ClientDeviceCapabilities

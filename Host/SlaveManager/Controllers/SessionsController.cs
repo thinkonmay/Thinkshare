@@ -26,8 +26,7 @@ namespace SlaveManager.Controllers
 {
     [Route("/Session")]
     [ApiController]
-    //user
-    // TODO: Add URL routing for REST requests for signalling & slave manager servers
+    [Authorize]
     public class SessionsController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -39,13 +38,16 @@ namespace SlaveManager.Controllers
         private readonly IAdmin _admin;
 
         private readonly RestClient Signalling;
+        
+        private readonly UserManager<UserAccount> _userManager;
 
-        public SessionsController(ApplicationDbContext db,SystemConfig config, ISlavePool slavePool, IAdmin admin)
+        public SessionsController(ApplicationDbContext db,SystemConfig config, ISlavePool slavePool, IAdmin admin,UserManager<UserAccount> userManager)
         {
             _db = db;
             _admin = admin;
             _slavePool = slavePool;
             Configuration = config;
+            _userManager = userManager;
             
             Signalling = new RestClient("http://"+Configuration.BaseUrl+":"+ Configuration.SignallingPort+"/System");
         }
@@ -53,7 +55,6 @@ namespace SlaveManager.Controllers
         /// <summary>
         /// initialize session
         /// </summary>
-        /// <param name="ClientId"></param>
         /// <param name="SlaveId"></param>
         /// <param name="ScreenWidth"></param>
         /// <param name="ScreenHeight"></param>
@@ -63,8 +64,9 @@ namespace SlaveManager.Controllers
         /// <param name="AudioCodec"></param>
         /// <returns></returns>
         [HttpGet("Initialize")]
-        public async Task<IActionResult> Create(int ClientId, int SlaveId, int ScreenWidth, int ScreenHeight,int bitrate, int QoEMode, int VideoCodec, int AudioCodec)
+        public async Task<IActionResult> Create(int SlaveId, int ScreenWidth, int ScreenHeight,int bitrate, int QoEMode, int VideoCodec, int AudioCodec)
         {
+            var ClientId =  _userManager.GetUserAsync(User).Id;
             var cap = new ClientDeviceCapabilities();
             cap.screenWidth= ScreenWidth;
             cap.screenHeight = ScreenHeight;
@@ -147,16 +149,17 @@ namespace SlaveManager.Controllers
         /// <returns></returns>
         [HttpDelete("Terminate")]
         public async Task<IActionResult> Terminate(int sessionClientId)
-        {
-            
-            Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
+        {            
+            var ClientId =  _userManager.GetUserAsync(User).Id;
+            Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId 
+                && s.ClientID == ClientId  && !s.EndTime.HasValue).FirstOrDefault();
             if(ses == null)
             {
                 return BadRequest("session not found");
             }
             await _admin.ReportSessionTermination(ses.SlaveID, ses.ClientID);
 
-            ses.EndTime = DateTime.UtcNow;
+            ses.EndTime = DateTime.Now;
             await _db.SaveChangesAsync();
 
             if (ses == null) return BadRequest();
@@ -190,8 +193,10 @@ namespace SlaveManager.Controllers
         /// <returns></returns>
         [HttpDelete("Disconnect")]
         public async Task<IActionResult> DisconnectRemoteControl(int sessionClientId)
-        {
-            Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
+        {            
+            var ClientId =  _userManager.GetUserAsync(User).Id;
+            Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId 
+                && s.ClientID == ClientId && !s.EndTime.HasValue).FirstOrDefault();
 
             if (ses == null) return BadRequest();
 
@@ -214,8 +219,10 @@ namespace SlaveManager.Controllers
         /// <returns></returns>
         [HttpPost("Reconnect")]
         public async Task<IActionResult> ReconnectRemoteControl(int sessionClientId)
-        {
-            Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
+        {            
+            var ClientId =  _userManager.GetUserAsync(User).Id;
+            Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId 
+                && s.ClientID == ClientId && !s.EndTime.HasValue).FirstOrDefault();
 
             if (ses == null) return BadRequest();
 

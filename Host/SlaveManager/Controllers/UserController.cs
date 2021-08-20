@@ -50,9 +50,6 @@ namespace SlaveManager.Controllers
                     // Add Device Information to open device Id list;
                     var slave = _db.Devices.Find(i.Item1);
 
-                    var session = _db.Sessions.Where(
-                        s => s.ClientID == user.Id && s.SlaveID == slave.ID && !s.EndTime.HasValue).FirstOrDefault();
-
                     var device_infor = new SlaveDeviceInformation()
                     {
                         CPU = slave.CPU,
@@ -60,10 +57,46 @@ namespace SlaveManager.Controllers
                         RAMcapacity = slave.RAMcapacity,
                         OS = slave.OS,
                         ID = slave.ID,
-                        SessionClientID = (session == null) ? -1 : session.SessionClientID
+                    SessionClientID = null
                     };
                     resp.Add(device_infor);
                 }
+            }
+            return Ok(JsonConvert.SerializeObject(resp));
+        }
+
+
+
+        /// <summary>
+        /// Get list of available slave device, contain device information
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("FetchSession")]
+        public async Task<IActionResult> UserGetCurrentSesssion()
+        {
+            var user = _userManager.GetUserAsync(User);
+
+            List<SlaveDeviceInformation> resp = new List<SlaveDeviceInformation>();
+
+            var session = _db.Sessions.Where(
+                s => s.ClientID == user.Id  && !s.EndTime.HasValue);
+
+            foreach (var i in session)
+            {
+                // Add Device Information to open device Id list;
+                var slave = _db.Devices.Find(i.SlaveID);
+
+                var device_infor = new SlaveDeviceInformation()
+                {
+                    CPU = slave.CPU,
+                    GPU = slave.GPU,
+                    OS = slave.OS,
+                    ID = slave.ID,
+                    serviceState = _slavePool.GetSlaveDevice(i.SlaveID).GetSlaveState(),
+                    RAMcapacity = slave.RAMcapacity,
+                    SessionClientID = session.SessionClientID
+                };
+                resp.Add(device_infor);                
             }
             return Ok(JsonConvert.SerializeObject(resp));
         }
