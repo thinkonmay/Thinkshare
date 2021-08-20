@@ -15,8 +15,8 @@ import '../../../constants.dart';
 
 class FileInfoCard extends StatefulWidget {
   const FileInfoCard({
-    Key? key,
-    required this.slave,
+    Key key,
+    this.slave,
   }) : super(key: key);
 
   final Slave slave;
@@ -86,7 +86,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                 "RAM:",
                 style: Theme.of(context)
                     .textTheme
-                    .caption!
+                    .caption
                     .copyWith(color: Colors.black45),
               ),
               SizedBox(
@@ -96,7 +96,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                 "${widget.slave.RAMcapacity} GB",
                 style: Theme.of(context)
                     .textTheme
-                    .caption!
+                    .caption
                     .copyWith(color: Colors.black),
               ),
             ],
@@ -109,7 +109,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                 "CPU:",
                 style: Theme.of(context)
                     .textTheme
-                    .caption!
+                    .caption
                     .copyWith(color: Colors.black45),
               ),
               SizedBox(
@@ -122,7 +122,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                   maxLines: 2,
                   style: Theme.of(context)
                       .textTheme
-                      .caption!
+                      .caption
                       .copyWith(color: Colors.black),
                 ),
               ),
@@ -136,7 +136,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                 "GPU:",
                 style: Theme.of(context)
                     .textTheme
-                    .caption!
+                    .caption
                     .copyWith(color: Colors.black45),
               ),
               SizedBox(width: 10),
@@ -147,7 +147,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                   maxLines: 2,
                   style: Theme.of(context)
                       .textTheme
-                      .caption!
+                      .caption
                       .copyWith(color: Colors.black),
                 ),
               ),
@@ -161,7 +161,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                 "OS:",
                 style: Theme.of(context)
                     .textTheme
-                    .caption!
+                    .caption
                     .copyWith(color: Colors.black45),
               ),
               SizedBox(
@@ -174,7 +174,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                   maxLines: 2,
                   style: Theme.of(context)
                       .textTheme
-                      .caption!
+                      .caption
                       .copyWith(color: Colors.black),
                 ),
               ),
@@ -185,7 +185,8 @@ class _FileInfoCardState extends State<FileInfoCard> {
               child: Padding(
                 padding: EdgeInsets.only(top: 5.0),
                 child: new RaisedButton(
-                  color: stateConnect == 1 ? Colors.greenAccent: Colors.redAccent,
+                  color:
+                      stateConnect == 1 ? Colors.greenAccent : Colors.redAccent,
                   shape: new RoundedRectangleBorder(
                       borderRadius:
                           new BorderRadius.all(new Radius.circular(15.0))),
@@ -235,13 +236,13 @@ AudioCodec=4
 
 class ProgressLine extends StatelessWidget {
   const ProgressLine({
-    Key? key,
+    Key key,
     this.color = primaryColor,
-    required this.percentage,
+    this.percentage,
   }) : super(key: key);
 
-  final Color? color;
-  final int? percentage;
+  final Color color;
+  final int percentage;
 
   @override
   Widget build(BuildContext context) {
@@ -251,13 +252,13 @@ class ProgressLine extends StatelessWidget {
           width: double.infinity,
           height: 5,
           decoration: BoxDecoration(
-            color: color!.withOpacity(0.1),
+            color: color.withOpacity(0.1),
             borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
         ),
         LayoutBuilder(
           builder: (context, constraints) => Container(
-            width: constraints.maxWidth * (percentage! / 100),
+            width: constraints.maxWidth * (percentage / 100),
             height: 5,
             decoration: BoxDecoration(
               color: color,

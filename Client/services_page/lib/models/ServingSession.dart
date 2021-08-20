@@ -1,4 +1,4 @@
-class ServingSession{
+class ServingSession {
   final int ClientID;
   final int SlaveID;
   final int SessionSlaveID;
@@ -10,35 +10,31 @@ class ServingSession{
   final bool ClientOffer;
   final String QoE;
 
-  ServingSession({
-    required this.ClientID,
-    required this.SlaveID,
-    required this.SessionSlaveID,
-    required this.SessionClientID,
-    required this.StartTime,
-    required this.EndTime,
-    required this.SignallingUrl,
-    required this.StunServer,
-    required this.ClientOffer,
-    required this.QoE
-  });
+  ServingSession(
+      {this.ClientID,
+      this.SlaveID,
+      this.SessionSlaveID,
+      this.SessionClientID,
+      this.StartTime,
+      this.EndTime,
+      this.SignallingUrl,
+      this.StunServer,
+      this.ClientOffer,
+      this.QoE});
 
-  factory ServingSession.fromJson(Map<String, dynamic> json){
+  factory ServingSession.fromJson(Map<String, dynamic> json) {
     return ServingSession(
-      ClientID: json['ClientID'],
-      SlaveID: json['SlaveID'],
-      SessionSlaveID: json['SessionSlaveID'],
-      SessionClientID: json['SessionClientID'],
-      StartTime: json['StartTime'],
-      EndTime: json['EndTime'],
-      SignallingUrl: json['SignallingUrl'],
-      StunServer: json['StunServer'],
-      ClientOffer: json['ClientOffer'],
-      QoE: json['QoE']
-    );
+        ClientID: json['ClientID'],
+        SlaveID: json['SlaveID'],
+        SessionSlaveID: json['SessionSlaveID'],
+        SessionClientID: json['SessionClientID'],
+        StartTime: json['StartTime'],
+        EndTime: json['EndTime'],
+        SignallingUrl: json['SignallingUrl'],
+        StunServer: json['StunServer'],
+        ClientOffer: json['ClientOffer'],
+        QoE: json['QoE']);
   }
-
-
 
   /*
   "ClientID": 0,

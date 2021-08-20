@@ -7,7 +7,7 @@ import '../../../constants.dart';
 
 class RecentFiles extends StatelessWidget {
   const RecentFiles({
-    Key? key,
+    Key key,
   }) : super(key: key);
 
   @override
@@ -23,7 +23,7 @@ class RecentFiles extends StatelessWidget {
         children: [
           Text(
             "Application installed",
-            style: Theme.of(context).textTheme.subtitle1!.copyWith(color: Colors.black),
+            style: Theme.of(context).textTheme.subtitle1.copyWith(color: Colors.black),
           ),
           SizedBox(
             width: double.infinity,
@@ -69,13 +69,13 @@ DataRow recentFileDataRow(RecentFile fileInfo) {
         Row(
           children: [
             SvgPicture.asset(
-              fileInfo.icon!,
+              fileInfo.icon,
               height: 30,
               width: 30,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-              child: Text(fileInfo.title!,
+              child: Text(fileInfo.title,
                   style: TextStyle(
                     color: Colors.black,
                   )),
@@ -83,11 +83,11 @@ DataRow recentFileDataRow(RecentFile fileInfo) {
           ],
         ),
       ),
-      DataCell(Text(fileInfo.date!,
+      DataCell(Text(fileInfo.date,
           style: TextStyle(
             color: Colors.black,
           ))),
-      DataCell(Text(fileInfo.version!,
+      DataCell(Text(fileInfo.version,
           style: TextStyle(
             color: Colors.black,
           ))),

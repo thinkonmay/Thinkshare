@@ -2,9 +2,9 @@ import 'package:admin/constants.dart';
 import 'package:flutter/material.dart';
 
 class CloudStorageInfo {
-  final String? svgSrc, title, totalStorage, nameOfCPU, nameOfGPU;
-  final int? numOfRam, percentage;
-  final Color? color;
+  final String svgSrc, title, totalStorage, nameOfCPU, nameOfGPU;
+  final int numOfRam, percentage;
+  final Color color;
 
   CloudStorageInfo({
     this.svgSrc,

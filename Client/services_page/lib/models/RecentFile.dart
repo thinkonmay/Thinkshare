@@ -1,5 +1,5 @@
 class RecentFile {
-  final String? icon, title, date, version;
+  final String icon, title, date, version;
 
   RecentFile({this.icon, this.title, this.date, this.version});
 }

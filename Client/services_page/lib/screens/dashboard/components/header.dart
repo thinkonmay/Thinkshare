@@ -7,7 +7,7 @@ import '../../../constants.dart';
 
 class Header extends StatelessWidget {
   const Header({
-    Key? key,
+    Key key,
   }) : super(key: key);
 
   @override
@@ -17,7 +17,7 @@ class Header extends StatelessWidget {
         if (!Responsive.isMobile(context))
           Text(
             "Dashboard",
-            style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.black),
+            style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black),
           ),
         if (!Responsive.isMobile(context))
           Spacer(flex: Responsive.isDesktop(context) ? 2 : 1),
@@ -30,7 +30,7 @@ class Header extends StatelessWidget {
 
 class   ProfileCard extends StatelessWidget {
   const ProfileCard({
-    Key? key,
+    Key key,
   }) : super(key: key);
 
   @override

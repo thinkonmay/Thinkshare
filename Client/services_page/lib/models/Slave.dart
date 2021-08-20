@@ -11,11 +11,11 @@ class Slave {
   final String OS;
 
   Slave({
-    required this.ID,
-    required this.CPU,
-    required this.GPU,
-    required this.RAMcapacity,
-    required this.OS,
+    this.ID,
+    this.CPU,
+    this.GPU,
+    this.RAMcapacity,
+    this.OS,
   });
 
   factory Slave.fromJson(Map<String, dynamic> json) {

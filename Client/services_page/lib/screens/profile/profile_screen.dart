@@ -26,7 +26,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               Text(
                 'Do Huy Hoang',
-                style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.black),
+                style: Theme.of(context).textTheme.bodyText1.copyWith(color: Colors.black),
                 textScaleFactor: 2,
                 textAlign: TextAlign.center,
               ),

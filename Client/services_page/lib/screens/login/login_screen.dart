@@ -13,7 +13,7 @@ import 'package:http/http.dart' as http;
 int clientID = 0;
 
 class LoginScreen extends StatelessWidget {
-  LoginScreen({Key? key}) : super(key: key);
+  LoginScreen({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
