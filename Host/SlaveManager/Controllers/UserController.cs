@@ -10,30 +10,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using SlaveManager.Models.User;
 
 namespace SlaveManager.Controllers
 {
     [Route("/User")]
     [ApiController]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly ISlavePool _SlavePool;
+        private readonly UserManager<UserAccount> _userManager;
 
         private readonly ApplicationDbContext _db;
-        public UserController(ISlavePool slavePool, ApplicationDbContext db)
+        public UserController(ISlavePool slavePool, ApplicationDbContext db, UserManager<UserAccount> userManager)
         {
             _SlavePool = slavePool;
             _db = db;
+            _userManager = userManager;
         }
 
         /// <summary>
         /// Get list of available slave device, contain device information
         /// </summary>
-        /// <param name="UserID"></param>
         /// <returns></returns>
         [HttpGet("FetchSlave")]
-        public async Task<IActionResult> UserGetCurrentAvailableDevice(int UserID)
+        public async Task<IActionResult> UserGetCurrentAvailableDevice()
         {
+            var user = _userManager.GetUserAsync(User);
+
             List<SlaveDeviceInformation> resp = new List<SlaveDeviceInformation>();
             var stateList = _SlavePool.GetSystemSlaveState();
 
@@ -44,13 +50,17 @@ namespace SlaveManager.Controllers
                     // Add Device Information to open device Id list;
                     var slave = _db.Devices.Find(i.Item1);
 
+                    var session = _db.Sessions.Where(
+                        s => s.ClientID == user.Id && s.SlaveID == slave.ID && !s.EndTime.HasValue).FirstOrDefault();
+
                     var device_infor = new SlaveDeviceInformation()
                     {
                         CPU = slave.CPU,
                         GPU = slave.GPU,
                         RAMcapacity = slave.RAMcapacity,
                         OS = slave.OS,
-                        ID = slave.ID
+                        ID = slave.ID,
+                        SessionClientID = (session == null) ? -1 : session.SessionClientID
                     };
                     resp.Add(device_infor);
                 }

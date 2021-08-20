@@ -20,11 +20,13 @@ namespace SharedHost.Models
 
     public class SlaveDeviceInformation
     {
-        public string CPU {get;set;}
-        public string GPU {get;set;}
-        public int RAMcapacity {get;set;}
-        public string OS{get;set;}
-        public int ID{get;set;}
+        public string CPU { get; set; }
+        public string GPU { get; set; }
+        public int RAMcapacity { get; set; }
+        public string OS { get; set; }
+        public int ID { get; set; }
+
+        public int? SessionClientID { get; set; }
     }
 
     public class ClientDeviceCapabilities

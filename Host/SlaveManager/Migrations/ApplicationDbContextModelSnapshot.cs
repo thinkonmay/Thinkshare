@@ -225,7 +225,9 @@ namespace SlaveManager.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("StartTime")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("current_timestamp");
 
                     b.Property<string>("StunServer")
                         .HasColumnType("text");
@@ -307,9 +309,6 @@ namespace SlaveManager.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ClientID")
                         .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")

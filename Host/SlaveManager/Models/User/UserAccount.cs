@@ -11,7 +11,6 @@ namespace SlaveManager.Models.User
         /// </summary>
         //public virtual ICollection<StorageBlock> currentStorage { get; set; }
 
-        public int ClientID { get; set; }
         public string FullName { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public DateTime? Created { get; set; }

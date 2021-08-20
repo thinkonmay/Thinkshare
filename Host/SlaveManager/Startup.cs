@@ -20,8 +20,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-using static System.Environment;
 using SignalRChat.Hubs;
 
 namespace SlaveManager
@@ -44,15 +42,11 @@ namespace SlaveManager
                     builder => builder.AllowAnyOrigin());
             });
 
-
-            
-
             //for postgresql
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection"))
             );
             
-
             ///for sql server
             /// services.AddDbContext<ApplicationDbContext>(options =>
             //     options.UseSQLServer());
@@ -72,7 +66,6 @@ namespace SlaveManager
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
             });
-
 
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
@@ -127,7 +120,6 @@ namespace SlaveManager
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "slavemanager v1"));
             }
-
 
            // global cors policy
             app.UseCors(x => x
