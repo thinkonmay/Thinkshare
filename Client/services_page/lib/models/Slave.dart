@@ -9,7 +9,8 @@ class Slave {
   final String GPU;
   final int RAMcapacity;
   final String OS;
-  final 
+  final int SessionClientID;
+  final String ServiceState;
 
   Slave({
     this.ID,
@@ -17,6 +18,8 @@ class Slave {
     this.GPU,
     this.RAMcapacity,
     this.OS,
+    this.SessionClientID,
+    this.ServiceState;
   });
 
   factory Slave.fromJson(Map<String, dynamic> json) {
@@ -26,6 +29,8 @@ class Slave {
       GPU: json['GPU'],
       RAMcapacity: json['RAMcapacity'],
       OS: json['OS'],
+      SessionClientID: json['SessionClientID'],
+      ServiceState: json['ServiceState'],
     );
   }
 }
