@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:admin/models/ServingSession.dart';
 import 'package:admin/models/Slave.dart';
 import 'package:admin/screens/login/login_screen.dart';
@@ -35,4 +35,14 @@ Future<List<Slave>> userFetchSession() async {
 List<Slave> parseSession(String responseBody) {
   final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
   return parsed.map<Slave>((json) => Slave.fromJson(json)).toList();
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    HttpClient client = super.createHttpClient(context);
+    client.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    return client;
+  }
 }
