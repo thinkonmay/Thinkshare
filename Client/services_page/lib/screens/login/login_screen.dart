@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:admin/components/AppTools.dart';
-import 'package:admin/screens/login/login_screen.dart';
 import 'package:admin/screens/main/main_screen.dart';
+import 'package:admin/screens/register/register_screen.dart';
 import 'package:admin/utils/server_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -10,8 +10,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class RegisterScreen extends StatelessWidget {
-  RegisterScreen({Key? key}) : super(key: key);
+int clientID = 0;
+
+class LoginScreen extends StatelessWidget {
+  LoginScreen({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +40,14 @@ class Menu extends StatelessWidget {
             children: [
               _menuItem(title: 'Home'),
               _menuItem(title: 'About us'),
-              _menuItem(title: 'Contact us'),
-              _menuItem(title: 'Help'),
+              // _menuItem(title: 'Contact us'),
+              // _menuItem(title: 'Help'),
             ],
           ),
           Row(
             children: [
-              _menuItem(title: 'Sign In', isActive: false),
-              _menuItem(title: 'Register', isActive: true)
+              _menuItem(title: 'Sign In', isActive: true),
+              _menuItem(title: 'Register', isActive: false),
             ],
           ),
         ],
@@ -94,11 +96,17 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   TextEditingController _email = new TextEditingController();
   TextEditingController _password = new TextEditingController();
-  TextEditingController _repassword = new TextEditingController();
   // UserRepository userRepository = new UserRepository();
 
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   final snackBarKey = new GlobalKey<ScaffoldState>();
+
+  Future saveLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // md5 convert data behind sharepreferences
+    prefs.setString('email', _email.text);
+    prefs.setString('password', _password.text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,11 +152,12 @@ class _BodyState extends State<Body> {
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => RegisterScreen()),
                       );
                     },
                     child: Text(
-                      "Sign In!",
+                      "Register!",
                       style: TextStyle(
                           color: Colors.deepPurple,
                           fontWeight: FontWeight.bold),
@@ -164,14 +173,14 @@ class _BodyState extends State<Body> {
               vertical: MediaQuery.of(context).size.height / 6),
           child: Container(
             width: 320,
-            child: _formRegister(),
+            child: _formLogin(),
           ),
         )
       ],
     );
   }
 
-  Widget _formRegister() {
+  Widget _formLogin() {
     return Column(
       children: [
         TextField(
@@ -202,32 +211,7 @@ class _BodyState extends State<Body> {
           style: TextStyle(color: Colors.black54),
           decoration: InputDecoration(
             hintText: 'Password',
-            counterStyle: TextStyle(color: Colors.black45),
-            hintStyle: TextStyle(color: Colors.black38),
-            hoverColor: Colors.black12,
-            filled: true,
-            fillColor: Colors.blueGrey[100],
-            labelStyle: TextStyle(fontSize: 12),
-            contentPadding: EdgeInsets.only(left: 30),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffECEFF1)),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffECEFF1)),
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 30,
-        ),
-        TextField(
-          controller: _repassword,
-          obscureText: true,
-          style: TextStyle(color: Colors.black54),
-          decoration: InputDecoration(
-            hintText: 'Rewrite Password',
+            counterText: 'Forgot password?',
             counterStyle: TextStyle(color: Colors.black45),
             hintStyle: TextStyle(color: Colors.black38),
             hoverColor: Colors.black12,
@@ -262,8 +246,8 @@ class _BodyState extends State<Body> {
             child: Container(
                 width: double.infinity,
                 height: 50,
-                child: Center(child: Text("Sign Up"))),
-            onPressed: verifyRegister,
+                child: Center(child: Text("Sign In"))),
+            onPressed: verifyLogin,
             style: ElevatedButton.styleFrom(
               primary: Colors.deepPurple,
               onPrimary: Colors.white,
@@ -288,7 +272,7 @@ class _BodyState extends State<Body> {
     );
   }
 
-  verifyRegister() async {
+  verifyLogin() async {
     if (_email.text == "") {
       showMaterialDialog(
           context, "Lỗi thông tin", "Vui lòng không để trống Email!", "OK");
@@ -307,10 +291,10 @@ class _BodyState extends State<Body> {
       return;
     } else {
       displayProgressDialog(context);
-
-     final response = await http.post(
+      // login services
+      final response = await http.post(
         // Uri.parse('https://localhost:port/Admin/AddSlave'),
-        Uri.parse('$urlServer/Account/Register'),
+        Uri.parse('$urlServer/Account/Login'),
         headers: {
           'Content-type': 'application/json',
           'Accept': 'application/json',
@@ -319,22 +303,26 @@ class _BodyState extends State<Body> {
         body: jsonEncode(<String, String>{
           'email': _email.text,
           'password': _password.text,
-          'fullName': "chuahe",
-          'dateOfBirth': "2021-08-13T15:30:22.127Z"
         }),
       );
-      print(response.body);
       final Map parsed = json.decode(response.body);
+      print(parsed);
+      clientID = parsed['clientID'];
       print(parsed['errorCode']);
       if (parsed['errorCode'] == 0) {
-        print("Register Success");
+        print("Login Success");
+        // saveLogin();
         closeProgressDialog(context);
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LoginScreen()));
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => MainScreen(1)),
+            (Route<dynamic> route) => false);
       } else {
         closeProgressDialog(context);
         showMaterialDialog(
-            context, "Đăng ký thất bại", "Tài khoản của bạn đã tồn tại!", "OK");
+            context,
+            "Đăng nhập thất bại",
+            "Tài khoản đăng nhập không đúng! \nHoặc bạn chưa xác thực tài khoản của mình!",
+            "OK");
       }
     }
   }

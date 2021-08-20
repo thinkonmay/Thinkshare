@@ -9,7 +9,7 @@ import 'file_info_card.dart';
 
 class MyFiles extends StatelessWidget {
   const MyFiles({
-    Key? key,
+    Key key,
   }) : super(key: key);
 
   @override
@@ -24,23 +24,8 @@ class MyFiles extends StatelessWidget {
               "My Devices",
               style: Theme.of(context)
                   .textTheme
-                  .subtitle1!
+                  .subtitle1
                   .copyWith(color: Colors.black),
-            ),
-            ElevatedButton.icon(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  horizontal: defaultPadding * 1.5,
-                  vertical:
-                      defaultPadding / (Responsive.isMobile(context) ? 2 : 1),
-                ),
-              ),
-              onPressed: () {},
-              icon: Icon(Icons.add),
-              label: Text("Add New",
-                  style: TextStyle(
-                    color: Colors.black,
-                  )),
             ),
           ],
         ),
@@ -62,7 +47,7 @@ class MyFiles extends StatelessWidget {
 
 class FileInfoCardGridView extends StatelessWidget {
   const FileInfoCardGridView({
-    Key? key,
+    Key key,
     this.crossAxisCount = 3,
     this.childAspectRatio = 1,
   }) : super(key: key);
@@ -77,7 +62,7 @@ class FileInfoCardGridView extends StatelessWidget {
         builder: (context, snapshot) {
           print(snapshot.data);
           if (snapshot.hasData) {
-            List<Slave>? slaves = snapshot.data;
+            List<Slave> slaves = snapshot.data;
             return GridView.count(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
@@ -92,7 +77,7 @@ class FileInfoCardGridView extends StatelessWidget {
               //   mainAxisSpacing: defaultPadding,
               //   childAspectRatio: childAspectRatio,
               // ),
-              children: slaves!.map<Widget>((Slave slave) {
+              children: slaves.map<Widget>((Slave slave) {
                 return FileInfoCard(slave: slave);
               }).toList(),
 

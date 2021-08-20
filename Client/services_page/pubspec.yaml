@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.7.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -34,6 +34,10 @@ dependencies:
   data_table_2: ^2.0.3
   shared_preferences: ^2.0.6
   intl: ^0.17.0
+
+  # this lib hasn't support null-safety, damn!!!
+  signalr_netcore: ^1.1.1
+
   
 dev_dependencies:
   flutter_test:
