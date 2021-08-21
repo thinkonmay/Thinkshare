@@ -29,26 +29,27 @@ class FileInfoCard extends StatefulWidget {
 class _FileInfoCardState extends State<FileInfoCard> {
   int stateConnect = 1;
 
-    final hubConnection =
-      HubConnectionBuilder().withUrl("https://localhost:44348/clientHub").build();
+  
   @override
   void initState() {
       hubConnection.onclose(({ error}) {
       print(error);
     });
-
-    hubConnection.on("ReceiveMessage", onReceiveMessage);
-
+    hubConnection.on("FunctionName", onFunctionName);
     startConnection();
-
     super.initState();
   }
 
-  void onReceiveMessage(List<Object> result) {
+  void onFunctionName(List<Object> result) {
     setState(() {
-      messages.add("${result[0]} diz: ${result[1]}");
+      print(result);
     });
   }
+
+  void startConnection() async {
+    await hubConnection.start();
+  }
+  
 
   @override
   Widget build(BuildContext context) {

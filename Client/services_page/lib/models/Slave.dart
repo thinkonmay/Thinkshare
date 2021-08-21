@@ -19,7 +19,7 @@ class Slave {
     this.RAMcapacity,
     this.OS,
     this.SessionClientID,
-    this.ServiceState;
+    this.ServiceState,
   });
 
   factory Slave.fromJson(Map<String, dynamic> json) {
