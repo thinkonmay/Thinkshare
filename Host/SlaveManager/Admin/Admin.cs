@@ -6,7 +6,7 @@ using System;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 using SignalRChat.Hubs;
-using SlaveManager.SlaveDevices.SlaveStates;
+using System.Linq;
 
 
 namespace SlaveManager.Administration
@@ -112,21 +112,26 @@ namespace SlaveManager.Administration
         }
 
         public async Task ReportRemoteControlDisconnected(int SlaveID)
-        {
-            await _clientHubctx.Clients.All.ReportSessionDisconnected(SlaveID);
+        {            
+            Session ses = _db.Sessions.Where(s =>s.SlaveID == SlaveID  
+                                             && !s.EndTime.HasValue).FirstOrDefault();
+                                                
+            await _clientHubctx.Clients.User(ses.ClientID.ToString()).ReportSessionDisconnected(SlaveID);
         }
         public async Task ReportRemoteControlDisconnected(Session session)
         {
-            await _clientHubctx.Clients.All.ReportSessionDisconnected(session.SlaveID);
+            await _clientHubctx.Clients.User(session.ClientID.ToString()).ReportSessionDisconnected(session.SlaveID);
         }
 
         public async Task ReportRemoteControlReconnect(int SlaveID)
         {
-            await _clientHubctx.Clients.All.ReportSessionReconnected(SlaveID);
+            Session ses = _db.Sessions.Where(s =>s.SlaveID == SlaveID  
+                                             && !s.EndTime.HasValue).FirstOrDefault();
+            await _clientHubctx.Clients.User(ses.ClientID.ToString()).ReportSessionReconnected(SlaveID);
         }
         public async Task ReportRemoteControlReconnect(Session session)
         {
-            await _clientHubctx.Clients.All.ReportSessionReconnected(session.SlaveID);
+            await _clientHubctx.Clients.User(session.ClientID.ToString()).ReportSessionReconnected(session.SlaveID);
         }
     }
 }

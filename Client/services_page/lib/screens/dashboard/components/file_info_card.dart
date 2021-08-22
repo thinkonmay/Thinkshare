@@ -221,11 +221,9 @@ class _FileInfoCardState extends State<FileInfoCard> {
                     });
                     html.window.open('''
 http://192.168.1.6:81/Session/Initialize?
-ClientId=$clientID&
 SlaveId=${widget.slave.ID}&
 ScreenWidth=${MediaQuery.of(context).size.width.toInt()}&
 ScreenHeight=${MediaQuery.of(context).size.height.toInt()}&
-bitrate=1000000&
 QoEMode=0&
 VideoCodec=1&
 AudioCodec=3

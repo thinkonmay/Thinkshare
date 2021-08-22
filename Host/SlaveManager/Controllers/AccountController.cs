@@ -44,7 +44,7 @@ namespace SlaveManager.Controllers
                 {
                     UserAccount user = await _userManager.FindByEmailAsync(model.Email);
                     string token = await _tokenGenerator.GenerateJwt(user);
-                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now.AddHours(1), user.Id);
+                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now.AddHours(1));
                 }
             }
             return AuthResponse.GenerateFailure(model.Email, "Login failed", -1);
@@ -70,7 +70,7 @@ namespace SlaveManager.Controllers
                 {
                     UserAccount u = await _userManager.FindByEmailAsync(model.Email);
                     string token = await _tokenGenerator.GenerateJwt(u);
-                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now, user.Id);
+                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now);
                 }
             }
 

@@ -9,9 +9,10 @@ import 'package:http/http.dart' as http;
 
 Future<List<Slave>> userFetchSlave() async {
    final response = await http.get(
-      Uri.parse('$urlServer/User/FetchSlave?UserID=$clientID'),
+      Uri.parse('$urlServer/User/FetchSlave'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
       },
     );
   return compute(parseSlaves, response.body);
@@ -24,9 +25,10 @@ List<Slave> parseSlaves(String responseBody) {
 
 Future<List<Slave>> userFetchSession() async {
    final response = await http.get(
-      Uri.parse('$urlServer/User/FetchSession?UserID=$clientID'),
+      Uri.parse('$urlServer/User/FetchSession'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
       },
     );
   return compute(parseSession, response.body);

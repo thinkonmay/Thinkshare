@@ -10,7 +10,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-int clientID = 0;
 String token = "";
 
 class LoginScreen extends StatelessWidget {
@@ -298,8 +297,7 @@ class _BodyState extends State<Body> {
         Uri.parse('$urlServer/Account/Login'),
         headers: {
           'Content-type': 'application/json',
-          'Accept': 'application/json',
-          //  'Authorization': '<Your token>'
+          'Accept': 'application/json'
         },
         body: jsonEncode(<String, String>{
           'email': _email.text,
@@ -314,14 +312,13 @@ class _BodyState extends State<Body> {
           Message = "Login successful",
           Token = token,
           ValidUntil = expiry,
-          ClientID = _clientID,
        *** Failure
          ErrorCode = -1,
                 Message = "Login failed",
                 UserEmail = email 
       */
       print(parsed);
-      clientID = parsed['clientID'];
+      token = parsed['token'];
       print(parsed['errorCode']);
       if (parsed['errorCode'] == 0) {
         print("Login Success");
