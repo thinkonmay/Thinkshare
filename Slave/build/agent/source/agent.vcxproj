@@ -329,6 +329,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\agent\source\program.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\shared-items\key-convert.c" />
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\shared-items\logging.c" />
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\shared-items\message-form.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\build\ZERO_CHECK.vcxproj">

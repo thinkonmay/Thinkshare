@@ -27,16 +27,16 @@ handle_thread(gpointer data)
 
     while (TRUE)
     {
-         DWORD dwread = 0;
-         gboolean success = FALSE;
-         while (TRUE)
-         {
-             HANDLE input = ipc->input_pipe;
-             success = ReadFile(input, buffer, BUFFER_SIZE, &dwread, NULL);
-             if (success && dwread > 0) {goto send;}
-         }
+        DWORD dwread = 0;
+        gboolean success = FALSE;
+        while (TRUE)
+        {
+            HANDLE input = ipc->input_pipe;
+            success = ReadFile(input, buffer, BUFFER_SIZE, &dwread, NULL);
+            if (success && dwread > 0) {goto send;}
+        }
     send:
-         session_core_on_message(core, buffer);        
+        session_core_on_message(core, buffer);        
     }
 }
 

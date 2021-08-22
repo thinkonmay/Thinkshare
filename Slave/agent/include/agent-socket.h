@@ -14,12 +14,6 @@
 
 
 
-/// <summary>
-/// get string from json object, using json-glib library
-/// </summary>
-/// <param name="object"></param>
-/// <returns></returns>
-gchar*									get_string_from_json_object			(JsonObject* object);
 
 
 

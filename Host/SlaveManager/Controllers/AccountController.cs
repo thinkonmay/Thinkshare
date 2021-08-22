@@ -44,7 +44,7 @@ namespace SlaveManager.Controllers
                 {
                     UserAccount user = await _userManager.FindByEmailAsync(model.Email);
                     string token = await _tokenGenerator.GenerateJwt(user);
-                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now, user.Id);
+                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now.AddHours(1), user.Id);
                 }
             }
             return AuthResponse.GenerateFailure(model.Email, "Login failed", -1);
@@ -57,9 +57,6 @@ namespace SlaveManager.Controllers
         {
             if (ModelState.IsValid)
             {
-                
-                //var now = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"); //port to string for compability with postgresql;
-
                 var user = new UserAccount()
                 {
                     UserName = model.Email,

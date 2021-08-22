@@ -19,7 +19,9 @@
 #include <tchar.h>
 #include <stdio.h> 
 #include <strsafe.h>
+
 #include <error-code.h>
+#include <child-process-constant.h>
 
 #define BUFSIZE 100000
 
@@ -48,14 +50,27 @@ struct _ChildProcess
     HANDLE standard_out;
 #endif
 
-    ChildHandleFunc func;
+    ChildStdHandle func;
+    ChildStateHandle handler;
+    GThread* handle_thread;
+    gboolean exit;
 };
 
 
 
 
 
+void
+initialize_child_process_system(AgentObject* agent)
+{
+    static ChildProcess  process_array[LAST_CHILD_PROCESS];
+    ZeroMemory(&process_array,sizeof(process_array));
 
+    for(gint i = 0; i < LAST_CHILD_PROCESS;i++)
+    {
+        agent_set_child_process(agent,i,&(process_array[i]));
+    }
+}
 
 
 
@@ -84,43 +99,12 @@ handle_child_process_thread(ChildProcess* proc)
 
         DWORD ret;
         GetExitCodeProcess(proc->process, &ret);
-
-
-        /*
-        *if child process terminated is session core
-        *let agent handle that
-        */
-        if (ret != STILL_ACTIVE)
+        proc->handler(proc,ret,proc->agent);
+        if(proc->exit)
         {
-            if(proc->process_id  == SESSION_CORE_PROCESS_ID)
-            {
-                agent_on_session_core_exit(proc->agent);
-                
-                //switch to off remote state if session-core terminate durin session
-                if(!g_strcmp0(agent_get_current_state_string(proc->agent) , AGENT_ON_SESSION))
-                {
-                    // TODO : off remote report to slavemanager
-                    AgentState* off_remote = transition_to_off_remote_state();
-                    agent_set_state(proc->agent,off_remote);
-                }
-            }
-            return;
-        }
-
-        /*
-        *if child process is session core, check for current state of agent,
-        *Terminate process if agent is not in session,
-        */
-        if(proc->process_id == SESSION_CORE_PROCESS_ID)
-        {
-            if(g_strcmp0(agent_get_current_state_string(proc->agent) , AGENT_ON_SESSION))
-            {
-                TerminateProcess(proc->process,FORCE_EXIT);
-                return;
-            }
+            g_thread_exit(NULL);
         }
     }
-
 }
 
 
@@ -170,14 +154,11 @@ send_message_to_child_process(ChildProcess* self,
 void
 close_child_process(ChildProcess* proc)
 {
-    DWORD exit_code = STILL_ACTIVE;
-    GetExitCodeProcess(proc->process, exit_code);
+    proc->exit = TRUE;
 
-    if (exit_code == STILL_ACTIVE)
-    {
-        write_to_log_file(AGENT_GENERAL_LOG,"Child process closed");
-        TerminateProcess(proc->process, FORCE_EXIT);
-    }
+    write_to_log_file(AGENT_GENERAL_LOG,"Child process closed");
+    TerminateProcess(proc->process, FORCE_EXIT);
+    
     CloseHandle(proc->standard_out);
     CloseHandle(proc->standard_in);
     ZeroMemory(proc,sizeof(ChildProcess));
@@ -185,18 +166,22 @@ close_child_process(ChildProcess* proc)
 
 ChildProcess*
 create_new_child_process(gchar* process_name,
-    gint process_id,
-    gchar* parsed_command,
-    ChildHandleFunc func,
-    AgentObject* agent)
+                        gint process_id,
+                        gchar* parsed_command,
+                        ChildStdHandle func,
+                        ChildStateHandle handler,
+                        AgentObject* agent)
 {
-    static ChildProcess child_process[8];
-    child_process[process_id].agent = agent;
-    child_process[process_id].process_id = process_id;
-    child_process[process_id].func = func;
+    ChildProcess* child_process = agent_get_child_process(agent,process_id);
+
+    child_process->agent = agent;
+    child_process->process_id = process_id;
+    child_process->func = func;
+    child_process->handler = handler;
+    child_process->exit = FALSE;
 
 
-    ChildPipe* hdl = initialize_process_handle(&child_process[process_id],agent);
+    ChildPipe* hdl = initialize_process_handle(child_process,agent);
     if(hdl == NULL)
     {
         agent_report_error(agent,"Fail to create child process handle");
@@ -216,13 +201,8 @@ create_new_child_process(gchar* process_name,
     startup_infor.hStdOutput = hdl->standard_out;
     startup_infor.hStdError = hdl->standard_out;
 
-
-
     strcat(process_name, parsed_command);
     
-
-
-
     LPSTR path = g_win32_locale_filename_from_utf8(process_name);
     /*START process, all standard input and output are controlled by agent*/
     gboolean output = CreateProcess(NULL,
@@ -243,18 +223,17 @@ create_new_child_process(gchar* process_name,
         return NULL;        
     }
 
-    memcpy(&child_process[process_id].process, &pi.hProcess, sizeof(HANDLE));
+    memcpy(&child_process->process, &pi.hProcess, sizeof(HANDLE));
 
     CloseHandle(pi.hThread);
     CloseHandle(hdl->standard_out);
     CloseHandle(hdl->standard_in);
 
 
-    g_thread_new("child handle thread", 
-        handle_child_process_thread, &(child_process[process_id]));
+    child_process->handle_thread =  g_thread_new("child handle thread", 
+        handle_child_process_thread, child_process);
 
-
-    return &child_process;
+    return child_process;
 }
 
 

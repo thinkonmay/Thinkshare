@@ -10,6 +10,7 @@
 #include <state-indicator.h>
 #include <general-constant.h>
 #include <error-code.h>
+#include <message-form.h>
 #include <logging.h>
 
 
@@ -18,9 +19,12 @@ static void
 off_remote_session_terminate(AgentObject* agent)
 {
     GFile* hdl = g_file_parse_name(SESSION_SLAVE_FILE);
+    GError* error = malloc(sizeof(GError));
 
-    if(!g_file_replace_contents(hdl, "EmptySession", strlen("EmptySession"), NULL, TRUE,
-        G_FILE_CREATE_NONE, NULL, NULL, NULL))
+    g_file_replace_contents(hdl, "EmptySession", strlen("EmptySession"), NULL, TRUE,
+        G_FILE_CREATE_NONE, NULL, NULL, &error);
+
+    if(error != NULL)
     {
 		agent_report_error(agent,ERROR_FILE_OPERATION);
     }
@@ -34,12 +38,13 @@ static void
 off_remote_send_message_to_host(AgentObject* agent,
     gchar* message)
 {
+    GError* error = malloc(sizeof(GError));
     static gboolean initialized = FALSE;
     static gint SlaveID;
     if(!initialized)
     {
         JsonParser* parser = json_parser_new();
-        GError* error = NULL;
+        GError* error = malloc(sizeof(GError));
         json_parser_load_from_file(parser, HOST_CONFIG_FILE,&error);
         if(error != NULL)
         {
@@ -52,12 +57,8 @@ off_remote_send_message_to_host(AgentObject* agent,
     }
 
 
-    JsonParser* parser = json_parser_new();
-    json_parser_load_from_data(parser, message, -1, NULL);
-    JsonNode* root = json_parser_get_root(parser);
-    JsonObject* object = json_node_get_object(root);
-
-
+    Message* object = get_json_object_from_string(message,&error);
+	if(error != NULL || object == NULL) {return;}
 
 
     json_object_set_int_member(object,

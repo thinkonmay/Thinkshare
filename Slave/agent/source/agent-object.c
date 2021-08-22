@@ -18,6 +18,7 @@
 #include <child-process-constant.h>
 #include <general-constant.h>
 #include <logging.h>
+#include <message-form.h>
 
 /// <summary>
 /// agent object 
@@ -57,6 +58,7 @@ agent_new(gchar* url)
 
 	g_thread_new("update device", (GThreadFunc)update_device, &agent);
 
+	initialize_child_process_system(&agent);
 	agent.socket=initialize_socket(&agent);
 	
 	
@@ -122,9 +124,9 @@ agent_report_error(AgentObject* self,
 	json_object_set_string_member(obj,
 		"ErrorMessage",message);
 
-	message_init(AGENT_MODULE,HOST_MODULE,ERROR_REPORT,obj);
-
+	Message* msg = message_init(AGENT_MODULE,HOST_MODULE,ERROR_REPORT,obj);
 	write_to_log_file(AGENT_GENERAL_LOG, get_string_from_json_object(obj));
+	agent_send_message(self,msg);
 }
 
 

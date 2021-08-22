@@ -3,9 +3,7 @@
 #include <gst/gst.h>
 #include <qoe.h>
 
-void			attach_bitrate_control				(GstObject* audio_encoder,
-													 GstObject* video_encoder,
-													 SessionCore* core);
+void			attach_bitrate_control				(SessionCore* core);
 
 void			set_dynamic_bitrate					(Pipeline* pipe, 
 												     SessionQoE* qoe);
@@ -15,8 +13,7 @@ QoE*			qoe_initialize						();
 void			qoe_setup							(QoE* qoe,
 													 gint screen_width,
 													 gint screen_height,
-													 gint framerate,
-													 gint bitrate);
+													 gint framerate);
 
 gint			qoe_get_screen_width				(QoE* qoe);
 

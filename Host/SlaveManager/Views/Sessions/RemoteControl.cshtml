@@ -19,7 +19,6 @@
     int ScreenWidth = Model.clientSession.QoE.ScreenWidth;
     int ScreenHeight = Model.clientSession.QoE.ScreenHeight;
     int Framerate = Model.clientSession.QoE.Framerate;
-    int Bitrate = Model.clientSession.QoE.Bitrate;
     int AudioCodec = (int) Model.clientSession.QoE.AudioCodec;
     int VideoCodec = (int) Model.clientSession.QoE.VideoCodec;
     int QoEMode = (int) Model.clientSession.QoE.QoEMode;
@@ -144,15 +143,15 @@ var app = new Vue({
             adaptive:
             {
                 "currentTime": 0,
-                "AudioBitrate": @Bitrate,
-                "VideoBitrate": @Bitrate,
+                "AudioBitrate": 0,
+                "VideoBitrate": 0,
                 "Framerate": @Framerate,
 
 
                 "PacketsLost": 0,
                 "AudioLatency": 0,
                 "VideoLatency": 0,
-                "TotalBandwidth":  @Bitrate,
+                "TotalBandwidth":  0,
             },
 
             /**

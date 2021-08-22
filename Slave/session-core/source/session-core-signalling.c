@@ -310,9 +310,10 @@ on_server_closed(SoupWebsocketConnection* conn G_GNUC_UNUSED,
     SessionCore* core G_GNUC_UNUSED)
 {
     SignallingHub* hub = session_core_get_signalling_hub(core);
-    if (!hub->peer_call_state == PEER_CALL_DONE)
+    if (g_strcmp0(hub->peer_call_state, PEER_CALL_DONE))
+    {
         report_session_core_error(core, SIGNALLING_ERROR);
-
+    }
     hub->connection = NULL;
     hub->session = NULL;
 
@@ -473,30 +474,14 @@ on_registering_message(SessionCore* core)
 static void
 on_ice_exchange(gchar* text,SessionCore* core)
 {
-    JsonNode* root;
-    JsonObject* object;
-    JsonParser* parser = json_parser_new();
-
-    GError* error = NULL;
-    json_parser_load_from_data(parser, text, -1, NULL);
-    if( error != NULL)
-    {
-        report_session_core_error(core, UNKNOWN_MESSAGE);
-        return;
-    }
-
-    root = json_parser_get_root(parser);
-    if (!JSON_NODE_HOLDS_OBJECT(root))
-    {
-        report_session_core_error(core, UNKNOWN_MESSAGE);
-        return;
-    }
-
-    object = json_node_get_object(root);
     Pipeline* pipe = session_core_get_pipeline(core);
 
+    GError* error = malloc(sizeof(GError));
+    Message* object = get_json_object_from_string(text,&error);
+	if(error != NULL || object == NULL) {return;}
+
     const gchar* candidate;
-    int sdpmlineindex;
+    gint sdpmlineindex;
     JsonObject* child = json_object_get_object_member(object, "ice");
     candidate = json_object_get_string_member(child, "candidate");
     sdpmlineindex = json_object_get_int_member(child, "sdpMLineIndex");
@@ -506,33 +491,23 @@ on_ice_exchange(gchar* text,SessionCore* core)
 }
 
 static void
-on_sdp_exchange(gchar* _text, SessionCore* core)
+on_sdp_exchange(gchar* data, 
+                SessionCore* core)
 {
-    JsonNode* root;
-    JsonObject* object;
-    JsonParser* parser = json_parser_new();
-    json_parser_load_from_data(parser, _text, -1, NULL);
     SignallingHub* hub = session_core_get_signalling_hub(core);
+    Pipeline* pipe = session_core_get_pipeline(core);
 
-    root = json_parser_get_root(parser);
-    if (!JSON_NODE_HOLDS_OBJECT(root))
-    {
-        report_session_core_error(core, UNKNOWN_MESSAGE);
-        return;
-    }
-
-    object = json_node_get_object(root);
-
+    GError* error = malloc(sizeof(GError));
+    Message* object = get_json_object_from_string(data,&error);
+	if(error != NULL || object == NULL) {session_core_finalize(core,UNKNOWN_PACKAGE_FROM_CLIENT,error);}
 
     gint ret;
     GstSDPMessage* sdp;
-    const gchar* text, * sdptype;
+    const gchar* text;
     GstWebRTCSessionDescription* answer;
-    Pipeline* pipe = session_core_get_pipeline(core);
-    SignallingHub* signalling = session_core_get_signalling_hub(core);
 
     JsonObject* child = json_object_get_object_member(object, "sdp");
-    sdptype = json_object_get_string_member(child, "type");
+    gchar* sdptype = json_object_get_string_member(child, "type");
 
     if (!json_object_has_member(child, "type"))
     {
@@ -591,62 +566,42 @@ on_server_message(SoupWebsocketConnection* conn,
     GBytes* message,
     SessionCore* core)
 {
-    JsonNode* root;
-    JsonObject* object;
-    JsonParser* parser = json_parser_new();
-
     Pipeline* pipe = session_core_get_pipeline(core);
 
     gchar* text;
 
     switch (type) 
     {
-    case SOUP_WEBSOCKET_DATA_BINARY:
-    {
-        report_session_core_error(core, UNKNOWN_MESSAGE);
-        return;
-    } 
-    case SOUP_WEBSOCKET_DATA_TEXT: 
-    {
-        gsize size;
-        const char* data = g_bytes_get_data(message, &size);
-        /* Convert to NULL-terminated string */
-        text = g_strndup(data, size);
-        strcat(text, "\n");
-        write_to_log_file(SESSION_CORE_GENERAL_LOG,text);
-        break;
-    }
-    default:
-        report_session_core_error(core, UNKNOWN_MESSAGE);
-    }
-
-
-    if (!json_parser_load_from_data(parser, text, -1, NULL))
-    {
-      report_session_core_error(core, UNKNOWN_MESSAGE);
-      g_object_unref(parser);
-      g_free(text);
-      return;
+        case SOUP_WEBSOCKET_DATA_BINARY:
+        {
+            report_session_core_error(core, UNKNOWN_MESSAGE);
+            return;
+        } 
+        case SOUP_WEBSOCKET_DATA_TEXT: 
+        {
+            gsize size;
+            const char* data = g_bytes_get_data(message, &size);
+            /* Convert to NULL-terminated string */
+            text = g_strndup(data, size);
+            strcat(text, "\n");
+            write_to_log_file(SESSION_CORE_GENERAL_LOG,text);
+            break;
+        }
+        default:
+            report_session_core_error(core, UNKNOWN_MESSAGE);
     }
 
-    root = json_parser_get_root(parser);
-    if (!JSON_NODE_HOLDS_OBJECT(root))
-    {
-        g_object_unref(parser);
-        g_free(text);
-        return;
-    }
 
-    object = json_node_get_object(root);
-     /* Check type of JSON message */
-
+    GError* error = malloc(sizeof(GError));
+    Message* object = get_json_object_from_string(text,&error);
+	if(error != NULL || object == NULL) {return;}
 
     gchar* RequestType =    json_object_get_string_member(object, "RequestType");
     gchar* SubjectId =      json_object_get_int_member(object, "SubjectId");
     gchar* Content =        json_object_get_string_member(object, "Content");
     gchar* Result =         json_object_get_string_member(object, "Result");
 
-    if (Result == "SESSION_REJECTED" || Result == "SESSION_TIMEOUT")
+    if (!g_strcmp0(Result, "SESSION_REJECTED") || !g_strcmp0(Result, "SESSION_TIMEOUT"))
     {
         session_core_finalize(core, SESSION_DENIED_EXIT,NULL);
     }
@@ -671,8 +626,6 @@ on_server_message(SoupWebsocketConnection* conn,
     {
         report_session_core_error(core, UNKNOWN_MESSAGE);
     }
-
-    g_object_unref(parser);   
 }
 
 
@@ -681,7 +634,7 @@ on_server_connected(SoupSession* session,
     GAsyncResult* res,
     SessionCore* core)
 {
-    GError* error = NULL;
+    GError* error = malloc(sizeof(GError));
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
     if (g_strcmp0(hub->signalling_state, SIGNALLING_SERVER_CONNECTING))  {  return;  }

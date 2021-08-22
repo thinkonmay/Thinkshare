@@ -8,21 +8,28 @@ using System.Threading.Tasks;
 using SignalRChat.Hubs;
 using SlaveManager.SlaveDevices.SlaveStates;
 
+
 namespace SlaveManager.Administration
-{    public class Admin : IAdmin
+{    
+    
+
+    public class Admin : IAdmin
     {
         private readonly ApplicationDbContext _db;
-        private readonly ISlavePool _slavePool;
         private readonly IHubContext<AdminHub, IAdminHub> _adminHubctx;
         private readonly IHubContext<ClientHub, IClientHub> _clientHubctx;
 
-        public Admin(ApplicationDbContext db, IHubContext<AdminHub, IAdminHub> adminHub, IHubContext<ClientHub,IClientHub> clientHub) //, ISlavePool slavePool
+        public Admin(ApplicationDbContext db, 
+                     IHubContext<AdminHub, IAdminHub> adminHub, 
+                     IHubContext<ClientHub,IClientHub> clientHub)
         {
             _db = db;
             _adminHubctx = adminHub;
             _clientHubctx = clientHub;
         }
 
+
+        
         public async Task ReportSlaveRegistered(SlaveDeviceInformation information)
         {
             await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
@@ -31,8 +38,9 @@ namespace SlaveManager.Administration
             Slave device = new Slave(information);
             _db.Devices.Add(device);
             await _db.SaveChangesAsync();
-
         }
+
+
 
         public async Task LogSlaveCommandLine(int slaveID, ReceiveCommand result)
         {
@@ -56,25 +64,20 @@ namespace SlaveManager.Administration
         {
             var slavedb = _db.Devices.Find(slaveID);
             var exit_report = new SessionCoreExit(exit, slavedb);
+
             _db.SessionCoreExits.Add(exit_report);
             await _db.SaveChangesAsync();
-
-            var slave = _slavePool.GetSlaveDevice(slaveID);
-            var state = new OnSessionOffRemote();
-            slave.ChangeState(state);
-            _slavePool.AddSlaveDeviceWithKey(slaveID,slave);
-
             await _adminHubctx.Clients.All.ReportSessionCoreExit(slaveID, exit_report);
+            
         }
-
 
         public async Task ReportSessionCoreError(GeneralErrorAbsTime err, int SlaveID)
         {
             var slave = _db.Devices.Find(SlaveID);
             var error = new GeneralError(err, slave);
+
             _db.GeneralErrors.Add(error);
             await _db.SaveChangesAsync();
-
             await _adminHubctx.Clients.All.ReportSessionCoreError(error);        
         }
 
@@ -85,6 +88,8 @@ namespace SlaveManager.Administration
             _db.GeneralErrors.Add(error);
             await _db.SaveChangesAsync();
 
+            await ReportSessionCoreExit(SlaveID, null);
+
             await _adminHubctx.Clients.All.ReportAgentError(error);
         }
 
@@ -94,19 +99,34 @@ namespace SlaveManager.Administration
             await _clientHubctx.Clients.All.ReportSlaveObtained(SlaveID);
         }
 
-        public async Task ReportSessionTermination(int SlaveID, int ClientID)
+        public async Task ReportSessionTermination(Session session)
         {
-            var slave = _db.Devices.Find(SlaveID);
-            var device_infor = new SlaveDeviceInformation()
-            {
-                CPU = slave.CPU,
-                GPU = slave.GPU,
-                RAMcapacity = slave.RAMcapacity,
-                OS = slave.OS,
-                ID = slave.ID
-            };
-            await _adminHubctx.Clients.All.ReportSessionTermination(SlaveID, ClientID);
+            session.EndTime = DateTime.Now;
+            _db.Sessions.Update(session);
+            await _db.SaveChangesAsync();
+
+            var slave = _db.Devices.Find(session.SlaveID);
+            var device_infor = new SlaveDeviceInformation(slave);
+            await _adminHubctx.Clients.All.ReportSessionTermination(session.SlaveID, session.ClientID);
             await _clientHubctx.Clients.All.ReportNewSlaveAvailable(device_infor);
+        }
+
+        public async Task ReportRemoteControlDisconnected(int SlaveID)
+        {
+            await _clientHubctx.Clients.All.ReportSessionDisconnected(SlaveID);
+        }
+        public async Task ReportRemoteControlDisconnected(Session session)
+        {
+            await _clientHubctx.Clients.All.ReportSessionDisconnected(session.SlaveID);
+        }
+
+        public async Task ReportRemoteControlReconnect(int SlaveID)
+        {
+            await _clientHubctx.Clients.All.ReportSessionReconnected(SlaveID);
+        }
+        public async Task ReportRemoteControlReconnect(Session session)
+        {
+            await _clientHubctx.Clients.All.ReportSessionReconnected(session.SlaveID);
         }
     }
 }

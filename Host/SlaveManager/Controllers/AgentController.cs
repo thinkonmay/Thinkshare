@@ -15,6 +15,7 @@ namespace SlaveManager.Controllers
 {
     [Route("/Agent")]
     [ApiController]
+    [AllowAnonymous]
     public class WebSocketApiController : ControllerBase
     {
         private readonly IWebSocketConnection _connection;

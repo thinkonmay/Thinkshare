@@ -1,4 +1,4 @@
-cd ../../Client/thinkmay_services_page
+cd ../../Client/services_page
 build.bat
 
 

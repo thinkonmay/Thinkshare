@@ -28,7 +28,8 @@ void				close_child_process							(ChildProcess* proc);
 ChildProcess*		create_new_child_process					(gchar* process_name,
 																 gint id,
 																 gchar* parsed_command,
-																 ChildHandleFunc func,
+																 ChildStdHandle func,
+																 ChildStateHandle handler,
 																 AgentObject* agent);
 
 /// <summary>
@@ -38,6 +39,9 @@ ChildProcess*		create_new_child_process					(gchar* process_name,
 /// <param name="agent"></param>
 void				command_line_output_handle					(gchar* buffer,
 																 AgentObject* agent);
+
+
+void				initialize_child_process_system				(AgentObject* agent);
 
 
 #endif

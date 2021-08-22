@@ -13,13 +13,10 @@
 /// <returns></returns>
 gboolean                connect_data_channel_signals                (SessionCore* core);
 
-GstWebRTCDataChannel*	webrtc_hub_get_control_data_channel			(WebRTCHub* hub);
 
 WebRTCHub*				webrtchub_initialize						();
 
-gboolean                on_hid_data_channel                         (GstElement* webrtc,
-                                                                     GstWebRTCDataChannel* channel,
-                                                                     gpointer data);
+
 
 
 

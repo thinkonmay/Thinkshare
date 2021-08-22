@@ -134,7 +134,7 @@ setup_element_factory(SessionCore* core,
     Codec audio)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
-    GError* error = NULL;
+    GError* error = malloc(sizeof(GError));
     
     if (video == CODEC_H264)
     {
@@ -233,7 +233,8 @@ setup_pipeline(SessionCore* core)
     connect_signalling_handler(core);
     
     pipe->state = PIPELINE_SETTING_UP_ELEMENT;
-    setup_element_property( core);
+    setup_element_property(core);
+    attach_bitrate_control(core);
 
 
 
@@ -299,14 +300,9 @@ setup_element_property(SessionCore* core)
     // /*set zero latency aggregate mode*/
     // if (pipe->video_element[RTP_H264_PAYLOAD]) { g_object_set(pipe->video_element[RTP_H264_PAYLOAD], "aggregate-mode", 1, NULL);}
 
-    // /*handle dynamic control bitrate*/
-    // if (!pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION])
-    // {
-    //   attach_bitrate_control(
-    //        GST_OBJECT(pipe->audio_element[OPUS_ENCODER]),
-    //        GST_OBJECT(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]),
-    //        core);
-    // }
+
+
+    
 
     // if (pipe->audio_element[WASAPI_SOURCE_SOUND]) { g_object_set(pipe->audio_element[WASAPI_SOURCE_SOUND], "low-latency", TRUE, NULL);}
 
@@ -395,3 +391,23 @@ pipeline_set_state(Pipeline* pipe,
 {
     pipe->state = state;
 }
+
+GstElement*
+pipeline_get_video_encoder(Pipeline* pipe, Codec video)
+{
+    
+    if (video == CODEC_H264) { return pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION];}
+    else if (pipe->video_element[CODEC_VP9]) { return pipe->video_element[VP9_ENCODER];}
+    else if (pipe->video_element[CODEC_VP8]) { return pipe->video_element[VP8_ENCODER];}
+    return NULL;
+}
+
+GstElement*
+pipeline_get_audio_encoder(Pipeline* pipe, Codec audio)
+{
+    
+    if (audio == OPUS_ENC) { return pipe->video_element[OPUS_ENCODER];}
+    else if (audio == AAC_ENC) { return pipe->audio_element[AAC_ENCODER];}
+    return NULL;
+}
+

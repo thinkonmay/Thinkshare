@@ -10,6 +10,7 @@
 #include <error-code.h>
 #include <logging.h>
 #include <general-constant.h>
+#include <message-form.h>
 
 #include <glib-object.h>
 #include <json-glib/json-glib.h>
@@ -45,24 +46,6 @@ send_message_to_host(AgentObject* object,
 
 
 
-gchar*
-get_string_from_json_object(JsonObject* object)
-{
-    JsonNode* root;
-    JsonGenerator* generator;
-    gchar* text;
-
-    /* Make it the root node */
-    root =      json_node_init_object(json_node_alloc(), object);
-    generator = json_generator_new();
-    json_generator_set_root(generator, root);
-    text =      json_generator_to_data(generator, NULL);
-
-    /* Release everything */
-    g_object_unref(generator);
-    json_node_free(root);
-    return text;
-}
 
 
 void
@@ -117,7 +100,7 @@ on_server_connected(SoupSession* session,
     GAsyncResult* res,
     AgentObject* agent)
 {
-    GError* error = NULL;
+    GError* error = malloc(sizeof(GError));
     Socket* socket = agent_get_socket(agent);
 
     socket->ws = soup_session_websocket_connect_finish(session, res, &error);
@@ -125,22 +108,20 @@ on_server_connected(SoupSession* session,
     
 
     /*if error happen during connection, restart agent_connect_to_host*/
-    if (error)
+    if (error != NULL)
     {
         write_to_log_file(AGENT_NETWORK_LOG,error->message);
         AgentState* disconnected = transition_to_disconnected_state();
         agent_set_state(agent, disconnected);
 
         agent_connect_to_host(agent);
-
         return;
     }
-    g_main_context_push_thread_default(g_main_loop_get_context(agent_get_main_loop(agent)));
 
+    g_main_context_push_thread_default(g_main_loop_get_context(agent_get_main_loop(agent)));
     /*connect websocket connection signal with signal handler*/
     g_signal_connect(socket->ws, "closed", G_CALLBACK(on_server_closed), agent);
     g_signal_connect(socket->ws, "message", G_CALLBACK(on_server_message), agent);
-
     g_main_context_pop_thread_default(g_main_loop_get_context(agent_get_main_loop(agent)));
 
 
@@ -208,11 +189,7 @@ register_with_host(AgentObject* agent)
 
     if(error != NULL)
     {
-        JsonObject* object = json_object_new();
-        json_object_set_string_member(object,UNDEFINED_ERROR,error->message);
-
-        agent_send_message(agent,
-            message_init(AGENT_MODULE,HOST_MODULE,ERROR_REPORT,object));
+        agent_report_error(agent,error->message);
     }
 
     JsonNode* root = json_parser_get_root(parser);
@@ -221,6 +198,7 @@ register_with_host(AgentObject* agent)
     gint ID = json_object_get_int_member(object, DEVICE_ID);
 
     write_to_log_file(AGENT_GENERAL_LOG,"Registering with host");
+
     Message* package =
         message_init(AGENT_MODULE, HOST_MODULE, 
             REGISTER_SLAVE, get_registration_message(ID));
@@ -247,7 +225,7 @@ socket_get_host_url(AgentObject* agent)
 {
     JsonParser* parser = json_parser_new();
 
-    GError* error = NULL;
+    GError* error = malloc(sizeof(GError));
     json_parser_load_from_file(parser,HOST_CONFIG_FILE,error);
     if(error != NULL)
     {
@@ -284,7 +262,7 @@ initialize_socket(AgentObject* agent)
 
     JsonParser* parser = json_parser_new();
 
-    GError* error = NULL;
+    GError* error = malloc(sizeof(GError));
     json_parser_load_from_file(parser,HOST_CONFIG_FILE,&error);
     if(error != NULL)
     {

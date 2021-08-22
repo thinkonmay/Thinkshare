@@ -50,6 +50,8 @@ namespace SlaveManager.Models
 
         public string PeerCallState { get; set; }
 
+        public string SignallingState {get;set;}
+
         public string Message { get; set; }
     }
 
@@ -82,7 +84,7 @@ namespace SlaveManager.Models
 
         public string PeerCallState { get; set; }
 
-        public string Message { get; set; }
+        public string? Message { get; set; }
 
         public virtual Slave Slave {get;set;}
     }

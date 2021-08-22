@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 using SlaveManager.SlaveDevices.SlaveStates;
 using System.IO;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System;
 using SlaveManager.Models;
 
@@ -33,9 +31,7 @@ namespace SlaveManager.SlaveDevices
     public class SlaveDevice : ISlaveDevice
     {
         public ISlaveState State { get; set; }
-        public IConnection connection { get; set; }
         public WebSocket ws { get; set; }
-
         private readonly IAdmin _admin;
         public SlaveDevice(IAdmin admin)
         {
@@ -60,50 +56,52 @@ namespace SlaveManager.SlaveDevices
                         if (message.Count > 0)
                         {
                             var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                            var json_message = JsonConvert.DeserializeObject<MessageWithID>(receivedMessage);
+                            var messageForm = JsonConvert.DeserializeObject<MessageWithID>(receivedMessage);
 
-                            if (json_message != null)
+                            if (messageForm.To == (int)Module.HOST_MODULE)
                             {
-                                if (json_message.To != Module.HOST_MODULE)
+                                if (messageForm.From == (int)Module.AGENT_MODULE)
                                 {
-                                    if (json_message.From == Module.AGENT_MODULE)
+                                    switch (messageForm.Opcode)
                                     {
-                                        switch (json_message.Opcode)
+                                        case (int)Opcode.COMMAND_LINE_FORWARD:
                                         {
-                                            case Opcode.COMMAND_LINE_FORWARD:
-                                                {
-                                                    var cmd = JsonConvert.DeserializeObject<ReceiveCommand>(json_message.Data);
-                                                    await _admin.LogSlaveCommandLine(json_message.SlaveID, cmd);    
-                                                    /*send command to admin here*/
-                                                    break;
-                                                }
-                                            case Opcode.ERROR_REPORT:
-                                                {
-                                                    var error = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(json_message.Data);
-                                                    await _admin.ReportAgentError(error, json_message.SlaveID);
-                                                    break;
-                                                }
-
+                                            var cmd = JsonConvert.DeserializeObject<ReceiveCommand>(messageForm.Data);
+                                            await _admin.LogSlaveCommandLine(messageForm.SlaveID, cmd);
+                                            break;
                                         }
-                                    }
-                                    else if (json_message.From == Module.CORE_MODULE)
-                                    {
-                                        switch (json_message.Opcode)
+                                        case (int)Opcode.ERROR_REPORT:
                                         {
-                                            case Opcode.ERROR_REPORT:
-                                                {
-                                                    var errabs = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(json_message.Data);
-                                                    await _admin.ReportSessionCoreError(errabs, json_message.SlaveID);
-                                                    break;
-                                                }
-                                            case Opcode.EXIT_CODE_REPORT:
-                                                {
-                                                    var abs = JsonConvert.DeserializeObject<SessionCoreExitAbsTime> ( json_message.Data );
-                                                    await _admin.ReportSessionCoreExit(json_message.SlaveID, abs);
+                                            var error = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(messageForm.Data);
 
-                                                    //TODO: add to db
-                                                    break;
-                                                }
+                                            if(error.ErrorMessage == ErrorMessage.UNKNOWN_SESSION_CORE_EXIT)
+                                            {
+                                                await _admin.ReportRemoteControlDisconnected(messageForm.SlaveID);
+                                                var state = new OnSessionOffRemote();
+                                                ChangeState(state);
+                                                break;
+                                            }
+                                            await _admin.ReportAgentError(error, messageForm.SlaveID);
+                                            break;
+                                        }
+
+                                    }
+                                }
+                                else if (messageForm.From == (int)Module.CORE_MODULE)
+                                {
+                                    switch (messageForm.Opcode)
+                                    {
+                                        case (int)Opcode.ERROR_REPORT:
+                                        {
+                                            var errabs = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(messageForm.Data);
+                                            await _admin.ReportSessionCoreError(errabs, messageForm.SlaveID);
+                                            break;
+                                        }
+                                        case (int)Opcode.EXIT_CODE_REPORT:
+                                        {
+                                            var abs = JsonConvert.DeserializeObject<SessionCoreExitAbsTime> ( messageForm.Data );
+                                            await _admin.ReportSessionCoreExit(messageForm.SlaveID, abs);
+                                            break;
                                         }
                                     }
                                 }

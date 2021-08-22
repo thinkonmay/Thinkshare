@@ -79,7 +79,6 @@ typedef struct 			_SignallingHub			SignallingHub;
 
 typedef	struct			_IPC					IPC;
 
-typedef 				JsonObject				Message;
 
 
 
@@ -92,6 +91,7 @@ typedef					gchar*					SignallingServerState;
 
 typedef					gchar*					PeerCallState;
 
+typedef void            (*ProcessBitrateCalculation) (SessionCore* core);
 
 #endif // ! __SESSION_CORE_TYPE_H__
 

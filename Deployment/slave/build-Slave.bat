@@ -2,6 +2,9 @@
 
 cd ..\..\Slave
 rmdir /Q /S build
+rmdir /Q /S C:/ThinkMay/bin
+
+mkdir C:/ThinkMay/bin
 mkdir build
 cd build
 cmake -G "Visual Studio 16 2019" 

@@ -1,5 +1,3 @@
-
-
 #include <agent-cmd.h>
 #include <agent-type.h>
 #include <agent-message.h>
@@ -9,6 +7,7 @@
 
 #include <logging.h>
 #include <general-constant.h>
+#include <message-form.h>
 
 
 
@@ -34,6 +33,18 @@ command_line_output_handle(GBytes* data,
 }
 
 
+void
+command_line_process_handle(ChildProcess* proc,
+                            DWORD exit_code,
+                            AgentObject* agent)
+{
+    if(exit_code != STILL_ACTIVE)
+    {
+        close_child_process(proc);
+    }
+}
+
+
 
 void
 create_new_cmd_process(AgentObject* agent, 
@@ -43,7 +54,7 @@ create_new_cmd_process(AgentObject* agent,
 
     ChildProcess* child_process = create_new_child_process(
         "C:\\Windows\\System32\\cmd.exe /k ", position, first_command,
-        command_line_output_handle, agent);
+        command_line_output_handle,NULL, agent);
 
     agent_set_child_process(agent,position, 
         child_process);

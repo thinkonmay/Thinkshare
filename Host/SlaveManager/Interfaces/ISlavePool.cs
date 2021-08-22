@@ -15,8 +15,9 @@ namespace SlaveManager.Interfaces
         /// slave id after add to slavepool will automatically set to disconnected state
         /// </summary>
         /// <param name="slaveid"></param>
+        /// <param name="slave"></param>
         /// <returns></returns>
-        public bool AddSlaveId(int slaveid,SlaveDevice slave);
+        bool AddSlaveId(int slaveid,SlaveDevice slave);
 
         /// <summary>
         /// Get SlaveDevice correspond to a ID in slave pool, 
@@ -25,20 +26,20 @@ namespace SlaveManager.Interfaces
         /// </summary>
         /// <param name="ID"></param>
         /// <returns>SlaveDevice instance correspond to given ID</returns>
-        public SlaveDevice GetSlaveDevice(int ID);
+        SlaveDevice GetSlaveDevice(int ID);
 
         /// <summary>
         /// Get slave state of slave with id in slave pool
         /// </summary>
         /// <param name="ID">id of slave device to query state</param>
         /// <returns>the string represent slave state</returns>
-        public string GetSlaveState(int ID);
+        string GetSlaveState(int ID);
 
         /// <summary>
         /// Get slave state of all slace device in slave pool
         /// </summary>
         /// <returns>list of tuple, first item contain slaveID, second contain slavee state in form of string</returns>
-        public List<Tuple<int, string>> GetSystemSlaveState();
+        List<Tuple<int, string>> GetSystemSlaveState();
 
         /// <summary>
         /// replace slave device with specific key,
@@ -47,14 +48,14 @@ namespace SlaveManager.Interfaces
         /// <param name="key"></param>
         /// <param name="slave"></param>
         /// <returns>true if slave was replaced successfully</returns>
-        public bool AddSlaveDeviceWithKey(int key, SlaveDevice slave);
+        bool AddSlaveDeviceWithKey(int key, SlaveDevice slave);
 
         /// <summary>
         /// search for id in slave queue, return true if id is found
         /// </summary>
         /// <param name="slave_id"></param>
         /// <returns>true if slave id was found in slave pool, otherwise return false</returns>
-        public bool SearchForSlaveID(int slave_id);
+        bool SearchForSlaveID(int slave_id);
 
 
         /// <summary>
@@ -62,14 +63,14 @@ namespace SlaveManager.Interfaces
         /// </summary>
         /// <param name="slaveid"></param>
         /// <returns></returns>
-        public bool DisconnectSlave(int slaveid);
+        bool DisconnectSlave(int slaveid);
 
         /// <summary>
         /// Send reject slave message to agent, then remove slavedevice and slave id from slavepool
         /// </summary>
         /// <param name="slaveid"></param>
         /// <returns></returns>
-        public bool RejectSlave(int slaveid);
+        bool RejectSlave(int slaveid);
 
         /// <summary>
         /// send command to a specific process id at an specific slavedevice
@@ -78,16 +79,16 @@ namespace SlaveManager.Interfaces
         /// <param name="order">processid of commandline processs</param>
         /// <param name="command"></param>
         /// <returns></returns>
-        public bool SendCommand(int slaveid, int order, string command);
+        bool SendCommand(int slaveid, int order, string command);
 
 
 
-        public bool RemoteControlReconnect(int slaveid);
+        bool RemoteControlReconnect(int slaveid);
 
-        public bool RemoteControlDisconnect(int slaveid);
+        bool RemoteControlDisconnect(int slaveid);
 
-        public bool SessionInitialize(int slaveid, SlaveSession session);
+        bool SessionInitialize(int slaveid, SlaveSession session);
 
-        public bool SessionTerminate(int slaveid);
+        bool SessionTerminate(int slaveid);
     }
 }

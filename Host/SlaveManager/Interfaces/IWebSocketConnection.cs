@@ -5,6 +5,11 @@ namespace SlaveManager.Interfaces
 {
     public interface IWebSocketConnection : IConnection
     {
-        public Task Close(WebSocket ws);
+        /// <summary>
+        /// close websocket connection
+        /// </summary>
+        /// <param name="ws"></param>
+        /// <returns></returns>
+        Task Close(WebSocket ws);
     }
 }

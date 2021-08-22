@@ -35,14 +35,14 @@ class _FileInfoCardState extends State<FileInfoCard> {
       hubConnection.onclose(({ error}) {
       print(error);
     });
-    hubConnection.on("FunctionName", onFunctionName);
+    hubConnection.on("ReportSlaveRegistered", onFunctionName);
     startConnection();
     super.initState();
   }
 
   void onFunctionName(List<Object> result) {
     setState(() {
-      print(result);
+      print(result[0]);
     });
   }
 
