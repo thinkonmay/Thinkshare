@@ -13,7 +13,7 @@ namespace SlaveManager.Services
         private readonly RoleManager<IdentityRole<int>> roleManager;
         private readonly UserManager<UserAccount> userManager;
 
-        public const string ADMIN = "Admin";
+        public const string ADMIN = "Administrator";
         public const string MOD = "Moderator";
         public const string USER = "User";
 
