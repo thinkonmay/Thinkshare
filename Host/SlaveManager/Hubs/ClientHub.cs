@@ -5,6 +5,7 @@ using SharedHost.Models;
 using SlaveManager.Administration;
 using SlaveManager.Models;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SignalRChat.Hubs
 {
@@ -20,9 +21,8 @@ namespace SignalRChat.Hubs
     }
 
 
-
+    [Authorize]
     public class ClientHub : Hub<IClientHub>
     { 
-
     }
 }

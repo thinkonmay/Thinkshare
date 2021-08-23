@@ -11,39 +11,11 @@
 #include <general-constant.h>
 #include <logging.h>
 #include <error-code.h>
+#include <message-form.h>
 
 
 #include <glib.h>
 #include <json-glib/json-glib.h>
-
-
-
-
-
-
-Message*
-message_init(Module from,
-	Module to,
-	Opcode opcode,
-	Message* data)
-{
-	Message* object = json_object_new();
-
-	json_object_set_int_member(object, "From", from);
-	json_object_set_int_member(object, "To", to);
-	json_object_set_int_member(object, "Opcode", opcode);
-	if (data == NULL)
-	{
-		return object;
-	}
-	else
-	{
-		gchar* data_string = get_string_from_json_object(data);
-		json_object_set_string_member	(object, "Data", data_string);
-		return object;
-	}
-}
-
 
 
 
@@ -130,31 +102,18 @@ void
 on_agent_message(AgentObject* agent,
 				 gchar* data)
 {
+	GError* error = malloc(sizeof(GError));
 	write_to_log_file(AGENT_MESSAGE_LOG,data);
 
-	JsonNode* root;
-	JsonObject* object, * json_data;
 
-	JsonParser* parser = json_parser_new();
-	json_parser_load_from_data(parser, data, -1, NULL);
-	root = json_parser_get_root(parser);
 
-	Module from, to;
-	Opcode opcode;
-	gchar* data_string;
-
-	if(JSON_NODE_TYPE(root) == JSON_NODE_OBJECT)
-	{
-		object = json_node_get_object(root);
-		from = json_object_get_int_member(object, "From");
-		to = json_object_get_int_member(object, "To");
-		opcode = json_object_get_int_member(object, "Opcode");
-		data_string = json_object_get_string_member(object, "Data");
-	}
-	else
-	{
-		return;
-	}
+	Message* object = 		get_json_object_from_string(data,&error);
+	if(error != NULL || object == NULL) {return;}
+	gint	from = 			json_object_get_int_member(object, "From");
+	gint	to = 			json_object_get_int_member(object, "To");
+	gint	opcode = 		json_object_get_int_member(object, "Opcode");
+	gchar*	data_string = 	json_object_get_string_member(object, "Data");
+	
 
 	if (to == AGENT_MODULE)
 	{
@@ -175,11 +134,8 @@ on_agent_message(AgentObject* agent,
 			
 
 
-			///message data with actual json object
-			JsonParser* parser_ = json_parser_new();
-			json_parser_load_from_data(parser_, data_string, -1, NULL);
-			JsonNode* root_ = json_parser_get_root(parser_);
-			json_data = json_node_get_object(root_);
+			Message* json_data = get_json_object_from_string(data_string,&error);
+			if(error != NULL || json_data == NULL) {return;}
 					
 			if (opcode == NEW_COMMAND_LINE_SESSION)
 			{
@@ -216,16 +172,14 @@ on_agent_message(AgentObject* agent,
 		}
 		else if(from == CORE_MODULE)
 		{		
-			JsonParser* parser_ = json_parser_new();
-			json_parser_load_from_data(parser_, data_string, -1, NULL);
-			JsonNode* root_ = json_parser_get_root(parser_);
-			json_data = json_node_get_object(root_);
+			Message* json_data = get_json_object_from_string(data_string,&error);
+			if(error != NULL || json_data == NULL) {return;}
 
-			if(FILE_TRANSFER_SERVICE){
+			if(opcode == FILE_TRANSFER_SERVICE){
 
-			}else if(CLIPBOARD_SERVICE){
+			}else if(opcode == CLIPBOARD_SERVICE){
 
-			}else if(RESET_QOE){
+			}else if(opcode == RESET_QOE){
 				agent_reset_qoe(agent,json_data);
 			}
 			

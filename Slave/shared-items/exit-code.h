@@ -15,6 +15,7 @@ typedef enum
     PLUGINS_MISSING_EXIT,
 
     FORCE_EXIT,
+    UNKNOWN_PACKAGE_FROM_CLIENT
 }ExitCode;
 
 #endif

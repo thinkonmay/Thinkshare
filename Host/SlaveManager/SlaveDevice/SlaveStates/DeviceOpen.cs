@@ -19,7 +19,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
             await slave.SendMessage(message);
 
-            ISlaveState _state = new OnSession();
+            var _state = new OnSession();
             slave.ChangeState(_state);
             return;
         }
@@ -65,6 +65,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             msg.From = Module.HOST_MODULE;
             msg.To = Module.AGENT_MODULE;
             msg.Opcode = Opcode.REJECT_SLAVE;
+            msg.Data = " ";
 
             await slave.SendMessage(msg);
             ISlaveState _state = new DeviceDisconnected();

@@ -31,17 +31,18 @@ namespace SlaveManager.Services
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
 
+            // add all role of user account to role claim
             var roleClaims = new List<Claim>();
             foreach (var role in roles)
             {
-                roleClaims.Add(new Claim("role", role));
+                roleClaims.Add(new Claim(ClaimTypes.Role, role));
             }
 
+            // combine default claim with customized claim
             var claims = new Claim[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id.ToString())
+                new Claim(JwtRegisteredClaimNames.Email, user.Email)
             }
             .Union(userClaims).Union(roleClaims);
 
@@ -52,13 +53,53 @@ namespace SlaveManager.Services
                 Audience = _jwt.Audience,
                 Issuer = _jwt.Issuer,
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
-                Expires = DateTime.Now.AddDays(7),
+                Expires = DateTime.Now.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+
+    
+
+
+        public int GetUserFromHttpRequest(ClaimsPrincipal User)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwt.Key);
+
+            ClaimsPrincipal principal = User as ClaimsPrincipal;  
+            if (null != principal)  
+            {  
+                foreach (Claim claim in principal.Claims)  
+                {  
+                    if(claim.Type == "id")
+                    {
+                        return Int32.Parse(claim.Value);
+                    }
+                }  
+            }
+            return -1;
+        }
+
+        
+        public bool IsAdmin(ClaimsPrincipal User)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwt.Key);
+
+            ClaimsPrincipal principal = User as ClaimsPrincipal;  
+            IEnumerable<Claim> roleClaims = User.FindAll(ClaimTypes.Role);
+            IEnumerable<string> roles = roleClaims.Select(r => r.Value);
+
+            if(roles.Contains<string>("Administrator"))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

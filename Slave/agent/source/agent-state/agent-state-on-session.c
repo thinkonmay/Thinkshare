@@ -18,11 +18,14 @@ static void
 on_session_session_terminate(AgentObject* agent)
 {
     GFile* hdl = g_file_parse_name(SESSION_SLAVE_FILE);
+    GError* error = malloc(sizeof(GError));
 
-    if(!g_file_replace_contents(hdl, "EmptySession", strlen("EmptySession"), NULL, TRUE,
-        G_FILE_CREATE_NONE, NULL, NULL, NULL))
+    g_file_replace_contents(hdl, "EmptySession", strlen("EmptySession"), NULL, TRUE,
+        G_FILE_CREATE_NONE, NULL, NULL, &error);
+        
+    if(error != NULL)
     {
-		agent_report_error(agent,ERROR_FILE_OPERATION);        
+		agent_report_error(agent,ERROR_FILE_OPERATION);
     }
 
     AgentState* open_state = transition_to_on_open_state();
@@ -32,8 +35,7 @@ on_session_session_terminate(AgentObject* agent)
 static void
 on_session_remote_control_disconnect(AgentObject* agent)
 {
-    session_terminate(agent);
-
+    // child process will be close automatically after state switch to off remote
     AgentState* off_remote_state = transition_to_off_remote_state();
     agent_set_state(agent,off_remote_state);
 }
@@ -47,7 +49,7 @@ on_session_send_message_to_host(AgentObject* agent,
     if(!initialized)
     {
         JsonParser* parser = json_parser_new();
-        GError* error = NULL;
+        GError* error = malloc(sizeof(GError));
         json_parser_load_from_file(parser, HOST_CONFIG_FILE,&error);
         if(error != NULL)
         {
@@ -59,14 +61,9 @@ on_session_send_message_to_host(AgentObject* agent,
         initialized = TRUE;
     }
 
-
-    JsonParser* parser = json_parser_new();
-    json_parser_load_from_data(parser, message, -1, NULL);
-    JsonNode* root = json_parser_get_root(parser);
-    JsonObject* object = json_node_get_object(root);
-
-
-
+    GError* error = malloc(sizeof(GError));
+    Message* object = get_json_object_from_string(message,&error);
+	if(error != NULL || object == NULL) {return;}
 
     json_object_set_int_member(object,
         DEVICE_ID, SlaveID);
@@ -79,8 +76,6 @@ static void
 on_session_session_core_exit(AgentObject* agent)
 {
     agent_report_error(agent,UNKNOWN_SESSION_CORE_EXIT);
-    Sleep(1000);
-    session_initialize(agent);
 }
 
 

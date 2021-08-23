@@ -47,8 +47,8 @@ namespace SlaveManager
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection"))
             );
             
-            ///for sql server
-            /// services.AddDbContext<ApplicationDbContext>(options =>
+            // for sql server
+            // services.AddDbContext<ApplicationDbContext>(options =>
             //     options.UseSQLServer());
 
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -72,6 +72,7 @@ namespace SlaveManager
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
                 .AddJwtBearer(options =>
                 {
@@ -86,10 +87,12 @@ namespace SlaveManager
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtOptions:Key"]))
                     };
                 });
+
+
             services.AddSignalR();
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(swagger =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                swagger.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "SlaveManager",
                     Version =
@@ -99,7 +102,33 @@ namespace SlaveManager
                 var xmlFilePath = Path.Combine(AppContext.BaseDirectory,
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
-                c.IncludeXmlComments(xmlFilePath);
+                swagger.IncludeXmlComments(xmlFilePath);
+
+
+                // To Enable authorization using Swagger (JWT)
+                swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                });
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
 
 
@@ -134,6 +163,7 @@ namespace SlaveManager
 
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
             {

@@ -16,7 +16,7 @@ namespace SlaveManager.Models.Auth
         public int ClientID {get;set;}
 
 
-        public static AuthResponse GenerateSuccessful(string email, string token, DateTime expiry, int _clientID)
+        public static AuthResponse GenerateSuccessful(string email, string token, DateTime expiry)
         {
             return new AuthResponse()
             {
@@ -25,7 +25,6 @@ namespace SlaveManager.Models.Auth
                 Message = "Login successful",
                 Token = token,
                 ValidUntil = expiry,
-                ClientID = _clientID,
             };
         }
 

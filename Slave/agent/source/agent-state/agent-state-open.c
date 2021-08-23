@@ -8,6 +8,7 @@
 
 #include <state-indicator.h>
 #include <general-constant.h>
+#include <message-form.h>
 #include <error-code.h>
 #include <logging.h>
 
@@ -30,7 +31,7 @@ open_state_send_message_to_host(AgentObject* agent,
     if(!initialized)
     {
         JsonParser* parser = json_parser_new();
-        GError* error = NULL;
+        GError* error = malloc(sizeof(GError));
         json_parser_load_from_file(parser, HOST_CONFIG_FILE,&error);
         if(error != NULL)
         {
@@ -42,13 +43,9 @@ open_state_send_message_to_host(AgentObject* agent,
         initialized = TRUE;
     }
 
-
-    JsonParser* parser = json_parser_new();
-    json_parser_load_from_data(parser, message, -1, NULL);
-    JsonNode* root = json_parser_get_root(parser);
-    JsonObject* object = json_node_get_object(root);
-
-
+    GError* error = malloc(sizeof(GError));
+    Message* object = get_json_object_from_string(message,&error);
+    if (error != NULL || object == NULL) { return; }
 
 
     json_object_set_int_member(object,

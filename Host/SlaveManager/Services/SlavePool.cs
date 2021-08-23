@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using SlaveManager.Interfaces;
-using SlaveManager.Data;
 
 namespace SlaveManager.Services
 {
@@ -85,7 +84,7 @@ namespace SlaveManager.Services
             SlaveDevice slave;
             if (!SearchForSlaveID(slaveid)) { return false; }
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
-            if (this.GetSlaveState(slaveid) != SlaveServiceState.OnSession) { return false; }
+            if (GetSlaveState(slaveid) != SlaveServiceState.OnSession) { return false; }
 
             slave.RemoteControlDisconnect();
             return true;
@@ -96,7 +95,7 @@ namespace SlaveManager.Services
             SlaveDevice slave;
             if (!SearchForSlaveID(slaveid)) { return false; }
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
-            if (this.GetSlaveState(slaveid) != SlaveServiceState.OffRemote) { return false; }
+            if (GetSlaveState(slaveid) != SlaveServiceState.OffRemote) { return false; }
             slave.RemoteControlReconnect();
             return true;
         }

@@ -1,1 +1,0 @@
-var urlServer = "http://192.168.1.6:81";

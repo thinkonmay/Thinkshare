@@ -8,6 +8,7 @@
 #include <logging.h>
 #include <general-constant.h>
 #include <opcode.h>
+#include <message-form.h>
 
 
 
@@ -37,22 +38,22 @@ disconnected_register_with_host(AgentObject* agent)
 }
 
 static void
-disconnected_send_message_to_host(AgentObject* agent, char* message)
+disconnected_send_message_to_host(AgentObject* agent, 
+                                  char* message)
 {
-    JsonNode* root;
-    JsonObject* object, * json_data;
-
-    JsonParser* parser = json_parser_new();
-    json_parser_load_from_data(parser, message, -1, NULL);
-    root = json_parser_get_root(parser);
-    object = json_node_get_object(root);
-
-    int i= json_object_get_int_member(object, "Opcode");
+    GError* error = malloc(sizeof(GError));
+    Message* object = get_json_object_from_string(message,&error);
+	if(error != NULL || object == NULL) {return;}
+    gint i = json_object_get_int_member(object, "Opcode");
 
     if (i != REGISTER_SLAVE)
+    {
         write_to_log_file(AGENT_GENERAL_LOG,"Unknown message send to host while not configured");
+    }
     else
+    {
         send_message_to_host(agent, message);
+    }   
 }
 
 

@@ -16,6 +16,7 @@
 
 #include <glib.h>
 #include <logging.h>
+#include <message-form.h>
 
 
 struct _SessionCore
@@ -56,7 +57,7 @@ session_core_setup_session(SessionCore* self)
 	JsonObject* object;
 	JsonParser* parser = json_parser_new();
 
-	GError* error = NULL;
+	GError* error = malloc(sizeof(GError));
 	json_parser_load_from_file(parser, SESSION_SLAVE_FILE, &error);
 	if (error != NULL)
 	{
@@ -80,7 +81,6 @@ session_core_setup_session(SessionCore* self)
 		json_object_get_int_member(qoe, "ScreenWidth"),
 		json_object_get_int_member(qoe, "ScreenHeight"),
 		json_object_get_int_member(qoe, "Framerate"),
-		json_object_get_int_member(qoe, "Bitrate"),
 		json_object_get_int_member(qoe, "AudioCodec"),
 		json_object_get_int_member(qoe, "VideoCodec"),
 		json_object_get_int_member(qoe, "QoEMode"));
@@ -176,15 +176,15 @@ get_json_exit_state(ExitState* state)
 
 
 	json_object_set_int_member(message, "ExitCode", state->code);
-	json_object_set_int_member(message, "CoreState", state->core_state);
-	json_object_set_int_member(message, "PipelineState", state->pipeline_state);
-	json_object_set_int_member(message, "SignallingState", state->signalling_state);
-	json_object_set_int_member(message, "PeerCallState", state->peer_state);
 	json_object_set_int_member(message, "ExitTime", g_get_real_time());
+	json_object_set_string_member(message, "CoreState", state->core_state);
+	json_object_set_string_member(message, "PipelineState", state->pipeline_state);
+	json_object_set_string_member(message, "SignallingState", state->signalling_state);
+	json_object_set_string_member(message, "PeerCallState", state->peer_state);
 
 	if(state->error != NULL)
 	{
-		json_object_set_int_member(message, "Message", state->error->message);
+		json_object_set_string_member(message, "Message", state->error->message);
 	}
 	else
 	{
@@ -215,6 +215,8 @@ session_core_finalize(SessionCore* self,
 	SoupWebsocketConnection* connection = 
 		signalling_hub_get_websocket_connection(signalling);
 
+
+    //exit current state to report to slave manager
 	ExitState state;
 
 	state.code = exit_code;

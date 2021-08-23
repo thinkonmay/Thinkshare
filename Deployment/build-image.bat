@@ -13,8 +13,8 @@ dotnet build .
 copy Dockerfile ..
 cd ..
 
-docker build -t 192.168.1.6:5000/signalling:signalling_v1.0.0 .
-docker push 192.168.1.6:5000/signalling:signalling_v1.0.0
+docker build -t 192.168.1.6:5000/signalling:signalling_v1.0.1 .
+docker push 192.168.1.6:5000/signalling:signalling_v1.0.1
 
 del Dockerfile
 
@@ -31,8 +31,8 @@ dotnet ef database update
 copy Dockerfile .. 
 cd ..
 
-docker build -t 192.168.1.6:5000/slavemanager:slavemanager_v1.0.0 .
-docker push 192.168.1.6:5000/slavemanager:slavemanager_v1.0.0
+docker build -t 192.168.1.6:5000/slavemanager:slavemanager_v1.0.1 .
+docker push 192.168.1.6:5000/slavemanager:slavemanager_v1.0.1
 
 del Dockerfile
 

@@ -1,8 +1,8 @@
 #include <session-core-type.h>
 #include <gst/gst.h>
 
-
-
+#include <session-core-type.h>
+#include <qoe.h>
 
 
 /// <summary>
@@ -76,3 +76,10 @@ void                pipeline_set_state              (Pipeline* pipe,
 
 void                stop_pipeline                   (Pipeline* pipe);
 
+
+
+GstElement*         pipeline_get_audio_encoder      (Pipeline* pipe,
+                                                     Codec video);
+
+GstElement*         pipeline_get_video_encoder      (Pipeline* pipe,
+                                                     Codec audio);

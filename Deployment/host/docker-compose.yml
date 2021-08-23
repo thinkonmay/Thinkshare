@@ -5,7 +5,7 @@ version: '3'
 services: 
 #signalling service
   signalling:
-    image: ${PCC_URL}:${REGISTRY_PORT}/signalling:signalling_v1.0.0   
+    image: ${PCC_URL}:${REGISTRY_PORT}/signalling:signalling_v1.0.1 
     restart: always
 
 
@@ -20,7 +20,7 @@ services:
 
 
   slavemanager:
-    image: ${PCC_URL}:${REGISTRY_PORT}/slavemanager:slavemanager_v1.0.0    
+    image: ${PCC_URL}:${REGISTRY_PORT}/slavemanager:slavemanager_v1.0.1  
     restart: always
 
     environment: 

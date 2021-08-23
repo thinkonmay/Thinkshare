@@ -49,6 +49,9 @@
     <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\shared-items\logging.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\shared-items\message-form.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="D:\OneDrive - VINACADEMY LLC\Desktop\personal-cloud-computing\Slave\agent\source\CmakeLists.txt" />

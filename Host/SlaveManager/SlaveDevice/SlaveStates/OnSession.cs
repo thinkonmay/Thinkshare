@@ -21,11 +21,11 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
             message.Opcode = Opcode.SESSION_TERMINATE;
-            message.Data = null;
+            message.Data = " ";
 
             await slave.SendMessage(message);
 
-            ISlaveState _state = new DeviceOpen();
+            var _state = new DeviceOpen();
             slave.ChangeState(_state);
 
 
@@ -39,7 +39,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
             message.Opcode = Opcode.DISCONNECT_REMOTE_CONTROL;
-            message.Data = null;
+            message.Data = " ";
 
             await slave.SendMessage(message);
 
@@ -49,7 +49,6 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
         public async Task RemoteControlReconnect(ISlaveDevice slave)
         {
-            Console.WriteLine("Already In Remote Control");
             return;
         }
 
@@ -80,6 +79,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             msg.From = Module.HOST_MODULE;
             msg.To = Module.AGENT_MODULE;
             msg.Opcode = Opcode.REJECT_SLAVE;
+            msg.Data = " ";
 
             await slave.SendMessage(msg);
             ISlaveState _state = new DeviceDisconnected();

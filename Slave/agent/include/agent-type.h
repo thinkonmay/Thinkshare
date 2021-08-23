@@ -5,6 +5,8 @@
 #include <glib.h>
 #include <json-glib/json-glib.h>
 
+#include <Windows.h>
+
 
 
 
@@ -24,9 +26,14 @@ typedef struct _AgentState			AgentState;
 
 typedef		   JsonObject			Message;
 
-typedef void  (*ChildHandleFunc)    (GBytes* buffer,
+typedef void  (*ChildStdHandle)    (GBytes* buffer,
                                      gint process_id,
                                      AgentObject* agent);
+
+
+typedef void  (*ChildStateHandle)  (ChildProcess* ProcessID,
+                                    DWORD ProcessState,
+                                    AgentObject* agent);
 
 
 

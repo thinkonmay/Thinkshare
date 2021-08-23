@@ -13,8 +13,6 @@
 #define DEFAULT_WIDTH				1920
 #define DEFAULT_HEIGHT				1080
 #define DEFAULT_RAMERATE			60
-#define DEFAULT_VIDEO_BITRATE		1000
-#define DEFAULT_AUDIO_BITRATE		1000
 #define DEFAULT_AUDIO_CODEC			OPUS_ENC
 #define DEFAULT_VIDEO_CODEC			CODEC_H264
 #define DEFAULT_MODE				VIDEO_PIORITY
@@ -36,7 +34,6 @@ typedef struct _QualitySample
 
 	gint available_bandwidth;
 	gint packets_lost;
-
 }QualitySample;
 
 struct _QoE
@@ -45,9 +42,6 @@ struct _QoE
 	*determine in session initialize time*/
 	gint screen_height;
 	gint screen_width;
-
-	gint audio_bitrate;
-	gint video_bitrate;
 
 
 	gint framerate;
@@ -65,12 +59,7 @@ struct _QoE
 	Codec codec_audio;
 	Codec codec_video;
 
-	/*control bind stuff*/
-	GstTimedValueControlSource* audio_controller;
-	GstTimedValueControlSource* video_controller;
-
-	GstControlSource* audio_control_source;
-	GstControlSource* video_control_source;
+	ProcessBitrateCalculation algorithm;
 };
 
 
@@ -83,13 +72,21 @@ qoe_initialize()
 	qoe.screen_width = DEFAULT_WIDTH;
 	qoe.screen_height = DEFAULT_HEIGHT;
 	qoe.framerate = DEFAULT_RAMERATE;
-	qoe.audio_bitrate = DEFAULT_AUDIO_BITRATE;
-	qoe.audio_bitrate = DEFAULT_VIDEO_BITRATE;
+	qoe.codec_video = DEFAULT_VIDEO_CODEC;
+	qoe.codec_audio = DEFAULT_AUDIO_CODEC;
 	qoe.mode = DEFAULT_MODE;
 	
-	qoe.audio_control_source = gst_interpolation_control_source_new();
-	qoe.video_control_source = gst_interpolation_control_source_new();
-
+	for(int i =0; i<SAMPLE_QUEUE_LENGTH + 1; i++)
+	{
+		qoe.sample[i].time = 0;
+		qoe.sample[i].framerate = DEFAULT_RAMERATE;
+		qoe.sample[i].video_bitrate = 2048;
+		qoe.sample[i].audio_bitrate = 2048;
+		qoe.sample[i].video_latency = 0;
+		qoe.sample[i].audio_latency = 0;
+		qoe.sample[i].available_bandwidth = 2048;
+		qoe.sample[i].packets_lost = 0;
+	}
 	qoe.current_reported_sample = 0;
 	qoe.current_sample = 0;
 	return &qoe;
@@ -101,7 +98,6 @@ qoe_setup(QoE* qoe,
 		  gint screen_width,
 		  gint screen_height,
 		  gint framerate,
-		  gint bitrate,
 		  Codec audio_codec,
 		  Codec video_codec,
 		  QoEMode qoe_mode)
@@ -109,77 +105,69 @@ qoe_setup(QoE* qoe,
 	qoe->framerate = framerate;
 	qoe->screen_width = screen_width;
 	qoe->screen_height = screen_height;
-	qoe->video_bitrate = bitrate;
-	qoe->audio_bitrate = DEFAULT_AUDIO_BITRATE;
 	qoe->codec_audio = audio_codec;
 	qoe->codec_video = video_codec;
 	qoe->mode = qoe_mode;
 }
 
 
-
-/// <summary>
-/// attach bitrate controller with element in pipeline, 
-/// more information can be found in gstreamer-dynamic controllable variable
-/// </summary>
-/// <param name="encoder"></param>
-/// <param name="controller"></param>
 void
-attach_bitrate_control(GstObject* audio_encoder, 
-					   GstObject* video_encoder,
-					   SessionCore* core)
+non_over_sampling(SessionCore* core)
+{
+	Pipeline* pipe = session_core_get_pipeline(core);
+	QoE* qoe = session_core_get_qoe(core);
+
+
+	GstElement* video_encoder = pipeline_get_video_encoder(pipe,qoe->codec_video);
+	GstElement* audio_encoder = pipeline_get_audio_encoder(pipe,qoe->codec_audio);
+
+	if(qoe->current_reported_sample == 0)
+	{
+		g_object_set_property(video_encoder,"bitrate",qoe->sample[1024].video_bitrate);
+		g_object_set_property(audio_encoder,"bitrate",qoe->sample[1024].audio_bitrate);
+	}
+
+	g_object_set_property(video_encoder,"bitrate",
+		(gint)(qoe->sample[qoe->current_reported_sample - 1].available_bandwidth * 0.7));
+	g_object_set_property(audio_encoder,"bitrate",
+		(gint)(qoe->sample[qoe->current_reported_sample - 1].available_bandwidth * 0.2));
+}
+
+
+
+void
+attach_bitrate_control(SessionCore* core)
 {
 	QoE* qoe = session_core_get_qoe(core);
+	Pipeline* pipeline = session_core_get_pipeline(core);
+
 	switch(qoe->mode)
 	{
-	case DEFAULT_MODE:
+		case DEFAULT_MODE:
+		{
+			qoe->algorithm = non_over_sampling;
+		}
+		case CUSTOM_BITRATE_CONTROL:
+		{
+
+		}
+		case NON_OVERSAMPLING:
+		{
+			qoe->algorithm = non_over_sampling;
+		}
+	}
+
+
+	while(TRUE)
 	{
-		g_object_set(qoe->audio_control_source, "mode",
-			GST_INTERPOLATION_MODE_CUBIC_MONOTONIC, NULL);
-
-		gst_object_add_control_binding(audio_encoder,
-			gst_direct_control_binding_new(audio_encoder, "bitrate", qoe->audio_control_source));
-
-
-		g_object_set(qoe->video_control_source, "mode",
-			GST_INTERPOLATION_MODE_CUBIC_MONOTONIC, NULL);
-
-		gst_object_add_control_binding(video_encoder,
-			gst_direct_control_binding_new(video_encoder, "bitrate", qoe->video_control_source));
-
-	}
+		qoe->algorithm(core);
+		Sleep(1000);
 	}
 }
 
-process_bitrate_calculation(gint bitrate, QoE* qoe)
-{
-	return bitrate;
-}
-
-void
-set_dynamic_bitrate(Pipeline* pipe, QoE* qoe)
-{
 
 
-	GstTimedValueControlSource* tv_source_audio = 
-		(GstTimedValueControlSource*)qoe->audio_controller;
 
-
-	GstTimedValueControlSource* tv_source_video = 
-		(GstTimedValueControlSource*)qoe->video_controller;
-
-	gst_timed_value_control_source_set( tv_source_video, 
-		gst_element_get_current_running_time(pipeline_get_webrtc_bin(pipe)), 
-		process_bitrate_calculation(qoe->video_bitrate,qoe));
-
-
-	gst_timed_value_control_source_set( tv_source_audio, 
-		gst_element_get_current_running_time(pipeline_get_webrtc_bin(pipe)),
-		process_bitrate_calculation(qoe->audio_bitrate,qoe));
-
-	g_free(tv_source_audio);
-	g_free(tv_source_video);
-}
 
 
 void
@@ -220,19 +208,19 @@ qoe_get_screen_height(QoE* qoe)
 gint
 qoe_get_framerate(QoE* qoe)
 {
-	return qoe->framerate;
+	return qoe->sample[qoe->current_reported_sample].framerate;
 }
 
 gint
 qoe_get_video_bitrate(QoE* qoe)
 {
-	return qoe->video_bitrate;
+	return qoe->sample[qoe->current_reported_sample].video_bitrate;
 }
 
 gint
 qoe_get_audio_bitrate(QoE* qoe)
 {
-	return qoe->audio_bitrate;
+	return qoe->sample[qoe->current_reported_sample].audio_bitrate;
 }
 
 Codec

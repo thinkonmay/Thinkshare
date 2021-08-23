@@ -26,6 +26,7 @@ namespace SlaveManager.Models
             ClientOffer = false;
             SignallingUrl = signalling;
             StunServer = stun;
+            // StartTime = DateTime.Now;
         }
 
 

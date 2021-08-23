@@ -15,11 +15,11 @@
     {
         public int SlaveID { get; set; }
 
-        public Module From { get; set; }
+        public int From { get; set; }
 
-        public Module To { get; set; }
+        public int To { get; set; }
 
-        public Opcode Opcode { get; set; }
+        public int Opcode { get; set; }
 
         public string Data { get; set; }
     }

@@ -5,6 +5,9 @@
 #include "session-core.h"
 #include "session-core-type.h"
 
+
+#include <message-form.h>
+
 #include <libsoup/soup.h>
 #include <glib.h>
 #include <gst/gst.h>

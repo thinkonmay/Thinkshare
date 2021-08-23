@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Data;
@@ -15,11 +16,13 @@ using System.Threading.Tasks;
 using System.Configuration;
 using RestSharp;
 using SlaveManager.SlaveDevices;
-using SharedHost.Models;
 using System.Net;
+using Microsoft.AspNetCore.Identity;
+using SlaveManager.Models.User;
 
 namespace SlaveManager.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     [Route("/Admin")]
     [ApiController]
     public class AdminController : Controller
@@ -31,11 +34,17 @@ namespace SlaveManager.Controllers
         private readonly SystemConfig Configuration;
 
         private readonly RestClient Signalling;
+        private readonly UserManager<UserAccount> _userManager;
 
         private readonly IAdmin _admin;
 
-        public AdminController(ISlavePool slavePool, ApplicationDbContext db, IAdmin admin, SystemConfig config)
+        public AdminController(ISlavePool slavePool, 
+                                ApplicationDbContext db, 
+                                IAdmin admin, 
+                                UserManager<UserAccount> userManager,
+                                SystemConfig config)
         {
+            _userManager = userManager;
             _admin = admin;
             Configuration = config;
             _slavePool = slavePool;
@@ -50,6 +59,21 @@ namespace SlaveManager.Controllers
             }
         }
 
+
+
+        /// <summary>
+        /// add role to specific user
+        /// </summary>
+        /// <param name="UserID"></param>
+        /// <param name="Role"></param>
+        /// <returns></returns>
+        [HttpGet("GrantRole")]
+        public async Task<IActionResult> GrantRole(int UserID, string Role)
+        {
+            var account = await _userManager.FindByIdAsync(UserID.ToString());
+            await _userManager.AddToRoleAsync(account,Role);
+            return Ok();
+        }
 
         /// <summary>
         /// Queries for every slave device in the system for serving state and static information 
@@ -118,122 +142,5 @@ namespace SlaveManager.Controllers
         {
             return _slavePool.DisconnectSlave(ID) ? Ok() : BadRequest();        
         }
-
-        
-        /// <summary>
-        /// initialize session
-        /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
-        [HttpPost("Initialize")]
-        public async Task<IActionResult> Create(int SlaveID)
-        {
-            var cap = new ClientDeviceCapabilities();
-            cap.screenWidth= 2560;
-            cap.screenHeight = 1440;
-            cap.bitrate = 10000;
-            cap.audioCodec = Codec.CODEC_H264;
-            cap.videoCodec = Codec.OPUS_ENC;
-            cap.mode = QoEMode.VIDEO_PIORITY;
-
-            var req = new ClientRequest();
-            req.cap = cap;
-            req.ClientId = 0;
-            req.SlaveId = SlaveID;
-
-
-            if (_slavePool.GetSlaveState(req.SlaveId) != SlaveServiceState.Open) { return BadRequest("Device Not Available"); }
-            await _admin.ReportNewSession(req.SlaveId, 0);
-
-            /*create session id pair randomly*/
-            int sessionSlaveId = Randoms.Next();
-            int sessionClientId = Randoms.Next();
-
-            /*create session from client device capability*/
-            var _QoE = new QoE(req.cap);
-
-            /*create new session with gevin session request from user*/
-            Session sess = new Session(req, _QoE, sessionSlaveId, sessionClientId,
-                "ws://" + Configuration.BaseUrl +":"+ Configuration.SignallingPort + "/Session",
-                Configuration.StunServer);
-
-            _db.Sessions.Add(sess);
-            await _db.SaveChangesAsync();
-
-            var signalPair = new SessionPair()
-            {
-                SessionSlaveID = sessionSlaveId,
-                SessionClientID = sessionClientId
-            };
-
-            /*generate rest post to signalling server*/
-            var get_req = new RestRequest("Generate")
-                .AddParameter("SessionSlaveID", sessionSlaveId.ToString())
-                .AddParameter("SessionClientID", sessionClientId.ToString());            
-            var reply = Signalling.Get(get_req); // TODO post and get confirmation from signalling server
-            if(reply.StatusCode != HttpStatusCode.OK)
-            {
-                return BadRequest(reply.Content.ToString());
-            }
-
-            SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
-            ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
-
-            if(!_slavePool.SessionInitialize(SlaveID, slaveSes))
-            {
-                var error = new GeneralErrorAbsTime();
-                error.ErrorMessage = "Cannot send initialize signal to agent";
-                error.ErrorTime = 0;
-                _admin.ReportAgentError(error,SlaveID);
-                return BadRequest("Cannot send session initialize signal to slave");
-
-            }
-           
-
-            SessionViewModel view = new SessionViewModel();
-            view.clientSession = clientSes; 
-            view.ClientID = sess.ClientID;
-            view.HostUrl = "http://"+Configuration.BaseUrl+":"+ Configuration.SlaveManagerPort;
-            view.DevMode = true;
-            return View("RemoteControl",view);
-            
-        }
-
-
-        /// <summary>
-        /// Terminate session 
-        /// </summary>
-        /// <param name="sessionClientId"></param>
-        /// <returns></returns>
-        [HttpDelete("Terminate")]
-        public async Task<IActionResult> Terminate(int sessionClientId)
-        {
-            
-            Session ses = _db.Sessions.Where(s => s.SessionClientID == sessionClientId).FirstOrDefault();
-
-            ses.EndTime = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
-
-            if (ses == null) return BadRequest();
-
-            var deletion = new SessionPair()
-            {
-                SessionClientID = ses.SessionClientID,
-                SessionSlaveID = ses.SessionSlaveID
-            };
-
-
-            /*generate rest get to signalling server*/
-            var get_req = new RestRequest("Terminate")
-                .AddParameter("SessionSlaveID", ses.SessionSlaveID.ToString())
-                .AddParameter("SessionClientID", ses.SessionClientID.ToString());            
-            var deletion_reply = Signalling.Get(get_req); // TODO post and get confirmation from signalling server
-            if(deletion_reply.StatusCode != HttpStatusCode.OK)
-            {
-                return BadRequest(deletion_reply.Content.ToString());
-            }
-            return Ok();
-        }
-
     }
 }
