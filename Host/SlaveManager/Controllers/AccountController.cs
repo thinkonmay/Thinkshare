@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SlaveManager.Interfaces;
 using SlaveManager.Models.Auth;
 using SlaveManager.Models.User;
+using SlaveManager.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,6 +70,7 @@ namespace SlaveManager.Controllers
                 if (result.Succeeded)
                 {
                     UserAccount u = await _userManager.FindByEmailAsync(model.Email);
+                    await _userManager.AddToRoleAsync(u, DataSeeder.USER);
                     string token = await _tokenGenerator.GenerateJwt(u);
                     return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now);
                 }
