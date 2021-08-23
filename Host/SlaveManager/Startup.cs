@@ -108,11 +108,13 @@ namespace SlaveManager
             services.AddTransient<IWebSocketConnection, WebSocketConnection>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
 
+            services.AddTransient<DataSeeder>();
+
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataSeeder seeder)
         {
             if (env.IsDevelopment())
             {
@@ -150,6 +152,8 @@ namespace SlaveManager
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling");
             }
             );
+
+            await seeder.SeedIdentityAsync();
         }
     }
 }
