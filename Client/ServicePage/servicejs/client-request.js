@@ -1,3 +1,7 @@
+/**
+ * Initialize Session with request form
+ * @param {int} ClientRequest 
+ */
 function InitializeSession(ClientRequest)
 {
     var bodyParameters = {
@@ -9,11 +13,74 @@ function InitializeSession(ClientRequest)
         "AudioCodec": ClientRequest.AudioCodec
 
     }
-    axios.get(ClientConfig.HostUrl + "/Session/Initialize",
+    axios.get(app.ClientConfig.HostUrl + "/Session/Initialize",
         bodyParameters,
         {headers :
         {
-            "Authorization": "Bearer " + ClientConfig.UserToken}
+            "Authorization": "Bearer " + app.ClientConfig.UserToken}
+        }).then((response) => {app.startRemotePage(response.body);}
+        ).catch(app.setError("fail to initialize"));
+}
+
+/**
+ * terminate session using slaveID
+ * @param {int} slaveID 
+ */
+function TerminateSession(slaveID){
+
+    var SessionClientID = app.getClientSessionID(slaveID);
+
+    var bodyParameters ={
+        "sessionClientId": SessionClientID
+    }
+
+    axios.get(app.ClientConfig.HostUrl + "/Session/Terminate",
+        bodyParameters,
+        {headers :
+        {
+            "Authorization": "Bearer " + app.ClientConfig.UserToken}
+        }).catch(app.setError("fail to terminate"));
+}
+
+/**
+ * disconnect remote control with given slaveID
+ * @param {int} slaveID 
+ */
+function 
+DisconnectRemote(slaveID){
+    
+    var SessionClientID = app.getClientSessionID(slaveID);
+
+    var bodyParameters ={
+        "sessionClientId": SessionClientID
+    }
+
+    axios.get(app.ClientConfig.HostUrl + "/Session/Disconnect",
+        bodyParameters,
+        {headers :
+        {
+            "Authorization": "Bearer " + app.ClientConfig.UserToken}
+        }).catch(app.setError("fail to initialize"));
+}
+
+/**
+ * Disconnect Remote Control with given slaveID
+ * @param {int} slaveID 
+ */
+function 
+ReconnectRemoteControl(slaveID){
+    
+    var SessionClientID = app.getClientSessionID(slaveID);
+
+    var bodyParameters ={
+        "sessionClientId": SessionClientID
+    }
+
+    axios.get(app.ClientConfig.HostUrl + "/Session/Reconnect",
+        bodyParameters,
+        {headers :
+        {
+            "Authorization": "Bearer " + app.ClientConfig.UserToken}
         }).then((response) => {app.startRemotePage(response.body);}
         ).catch(app.setError("fail to initialize"));
 }

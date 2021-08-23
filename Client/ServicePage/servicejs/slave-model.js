@@ -1,11 +1,15 @@
 
         
 const config = {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${app.ClientConfig.UserToken}` }
 };
 
-
-function fetchSlave()
+/**
+ * fetch currrent SlaveDevice available for new session
+ * @returns array contain slaveDeviceInformation
+ */
+function 
+fetchSlave()
 {
     var bodyParameters = {
 
@@ -24,8 +28,13 @@ function fetchSlave()
     return SlaveArray;
 }
 
-
-function fetchSession()
+/**
+ * fetch current session that user are in
+ * @returns array contain SlaveDeviceInformation with 
+ * additional serviceState attribute and SessionClientID
+ */
+function 
+fetchSession()
 {
     var bodyParameters = {
         
@@ -44,21 +53,4 @@ function fetchSession()
     return SessionArray;
 }
 
-
-function onNewSlave(slave)
-{
-    app.SlaveArray.push(slave);
-}
-
-function onNewSession(slave)
-{
-    app.SessionArray.push(slave);
-}
-
-function onSlaveChangeSlave(SlaveID, state)
-{
-    var slave = this.SessionArray.find(o=>o.Id == SlaveID);
-
-    slave.slaveServiceState = state;
-}
 

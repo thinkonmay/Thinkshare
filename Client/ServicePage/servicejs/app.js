@@ -52,7 +52,9 @@ var app = new Vue({
 
 
 
-
+        /**
+         * 
+         */
         fetchSlave(){
             app.SlaveArray = fetchSlave();
         },
@@ -61,6 +63,53 @@ var app = new Vue({
         },
 
 
+        
+        updateSlaveState(slaveID, state){
+            for (var i in app.SessionArray) {
+              if (app.SessionArray[i].ID == slaveID) {
+                 app.SessionArray[i].serviceState = state;
+                 break; //Stop this loop, we found it!
+              }
+            }
+        },
+        getSlaveState(slaveID){
+            for(var i in app.SessionArray) {
+                if(app.SessionArray[i].ID == slaveID){
+                    return app.SessionArray[i].serviceState;
+                }
+            }
+        },
+        onNewSlave(deviceInfor){
+            app.SlaveArray.push(deviceInfor);
+        },
+        onObtainedSlave(slaveID){
+            return app.SlaveArray.filter(function(value,index,arr){
+                return value.ID === slaveID;
+            });            
+        },
+        onNewSession(slaveID){
+            this.onObtainedSlave(slaveID);
+            this.fetchSession();
+        },
+        onTerminatedSession(){
+            this.fetchSession();
+        },
+        getClientSessionID(SlaveID){
+            for( var item in this.SessionArray){
+                if(this.SessionArray[item].ID === SlaveID){
+                    return this.SessionArray[item].SessionClientID;
+                }
+            }
+        },
+
+
+
+
+
+        /**
+         * initialize session with slave 
+         * @param {int} SlaveID 
+         */
         sessionInitialize(SlaveID){
             var ClientRequest = {
                 "SlaveID": SlaveID,
@@ -69,7 +118,10 @@ var app = new Vue({
                 "AudioCodec": app.AudioCodec
             }
             InitializeSession(ClientRequest);
+            this.onNewSession(SlaveID);
         },
+
+
 
 
 
