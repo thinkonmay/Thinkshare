@@ -1,35 +1,144 @@
 
-<div class="container-scroller">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="content-wrapper full-page-wrapper d-flex align-items-center auth-pages">
-        <div class="card col-lg-4 mx-auto">
-          <div class="card-body px-5 py-5">
-            <h3 class="card-title text-left mb-3">Login</h3>
-            <form>
-              <div class="form-group">
-                <input v-model="username" type="text" class="form-control p_input" placeholder="Username">
-              </div>
-              <div class="form-group">
-                <input v-model="password" type="text" class="form-control p_input" placeholder="Password">
-              </div>
-              <div class="form-group d-flex align-items-center justify-content-between">
-                <div class="form-check"><label><input type="checkbox" class="form-check-input">Remember me</label></div>
-                <a href="#" class="forgot-pass">Forgot password</a>
-              </div>
-              <div class="text-center">
-                <button v-on:click="Login()" type="submit" class="btn btn-primary btn-block enter-btn">
-                  LOG IN
-                </button>
-              </div>
-              <p class="Or-login-with my-3">Or login with</p>
-              <a href="#" class="facebook-login btn btn-facebook btn-block">Sign in with Facebook</a>
-              <a href="#" class="google-login btn btn-google btn-block">Sign in with Google+</a>
-              <a href="#" class="google-login btn btn-create-account btn-block">Create An Account</a>
-            </form>
+<div id="login">
+  <div class="container-scroller">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="content-wrapper full-page-wrapper d-flex align-items-center auth-pages">
+          <div class="card col-lg-4 mx-auto">
+            <div class="card-body px-5 py-5">
+              <h3 class="card-title text-left mb-3">Login</h3>
+              <form>
+                <div class="form-group">
+                  <input v-model="username" type="text" class="form-control p_input" placeholder="Username">
+                </div>
+                <div class="form-group">
+                  <input v-model="password" type="text" class="form-control p_input" placeholder="Password">
+                </div>
+                <div class="form-group d-flex align-items-center justify-content-between">
+                  <div class="form-check"><label><input type="checkbox" class="form-check-input">Remember me</label></div>
+                  <a href="#" class="forgot-pass">Forgot password</a>
+                </div>
+                <div class="text-center">
+                  <button v-on:click="Login()" type="submit" class="btn btn-primary btn-block enter-btn">
+                    LOG IN
+                  </button>
+                </div>
+                <p class="Or-login-with my-3">Or login with</p>
+                <a href="#" class="facebook-login btn btn-facebook btn-block">Sign in with Facebook</a>
+                <a href="#" class="google-login btn btn-google btn-block">Sign in with Google+</a>
+                <a href="#" class="google-login btn btn-create-account btn-block">Create An Account</a>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+
+<script>
+  var login = new Vue({
+    el: '#login',
+
+    components: {
+    },
+
+    data() 
+    {
+        return {
+
+            username: null,
+            password: null,
+            
+            LoggedIn:false,
+
+            ClientSocket: null,
+
+            SlaveArray: [],
+            SessionArray: [],
+
+            debugEntries: [],
+            logEntries: []
+        };
+    },
+
+    methods: 
+    {  
+        Login() {
+            var body = {
+                "email":app.username,
+                "password":app.password
+            }
+            var url = new URL(app.ClientConfig.HostUrl + 
+                app.ClientConfig.LoginRoute);
+            try{
+                axios.post(url,body).then((response) => {
+                    app.ClientConfig.UserToken = response.data.token;
+                    app.LoggedIn = true;
+                })
+            }catch(error){
+                app.setError(error);
+            }
+        },
+
+
+
+
+        Register(){
+            
+        },
+
+
+
+
+
+
+
+
+
+        setDebug(message)
+        {
+            console.log(message);
+            // app.debugEntries.push(message);
+        },
+        ///report errror in debug mode
+        setError(message)
+        {
+            console.log(message);
+            // app.debugEntries.push(message);
+        },
+        ///method 
+        setStatus(message)
+        {
+            console.log(message);
+            // app.logEntries.push(message);
+        }
+    },
+
+    watch: {
+        SlaveArray(newValue) {
+            // Detach inputs when menu is shown.
+            if (newValue === true) {
+                webrtc.input.detach();
+            } else {
+                webrtc.input.attach();
+            }
+        },
+        SessionArray(newValue, oldValue) {
+            if(newValue === true)
+            {
+                                
+            }
+        },
+        LoggedIn(newValue){
+            if(newValue === true){
+                app.LoggedIn = true;
+                reload();
+            }
+        }
+    },
+});
+
+  
+</script>
