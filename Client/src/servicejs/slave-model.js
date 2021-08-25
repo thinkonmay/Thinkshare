@@ -7,6 +7,16 @@ const config = {
 /**
  * fetch currrent SlaveDevice available for new session
  * @returns array contain slaveDeviceInformation
+ * 
+ *  example: 
+ *  return: 
+ * [{
+ *     "CPU": "R7 2700",
+ *     "GPU": "RTX 3090",
+ *     "RAMcapacity": 16000 (MB),
+ *     "OS": "Window 10.6.1",
+ *     "ID": 123345
+ * }]
  */
 function 
 fetchSlave()
@@ -32,7 +42,26 @@ fetchSlave()
  * fetch current session that user are in
  * @returns array contain SlaveDeviceInformation with 
  * additional serviceState attribute and SessionClientID
+ * ex:
+ * 
+ * return: 
+ * [{
+ *   "CPU": "R7 2700",
+ *    "GPU": "RTX 3090",
+ *    "RAMcapacity": 16000 (MB),
+ *    "OS": "Window 10.6.1",
+ *    "ID": 123345,
+ *
+ *    "SessionClientID": 23645123,
+ *
+ *    "serviceState":  | "ON_SESSION" (one in two left string)
+ *                     | "OFF_REMOTE"
+ * }]
  */
+
+
+
+
 function 
 fetchSession()
 {

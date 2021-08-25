@@ -1,5 +1,7 @@
 /**
- * Initialize Session with request form
+ * Initialize Session 
+ * 
+ * slave device after session initialize return with new remote page will be move from slave queue to session queue
  * @param {int} ClientRequest 
  */
 function InitializeSession(ClientRequest)
@@ -18,12 +20,18 @@ function InitializeSession(ClientRequest)
         {headers :
         {
             "Authorization": "Bearer " + app.ClientConfig.UserToken}
-        }).then((response) => {app.startRemotePage(response.body);}
+        }).then((response) => {
+
+            app.startRemotePage(response.body);
+        }
         ).catch(app.setError("fail to initialize"));
 }
 
+
 /**
  * terminate session using slaveID
+ * 
+ * Session after termination will move from session queue to slave queue
  * @param {int} slaveID 
  */
 function TerminateSession(slaveID){
@@ -44,11 +52,12 @@ function TerminateSession(slaveID){
 
 /**
  * disconnect remote control with given slaveID
+ * 
+ * state update will be done through signalR
  * @param {int} slaveID 
  */
 function 
 DisconnectRemote(slaveID){
-    
     var SessionClientID = app.getClientSessionID(slaveID);
 
     var bodyParameters ={
@@ -65,11 +74,12 @@ DisconnectRemote(slaveID){
 
 /**
  * Disconnect Remote Control with given slaveID
+ * 
+ * state update will be done through signalR
  * @param {int} slaveID 
  */
 function 
 ReconnectRemoteControl(slaveID){
-    
     var SessionClientID = app.getClientSessionID(slaveID);
 
     var bodyParameters ={

@@ -18,7 +18,6 @@ function loadSlaveModel() {
 
         document.getElementById('SessionGroup').appendChild(session);
     }
-    
 }
 
 
@@ -27,7 +26,7 @@ function loadSlaveModel() {
 function reload()
 {
     if(app.LoggedIn === false){
-        fetch('pages/login.html').then(function (response) {
+        fetch('pages/service.html').then(function (response) {
             return response.text();
         }).then(function (html) {
             document.getElementById("app").innerHTML = html;

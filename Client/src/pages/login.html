@@ -55,9 +55,6 @@
 
             ClientSocket: null,
 
-            SlaveArray: [],
-            SessionArray: [],
-
             debugEntries: [],
             logEntries: []
         };
@@ -67,15 +64,15 @@
     {  
         Login() {
             var body = {
-                "email":app.username,
-                "password":app.password
+                "email":login.username,
+                "password":login.password
             }
             var url = new URL(app.ClientConfig.HostUrl + 
                 app.ClientConfig.LoginRoute);
             try{
                 axios.post(url,body).then((response) => {
-                    app.ClientConfig.UserToken = response.data.token;
-                    app.LoggedIn = true;
+                    login.ClientConfig.UserToken = response.data.token;
+                    login.LoggedIn = true;
                 })
             }catch(error){
                 app.setError(error);

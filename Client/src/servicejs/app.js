@@ -12,11 +12,6 @@ var app = new Vue({
             VideoCodec: null,
             AudioCodec: null,
 
-            Token: null,
-            
-            username: null,
-            password: null,
-            
             LoggedIn:false,
 
 
@@ -182,20 +177,6 @@ var app = new Vue({
     },
 
     watch: {
-        SlaveArray(newValue) {
-            // Detach inputs when menu is shown.
-            if (newValue === true) {
-                webrtc.input.detach();
-            } else {
-                webrtc.input.attach();
-            }
-        },
-        SessionArray(newValue, oldValue) {
-            if(newValue === true)
-            {
-                                
-            }
-        },
         LoggedIn(newValue){
             if(newValue === true){
                 reload();

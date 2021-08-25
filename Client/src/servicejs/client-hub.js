@@ -1,57 +1,80 @@
 
-function connectClientHub()
+class ClientHub
 {
-    app.ClientSocket = new signalR.HubConnectionBuilder()
-                                .withUrl(ClientConfig.HostUrl+ClientConfig.ClientHub)
-                                .configureLogging(signalR.LogLevel.Information)
-                                .build();
+    constructor()
+    {
+        this.ClientSocket = null;
+    }
 
-    app.ClientSocket.onclose(async () => {
-        await start();
-    });
 
-    app.ClientSocket.on("ReportSlaveObtained", function (slaveID) {
-        app.onObtainedSlave(slaveID);
-    });
 
-    app.ClientSocket.on("ReportNewSlaveAvailable", function (device) {
-        app.onNewSlave(device);
-    });
+    connectClientHub()
+    {
+        this.ClientSocket = new signalR.HubConnectionBuilder()
+                                    .withUrl(ClientConfig.HostUrl+ClientConfig.ClientHub)
+                                    .configureLogging(signalR.LogLevel.Information)
+                                    .build();
 
-    app.ClientSocket.on("ReportSessionDisconnected", function (slaveID) {
-        if(app.getSlaveState(slaveID) === "OFF_REMOTE"){
-            app.updateSlaveState(slaveID,"ON_SESSION");
+        this.ClientSocket.onclose(async () => {
+            await start();
+        });
+
+        /**
+         * new slave device obtained by other user, then it block on available slave will disappear
+         */
+        this.ClientSocket.on("ReportSlaveObtained", function (slaveID) {
+            this.onObtainedSlave(slaveID);
+        });
+
+        /**
+         * new Slave device available for user to remote 
+         */
+        this.ClientSocket.on("ReportNewSlaveAvailable", function (device) {
+            this.onNewSlave(device);
+        });
+
+        /**
+         * a session of this user is switch serving state from "ON_SESSION" to "OFF_REMOTE"
+         */
+        this.ClientSocket.on("ReportSessionDisconnected", function (slaveID) {
+            if(this.getSlaveState(slaveID) === "OFF_REMOTE"){
+                this.updateSlaveState(slaveID,"ON_SESSION");
+            }
+            else{
+                return;}
+        });
+
+        
+        /**
+         * a session of this user is switch serving state from "OFF_REMOTE" to "ON_SESSION"
+         */
+        this.ClientSocket.on("ReportSessionDisconnected", function (slaveID) {
+            if(this.getSlaveState(slaveID) === "ON_SESSION"){
+                this.updateSlaveState(slaveID,"OFF_REMOTE");
+            }
+            else{
+                return;
+            }
+        });
+
+        this.start();
+    }
+
+
+
+    start()
+    {
+        try{
+            this.ClientSocket.start();
+            console.log("connecting to ClientHub");
+        }catch (err) {
+            console.log(err);
+            setTimeout(start, 5000);
         }
-        else{
-            return;}
-    });
-
-    app.ClientSocket.on("ReportSessionDisconnected", function (slaveID) {
-        if(app.getSlaveState(slaveID) === "ON_SESSION"){
-            app.updateSlaveState(slaveID,"OFF_REMOTE");
-        }
-        else{
-            return;
-        }
-    });
-
-    app.start();
-}
-
-
-
-function start()
-{
-    try{
-        app.ClientSocket.start();
-        console.log("connecting to ClientHub");
-    }catch (err) {
-        console.log(err);
-        setTimeout(start, 5000);
     }
 }
 
 
 
 
-    
+        
