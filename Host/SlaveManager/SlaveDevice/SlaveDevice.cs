@@ -90,12 +90,11 @@ namespace SlaveManager.SlaveDevices
                             var error = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(messageForm.Data);
 
                             if(error.ErrorMessage == ErrorMessage.UNKNOWN_SESSION_CORE_EXIT)
-                                {
-                                    var state = new OnSessionOffRemote();
-                                    State = state;
+                                { 
+                                    State = new OnSessionOffRemote();
                                     await _admin.ReportRemoteControlDisconnected(messageForm.SlaveID);
-                                break;
-                            }
+                                    break;
+                                }
                             await _admin.ReportAgentError(error, messageForm.SlaveID);
                             break;
                         }

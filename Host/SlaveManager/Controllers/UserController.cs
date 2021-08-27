@@ -73,7 +73,7 @@ namespace SlaveManager.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("FetchSession")]
-        public IActionResult UserGetCurrentSesssion()
+        public async Task<IActionResult> UserGetCurrentSesssion()
         {
             int ClientId = _jwt.GetUserFromHttpRequest(User);
 
