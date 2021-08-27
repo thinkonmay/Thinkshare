@@ -17,7 +17,7 @@ var app = new Vue({
 
             ClientConfig: 
             {
-              HostUrl: "http://192.168.1.6:81",
+              HostUrl: "http://125.212.237.45:81",
 
               
               Role:"User",
