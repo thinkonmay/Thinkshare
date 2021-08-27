@@ -183,7 +183,7 @@ namespace SlaveManager
             }
             );
 
-            await seeder.SeedIdentityAsync();
+            seeder.SeedIdentityAsync();
         }
     }
 }
