@@ -4,17 +4,8 @@ personal cloud computing is a part of thinkmay project which aim to create a per
 
 How to build this project:
 
-
-on windows: 
-in Deployment:
-
-to build Host:
-
-install .NET SDK and runtime
-
-
-
 # In Deployment/backbone:
+not neccessary if you are not building a separate host
 
 build backbone container (*include database and registry container):
 
@@ -35,7 +26,7 @@ then
 docker-compose pull
 docker-compose up
 
-#To build slave manager
+# To build slave manager
 
 install Visual Studio 2019
 
