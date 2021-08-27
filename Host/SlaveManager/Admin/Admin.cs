@@ -93,10 +93,13 @@ namespace SlaveManager.Administration
             await _adminHubctx.Clients.All.ReportAgentError(error);
         }
 
-        public async Task ReportNewSession(int SlaveID, int ClientID)
+        public async Task ReportNewSession(Session session)
         {
-            await _adminHubctx.Clients.All.ReportSessionStart(SlaveID, ClientID);
-            await _clientHubctx.Clients.All.ReportSlaveObtained(SlaveID);
+            _db.Sessions.Add(session);
+            await _db.SaveChangesAsync();
+
+            await _adminHubctx.Clients.All.ReportSessionStart(session.SlaveID, session.ClientID);
+            await _clientHubctx.Clients.All.ReportSlaveObtained(session.SlaveID);
         }
 
         public async Task ReportSessionTermination(Session session)

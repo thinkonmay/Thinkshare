@@ -140,7 +140,7 @@ namespace SlaveManager.Controllers
             _slavePool.SessionInitialize(SlaveId, slaveSes);
 
             // report new session to admin
-            await _admin.ReportNewSession(SlaveId, ClientId);
+            await _admin.ReportNewSession(sess);
 
             // return view for user
             SessionViewModel view = new SessionViewModel();

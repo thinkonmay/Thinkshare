@@ -1,4 +1,5 @@
 #include <agent-session-initializer.h>
+#include <agent-state-on-session-off-remote.h>
 #include <agent-socket.h>
 #include <agent-type.h>
 #include <agent-message.h>

@@ -238,7 +238,7 @@ class _RegisterState extends State<Register> {
       // login services
       final response = await http.post(
         // Uri.parse('https://localhost:port/Admin/AddSlave'),
-        Uri.parse('http://192.168.1.6:81/Account/Register'),
+        Uri.parse('http://125.212.237.45:81/Account/Register'),
         headers: {
           'Content-type': 'application/json',
           'Accept': 'application/json',

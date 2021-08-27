@@ -43,7 +43,7 @@ class ServingSession {
 "SessionClientID": 398976275,
 "StartTime": "2021-08-08T13:46:50.1733333",
 "EndTime": null,
-"SignallingUrl": "http://192.168.1.6:80",
+"SignallingUrl": "http://125.212.237.45:80",
 "StunServer": "stun://stun.l.google.com:19302",
 "ClientOffer": false,
 "QoE": null

@@ -88,18 +88,16 @@ namespace SlaveManager.Services
         /// </summary>
         /// <param name="ws"></param>
         /// <returns></returns>
-        public async Task<bool> KeepReceiving(WebSocket ws)
+        public async Task KeepReceiving(WebSocket ws)
         {
-            WebSocketReceiveResult message;
-            SlaveDeviceInformation registeredInfor = null;
-            SlaveDevice slave = null;
+            int SlaveID = 0;
             try
             {
                 do
                 {
                     using (var memoryStream = new MemoryStream())
                     {
-                        message = await ReceiveMessage(ws, memoryStream);
+                        var message = await ReceiveMessage(ws, memoryStream);
                         if (message.Count > 0)
                         {
                             var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
@@ -107,30 +105,31 @@ namespace SlaveManager.Services
                             if (message_json.Opcode == Opcode.REGISTER_SLAVE)
                             {
                                 //perform slave registration, break this loop and go to slave connection loop if registration return successfully
-                                registeredInfor =  JsonConvert.DeserializeObject<SlaveDeviceInformation>(message_json.Data);
+                                var registeredInfor =  JsonConvert.DeserializeObject<SlaveDeviceInformation>(message_json.Data);
                                 bool result = await UpgradeToSlave(ws, registeredInfor);
                                 if(result)
-                                { break; }
+                                {
+                                    SlaveID = registeredInfor.ID;
+                                    break; 
+                                }
                                 else
-                                { return false; }
+                                { return; }
                             }
                         }
                     }
                 } while (ws.State == WebSocketState.Open);
             } catch (WebSocketException)
             {
-                return true;
+                return;
             }
+            await HandleSlaveCreation(ws, SlaveID);
+        }
 
-            slave = _slavePool.GetSlaveDevice(registeredInfor.ID);
+        private async Task HandleSlaveCreation(WebSocket ws, int slaveID)
+        {
+            var slave = _slavePool.GetSlaveDevice(slaveID);
             slave.ws = ws;
             await slave.KeepReceiving();
-
-            //set slave state to disconnected after websocket connection is closed
-            slave.ChangeState(new DeviceDisconnected());
-            _slavePool.AddSlaveDeviceWithKey(registeredInfor.ID, slave);     
- 
-            return true;
         }
 
         private async Task<WebSocketReceiveResult> ReceiveMessage(WebSocket ws, Stream memoryStream)
@@ -171,11 +170,7 @@ namespace SlaveManager.Services
             try
             {
                 await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-            }
-            catch (WebSocketException)
-            {
-                return;
-            }
+            }  catch (WebSocketException)   {  }
         }
     }
 }

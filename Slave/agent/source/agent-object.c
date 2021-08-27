@@ -56,7 +56,7 @@ agent_new(gchar* url)
 	AgentState* unregistered = transition_to_unregistered_state();
 	agent.state = unregistered;
 
-	g_thread_new("update device", (GThreadFunc)update_device, &agent);
+	//g_thread_new("update device",(GThreadFunc)update_device, &agent);
 
 	initialize_child_process_system(&agent);
 	agent.socket=initialize_socket(&agent);
@@ -119,13 +119,17 @@ agent_report_error(AgentObject* self,
 {
 	JsonObject* obj = json_object_new();
 
-	json_object_set_int_member(obj,
-		"ErrorTime",g_get_real_time());
+	GTimeVal current_time;
+	g_get_current_time(&current_time);
+	gchar* iso_time = g_time_val_to_iso8601(&current_time);
+
+
+	json_object_set_string_member(obj,
+		"ErrorTime",iso_time);
 	json_object_set_string_member(obj,
 		"ErrorMessage",message);
 
 	Message* msg = message_init(AGENT_MODULE,HOST_MODULE,ERROR_REPORT,obj);
-	write_to_log_file(AGENT_GENERAL_LOG, get_string_from_json_object(obj));
 	agent_send_message(self,msg);
 }
 
@@ -148,6 +152,8 @@ void
 agent_send_message(AgentObject* self,
 	Message* message)
 {
+	write_to_log_file(AGENT_GENERAL_LOG, 
+		get_string_from_json_object(message));
 	send_message(self, message);
 }
 

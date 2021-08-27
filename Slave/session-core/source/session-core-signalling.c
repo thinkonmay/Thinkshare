@@ -476,9 +476,9 @@ on_ice_exchange(gchar* text,SessionCore* core)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
 
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     Message* object = get_json_object_from_string(text,&error);
-	if(error != NULL || object == NULL) {return;}
+	if(!error == NULL || object == NULL) {return;}
 
     const gchar* candidate;
     gint sdpmlineindex;
@@ -497,9 +497,9 @@ on_sdp_exchange(gchar* data,
     SignallingHub* hub = session_core_get_signalling_hub(core);
     Pipeline* pipe = session_core_get_pipeline(core);
 
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     Message* object = get_json_object_from_string(data,&error);
-	if(error != NULL || object == NULL) {session_core_finalize(core,UNKNOWN_PACKAGE_FROM_CLIENT,error);}
+	if(!error == NULL || object == NULL) {session_core_finalize(core,UNKNOWN_PACKAGE_FROM_CLIENT,error);}
 
     gint ret;
     GstSDPMessage* sdp;
@@ -592,9 +592,9 @@ on_server_message(SoupWebsocketConnection* conn,
     }
 
 
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     Message* object = get_json_object_from_string(text,&error);
-	if(error != NULL || object == NULL) {return;}
+	if(!error == NULL || object == NULL) {return;}
 
     gchar* RequestType =    json_object_get_string_member(object, "RequestType");
     gchar* SubjectId =      json_object_get_int_member(object, "SubjectId");
@@ -634,13 +634,13 @@ on_server_connected(SoupSession* session,
     GAsyncResult* res,
     SessionCore* core)
 {
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
     if (g_strcmp0(hub->signalling_state, SIGNALLING_SERVER_CONNECTING))  {  return;  }
     
     hub->connection = soup_session_websocket_connect_finish(session, res, &error);
-    if (error != NULL || hub->connection == NULL) 
+    if (!error == NULL || hub->connection == NULL) 
     {
         session_core_finalize(core, SIGNALLING_SERVER_CONNECTION_ERROR_EXIT,error);
     }

@@ -134,7 +134,7 @@ setup_element_factory(SessionCore* core,
     Codec audio)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     
     if (video == CODEC_H264)
     {
@@ -204,7 +204,7 @@ setup_element_factory(SessionCore* core,
         }
     }
 
-    if (error != NULL) {
+    if (!error == NULL) {
         session_core_finalize(core,PIPELINE_ERROR_EXIT,error);
     }
     pipe->webrtcbin =
@@ -234,7 +234,7 @@ setup_pipeline(SessionCore* core)
     
     pipe->state = PIPELINE_SETTING_UP_ELEMENT;
     setup_element_property(core);
-    attach_bitrate_control(core);
+    //attach_bitrate_control(core);
 
 
 

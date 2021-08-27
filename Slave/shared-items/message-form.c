@@ -51,7 +51,7 @@ get_json_object_from_string(gchar* string,
 	JsonObject* json_data;
 
 	JsonParser* parser = json_parser_new();
-	json_parser_load_from_data(parser, string, -1, &error);
+	json_parser_load_from_data(parser, string, -1, error);
 	root = json_parser_get_root(parser);  
     
     return json_node_get_object(root);

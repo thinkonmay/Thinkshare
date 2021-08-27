@@ -55,10 +55,8 @@ namespace SlaveManager.Interfaces
         /// <summary>
         /// Report new session start, invoke from sesssions controller
         /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ClientID"></param>
         /// <returns></returns>
-        Task ReportNewSession(int SlaveID, int ClientID);
+        Task ReportNewSession(Session session);
 
         /// <summary>
         /// report sesssion termination from agent device

@@ -57,9 +57,9 @@ session_core_setup_session(SessionCore* self)
 	JsonObject* object;
 	JsonParser* parser = json_parser_new();
 
-	GError* error = malloc(sizeof(GError));
+	GError* error = NULL;
 	json_parser_load_from_file(parser, SESSION_SLAVE_FILE, &error);
-	if (error != NULL)
+	if (!error == NULL)
 	{
 		session_core_finalize(self, CORRUPTED_CONFIG_FILE_EXIT, error);
 		return;
@@ -173,16 +173,20 @@ Message*
 get_json_exit_state(ExitState* state)
 {
 	Message* message = json_object_new();
+	
+	GTimeVal current_time;
+	g_get_current_time(&current_time);
+	gchar* iso_time = g_time_val_to_iso8601(&current_time);
 
 
 	json_object_set_int_member(message, "ExitCode", state->code);
-	json_object_set_int_member(message, "ExitTime", g_get_real_time());
+	json_object_set_int_member(message, "ExitTime", iso_time);
 	json_object_set_string_member(message, "CoreState", state->core_state);
 	json_object_set_string_member(message, "PipelineState", state->pipeline_state);
 	json_object_set_string_member(message, "SignallingState", state->signalling_state);
 	json_object_set_string_member(message, "PeerCallState", state->peer_state);
 
-	if(state->error != NULL)
+	if(!state->error == NULL)
 	{
 		json_object_set_string_member(message, "Message", state->error->message);
 	}
@@ -253,10 +257,14 @@ report_session_core_error(SessionCore* self,
 {
 	Message* msg = json_object_new();
 
+	GTimeVal current_time;
+	g_get_current_time(&current_time);
+	gchar* iso_time = g_time_val_to_iso8601(&current_time);
+
 	json_object_set_string_member(msg, 
 		"ErrorMessage", code);
 	json_object_set_int_member(msg,
-		"ErrorTime",g_get_real_time());
+		"ErrorTime",iso_time);
 
 	Message* msg_host = message_init(CORE_MODULE,
 		HOST_MODULE, ERROR_REPORT, msg);

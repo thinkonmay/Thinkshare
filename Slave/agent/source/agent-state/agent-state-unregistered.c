@@ -26,9 +26,9 @@ unregistered_register_with_host(AgentObject* agent)
 static void
 unregistered_send_message_to_host(AgentObject* agent, char* message)
 {
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     Message* object = get_json_object_from_string(message,&error);
-	if(error != NULL || object == NULL) {return;}
+	if(!error == NULL || object == NULL) {return;}
     gint i= json_object_get_int_member(object, "Opcode");
 
     if (i == REGISTER_SLAVE)

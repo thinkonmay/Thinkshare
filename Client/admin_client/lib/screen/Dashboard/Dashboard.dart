@@ -43,7 +43,7 @@ class _DashboardState extends State<Dashboard> {
 
   Future<List<Slave>> getData() async {
     http.Response response =
-        await http.get(Uri.parse("http://192.168.1.6:81/Admin/System"));
+        await http.get(Uri.parse("http://125.212.237.45:81/Admin/System"));
     return compute(parseSlaves, response.body);
   }
 
@@ -107,7 +107,7 @@ class _DashboardState extends State<Dashboard> {
                                         final response = await http.post(
                                           // Uri.parse('https://localhost:port/Admin/AddSlave'),
                                           Uri.parse(
-                                              'http://192.168.1.6:81/Admin/AddSlave?ID=$randomNumber'),
+                                              'http://125.212.237.45:81/Admin/AddSlave?ID=$randomNumber'),
                                           headers: <String, String>{
                                             'Content-Type':
                                                 'application/json; charset=UTF-8',

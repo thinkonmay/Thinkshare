@@ -31,9 +31,9 @@ open_state_send_message_to_host(AgentObject* agent,
     if(!initialized)
     {
         JsonParser* parser = json_parser_new();
-        GError* error = malloc(sizeof(GError));
+        GError* error = NULL;
         json_parser_load_from_file(parser, HOST_CONFIG_FILE,&error);
-        if(error != NULL)
+        if(!error == NULL)
         {
             agent_report_error(agent, ERROR_FILE_OPERATION);
         }
@@ -43,9 +43,9 @@ open_state_send_message_to_host(AgentObject* agent,
         initialized = TRUE;
     }
 
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     Message* object = get_json_object_from_string(message,&error);
-    if (error != NULL || object == NULL) { return; }
+    if (!error == NULL || object == NULL) { return; }
 
 
     json_object_set_int_member(object,

@@ -214,7 +214,7 @@ class _LoginState extends State<Login> {
       // login services
       final response = await http.post(
         // Uri.parse('https://localhost:port/Admin/AddSlave'),
-        Uri.parse('http://192.168.1.6:81/Account/Login'),
+        Uri.parse('http://125.212.237.45:81/Account/Login'),
         headers: {
           'Content-type': 'application/json',
           'Accept': 'application/json',

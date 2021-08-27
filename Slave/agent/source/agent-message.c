@@ -57,9 +57,9 @@ void
 agent_reset_qoe(AgentObject* agent, JsonObject* qoe)
 {
 	JsonParser* parser;
-	GError* error;
+	GError* error = NULL;
 	json_parser_load_from_file(parser,SESSION_SLAVE_FILE,&error);
-	if(error != NULL)
+	if(!error == NULL)
 	{
 		agent_report_error(agent, error->message);
 	}
@@ -90,7 +90,7 @@ agent_reset_qoe(AgentObject* agent, JsonObject* qoe)
 	}	
 
 	g_free(buffer);
-	if(error != NULL)
+	if(!error == NULL)
 	{
 		agent_report_error(agent,error->message);
 	}
@@ -102,13 +102,14 @@ void
 on_agent_message(AgentObject* agent,
 				 gchar* data)
 {
-	GError* error = malloc(sizeof(GError));
+	GError* error = NULL;
 	write_to_log_file(AGENT_MESSAGE_LOG,data);
 
 
 
 	Message* object = 		get_json_object_from_string(data,&error);
-	if(error != NULL || object == NULL) {return;}
+	if(!error == NULL || object == NULL || ! json_object_has_member(object,"Opcode")) {return;}
+
 	gint	from = 			json_object_get_int_member(object, "From");
 	gint	to = 			json_object_get_int_member(object, "To");
 	gint	opcode = 		json_object_get_int_member(object, "Opcode");
@@ -135,7 +136,7 @@ on_agent_message(AgentObject* agent,
 
 
 			Message* json_data = get_json_object_from_string(data_string,&error);
-			if(error != NULL || json_data == NULL) {return;}
+			if(!error == NULL || json_data == NULL) {return;}
 					
 			if (opcode == NEW_COMMAND_LINE_SESSION)
 			{
@@ -173,7 +174,7 @@ on_agent_message(AgentObject* agent,
 		else if(from == CORE_MODULE)
 		{		
 			Message* json_data = get_json_object_from_string(data_string,&error);
-			if(error != NULL || json_data == NULL) {return;}
+			if(!error == NULL || json_data == NULL) {return;}
 
 			if(opcode == FILE_TRANSFER_SERVICE){
 

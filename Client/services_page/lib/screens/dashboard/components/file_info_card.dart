@@ -220,7 +220,7 @@ class _FileInfoCardState extends State<FileInfoCard> {
                       }
                     });
                     html.window.open('''
-http://192.168.1.6:81/Session/Initialize?
+http://125.212.237.45:81/Session/Initialize?
 SlaveId=${widget.slave.ID}&
 ScreenWidth=${MediaQuery.of(context).size.width.toInt()}&
 ScreenHeight=${MediaQuery.of(context).size.height.toInt()}&

@@ -13,8 +13,8 @@ namespace SlaveManager.Models
         { }
 
         public GeneralError(GeneralErrorAbsTime abs, Slave _Slave)
-        {
-            ErrorTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ErrorTime);
+        {		
+            DateTime ErrorTime = DateTime.Parse(abs.ErrorTime);
 
             ErrorMessage = abs.ErrorMessage;
 
@@ -34,13 +34,13 @@ namespace SlaveManager.Models
 
     public class GeneralErrorAbsTime
     {
-        public int ErrorTime { get; set; }
+        public string ErrorTime { get; set; }
         public string ErrorMessage { get; set; }
     }
 
     public class SessionCoreExitAbsTime 
     {
-        public int ExitTime { get; set; }
+        public string ExitTime { get; set; }
 
         public int ExitCode { get; set; }
 
@@ -62,7 +62,7 @@ namespace SlaveManager.Models
 
         public SessionCoreExit(SessionCoreExitAbsTime abs, Slave _Slave)
         {
-            ExitTime = new DateTime(1970, 1, 1).AddMilliseconds(abs.ExitTime);
+            ExitTime = DateTime.Parse(abs.ExitTime);
             ExitCode = abs.ExitCode;
             CoreState = abs.CoreState;
             PipelineState = abs.PipelineState;

@@ -19,12 +19,12 @@ static void
 off_remote_session_terminate(AgentObject* agent)
 {
     GFile* hdl = g_file_parse_name(SESSION_SLAVE_FILE);
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
 
     g_file_replace_contents(hdl, "EmptySession", strlen("EmptySession"), NULL, TRUE,
         G_FILE_CREATE_NONE, NULL, NULL, &error);
 
-    if(error != NULL)
+    if(!error == NULL)
     {
 		agent_report_error(agent,ERROR_FILE_OPERATION);
     }
@@ -38,15 +38,15 @@ static void
 off_remote_send_message_to_host(AgentObject* agent,
     gchar* message)
 {
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     static gboolean initialized = FALSE;
     static gint SlaveID;
     if(!initialized)
     {
         JsonParser* parser = json_parser_new();
-        GError* error = malloc(sizeof(GError));
+        GError* error = NULL;
         json_parser_load_from_file(parser, HOST_CONFIG_FILE,&error);
-        if(error != NULL)
+        if(!error == NULL)
         {
             agent_report_error(agent,ERROR_FILE_OPERATION);
         }
@@ -58,7 +58,7 @@ off_remote_send_message_to_host(AgentObject* agent,
 
 
     Message* object = get_json_object_from_string(message,&error);
-	if(error != NULL || object == NULL) {return;}
+	if(!error == NULL || object == NULL) {return;}
 
 
     json_object_set_int_member(object,
@@ -73,10 +73,9 @@ off_remote_send_message_to_host(AgentObject* agent,
 static void
 off_remote_remote_control_reconnect(AgentObject* agent)
 {
-    session_initialize(agent);
-
     AgentState* on_session = transition_to_on_session_state();
     agent_set_state(agent, on_session);
+    session_initialize(agent);
 }
 
 
