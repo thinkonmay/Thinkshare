@@ -1,11 +1,6 @@
 # personal-cloud-computing
 personal cloud computing is a part of thinkmay project which aim to create a personal cloud computing platform
 
-Project documentation for this project is provided here:
-https://vinuniversity.sharepoint.com/:w:/s/Personalcloudcomputing/EZMj0WYoSPVHtA9bIpyAztgBeK0l6vMb4TMkJZEKo4itYA?e=4s5a5b
-
-
-
 
 How to build this project:
 
@@ -15,19 +10,32 @@ in Deployment:
 
 to build Host:
 
-
 install .NET SDK and runtime
 
-in Deployment/backbone:
 
-build backbone container include postgresql database and registry container
+
+# In Deployment/backbone:
+
+build backbone container (*include database and registry container):
+
+docker-compose pull
 docker-compose up
 
-build signalling and slavemanager container
+# In Deployment/host
+
+build host container (*include signalling and slavemanager container):
+
 ./Deployment/build-image.bat
 
+after building host container, all container will automatically be pushed to server registry (built in previous step)
 
-run signalling and slavemanager container
+In order to re-create host, go-to directory /home/ubuntu/src/personal-cloud-computing/Deployment/host/
+
+then 
+docker-compose pull
+docker-compose up
+
+#To build slave manager
 
 install Visual Studio 2019
 
