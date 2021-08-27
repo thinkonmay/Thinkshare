@@ -10,7 +10,7 @@ namespace SlaveManager.Interfaces
         /// </summary>
         /// <param name="ws"></param>
         /// <returns></returns>
-        public Task<bool> KeepReceiving(WebSocket ws);
+        public Task KeepReceiving(WebSocket ws);
         
         /// <summary>
         /// 

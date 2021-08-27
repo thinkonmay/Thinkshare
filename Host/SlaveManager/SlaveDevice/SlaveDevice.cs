@@ -43,7 +43,7 @@ namespace SlaveManager.SlaveDevices
 
 
 
-        public async Task<bool> KeepReceiving()
+        public async Task KeepReceiving()
         {
             WebSocketReceiveResult message;
             try
@@ -60,62 +60,69 @@ namespace SlaveManager.SlaveDevices
 
                             if (messageForm.To == (int)Module.HOST_MODULE)
                             {
-                                if (messageForm.From == (int)Module.AGENT_MODULE)
-                                {
-                                    switch (messageForm.Opcode)
-                                    {
-                                        case (int)Opcode.COMMAND_LINE_FORWARD:
-                                        {
-                                            var cmd = JsonConvert.DeserializeObject<ReceiveCommand>(messageForm.Data);
-                                            await _admin.LogSlaveCommandLine(messageForm.SlaveID, cmd);
-                                            break;
-                                        }
-                                        case (int)Opcode.ERROR_REPORT:
-                                        {
-                                            var error = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(messageForm.Data);
-
-                                            if(error.ErrorMessage == ErrorMessage.UNKNOWN_SESSION_CORE_EXIT)
-                                            {
-                                                await _admin.ReportRemoteControlDisconnected(messageForm.SlaveID);
-                                                var state = new OnSessionOffRemote();
-                                                ChangeState(state);
-                                                break;
-                                            }
-                                            await _admin.ReportAgentError(error, messageForm.SlaveID);
-                                            break;
-                                        }
-
-                                    }
-                                }
-                                else if (messageForm.From == (int)Module.CORE_MODULE)
-                                {
-                                    switch (messageForm.Opcode)
-                                    {
-                                        case (int)Opcode.ERROR_REPORT:
-                                        {
-                                            var errabs = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(messageForm.Data);
-                                            await _admin.ReportSessionCoreError(errabs, messageForm.SlaveID);
-                                            break;
-                                        }
-                                        case (int)Opcode.EXIT_CODE_REPORT:
-                                        {
-                                            var abs = JsonConvert.DeserializeObject<SessionCoreExitAbsTime> ( messageForm.Data );
-                                            await _admin.ReportSessionCoreExit(messageForm.SlaveID, abs);
-                                            break;
-                                        }
-                                    }
-                                }
+                                await OnHostMessage(messageForm);
                             }
                         }
                     }
                 } while (ws.State == WebSocketState.Open);
             } catch (WebSocketException)
-            {
-                return true;
-            }
-
-            return false;
+            { }
+            State = new DeviceDisconnected();
         }
+
+
+        private async Task OnHostMessage(MessageWithID messageForm)
+        { 
+            try
+            {
+                if (messageForm.From == (int)Module.AGENT_MODULE)
+                {
+                    switch (messageForm.Opcode)
+                    {
+                        case (int)Opcode.COMMAND_LINE_FORWARD:
+                        {
+                            var cmd = JsonConvert.DeserializeObject<ReceiveCommand>(messageForm.Data);
+                            await _admin.LogSlaveCommandLine(messageForm.SlaveID, cmd);
+                            break;
+                        }
+                        case (int)Opcode.ERROR_REPORT:
+                        {
+                            var error = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(messageForm.Data);
+
+                            if(error.ErrorMessage == ErrorMessage.UNKNOWN_SESSION_CORE_EXIT)
+                                { 
+                                    State = new OnSessionOffRemote();
+                                    await _admin.ReportRemoteControlDisconnected(messageForm.SlaveID);
+                                    break;
+                                }
+                            await _admin.ReportAgentError(error, messageForm.SlaveID);
+                            break;
+                        }
+
+                    }
+                }
+                else if (messageForm.From == (int)Module.CORE_MODULE)
+                {
+                    switch (messageForm.Opcode)
+                    {
+                        case (int)Opcode.ERROR_REPORT:
+                        {
+                            var errabs = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(messageForm.Data);
+                            await _admin.ReportSessionCoreError(errabs, messageForm.SlaveID);
+                            break;
+                        }
+                        case (int)Opcode.EXIT_CODE_REPORT:
+                        {
+                            var abs = JsonConvert.DeserializeObject<SessionCoreExitAbsTime> ( messageForm.Data );
+                            await _admin.ReportSessionCoreExit(messageForm.SlaveID, abs);
+                            break;
+                        }
+                    }
+                }
+            }catch(Exception)
+            { }
+        }
+
 
         public async Task Send(string message)
         {

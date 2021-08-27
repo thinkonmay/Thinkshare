@@ -23,7 +23,7 @@
 #include <error-code.h>
 #include <child-process-constant.h>
 
-#define BUFSIZE 100000
+#define BUFSIZE 5000
 
 /// <summary>
 /// information about local storage to add to the session
@@ -102,6 +102,7 @@ handle_child_process_thread(ChildProcess* proc)
         proc->handler(proc,ret,proc->agent);
         if(proc->exit)
         {
+            ZeroMemory(proc, sizeof(ChildProcess));
             g_thread_exit(NULL);
         }
     }
@@ -161,7 +162,6 @@ close_child_process(ChildProcess* proc)
     
     CloseHandle(proc->standard_out);
     CloseHandle(proc->standard_in);
-    ZeroMemory(proc,sizeof(ChildProcess));
 }
 
 ChildProcess*

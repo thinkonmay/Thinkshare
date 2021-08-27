@@ -40,9 +40,9 @@ session_core_on_message(SessionCore* core,
 
 	write_to_log_file(SESSION_CORE_NETWORK_LOG,data);
 
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     Message* object = get_json_object_from_string(data,&error);
-	if(error != NULL || object == NULL) {return;}
+	if(!error == NULL || object == NULL) {return;}
 
 	Module     from =		json_object_get_int_member(object, "From");
 	Module     to =			json_object_get_int_member(object, "To");
@@ -56,7 +56,7 @@ session_core_on_message(SessionCore* core,
 			if(opcode == QOE_REPORT)
 			{
 			    Message* json_data = get_json_object_from_string(data_string,&error);
-				if(error != NULL || object == NULL) {return;}
+				if(!error == NULL || object == NULL) {return;}
 				
 				qoe_update_quality(qoe, 
 					g_get_real_time(),

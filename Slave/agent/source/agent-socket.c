@@ -100,7 +100,7 @@ on_server_connected(SoupSession* session,
     GAsyncResult* res,
     AgentObject* agent)
 {
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     Socket* socket = agent_get_socket(agent);
 
     socket->ws = soup_session_websocket_connect_finish(session, res, &error);
@@ -108,10 +108,11 @@ on_server_connected(SoupSession* session,
     
 
     /*if error happen during connection, restart agent_connect_to_host*/
-    if (error != NULL)
+    if (!error == NULL)
     {
         write_to_log_file(AGENT_NETWORK_LOG,error->message);
         AgentState* disconnected = transition_to_disconnected_state();
+        
         agent_set_state(agent, disconnected);
 
         agent_connect_to_host(agent);
@@ -184,10 +185,10 @@ register_with_host(AgentObject* agent)
 {
     JsonParser* parser = json_parser_new();
 
-    GError* error =NULL;
+    GError* error = NULL;
     json_parser_load_from_file(parser,HOST_CONFIG_FILE,&error);
 
-    if(error != NULL)
+    if(!error == NULL)
     {
         agent_report_error(agent,error->message);
     }
@@ -225,9 +226,9 @@ socket_get_host_url(AgentObject* agent)
 {
     JsonParser* parser = json_parser_new();
 
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
     json_parser_load_from_file(parser,HOST_CONFIG_FILE,error);
-    if(error != NULL)
+    if(!error == NULL)
     {
         agent_report_error(agent, error->message);
     }
@@ -262,9 +263,10 @@ initialize_socket(AgentObject* agent)
 
     JsonParser* parser = json_parser_new();
 
-    GError* error = malloc(sizeof(GError));
+    GError* error = NULL;
+
     json_parser_load_from_file(parser,HOST_CONFIG_FILE,&error);
-    if(error != NULL)
+    if(!error == NULL)
     {
         JsonObject* object = json_object_new();
         json_object_set_string_member(object,UNDEFINED_ERROR,error->message);
