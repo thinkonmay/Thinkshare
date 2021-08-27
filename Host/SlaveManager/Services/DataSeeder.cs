@@ -10,45 +10,26 @@ namespace SlaveManager.Services
 {
     public class DataSeeder
     {
-        private readonly RoleManager<IdentityRole<int>> roleManager;
-        private readonly UserManager<UserAccount> userManager;
-
         public const string ADMIN = "Administrator";
         public const string MOD = "Moderator";
         public const string USER = "User";
 
-        private readonly string[] defaultRoles = { ADMIN, MOD, USER };
+        public static readonly string[] DEFAULT_ROLES = { ADMIN, MOD, USER };
 
-        public DataSeeder(
-            RoleManager<IdentityRole<int>> _roleManager,
-            UserManager<UserAccount> _userManager,
-            IConfiguration _config)
+        public static void SeedRoles(RoleManager<IdentityRole<int>> roleManager)
         {
-            roleManager = _roleManager;
-            userManager = _userManager;
-        }
-
-        public async Task SeedIdentityAsync()
-        {
-            await SeedRolesAsync();
-            await SeedAdminUsersAsync();
-            await SeedUserRoleAsync();
-        }
-
-        public async Task SeedRolesAsync()
-        {
-            foreach (var role in defaultRoles)
+            foreach (var role in DEFAULT_ROLES)
             {
-                if (!await roleManager.RoleExistsAsync(role))
+                if (!roleManager.RoleExistsAsync(role).GetAwaiter().GetResult())
                 {
-                    await roleManager.CreateAsync(new IdentityRole<int>(role));
+                    roleManager.CreateAsync(new IdentityRole<int>(role)).Wait();
                 }
             }
         }
 
-        public async Task SeedAdminUsersAsync()
+        public static void SeedAdminUsers(UserManager<UserAccount> userManager)
         {
-            var admins = await userManager.GetUsersInRoleAsync(ADMIN);
+            var admins = userManager.GetUsersInRoleAsync(ADMIN).GetAwaiter().GetResult();
             if (admins.Count == 0)
             {
                 UserAccount admin = new UserAccount()
@@ -61,23 +42,24 @@ namespace SlaveManager.Services
 
                 const string defaultPassword = @"@|)|\/|1n|s7ra70r";
 
-                if (await userManager.FindByNameAsync(admin.UserName) == null)
+                if (userManager.FindByNameAsync(admin.UserName).GetAwaiter().GetResult() == null)
                 {
-                    var result = await userManager.CreateAsync(admin, defaultPassword);
+                    var result = userManager.CreateAsync(admin, defaultPassword).GetAwaiter().GetResult();
                     if (result.Succeeded)
                     {
-                        await userManager.AddToRoleAsync(admin, ADMIN);
+                        userManager.AddToRoleAsync(admin, ADMIN).Wait();
                     }
                 }
             }
         }
 
-        public async Task SeedUserRoleAsync()
+        public static void SeedUserRole(UserManager<UserAccount> userManager)
         {
-            foreach (var user in userManager.Users)
+            var users = userManager.Users.ToList();
+            foreach (var u in users)
             {
-                var roles = await userManager.GetRolesAsync(user);
-                if (roles.Count == 0) await userManager.AddToRoleAsync(user, USER);
+                var roles = userManager.GetRolesAsync(u).GetAwaiter().GetResult();
+                if (roles.Count == 0) userManager.AddToRoleAsync(u, USER).Wait();
             }
         }
     }

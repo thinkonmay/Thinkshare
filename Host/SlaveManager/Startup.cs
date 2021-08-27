@@ -21,6 +21,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using SignalRChat.Hubs;
+using System.Threading.Tasks;
 
 namespace SlaveManager
 {
@@ -143,7 +144,7 @@ namespace SlaveManager
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataSeeder seeder)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -182,8 +183,6 @@ namespace SlaveManager
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling");
             }
             );
-
-            seeder.SeedIdentityAsync();
         }
     }
 }
