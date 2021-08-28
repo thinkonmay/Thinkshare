@@ -123,6 +123,6 @@ jobs:
           script: |
             cd /home/ubuntu/Deployment/Host
             docker-compose pull
-            docker-compose -d up
+            docker-compose up
 
 
