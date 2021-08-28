@@ -52,14 +52,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Build slavemanager
-      shell: pwsh
-      working-directory: Host/SlaveManager
-      run: |
-        rmdir -rf Migrations
-        dotnet build .
-        dotnet ef migrations add Deployment
-        dotnet ef database update
+      - name: Build slavemanager
+        shell: pwsh
+        working-directory: Host/SlaveManager
+        run: |
+          rmdir -rf Migrations
+          dotnet build .
+          dotnet ef migrations add Deployment
+          dotnet ef database update
 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -111,16 +111,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      #   copy all pcc folder to host server
-      # - name: Copy folder content recursively to remote
-      #   uses: garygrossgarten/github-action-scp@release
-      #   with:
-      #     local: .
-      #     remote: /home/ubuntu/src/personal-cloud-computing
-      #     username:  ${{ secrets.HOST_USERNAME }}
-      #     host: ${{ secrets.HOST_IP }}
-      #     password: ${{ secrets.HOST_PASSWORD }}
 
       # Login to server using ssh
       - name: Deploy to server
