@@ -44,7 +44,7 @@ jobs:
         run: |
           mkdir C:/gstreamer/1.0/msvc_x86_64
           xcopy "msvc_x86_64" "C:/gstreamer/1.0/msvc_x86_64" /s /e
-          set PATH=C:\gstreamer\1.0\msvc_x86_64\bin;%PATH%
+          echo "C:\gstreamer\1.0\msvc_x86_64\bin" >> $GITHUB_PATH
 
       - name: Print env
         run: |
