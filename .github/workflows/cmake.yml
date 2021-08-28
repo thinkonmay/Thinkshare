@@ -2,11 +2,8 @@
 name: CMake 
 # Controls when the action will run. Triggers the workflow on push
 on: 
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-  release:
+  workflow_dispatch:
+
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -66,10 +63,3 @@ jobs:
         working-directory: Deployment/slave
         run: |
           ./build-Slave.bat        
-
-      # Export back setup folder in C drive to 
-      - name: Export setup folder
-        shell:  pwsh
-        working-directory: Deployment
-        run: |
-          xcopy "C:\ThinkMay" "ThinkMay" /s /e

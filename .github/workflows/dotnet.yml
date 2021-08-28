@@ -48,18 +48,18 @@ jobs:
       run: |
         dotnet build .
 
+    - name: Build slavemanager
+      shell: pwsh
+      working-directory: Host/SlaveManager
+      run: |
+        dotnet build .
+        dotnet ef database update
+
   docker-build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Build slavemanager
-        shell: pwsh
-        working-directory: Host/SlaveManager
-        run: |
-          rmdir -rf Migrations
-          dotnet build .
-          dotnet ef migrations add Deployment
-          dotnet ef database update
+
 
       - name: Checkout repository
         uses: actions/checkout@v2
