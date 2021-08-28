@@ -47,12 +47,13 @@ jobs:
       working-directory: Host/Signalling
       run: |
         dotnet build .
-
+        
     - name: Build slavemanager
       shell: pwsh
       working-directory: Host/SlaveManager
       run: |
         dotnet build .
+        dotnet ef migrations add Deployment
         dotnet ef database update
 
   docker-build:
@@ -81,7 +82,7 @@ jobs:
         with:
           context: Host  
           push: true
-          tags: SIGNALLING_IMAGE_NAME
+          tags: ${{ env.SIGNALLING_IMAGE_NAME }}
       - name: Delete signalling Dockerfile
         shell: pwsh
         working-directory: Host
@@ -99,7 +100,7 @@ jobs:
         with:
           context: Host  
           push: true
-          tags: SLAVEMANAGER_IMAGE_NAME
+          tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
       - name: Delete slavemanager Dockerfile
         shell: pwsh
         working-directory: Host
