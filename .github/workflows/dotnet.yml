@@ -14,7 +14,7 @@ env:
   SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:latest
 
 jobs:
-  dotnetbuild:
+  dotnet-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -53,10 +53,9 @@ jobs:
       working-directory: Host/SlaveManager
       run: |
         dotnet build .
-        dotnet ef migrations add Deployment
-        dotnet ef database update
 
   docker-build:
+    needs: dotnet-build
     runs-on: ubuntu-latest
 
     steps:
@@ -109,6 +108,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    needs: docker-build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
