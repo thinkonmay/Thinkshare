@@ -68,15 +68,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # copy all pcc folder to host server
-      - name: Copy folder content recursively to remote
-        uses: garygrossgarten/github-action-scp@release
-        with:
-          local: .
-          remote: /home/ubuntu/src/personal-cloud-computing
-          username:  ${{ secrets.HOST_USERNAME }}
-          host: ${{ secrets.HOST_IP }}
-          password: ${{ secrets.HOST_PASSWORD }}
+      #   copy all pcc folder to host server
+      # - name: Copy folder content recursively to remote
+      #   uses: garygrossgarten/github-action-scp@release
+      #   with:
+      #     local: .
+      #     remote: /home/ubuntu/src/personal-cloud-computing
+      #     username:  ${{ secrets.HOST_USERNAME }}
+      #     host: ${{ secrets.HOST_IP }}
+      #     password: ${{ secrets.HOST_PASSWORD }}
 
       # Login to server using ssh
       - name: Deploy to server
@@ -86,7 +86,7 @@ jobs:
           host: ${{ secrets.HOST_IP }}
           password: ${{ secrets.HOST_PASSWORD }}
           script: |
-            cd /home/ubuntu/src/personal-cloud-computing/Deployment/host
+            cd /home/ubuntu/Deployment/Host
             docker-compose pull
             docker-compose -d up
 

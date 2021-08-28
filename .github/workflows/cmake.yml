@@ -69,7 +69,7 @@ jobs:
 
       # Export back setup folder in C drive to 
       - name: Export setup folder
-        shel:  pwsh
+        shell:  pwsh
         working-directory: Deployment
         run: |
           xcopy "C:\ThinkMay" "ThinkMay" /s /e

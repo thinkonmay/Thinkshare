@@ -23,11 +23,13 @@ jobs:
 
     # restore other dependencies of slavemanager and 
     - name: Restore dependencies on slavemanager
+      shell: pwsh
       working-directory: Host/SlaveManager
       run: |
         dotnet restore .
 
     - name: Restore dependencies on signalling
+      shell: pwsh
       working-directory: Host/Signalling
       run: |
         dotnet restore .
@@ -37,7 +39,7 @@ jobs:
       shell: pwsh
       working-directory: Host/Signalling
       run: |
-        dotnet build.
+        dotnet build .
 
     # update migration
     - name: Build slavemanager
