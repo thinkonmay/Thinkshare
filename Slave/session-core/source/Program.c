@@ -3,8 +3,10 @@
 
 #include <gst\gst.h>
 #include <glib-2.0\glib.h>
-#define GST_USE_UNSTABLE_API
 
+#ifndef GST_USE_UNSTABLE_API
+#define GST_USE_UNSTABLE_API
+#endif
 
 
 int

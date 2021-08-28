@@ -1,0 +1,75 @@
+# This is a basic workflow to help you get started with Actions
+name: CMake 
+# Controls when the action will run. Triggers the workflow on push
+on: 
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  release:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }} # будет запускаться по очереди на всех типах машин
+    strategy:
+      fail-fast: false
+      matrix:
+        config: 
+        - {
+            name: "Windows Latest MSVC",
+            os: windows-latest,
+            artifact: "windows_msvc.7z",
+            build_type: "Release",
+            cc: "cl",
+            cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+            archiver: "7z a",
+            generators: "Visual Studio 16 2019"
+          }
+    steps:
+      # Checks-out our repository
+      - uses: actions/checkout@v2
+
+      # Setup microsoft msbuild
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+      
+      # copy gstreamer from Deployment folder to C drive, then add to path
+      - name: Add gstreamer to path
+        working-directory: Deployment/Dependencies
+        run: |
+          mkdir C:/gstreamer/1.0/msvc_x86_64
+          xcopy "msvc_x86_64" "C:/gstreamer/1.0/msvc_x86_64" /s /e
+          set PATH=C:\gstreamer\1.0\msvc_x86_64\bin;%PATH%
+
+      - name: Print env
+        run: |
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
+
+      # setup cmake include os and cmake version
+      - name: Setup Cmake
+        if: startsWith(matrix.config.os, 'windows')
+        run: |
+          choco install ninja cmake
+          ninja --version
+          cmake --version
+          cmd "${{ matrix.config.environment_script }}"       
+
+      # build slave using bat file
+      - name: Build
+        shell: pwsh
+        working-directory: Deployment/slave
+        run: |
+          ./build-Slave.bat        
+
+      # Export back setup folder in C drive to 
+      - name: Export setup folder
+        shel:  pwsh
+        working-directory: Deployment
+        run: |
+          xcopy "C:\ThinkMay" "ThinkMay" /s /e

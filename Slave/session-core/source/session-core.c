@@ -178,22 +178,13 @@ get_json_exit_state(ExitState* state)
 	g_get_current_time(&current_time);
 	gchar* iso_time = g_time_val_to_iso8601(&current_time);
 
-
 	json_object_set_int_member(message, "ExitCode", state->code);
 	json_object_set_int_member(message, "ExitTime", iso_time);
 	json_object_set_string_member(message, "CoreState", state->core_state);
 	json_object_set_string_member(message, "PipelineState", state->pipeline_state);
 	json_object_set_string_member(message, "SignallingState", state->signalling_state);
 	json_object_set_string_member(message, "PeerCallState", state->peer_state);
-
-	if(!state->error == NULL)
-	{
-		json_object_set_string_member(message, "Message", state->error->message);
-	}
-	else
-	{
-		json_object_set_string_member(message, "Message"," ");
-	}
+	json_object_set_string_member(message, "Message", state->error->message);
 	return message;
 }
 
@@ -202,8 +193,8 @@ get_json_exit_state(ExitState* state)
 
 void
 session_core_finalize(SessionCore* self, 
-					ExitCode exit_code, 
-					GError* error)
+					  ExitCode exit_code, 
+					  GError* error)
 {
 	PipelineState pipeline_state = pipeline_get_state(self->pipe);
 
@@ -240,11 +231,12 @@ session_core_finalize(SessionCore* self,
 
 	write_to_log_file(SESSION_CORE_GENERAL_LOG,"session core exited\n");
 
-	Message* msg_host = message_init(CORE_MODULE, 
-		HOST_MODULE, EXIT_CODE_REPORT, get_json_exit_state(&state));
-
-	session_core_send_message(self, msg_host);
-
+	Message* message = get_json_exit_state(&state);
+	if(!error == NULL)
+	{
+		report_session_core_error(self,
+			get_string_from_json_object(message));
+	}
 	/*agent will catch session core exit code to restart session*/
 	ExitProcess(exit_code);
 }

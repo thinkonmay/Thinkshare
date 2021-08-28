@@ -1,0 +1,51 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Install EF Core tools
+      run: |
+        dotnet tool install --global dotnet-ef
+
+    # restore other dependencies of slavemanager and 
+    - name: Restore dependencies on slavemanager
+      working-directory: Host/SlaveManager
+      run: |
+        dotnet restore .
+
+    - name: Restore dependencies on signalling
+      working-directory: Host/Signalling
+      run: |
+        dotnet restore .
+
+    # Build signalling and slavemanager
+    - name: Build signalling
+      shell: pwsh
+      working-directory: Host/Signalling
+      run: |
+        dotnet build.
+
+    # update migration
+    - name: Build slavemanager
+      shell: pwsh
+      working-directory: Host/SlaveManager
+      run: |
+        rmdir /S /Q Migrations
+        dotnet build .
+        dotnet ef migrations add Deployment
+        dotnet ef database update
+

@@ -118,7 +118,9 @@ start_pipeline(SessionCore* core)
     ret = gst_element_set_state(GST_ELEMENT(pipe->pipeline), GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE)
     {
-        session_core_finalize(core, PIPELINE_ERROR_EXIT,NULL);
+        GError error;
+        error.message = "Fail to start pipeline, this may due to pipeline setup failure";
+        session_core_finalize(core, PIPELINE_ERROR_EXIT,&error);
     }
     write_to_log_file(SESSION_CORE_GENERAL_LOG,"Starting pipeline\n");
     return TRUE;
@@ -204,7 +206,8 @@ setup_element_factory(SessionCore* core,
         }
     }
 
-    if (!error == NULL) {
+    if (!error == NULL) 
+    {
         session_core_finalize(core,PIPELINE_ERROR_EXIT,error);
     }
     pipe->webrtcbin =
@@ -234,7 +237,7 @@ setup_pipeline(SessionCore* core)
     
     pipe->state = PIPELINE_SETTING_UP_ELEMENT;
     setup_element_property(core);
-    //attach_bitrate_control(core);
+    attach_bitrate_control(core);
 
 
 

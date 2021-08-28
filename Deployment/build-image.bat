@@ -37,8 +37,6 @@ docker push 125.212.237.45:5000/slavemanager:slavemanager_v1.0.1
 del Dockerfile
 
 
-
-
 cd ..
 cd Deployment
 

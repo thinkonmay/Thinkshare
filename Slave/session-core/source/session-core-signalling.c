@@ -118,7 +118,9 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
 
     if (g_strcmp0(hub->peer_call_state, PEER_CALL_NEGOTIATING))
     {
-        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT, NULL);
+        GError error;
+        error.message = "State conflict";
+        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT, &error);
     }
 
     ice = json_object_new();
@@ -147,8 +149,11 @@ send_sdp_to_peer(SessionCore* core,
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
     if (!hub->peer_call_state == PEER_CALL_NEGOTIATING) 
-        session_core_finalize( core, CORE_STATE_CONFLICT_EXIT,NULL);
-
+    {
+        GError error;
+        error.message = "State conflict";
+        session_core_finalize( core, CORE_STATE_CONFLICT_EXIT, &error);
+    }
     text = gst_sdp_message_as_text(desc->sdp);
     sdp = json_object_new();
 
@@ -189,7 +194,9 @@ on_offer_created( GstPromise* promise, SessionCore* core)
 
     if (g_strcmp0(hub->peer_call_state, PEER_CALL_NEGOTIATING))
     {
-        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT, NULL);
+        GError error;
+        error.message = "State conflict";
+        session_core_finalize( core, CORE_STATE_CONFLICT_EXIT, &error);
     }
 
     g_assert_cmphex(gst_promise_wait(promise), == , GST_PROMISE_RESULT_REPLIED);
@@ -287,7 +294,9 @@ register_with_server(SessionCore* core)
     if (g_strcmp0(hub->signalling_state, SIGNALLING_SERVER_CONNECTED) || 
         (soup_websocket_connection_get_state(hub->connection) != SOUP_WEBSOCKET_STATE_OPEN))
     {
-        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);    
+        GError error;
+        error.message = "State conflict";
+        session_core_finalize( core, CORE_STATE_CONFLICT_EXIT, &error);  
     }
 
     //gchar* buffer = malloc(10);
@@ -426,8 +435,9 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
     {
         if (!g_strcmp0(hub->signalling_state,SIGNALLING_SERVER_READY))
         {
-            session_core_finalize(core, CORE_STATE_CONFLICT_EXIT, NULL);
-            return;
+            GError error;
+            error.message = "State conflict";
+            session_core_finalize( core, CORE_STATE_CONFLICT_EXIT, &error);
         }
     }
 
@@ -460,11 +470,15 @@ on_registering_message(SessionCore* core)
 
     if (g_strcmp0(signalling->signalling_state, SIGNALLING_SERVER_REGISTERING))
     {
-        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);
+        GError error;
+        error.message = "State conflict";
+        session_core_finalize( core, CORE_STATE_CONFLICT_EXIT, &error);
     }
     if (g_strcmp0( signalling->signalling_state , SIGNALLING_SERVER_REGISTERING))
     {
-        session_core_finalize(core, CORE_STATE_CONFLICT_EXIT,NULL);
+        GError error;
+        error.message = "State conflict";
+        session_core_finalize( core, CORE_STATE_CONFLICT_EXIT, &error);
     }
     signalling->signalling_state = SIGNALLING_SERVER_REGISTER_DONE;
     signalling->peer_call_state = PEER_CALL_READY;
@@ -603,7 +617,9 @@ on_server_message(SoupWebsocketConnection* conn,
 
     if (!g_strcmp0(Result, "SESSION_REJECTED") || !g_strcmp0(Result, "SESSION_TIMEOUT"))
     {
-        session_core_finalize(core, SESSION_DENIED_EXIT,NULL);
+        GError error;
+        error.message = "Session has been rejected, this may due to security attack or signalling failure";
+        session_core_finalize( core, CORE_STATE_CONFLICT_EXIT, &error);
     }
 
 

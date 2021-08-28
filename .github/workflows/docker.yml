@@ -1,0 +1,95 @@
+name: Docker
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  REGISTRY: ghcr.io
+  SIGNALLING_IMAGE_NAME:  ${{ secrets.DOCKER_USERNAME }}/signalling:latest
+  SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:latest
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        
+      # create temporary signalling dockerfile then build&push in host context
+      - name: Copy signalling Dockerfile
+        shell: pwsh
+        working-directory: Host/Signalling
+        run: |
+          xcopy "Dockerfile" ..
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: Host  
+          push: true
+          tags: SIGNALLING_IMAGE_NAME
+      - name: Delete signalling Dockerfile
+        shell: pwsh
+        working-directory: Host
+        run: |
+          del Dockerfile
+
+      # Create temporary slave manager dockerfile then build&push in host context
+      - name: Copy slavemanager Dockerfile
+        shell: pwsh
+        working-directory: Host/SlaveManager
+        run: |
+          xcopy "Dockerfile" ..
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: Host  
+          push: true
+          tags: SLAVEMANAGER_IMAGE_NAME
+      - name: Delete slavemanager Dockerfile
+        shell: pwsh
+        working-directory: Host
+        run: |
+          del Dockerfile
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # copy all pcc folder to host server
+      - name: Copy folder content recursively to remote
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: .
+          remote: /home/ubuntu/src/personal-cloud-computing
+          username:  ${{ secrets.HOST_USERNAME }}
+          host: ${{ secrets.HOST_IP }}
+          password: ${{ secrets.HOST_PASSWORD }}
+
+      # Login to server using ssh
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          username:  ${{ secrets.HOST_USERNAME }}
+          host: ${{ secrets.HOST_IP }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          script: |
+            cd /home/ubuntu/src/personal-cloud-computing/Deployment/host
+            docker-compose pull
+            docker-compose -d up
+
+ 
+      
+    

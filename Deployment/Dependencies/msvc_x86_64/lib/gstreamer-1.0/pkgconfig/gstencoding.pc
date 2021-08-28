@@ -1,0 +1,11 @@
+prefix=c:/projects/repos/cerbero.git/1.18/build/dist/msvc_x86_64
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: gstencoding
+Description: gst-plugins-base: gstencoding
+Version: 1.18.4
+Requires.private: gstreamer-base-1.0 >=  1.18.0, orc-0.4 >=  0.4.24, zlib
+Libs: -L${prefix}/lib/gstreamer-1.0 -lgstencoding
+Libs.private: -L${libdir} -lgstpbutils-1.0 -lgstvideo-1.0 -lgstaudio-1.0 -lgsttag-1.0
+Cflags:-I${includedir}

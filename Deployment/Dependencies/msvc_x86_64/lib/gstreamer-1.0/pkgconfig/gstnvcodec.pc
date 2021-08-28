@@ -1,0 +1,11 @@
+prefix=c:/projects/repos/cerbero.git/1.18/build/dist/msvc_x86_64
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: gstnvcodec
+Description: gst-plugins-bad: gstnvcodec
+Version: 1.18.4
+Requires.private: gstreamer-base-1.0 >=  1.18.0, gstreamer-video-1.0 >=  1.18.0, gstreamer-pbutils-1.0 >=  1.18.0, gstreamer-gl-1.0 >=  1.18.0, gstreamer-gl-prototypes-1.0 >=  1.18.0, gmodule-2.0
+Libs: -L${prefix}/lib/gstreamer-1.0 -lgstnvcodec
+Libs.private: -L${libdir} -lgstcodecs-1.0 -lgstcodecparsers-1.0
+Cflags:-I${includedir}

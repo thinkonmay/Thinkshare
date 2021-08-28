@@ -289,7 +289,7 @@ initialize_socket(AgentObject* agent)
     soup_session_add_feature(socket.session, SOUP_SESSION_FEATURE(socket.logger));
     g_object_unref(socket.logger);
 
-    //soup_logger_set_printer(socket.logger,agent_logger,NULL,NULL);
+    soup_logger_set_printer(socket.logger,agent_logger,NULL,NULL);
 
     socket.message = soup_message_new(SOUP_METHOD_GET,
         json_object_get_string_member(obj,HOST_URL));

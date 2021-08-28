@@ -22,8 +22,7 @@ using SlaveManager.Models.User;
 
 namespace SlaveManager.Controllers
 {
-    // [Authorize(Roles = "Administrator")]
-    [AllowAnonymous]
+    [Authorize(Roles = "Administrator")]
     [Route("/Admin")]
     [ApiController]
     public class AdminController : Controller

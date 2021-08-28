@@ -1,0 +1,9 @@
+prefix=c:/projects/repos/cerbero.git/1.18/build/dist/msvc_x86_64
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: sqlite3
+Description: An embedded SQL database engine
+Version: 3320300
+Libs: -L${libdir} -lsqlite3
+Cflags:-I${includedir}

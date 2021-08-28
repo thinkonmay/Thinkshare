@@ -1,7 +1,0 @@
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build-ninja/CMakeFiles/edit_cache.dir
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build-ninja/CMakeFiles/rebuild_cache.dir
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build-ninja/agent/CMakeFiles/edit_cache.dir
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build-ninja/agent/CMakeFiles/rebuild_cache.dir
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build-ninja/agent/source/CMakeFiles/agent.dir
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build-ninja/agent/source/CMakeFiles/edit_cache.dir
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing-master/Slave/build-ninja/agent/source/CMakeFiles/rebuild_cache.dir

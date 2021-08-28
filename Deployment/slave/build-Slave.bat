@@ -1,8 +1,10 @@
 
+rmdir /Q /S "C:/ThinkMay"
+mkdir "C:/ThinkMay"
+xcopy "..\ThinkMay" "C:\ThinkMay" /s /e
 
 cd ..\..\Slave
 rmdir /Q /S build
-rmdir /Q /S C:/ThinkMay/bin
 
 mkdir C:/ThinkMay/bin
 mkdir build
@@ -17,6 +19,3 @@ cd ../../session-core/source
 msbuild 
 cd ..\..\..\..
 
-cd ./Slave/bin/Debug/
-C:/ThinkMay/bin/agent.exe
-cd ..\..\..
