@@ -36,4 +36,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.1.5" />
   </ItemGroup>
 
+  <Import Project="..\SharedHost\SharedHost.projitems" Label="Shared" />
+
 </Project>

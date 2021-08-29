@@ -44,4 +44,13 @@ void				command_line_output_handle					(gchar* buffer,
 void				initialize_child_process_system				(AgentObject* agent);
 
 
+/// <summary>
+/// get state of a specific child process, return true if it is running,
+/// otherwise, return false
+/// </summary>
+/// <param name="buffer"></param>
+/// <param name="agent"></param>
+gboolean			get_current_child_process_state				(AgentObject* agent,
+																 gint order);
+
 #endif

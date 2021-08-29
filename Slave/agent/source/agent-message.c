@@ -141,8 +141,7 @@ on_agent_message(AgentObject* agent,
 			if (opcode == NEW_COMMAND_LINE_SESSION)
 			{
 				create_new_cmd_process(agent,
-					json_object_get_int_member(json_data, "ProcessID"), 
-						json_object_get_string_member(json_data, "CommandLine"));
+					json_object_get_int_member(json_data, "ProcessID"));
 			}
 			else if (opcode == END_COMMAND_LINE_SESSION)
 			{

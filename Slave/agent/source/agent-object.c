@@ -18,6 +18,7 @@
 #include <child-process-constant.h>
 #include <general-constant.h>
 #include <logging.h>
+#include <error-code.h>
 #include <message-form.h>
 
 /// <summary>
@@ -84,29 +85,6 @@ agent_finalize(AgentObject* self)
 
 
 
-void
-agent_send_command_line(AgentObject* self, 
-						gchar* command, 
-						gint order)
-{
-	//append new line to the end of commandline by copying command to new cmd_with_enter
-	gchar* cmd_with_enter = malloc(strlen(command)+1);
-	ZeroMemory(cmd_with_enter,strlen(cmd_with_enter));
-	strcat(cmd_with_enter,command);
-	strcat(cmd_with_enter,"\n");
-
-
-	if (self->child_process[order] == NULL)
-	{
-		agent_report_error(self,"Foward command to uninitialzed process, initializing new one");
-		create_new_cmd_process(self,order,command);
-		return;
-	}
-	send_message_to_child_process(self->child_process[order],
-		cmd_with_enter,strlen(cmd_with_enter));
-	g_free(cmd_with_enter);
-}
-
 
 
 
@@ -117,19 +95,24 @@ void
 agent_report_error(AgentObject* self,
 				   gchar* message)
 {
+	JsonParser* parser = json_parser_new();
+	json_parser_load_from_file(parser, HOST_CONFIG_FILE,NULL);
+	JsonNode* root = json_parser_get_root(parser);
+	JsonObject* json = json_node_get_object(root);
+	gint SlaveID = json_object_get_int_member(json,DEVICE_ID);
+
+
 	JsonObject* obj = json_object_new();
-
-	GTimeVal current_time;
-	g_get_current_time(&current_time);
-	gchar* iso_time = g_time_val_to_iso8601(&current_time);
-
-
 	json_object_set_string_member(obj,
-		"ErrorTime",iso_time);
+		"SlaveID",SlaveID);
+	json_object_set_string_member(obj,
+		"Module",AGENT_MODULE);	
 	json_object_set_string_member(obj,
 		"ErrorMessage",message);
+		
 
-	Message* msg = message_init(AGENT_MODULE,HOST_MODULE,ERROR_REPORT,obj);
+	Message* msg = message_init(AGENT_MODULE,
+		HOST_MODULE, ERROR_REPORT, obj);
 	agent_send_message(self,msg);
 }
 
@@ -147,6 +130,11 @@ agent_connect_to_host(AgentObject* self)
 	self->state->connect_to_host(self);
 }
 
+void
+agent_on_cmd_process_terminate(AgentObject* self, gint ProcessID)
+{
+	self->state->on_commandline_exit(self, ProcessID);
+}
 
 void
 agent_send_message(AgentObject* self,

@@ -1,4 +1,6 @@
 ﻿using SharedHost.Models;
+using SharedHost.Models.Device;
+using SharedHost.Models.Session;
 using SlaveManager.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -21,7 +23,6 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
         public async Task RemoteControlDisconnect(ISlaveDevice slave)
         {
-
             return;
         }
 
@@ -31,7 +32,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             return;
         }
 
-        public async Task SendCommand(ISlaveDevice slave, int order, string command)
+        public async Task SendCommand(ISlaveDevice slave, ForwardCommand command)
         {
             return;
         }
@@ -39,13 +40,27 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
         public async Task RejectSlave(ISlaveDevice slave)
         {
-
             return;
         }
 
         public string GetSlaveState()
         {
             return SlaveServiceState.Disconnected;
+        }
+
+        public async Task InitializeCommandlineSession(ISlaveDevice slave, int order)
+        {
+            return;
+        }
+
+        public async Task TerminateCommandlineSession(ISlaveDevice slave, int order)
+        {
+            return;
+        }
+
+        public async Task OnSessionCoreExit(ISlaveDevice slave, int SlaveID)
+        {
+            return;
         }
     }
 }

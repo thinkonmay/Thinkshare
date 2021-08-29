@@ -6,6 +6,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using SlaveManager.Interfaces;
+using SharedHost.Models.Session;
+using SharedHost.Models.Device;
+using System.Threading.Tasks;
+using SharedHost;
 
 namespace SlaveManager.Services
 {
@@ -13,8 +17,12 @@ namespace SlaveManager.Services
     {
         ConcurrentDictionary<int, SlaveDevice> SlaveList;
 
-        public SlavePool()
+        private readonly SystemConfig _config;
+
+
+        public SlavePool(SystemConfig config)
         {
+            _config = config;
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
         }
 
@@ -25,7 +33,7 @@ namespace SlaveManager.Services
             SlaveDevice slave;
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
 
-            slave.RejectSlave();
+            Task.Run(() => slave.RejectSlave());
             var disconnected = new DeviceDisconnected();
             slave.ChangeState(disconnected);
             AddSlaveDeviceWithKey(slaveid,slave); 
@@ -53,14 +61,16 @@ namespace SlaveManager.Services
             return SlaveList.TryGetValue(slave_id, out slave);
         }
 
-        public List<Tuple<int, string>> GetSystemSlaveState()
+        public List<SlaveQueryResult> GetSystemSlaveState()
         {
-            var list = new List<Tuple<int, string>>();
+            var list = new List<SlaveQueryResult>();
 
-            var pair = SlaveList.Where(o => o.Value != null);
-            foreach (var i in pair)
+            foreach (var i in SlaveList)
             { 
-                list.Add(new Tuple<int, string>(i.Key, i.Value.GetSlaveState()));                
+                list.Add(new SlaveQueryResult() { 
+                    SlaveID = i.Key,
+                    SlaveServiceState = i.Value.GetSlaveState()
+                });                
             }
             return list;
         }
@@ -71,7 +81,7 @@ namespace SlaveManager.Services
             if (!SearchForSlaveID(slaveid)) { return false; }
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
 
-            slave.RejectSlave();
+            Task.Run(() => slave.RejectSlave());
             SlaveList.TryRemove(SlaveList.First(item => item.Key == slaveid));
             return true;
         }
@@ -79,36 +89,67 @@ namespace SlaveManager.Services
 
 
 
-        public bool RemoteControlDisconnect(int slaveid)
+
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SlaveID"></param>
+        /// <param name="ProcessID"></param>
+        public bool InitializeCommand(int SlaveID, int ProcessID)
         {
             SlaveDevice slave;
-            if (!SearchForSlaveID(slaveid)) { return false; }
-            if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
-            if (GetSlaveState(slaveid) != SlaveServiceState.OnSession) { return false; }
+            if (!SearchForSlaveID(SlaveID)) { return false; }
+            if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
 
-            slave.RemoteControlDisconnect();
+            Task.Run(() => slave.TerminateCommandLineSession(ProcessID));
             return true;
         }
 
-        public bool RemoteControlReconnect(int slaveid)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SlaveID"></param>
+        /// <param name="ProcessID"></param>
+        public bool TerminateCommand(int SlaveID, int ProcessID)
         {
             SlaveDevice slave;
-            if (!SearchForSlaveID(slaveid)) { return false; }
-            if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
-            if (GetSlaveState(slaveid) != SlaveServiceState.OffRemote) { return false; }
-            slave.RemoteControlReconnect();
+            if (!SearchForSlaveID(SlaveID)) { return false; }
+            if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
+
+            Task.Run(() => slave.InitializeCommandLineSession(ProcessID));
             return true;
         }
 
-        public bool SendCommand(int slaveid, int order, string command)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public bool SendCommand(ForwardCommand command)
         {
             SlaveDevice slave;
-            if (!SearchForSlaveID(slaveid)) { return false; }
-            if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
+            if (!SearchForSlaveID(command.SlaveID)) { return false; }
+            if (!SlaveList.TryGetValue(command.SlaveID, out slave)) { return false; }
 
-            slave.SendCommand(order, command);
+            Task.Run(()=>slave.SendCommand(command));
             return true;
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public bool SessionInitialize(int slaveid, SlaveSession session)
         {
@@ -117,7 +158,7 @@ namespace SlaveManager.Services
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
             if (!String.Equals(slave.GetSlaveState(),SlaveServiceState.Open)) { return false; }
 
-            slave.SessionInitialize(session);
+            Task.Run(() => slave.SessionInitialize(session));
             return true;
         }
 
@@ -127,15 +168,37 @@ namespace SlaveManager.Services
             if (!SearchForSlaveID(slaveid)) { return false; }
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
 
-            slave.SessionTerminate();
+            Task.Run(() => slave.SessionTerminate());
+            return true;
+        }
+
+        public bool RemoteControlDisconnect(int slaveid)
+        {
+            SlaveDevice slave;
+            if (!SearchForSlaveID(slaveid)) { return false; }
+            if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
+            if (GetSlaveState(slaveid) != SlaveServiceState.OnSession) { return false; }
+
+            Task.Run(() => slave.RemoteControlDisconnect());
+            return true;
+        }
+
+        public bool RemoteControlReconnect(int slaveid)
+        {
+            SlaveDevice slave;
+            if (!SearchForSlaveID(slaveid)) { return false; }
+            if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
+            if (GetSlaveState(slaveid) != SlaveServiceState.OffRemote) { return false; }
+            Task.Run(() => slave.RemoteControlReconnect());
             return true;
         }
 
 
 
-        public bool AddSlaveId(int slaveid, SlaveDevice slave)
+        public bool AddSlaveId(int SlaveID)
         {
-            var ret = SlaveList.TryAdd(slaveid, slave);
+            var slave = new SlaveDevice(_config);
+            var ret = SlaveList.TryAdd(SlaveID, slave);
             return ret;
         }
 

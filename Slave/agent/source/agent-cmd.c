@@ -40,6 +40,7 @@ command_line_process_handle(ChildProcess* proc,
 {
     if(exit_code != STILL_ACTIVE)
     {
+        
         close_child_process(proc);
     }
 }
@@ -48,17 +49,45 @@ command_line_process_handle(ChildProcess* proc,
 
 void
 create_new_cmd_process(AgentObject* agent, 
-                       gint position,
-                       gchar* first_command)
+                       gint position)
 {
 
     ChildProcess* child_process = create_new_child_process(
-        "C:\\Windows\\System32\\cmd.exe /k ", position, first_command,
+        "C:\\Windows\\System32\\cmd.exe /k ", position, " ",
         command_line_output_handle,NULL, agent);
 
     agent_set_child_process(agent,position, 
         child_process);
 }
+
+
+
+void
+agent_send_command_line(AgentObject* agent, 
+						gchar* command, 
+						gint order)
+{
+    ChildProcess* cmdproc = agent_get_child_process(agent, order);
+
+	//append new line to the end of commandline by copying command to new cmd_with_enter
+	gchar* cmd_with_enter = malloc(strlen(command)+1);
+	ZeroMemory(cmd_with_enter,strlen(cmd_with_enter));
+	strcat(cmd_with_enter,command);
+	strcat(cmd_with_enter,"\n");
+
+    // send message to cmd process if it is running
+    // otherwise, report error
+	if (get_current_child_process_state(agent,order))
+	{
+	    send_message_to_child_process(cmdproc,
+		    cmd_with_enter,strlen(cmd_with_enter));
+	}
+    else
+    {
+        agent_report_error(agent,"Foward command to uninitialzed process");
+    }
+}
+
 
 
 

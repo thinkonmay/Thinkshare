@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using SharedHost;
 using Signalling.Filters;
 using Signalling.Interfaces;
 using Signalling.Services;
@@ -16,8 +17,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using static Signalling.GeneralConstants;
-using static System.Environment;
 
 
 namespace Signalling

@@ -237,4 +237,13 @@ create_new_child_process(gchar* process_name,
 }
 
 
+gboolean 				
+get_current_child_process_state(AgentObject* agent,
+								gint order)
+{
+    ChildProcess* child_process = agent_get_child_process(agent, order);
 
+    if(child_process->handler == NULL){ return FALSE;}
+    else if (!child_process->exit){ return FALSE; }
+    else { return TRUE; }
+}
