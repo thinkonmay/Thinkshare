@@ -12,6 +12,75 @@ env:
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
 
 jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        
+      # create temporary signalling dockerfile then build&push in host context
+      - name: Copy signalling Dockerfile
+        shell: pwsh
+        working-directory: Host/Signalling
+        run: |
+          cp Dockerfile ..
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: Host  
+          push: true
+          tags: ${{ env.SIGNALLING_IMAGE_NAME }}
+      - name: Delete signalling Dockerfile
+        shell: pwsh
+        working-directory: Host
+        run: |
+          del Dockerfile
+
+      # Create temporary slavemanager dockerfile then build&push in host context
+      - name: Copy slavemanager Dockerfile
+        shell: pwsh
+        working-directory: Host/SlaveManager
+        run: |
+          cp Dockerfile ..
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: Host  
+          push: true
+          tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
+      - name: Delete slavemanager Dockerfile
+        shell: pwsh
+        working-directory: Host
+        run: |
+          del Dockerfile
+
+      # Create temporary conductor dockerfile then build&push in host context
+      - name: Copy conductor Dockerfile
+        shell: pwsh
+        working-directory: Host/Conductor
+        run: |
+          cp Dockerfile ..
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: Host  
+          push: true
+          tags: ${{ env.CONDUCTOR_IMAGE_NAME }}
+      - name: Delete conductor Dockerfile
+        shell: pwsh
+        working-directory: Host
+        run: |
+          del Dockerfile
+
+
+          
   deploy:
     runs-on: ubuntu-latest
     needs: docker-build
@@ -27,18 +96,19 @@ jobs:
           host: ${{ secrets.HOST_IP }}
           password: ${{ secrets.HOST_PASSWORD }}
           script: |
-            cd /home/ubuntu/ThinkMay/Deployment/Host
+            cd /home/ubuntu/personal-cloud-computing
+            git checkout master
+            git pull https://${{ secrets.OAUTH_TOKEN }}@github.com/pigeatgarlic/personal-cloud-computing.git master
+
+
+            cd /home/ubuntu/personal-cloud-computing/Deployment/backbone/coturn-master/docker
             docker-compose pull
             docker-compose up --detach
 
-      # Login to server using ssh
-      - name: Deploy host container
-        uses: appleboy/ssh-action@master
-        with:
-          username:  ${{ secrets.HOST_USERNAME }}
-          host: ${{ secrets.HOST_IP }}
-          password: ${{ secrets.HOST_PASSWORD }}
-          script: |
+            cd /home/ubuntu/personal-cloud-computing/Deployment/backbone
+            docker-compose pull
+            docker-compose up --detach
+
             cd /home/ubuntu/personal-cloud-computing/Deployment/Host
             docker-compose pull
             docker-compose up --detach
