@@ -2,41 +2,29 @@
 using SharedHost.Models;
 using SlaveManager.Interfaces;
 using System.Net.WebSockets;
-using SlaveManager.Services;
 using System.Threading.Tasks;
 using SlaveManager.SlaveDevices.SlaveStates;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System;
-using SlaveManager.Models;
+using SharedHost.Models.Device;
+using SharedHost.Models.Session;
+using SharedHost.Models.Error;
+using SlaveManager.Services;
+using SharedHost;
 
 namespace SlaveManager.SlaveDevices
 {
-    public interface ISlaveDevice
-    {
-        void ChangeState(ISlaveState newstate);
-        string GetSlaveState();
-        Task SendMessage(Message message);
-        Task SessionInitialize(SlaveSession session);
-        Task RemoteControlDisconnect();
-        Task RemoteControlReconnect();
-        Task SendCommand(int order, string command);
-        Task RejectSlave();
-    }
-    /// <summary>
-    /// 
-    /// </summary>
     public class SlaveDevice : ISlaveDevice
     {
         public ISlaveState State { get; set; }
         public WebSocket ws { get; set; }
-        private readonly IAdmin _admin;
-        public SlaveDevice(IAdmin admin)
+        public ConductorSocket _conductor { get; set; }
+        public SlaveDevice(SystemConfig config)
         {
+            _conductor = new ConductorSocket(config);
             ws = null;
-            _admin = admin;
             State = new DeviceDisconnected();
         }
 
@@ -45,6 +33,7 @@ namespace SlaveManager.SlaveDevices
 
         public async Task KeepReceiving()
         {
+            int SlaveID = 0;
             WebSocketReceiveResult message;
             try
             {
@@ -57,6 +46,7 @@ namespace SlaveManager.SlaveDevices
                         {
                             var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
                             var messageForm = JsonConvert.DeserializeObject<MessageWithID>(receivedMessage);
+                            SlaveID = messageForm.SlaveID;
 
                             if (messageForm.To == (int)Module.HOST_MODULE)
                             {
@@ -67,6 +57,7 @@ namespace SlaveManager.SlaveDevices
                 } while (ws.State == WebSocketState.Open);
             } catch (WebSocketException)
             { }
+            await _conductor.ReportSlaveDisconnected(SlaveID);
             State = new DeviceDisconnected();
         }
 
@@ -82,20 +73,27 @@ namespace SlaveManager.SlaveDevices
                         case (int)Opcode.COMMAND_LINE_FORWARD:
                         {
                             var cmd = JsonConvert.DeserializeObject<ReceiveCommand>(messageForm.Data);
-                            await _admin.LogSlaveCommandLine(messageForm.SlaveID, cmd);
+                            cmd.SlaveID = messageForm.SlaveID;
+                            await _conductor.LogSlaveCommandLine(cmd);
                             break;
                         }
                         case (int)Opcode.ERROR_REPORT:
                         {
-                            var error = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(messageForm.Data);
-
-                            if(error.ErrorMessage == ErrorMessage.UNKNOWN_SESSION_CORE_EXIT)
-                                { 
-                                    State = new OnSessionOffRemote();
-                                    await _admin.ReportRemoteControlDisconnected(messageForm.SlaveID);
-                                    break;
-                                }
-                            await _admin.ReportAgentError(error, messageForm.SlaveID);
+                            var error = JsonConvert.DeserializeObject<ReportedError>(messageForm.Data);
+                            error.SlaveID = messageForm.SlaveID;
+                            error.Module = (int)Module.AGENT_MODULE;
+                            await _conductor.ReportError(error);
+                            break;
+                        }
+                        case (int)Opcode.SESSION_CORE_EXIT:
+                        {
+                            await State.OnSessionCoreExit(this, messageForm.SlaveID);
+                            break;
+                        }
+                        case (int)Opcode.END_COMMAND_LINE_SESSION:
+                        {
+                            var session = JsonConvert.DeserializeObject<ForwardCommand>(messageForm.Data);
+                            await _conductor.ReportShellSessionTerminated(session);
                             break;
                         }
 
@@ -107,14 +105,10 @@ namespace SlaveManager.SlaveDevices
                     {
                         case (int)Opcode.ERROR_REPORT:
                         {
-                            var errabs = JsonConvert.DeserializeObject<GeneralErrorAbsTime>(messageForm.Data);
-                            await _admin.ReportSessionCoreError(errabs, messageForm.SlaveID);
-                            break;
-                        }
-                        case (int)Opcode.EXIT_CODE_REPORT:
-                        {
-                            var abs = JsonConvert.DeserializeObject<SessionCoreExitAbsTime> ( messageForm.Data );
-                            await _admin.ReportSessionCoreExit(messageForm.SlaveID, abs);
+                            var errabs = JsonConvert.DeserializeObject<ReportedError>(messageForm.Data);
+                            errabs.SlaveID = messageForm.SlaveID;
+                            errabs.Module = (int)Module.CORE_MODULE;
+                            await _conductor.ReportError(errabs);
                             break;
                         }
                     }
@@ -146,11 +140,27 @@ namespace SlaveManager.SlaveDevices
         }
 
 
+
+
         public void ChangeState(ISlaveState newstate)
         {
             State = newstate;
         }
 
+
+
+
+
+
+
+
+
+
+        public async Task OnRemoteControlDisconnected(int SlaveID)
+        {
+            State = new OnSessionOffRemote();
+            await _conductor.ReportRemoteControlDisconnected(SlaveID);
+        }
 
         /*state dependent method*/
         public async Task SessionInitialize(SlaveSession session)
@@ -173,10 +183,41 @@ namespace SlaveManager.SlaveDevices
             await State.RemoteControlReconnect(this);
         }
 
-        public async Task SendCommand(int order, string command)
+        public async Task OnSessionCoreExit(int SlaveID)
         {
-            await State.SendCommand(this, order, command);
+            await State.OnSessionCoreExit(this, SlaveID);
         }
+
+
+
+
+
+
+
+
+
+
+
+        public async Task InitializeCommandLineSession(int order)
+        {
+            await State.InitializeCommandlineSession(this, order);
+        }
+
+
+        public async Task TerminateCommandLineSession(int order)
+        {
+            await State.TerminateCommandlineSession(this, order);
+        }
+
+        public async Task SendCommand(ForwardCommand command)
+        {
+            await State.SendCommand(this, command);
+        }
+
+
+
+
+
 
         public async Task RejectSlave()
         {

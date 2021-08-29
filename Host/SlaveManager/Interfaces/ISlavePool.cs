@@ -1,9 +1,8 @@
-﻿using SharedHost.Models;
+﻿using SharedHost.Models.Device;
+using SharedHost.Models.Session;
 using SlaveManager.SlaveDevices;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SlaveManager.Interfaces
 {
@@ -17,7 +16,7 @@ namespace SlaveManager.Interfaces
         /// <param name="slaveid"></param>
         /// <param name="slave"></param>
         /// <returns></returns>
-        bool AddSlaveId(int slaveid,SlaveDevice slave);
+        bool AddSlaveId(int slaveid);
 
         /// <summary>
         /// Get SlaveDevice correspond to a ID in slave pool, 
@@ -39,7 +38,7 @@ namespace SlaveManager.Interfaces
         /// Get slave state of all slace device in slave pool
         /// </summary>
         /// <returns>list of tuple, first item contain slaveID, second contain slavee state in form of string</returns>
-        List<Tuple<int, string>> GetSystemSlaveState();
+        List<SlaveQueryResult> GetSystemSlaveState();
 
         /// <summary>
         /// replace slave device with specific key,
@@ -72,14 +71,27 @@ namespace SlaveManager.Interfaces
         /// <returns></returns>
         bool RejectSlave(int slaveid);
 
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SlaveID"></param>
+        /// <param name="ProcessID"></param>
+        bool InitializeCommand(int SlaveID, int ProcessID);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SlaveID"></param>
+        /// <param name="ProcessID"></param>
+        bool TerminateCommand(int SlaveID,int ProcessID);
+
         /// <summary>
         /// send command to a specific process id at an specific slavedevice
         /// </summary>
-        /// <param name="slaveid">SlaveID of slavedevice</param>
-        /// <param name="order">processid of commandline processs</param>
-        /// <param name="command"></param>
         /// <returns></returns>
-        bool SendCommand(int slaveid, int order, string command);
+        bool SendCommand(ForwardCommand command);
 
 
 

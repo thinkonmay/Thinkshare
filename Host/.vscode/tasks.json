@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "dotnet build .",
+			"path": "SlaveManager",
+			"problemMatcher": [],
+			"label": "dotnet: build slavemanager",
+			"detail": "install dependencies from package"
+		}
+	]
+}

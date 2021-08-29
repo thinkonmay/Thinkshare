@@ -70,15 +70,6 @@ gboolean										agent_command_line_passing			(AgentObject* self,
 																					 gchar* command);
 
 
-/// <summary>
-/// agent send message function, wrap around send_messsage function
-/// </summary>
-/// <param name="self"></param>
-/// <param name="message"></param>
-/// <returns></returns>
-void											agent_send_message					(AgentObject* self,
-																					 Message* message);
-
 
 /// <summary>
 /// agent_finalize, end main loop and all related thread, 
@@ -99,6 +90,9 @@ AgentObject*									agent_new							();
 /// </summary>
 /// <param name="self"></param>
 void											handle_host_connection				(AgentObject* self);
+
+
+void											agent_send_message					(AgentObject* self, Message* message);
 
 /// <summary>
 /// send message to arbitrary device in system
@@ -132,15 +126,7 @@ void											agent_send_message_to_session_loader(AgentObject* self,
 void											agent_register_with_host			(AgentObject* self);
 
 
-/// <summary>
-/// 
-/// </summary>
-/// <param name="self"></param>
-/// <param name="command"></param>
-/// <param name="order"></param>
-void											agent_send_command_line				(AgentObject* self,
-																					 gchar* command,
-																					 gint order);
+
 
 void											agent_on_session_core_exit		(AgentObject* self);
 

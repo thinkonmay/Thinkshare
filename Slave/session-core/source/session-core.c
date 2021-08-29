@@ -247,19 +247,23 @@ void
 report_session_core_error(SessionCore* self,
 						  ErrorCode code)
 {
-	Message* msg = json_object_new();
+	JsonParser* parser = json_parser_new();
+	json_parser_load_from_file(parser, HOST_CONFIG_FILE,NULL);
+	JsonNode* root = json_parser_get_root(parser);
+	JsonObject* json = json_node_get_object(root);
+	gint SlaveID = json_object_get_int_member(json,DEVICE_ID);
 
-	GTimeVal current_time;
-	g_get_current_time(&current_time);
-	gchar* iso_time = g_time_val_to_iso8601(&current_time);
 
-	json_object_set_string_member(msg, 
-		"ErrorMessage", code);
-	json_object_set_int_member(msg,
-		"ErrorTime",iso_time);
+	JsonObject* obj = json_object_new();
+	json_object_set_string_member(obj,
+		"SlaveID",SlaveID);
+	json_object_set_string_member(obj,
+		"Module",CORE_MODULE);	
+	json_object_set_string_member(obj,
+		"ErrorMessage",code);
 
 	Message* msg_host = message_init(CORE_MODULE,
-		HOST_MODULE, ERROR_REPORT, msg);
+		HOST_MODULE, ERROR_REPORT, obj);
 
 	session_core_send_message(self, msg_host);
 }

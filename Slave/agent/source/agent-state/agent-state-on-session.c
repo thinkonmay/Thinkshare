@@ -2,14 +2,16 @@
 #include <agent-state.h>
 #include <agent-session-initializer.h>
 #include <agent-socket.h>
+#include <agent-object.h>
 #include <agent-state-open.h>
 #include <agent-state-on-session-off-remote.h>
-
 
 #include <state-indicator.h>
 #include <logging.h>
 #include <general-constant.h>
 #include <error-code.h>
+#include <message-form.h>
+
 
 
 #include <glib.h>
@@ -73,9 +75,34 @@ on_session_send_message_to_host(AgentObject* agent,
 }
 
 static void
+on_session_on_commandline_exit(AgentObject* agent,gint ProcessID)
+{
+    JsonParser* parser = json_parser_new();
+    json_parser_load_from_file(parser, HOST_CONFIG_FILE, NULL);
+    JsonNode* root = json_parser_get_root(parser);
+    JsonObject* obj = json_node_get_object(root);
+    gint SlaveID = json_object_get_int_member(obj, DEVICE_ID);
+
+    Message* cmd = json_object_new();
+    json_object_set_int_member(cmd, "ProcessID", ProcessID);
+    json_object_set_int_member(cmd, "SlaveID", SlaveID);
+
+
+    Message* message = message_init(
+        AGENT_MODULE,HOST_MODULE,
+            END_COMMAND_LINE_SESSION,cmd);
+
+    agent_send_message(agent,message);
+}
+
+static void
 on_session_session_core_exit(AgentObject* agent)
 {
-    agent_report_error(agent,UNKNOWN_SESSION_CORE_EXIT);
+    Message* message = message_init(
+        AGENT_MODULE,HOST_MODULE,
+            SESSION_CORE_EXIT,UNKNOWN_SESSION_CORE_EXIT);
+
+    agent_send_message(agent,message);
 }
 
 
@@ -98,9 +125,9 @@ transition_to_on_session_state(void)
         on_session_state.session_terminate = on_session_session_terminate;
         on_session_state.send_message_to_host = send_message_to_host;
         on_session_state.send_message_to_session_core = send_message_to_core;
-        //on_session_state.send_message_to_session_loader = send_message_to_loader;
         on_session_state.remote_control_disconnect = on_session_remote_control_disconnect;
         on_session_state.on_session_core_exit = on_session_session_core_exit;
+        on_session_state.on_commandline_exit = on_session_on_commandline_exit;
         on_session_state.get_current_state = on_session_get_state;
 
         initialized = TRUE; 

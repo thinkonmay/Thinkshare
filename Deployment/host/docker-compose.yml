@@ -5,35 +5,23 @@ version: '3'
 services: 
 #signalling service
   signalling:
-    image: ${PCC_URL}:${REGISTRY_PORT}/signalling:signalling_v1.0.1 
+    image: ${PCC_URL}:${REGISTRY_PORT}/signalling:latest 
     restart: always
-
-
-    environment: 
-      - SLAVEMANAGER_SERVER=http://${PCC_URL}:81
-
     ports:
       - "82:80"
 
-    depends_on: 
-      - slavemanager 
+
+  conductor:
+    image: ${PCC_URL}:${REGISTRY_PORT}/conductor:latest
+    restart: always
+    ports:
+      - "81:80"
 
 
   slavemanager:
-    image: ${PCC_URL}:${REGISTRY_PORT}/slavemanager:slavemanager_v1.0.1  
+    image: ${PCC_URL}:${REGISTRY_PORT}/conductor:latest
     restart: always
-
-    environment: 
-      - SIGNALLING_SERVER=http://${PCC_URL}:82
-      - FLUTTER_SERVER=http://${PCC_URL}:80
-
-      - DATABASE_SERVER=${PCC_URL}
-      - DATABASE_NAME=${DB_NAME}
-      - DATABASE_USER=${DB_USER}
-      - DATABASE_PASSWORD=${DB_PASSWORD}
-      - DATABASE_PORT=${DB_PORT}
-
     ports:
-      - "81:80"
+      - "83:80"
 
 

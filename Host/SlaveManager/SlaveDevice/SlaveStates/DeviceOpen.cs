@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SharedHost.Models;
+using SharedHost.Models.Device;
+using SharedHost.Models.Session;
 using SlaveManager.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -39,7 +41,43 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             return;
         }
 
-        public async Task SendCommand(ISlaveDevice slave, int order, string command)
+        public async Task InitializeCommandlineSession(ISlaveDevice slave, int order)
+        {
+            Message message = new Message();
+
+            message.From = Module.HOST_MODULE;
+            message.To = Module.AGENT_MODULE;
+            message.Opcode = Opcode.NEW_COMMAND_LINE_SESSION;
+
+            ForwardCommand forward_command = new ForwardCommand();
+            forward_command.ProcessID = order;
+            forward_command.CommandLine = " ";
+
+            message.Data = JsonConvert.SerializeObject(forward_command);
+            await slave.SendMessage(message);
+            return;
+        }
+
+        public async Task TerminateCommandlineSession(ISlaveDevice slave, int order)
+        {
+            Message message = new Message();
+
+            message.From = Module.HOST_MODULE;
+            message.To = Module.AGENT_MODULE;
+            message.Opcode = Opcode.END_COMMAND_LINE_SESSION;
+
+            ForwardCommand forward_command = new ForwardCommand();
+            forward_command.ProcessID = order;
+            forward_command.CommandLine = " ";
+
+            message.Data = JsonConvert.SerializeObject(forward_command);
+            await slave.SendMessage(message);
+            return;
+        }
+
+
+
+        public async Task SendCommand(ISlaveDevice slave, ForwardCommand command)
         {
 
             Message message = new Message();
@@ -47,14 +85,10 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
             message.Opcode = Opcode.COMMAND_LINE_FORWARD;
-
-            ForwardCommand forward_command = new ForwardCommand();
-            forward_command.ProcessID = order;
-            forward_command.CommandLine = command;
-
-            message.Data = JsonConvert.SerializeObject(forward_command);
+            message.Data = JsonConvert.SerializeObject(command);
 
             await slave.SendMessage(message);
+
 
             return;
         }
@@ -75,6 +109,11 @@ namespace SlaveManager.SlaveDevices.SlaveStates
         public string GetSlaveState()
         {
             return SlaveServiceState.Open;
+        }
+
+        public async Task OnSessionCoreExit(ISlaveDevice slave, int SlaveID)
+        {
+            return;
         }
     }
 }

@@ -4,43 +4,22 @@ using SlaveManager.Interfaces;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using SlaveManager.Data;
-using SlaveManager.Services;
-using SharedHost.Models;
-using System.Collections.Generic;
-using System.Linq;
-using SlaveManager.SlaveDevices;
 
 namespace SlaveManager.Controllers
 {
     [Route("/Agent")]
     [ApiController]
-    [AllowAnonymous]
+    [Produces("application/json")]
     public class WebSocketApiController : ControllerBase
     {
         private readonly IWebSocketConnection _connection;
 
-        private readonly IAdmin _admin;
-
-        private readonly ApplicationDbContext _db;
-
         static private bool initialized = false;
 
-        public WebSocketApiController(IWebSocketConnection connection, ISlavePool slavePool, ApplicationDbContext db )
+        public WebSocketApiController(IWebSocketConnection connection, 
+                                     ISlavePool slavePool)
         {
             _connection = connection;
-            _db = db;
-
-            //initialize device from database, only used in the first connection to slave manager
-            if(!initialized)
-            {
-                var list = _db.Devices.ToList();
-                foreach (var i in list)
-                {
-                    var slave = new SlaveDevice(_admin);
-                    slavePool.AddSlaveId(i.ID,slave);
-                }
-            }
         }
 
         [HttpGet("/Register")]

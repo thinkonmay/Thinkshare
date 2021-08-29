@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SharedHost.Models;
-using SlaveManager.Administration;
-using SlaveManager.Data;
+using SharedHost.Models.Device;
 using SlaveManager.Interfaces;
-using SlaveManager.Models;
 using SlaveManager.SlaveDevices;
 using SlaveManager.SlaveDevices.SlaveStates;
 using System;
@@ -21,19 +19,11 @@ namespace SlaveManager.Services
 
         private readonly ISlavePool _slavePool;
 
-        private readonly IAdmin _admin;
-
-        private readonly ApplicationDbContext _db;
 
 
-
-        public WebSocketConnection(ISlavePool slavePool,
-                                    IAdmin admin,
-                                    ApplicationDbContext db)
+        public WebSocketConnection(ISlavePool slavePool)
         {
             _slavePool = slavePool;
-            _admin = admin;
-            _db = db;
         }
 
         private async Task<bool> UpgradeToSlave(WebSocket ws, SlaveDeviceInformation device_information)
@@ -63,11 +53,6 @@ namespace SlaveManager.Services
                 slave.ws = ws;
                 _slavePool.AddSlaveDeviceWithKey(device_information.ID, slave);
 
-                //Add Slave into database if SlaveID is not found in database
-                if (_db.Devices.Where(o => o.ID == device_information.ID).Count() == 0)
-                {
-                    await _admin.ReportSlaveRegistered(device_information);
-                }
 
                 Message accept = new Message();
                 accept.From = Module.HOST_MODULE;

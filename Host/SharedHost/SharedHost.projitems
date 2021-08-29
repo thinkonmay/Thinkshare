@@ -9,16 +9,32 @@
     <Import_RootNamespace>SharedHost</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Models\SlaveServiceState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\StorageBlockIdentification.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ClientRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ClientSession.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ForwardCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Device.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Message.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\QoE.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\SlaveSession.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\SessionBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Telemetry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\AuthResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\JwtOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\LoginModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\Cluster.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Command\ShellSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Command\CommandLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Slave.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\SlaveQueryResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Error\GeneralError.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Error\SessionCoreExit.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Error\ReportedError.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\SlaveServiceState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\Session.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StorageBlock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\ClientRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\ClientSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Command\ForwardCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Device.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Message.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\QoE.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SlaveSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Telemetry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SystemConfig.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Models\Storage\" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 ﻿using SharedHost.Models;
-using SlaveManager.SlaveDevices;
+using SharedHost.Models.Device;
+using SharedHost.Models.Session;
 using System.Threading.Tasks;
 
 namespace SlaveManager.Interfaces
@@ -14,9 +15,15 @@ namespace SlaveManager.Interfaces
 
         Task RemoteControlReconnect(ISlaveDevice slave);
 
-        Task SendCommand(ISlaveDevice slave, int order, string command);
+        Task InitializeCommandlineSession(ISlaveDevice slave, int order);
+
+        Task TerminateCommandlineSession(ISlaveDevice slave, int order);
+
+        Task SendCommand(ISlaveDevice slave, ForwardCommand command);
 
         Task RejectSlave(ISlaveDevice slave);
+
+        Task OnSessionCoreExit(ISlaveDevice slave, int SlaveID);
 
         string GetSlaveState();
     }

@@ -62,6 +62,28 @@ open_get_state(void)
 }
 
 
+static void
+open_on_commandline_exit(AgentObject* agent, gint ProcessID)
+{
+    JsonParser* parser = json_parser_new();
+    json_parser_load_from_file(parser, HOST_CONFIG_FILE, NULL);
+    JsonNode* root = json_parser_get_root(parser);
+    JsonObject* obj = json_node_get_object(root);
+    gint SlaveID = json_object_get_int_member(obj, DEVICE_ID);
+
+    Message* cmd = json_object_new();
+    json_object_set_int_member(cmd, "ProcessID", ProcessID);
+    json_object_set_int_member(cmd, "SlaveID", SlaveID);
+
+
+    Message* message = message_init(
+        AGENT_MODULE, HOST_MODULE,
+        END_COMMAND_LINE_SESSION, cmd);
+
+    agent_send_message(agent, message);
+}
+
+
 AgentState*
 transition_to_on_open_state(void)
 {
@@ -73,7 +95,9 @@ transition_to_on_open_state(void)
         default_method(&open_state);
         open_state.session_initialize = on_open_session_initialize;
         open_state.send_message_to_host = send_message_to_host;
-        open_state.get_current_state = open_get_state;      
+        open_state.get_current_state = open_get_state;  
+        open_state.on_commandline_exit = open_on_commandline_exit;
+
 
         initialized = TRUE; 
     }
