@@ -76,7 +76,6 @@ jobs:
           target: debug
           push: true
           tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
-          del Dockerfile
 
       # Create temporary conductor dockerfile then build&push in host context
       - name: Conductor
