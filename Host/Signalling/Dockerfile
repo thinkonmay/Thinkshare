@@ -29,11 +29,11 @@ RUN dotnet run
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /app
 
-COPY Signalling.csproj ./Signalling.csproj
+COPY Signalling/Signalling.csproj /app/Signalling.csproj
 RUN dotnet restore
 
 COPY . .
-RUN dotnet publish -c release -o /app --no-restore
+RUN dotnet publish Signalling.csproj -c release -o /app --no-restore
 
 FROM base as release
 WORKDIR /app
