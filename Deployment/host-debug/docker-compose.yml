@@ -5,28 +5,28 @@ version: '3'
 services: 
 #signalling service
   signalling:
-    image: ${DOCKER_REGISTRY}/signalling:latest 
+    image: ${DOCKER_REGISTRY}/signalling:debug-latest 
     restart: always
     ports:
       - "82:80"
     volumes:
-      - /src/Host/Signalling:/work/
+      - /src/Host/Signalling:/work/Signalling
 
 
   conductor:
-    image: ${DOCKER_REGISTRY}/conductor:latest
+    image: ${DOCKER_REGISTRY}/conductor:debug-latest
     restart: always
     ports:
       - "81:80"
     volumes:
-      - /src/Host/Conductor:/work/
+      - /src/Host/Conductor:/work/Conductor
 
 
   slavemanager:
-    image: ${DOCKER_REGISTRY}/slavemanager:latest
+    image: ${DOCKER_REGISTRY}/slavemanager:debug-latest
     restart: always
     ports:
       - "83:80"
     volumes:
-      - /src/Host/SlaveManager:/work/
+      - /src/Host/SlaveManager:/work/SlaveManager
 
