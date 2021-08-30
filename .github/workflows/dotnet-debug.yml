@@ -1,0 +1,96 @@
+name: DEBUG
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+
+#setup environment variable
+env:
+  REGISTRY: ghcr.io
+  SIGNALLING_IMAGE_NAME:  ${{ secrets.DOCKER_USERNAME }}/signalling:debug_latest
+  SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:debug_latest
+  CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:debug_latest
+
+jobs:
+  dotnet-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    # restore other dependencies of slavemanager and build
+    - name: Restore dependencies on slavemanager
+      shell: pwsh
+      working-directory: Host/SlaveManager
+      run: |
+        dotnet restore .
+        dotnet build .
+
+    - name: Restore dependencies on signalling
+      shell: pwsh
+      working-directory: Host/Signalling
+      run: |
+        dotnet restore .
+        dotnet build .
+
+    - name: Restore dependencies on conductor
+      shell: pwsh
+      working-directory: Host/Conductor
+      run: |
+        dotnet restore .
+        dotnet build .
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        
+      # create temporary signalling dockerfile then build&push in host context
+      - name: Signalling
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: Host/Signalling  
+          target: debug
+          push: true
+          tags: ${{ env.SIGNALLING_IMAGE_NAME }}
+
+      # Create temporary slavemanager dockerfile then build&push in host context
+      - name: SlaveManager
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: Host/SlaveManager  
+          target: debug
+          push: true
+          tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
+          del Dockerfile
+
+      # Create temporary conductor dockerfile then build&push in host context
+      - name: Conductor
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: Host/Conductor 
+          target: debug
+          push: true
+          tags: ${{ env.CONDUCTOR_IMAGE_NAME }}
+
+
+
+
+
+
+
+

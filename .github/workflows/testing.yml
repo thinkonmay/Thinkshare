@@ -1,4 +1,4 @@
-name: Deploy
+name: Testing
 
 on:
   workflow_dispatch:
@@ -33,6 +33,6 @@ jobs:
             cd /src/Deployment/backbone
             docker-compose pull
             docker-compose up --detach
-            cd /src/Deployment/host-release
+            cd /src/Deployment/host-debug
             docker-compose pull
             docker-compose up --detach

@@ -1,0 +1,32 @@
+version: '3'
+
+
+#personal cloud computing
+services: 
+#signalling service
+  signalling:
+    image: ${DOCKER_REGISTRY}/signalling:latest 
+    restart: always
+    ports:
+      - "82:80"
+    volumes:
+      - /src/Host/Signalling:/work/
+
+
+  conductor:
+    image: ${DOCKER_REGISTRY}/conductor:latest
+    restart: always
+    ports:
+      - "81:80"
+    volumes:
+      - /src/Host/Conductor:/work/
+
+
+  slavemanager:
+    image: ${DOCKER_REGISTRY}/slavemanager:latest
+    restart: always
+    ports:
+      - "83:80"
+    volumes:
+      - /src/Host/SlaveManager:/work/
+
