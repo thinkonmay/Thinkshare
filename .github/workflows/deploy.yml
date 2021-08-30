@@ -99,16 +99,9 @@ jobs:
             cd /home/ubuntu/personal-cloud-computing
             git checkout master
             git pull https://${{ secrets.OAUTH_TOKEN }}@github.com/pigeatgarlic/personal-cloud-computing.git master
-
-
-            cd /home/ubuntu/personal-cloud-computing/Deployment/backbone/coturn-master/docker
-            docker-compose pull
-            docker-compose up --detach
-
             cd /home/ubuntu/personal-cloud-computing/Deployment/backbone
             docker-compose pull
             docker-compose up --detach
-
-            cd /home/ubuntu/personal-cloud-computing/Deployment/Host
+            cd /home/ubuntu/personal-cloud-computing/Deployment/host
             docker-compose pull
             docker-compose up --detach

@@ -5,23 +5,22 @@ version: '3'
 services: 
 #signalling service
   signalling:
-    image: ${PCC_URL}:${REGISTRY_PORT}/signalling:latest 
+    image: ${DOCKER_REGISTRY}/signalling:latest 
     restart: always
     ports:
       - "82:80"
 
 
   conductor:
-    image: ${PCC_URL}:${REGISTRY_PORT}/conductor:latest
+    image: ${DOCKER_REGISTRY}/conductor:latest
     restart: always
     ports:
       - "81:80"
 
 
   slavemanager:
-    image: ${PCC_URL}:${REGISTRY_PORT}/conductor:latest
+    image: ${DOCKER_REGISTRY}/slavemanager:latest
     restart: always
     ports:
       - "83:80"
-
 
