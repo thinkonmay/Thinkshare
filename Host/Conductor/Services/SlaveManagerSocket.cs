@@ -76,7 +76,8 @@ namespace Conductor.Services
             var get_req = new RestRequest("Query")
                 .AddParameter("SlaveID", SlaveID.ToString());
 
-            var result = _pool.Get(get_req);
+            get_req.Method = Method.GET;
+            var result = await _pool.ExecuteAsync(get_req);
             if (result.StatusCode == HttpStatusCode.OK)
             {
                 return true;
@@ -97,9 +98,12 @@ namespace Conductor.Services
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Disconnect")
                 .AddParameter("SlaveID", SlaveID.ToString());
-
-            _pool.Delete(get_req);
-            return true;
+            get_req.Method = Method.DELETE;
+            var reply = await _pool.ExecuteAsync(get_req);
+            if (reply.StatusCode == HttpStatusCode.OK)
+            { return true; }
+            else 
+            { return false; }
         }
 
         public async Task<bool> RejectSlave(int SlaveID)
@@ -107,9 +111,12 @@ namespace Conductor.Services
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Reject")
                 .AddParameter("SlaveID", SlaveID.ToString());
-
-            _pool.Delete(get_req);
-            return true;
+            get_req.Method = Method.DELETE;
+            var reply = await _pool.ExecuteAsync(get_req);
+            if (reply.StatusCode == HttpStatusCode.OK)
+            { return true; }
+            else
+            { return false; }
         }
 
 
@@ -123,7 +130,8 @@ namespace Conductor.Services
                 .AddParameter("SlaveID", SlaveID.ToString())
                 .AddParameter("ProcessID", ProcessID.ToString());
 
-            _shell.Post(get_req);
+            get_req.Method = Method.POST;
+            await _shell.ExecuteAsync(get_req);
         }
 
         public async Task TerminateCommandLineSession(int SlaveID, int ProcessID)
@@ -133,7 +141,8 @@ namespace Conductor.Services
                 .AddParameter("SlaveID", SlaveID.ToString())
                 .AddParameter("ProcessID", ProcessID.ToString());
 
-            _shell.Post(get_req);
+            get_req.Method = Method.POST;
+            await _shell.ExecuteAsync(get_req);
         }
 
         public async Task SendCommand(ForwardCommand command)
@@ -142,7 +151,8 @@ namespace Conductor.Services
             var get_req = new RestRequest("ForwardCommand")
                 .AddJsonBody(command);
 
-            _shell.Post(get_req);
+            get_req.Method = Method.POST;
+            await _shell.ExecuteAsync(get_req);
         }
 
 
@@ -160,7 +170,8 @@ namespace Conductor.Services
             var get_req = new RestRequest("Reconnect")
                 .AddParameter("SlaveID", SlaveID.ToString());
 
-            var result = _session.Post(get_req);
+            get_req.Method = Method.POST;
+            var result = await _session.ExecuteAsync(get_req);
             if (result.StatusCode == HttpStatusCode.OK)
             {
                 return true;
@@ -177,7 +188,8 @@ namespace Conductor.Services
             var get_req = new RestRequest("Disconnect")
                 .AddParameter("SlaveID", SlaveID.ToString());
 
-            var result = _session.Post(get_req);
+            get_req.Method = Method.POST;
+            var result = await _session.ExecuteAsync(get_req);
             if (result.StatusCode == HttpStatusCode.OK)
             {
                 return true;

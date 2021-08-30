@@ -27,15 +27,15 @@ namespace SlaveManager.Controllers
         {
             _config = config;
             _slavePool = slavePool;
-            _conductor = new RestClient("http://" + config.BaseUrl + ":" + config.SlaveManagerPort + "/SlaveManager");
+            _conductor = new RestClient("http://" + config.BaseUrl + ":" + config.ConductorPort + "/System");
         }
 
 
         [HttpPost("SystemStart")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var request = new RestRequest("SystemStart").
-                AddJsonBody(model);
+            var request = new RestRequest("SystemStart")
+                .AddJsonBody(model);
             request.Method = Method.GET;
 
             var result = await _conductor.ExecuteAsync(request);
