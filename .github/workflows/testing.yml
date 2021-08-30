@@ -3,18 +3,9 @@ name: Testing
 on:
   workflow_dispatch:
 
-
-#setup environment variable
-env:
-  REGISTRY: ghcr.io
-  SIGNALLING_IMAGE_NAME:  ${{ secrets.DOCKER_USERNAME }}/signalling:latest
-  SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:latest
-  CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
-
-jobs:         
-  deploy:
+jobs:
+  deployment:
     runs-on: ubuntu-latest
-    needs: docker-build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
