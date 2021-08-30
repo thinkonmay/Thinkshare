@@ -21,7 +21,7 @@ RUN dotnet publish "Signalling.csproj" -c Release -o /app/publish
 FROM build AS debug
 WORKDIR /src/Signalling
 
-
+RUN dotnet dev-certs https
 RUN apt-get update
 RUN apt-get install -y unzip
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
@@ -33,7 +33,4 @@ FROM base AS release
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Signalling.dll"]
-
-
-
 

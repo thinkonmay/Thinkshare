@@ -21,7 +21,7 @@ RUN dotnet publish "Conductor.csproj" -c Release -o /app/publish
 FROM build AS debug
 WORKDIR /src/Conductor
 
-
+RUN dotnet dev-certs https
 RUN apt-get update
 RUN apt-get install -y unzip
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
