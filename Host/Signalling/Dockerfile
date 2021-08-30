@@ -9,7 +9,7 @@ FROM base AS debug
 RUN mkdir /work/
 WORKDIR /work/
 
-COPY ./Signalling.csproj /work/Signalling.csproj
+COPY ./Signalling/Signalling.csproj /work/Signalling.csproj
 RUN dotnet restore
 
 

@@ -63,8 +63,9 @@ jobs:
       - name: Signalling
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
-          context: Host/Signalling  
+          context: Host  
           target: debug
+          file: Signalling/Dockerfile
           push: true
           tags: ${{ env.SIGNALLING_IMAGE_NAME }}
 
@@ -72,8 +73,9 @@ jobs:
       - name: SlaveManager
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
-          context: Host/SlaveManager  
+          context: Host  
           target: debug
+          file: SlaveManager/Dockerfile
           push: true
           tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
 
@@ -81,8 +83,9 @@ jobs:
       - name: Conductor
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
-          context: Host/Conductor 
+          context: Host 
           target: debug
+          file: Conductor/Dockerfile
           push: true
           tags: ${{ env.CONDUCTOR_IMAGE_NAME }}
 

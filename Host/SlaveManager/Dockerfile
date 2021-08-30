@@ -9,7 +9,7 @@ FROM base AS debug
 RUN mkdir /work/
 WORKDIR /work/
 
-COPY SlaveManager.csproj /work/SlaveManager.csproj
+COPY ./SlaveManager/SlaveManager.csproj /work/SlaveManager.csproj
 RUN dotnet restore
 
 
