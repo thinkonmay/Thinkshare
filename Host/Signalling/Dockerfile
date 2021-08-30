@@ -4,7 +4,7 @@ EXPOSE 80
 EXPOSE 443
 
 #debug image
-FROM base AS debug
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS debug
 
 RUN mkdir /work/
 WORKDIR /work/

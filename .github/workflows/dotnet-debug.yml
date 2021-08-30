@@ -15,38 +15,6 @@ env:
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:debug_latest
 
 jobs:
-  dotnet-build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-
-    # restore other dependencies of slavemanager and build
-    - name: Restore dependencies on slavemanager
-      shell: pwsh
-      working-directory: Host/SlaveManager
-      run: |
-        dotnet restore .
-        dotnet build .
-
-    - name: Restore dependencies on signalling
-      shell: pwsh
-      working-directory: Host/Signalling
-      run: |
-        dotnet restore .
-        dotnet build .
-
-    - name: Restore dependencies on conductor
-      shell: pwsh
-      working-directory: Host/Conductor
-      run: |
-        dotnet restore .
-        dotnet build .
-
   docker-build:
     runs-on: ubuntu-latest
     steps:
