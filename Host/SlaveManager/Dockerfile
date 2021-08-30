@@ -15,7 +15,7 @@ RUN dotnet restore
 
 COPY . /work/
 RUN mkdir /out/
-RUN dotnet publish --no-restore --output /out/ --configuration Release
+RUN dotnet publish SlaveManager.csproj --no-restore --output /out/ --configuration Release
 
 
 RUN apt-get update
