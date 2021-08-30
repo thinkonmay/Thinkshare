@@ -3,19 +3,23 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+WORKDIR /src
+
+COPY ["Signalling/Signalling.csproj", "Signalling/"]
+RUN dotnet restore "Signalling/Signalling.csproj"
+COPY . .
+WORKDIR "/src/Signalling"
+RUN dotnet build "Signalling.csproj" -c Release -o /app/build
+
+
+FROM build AS publish
+RUN dotnet publish "Signalling.csproj" -c Release -o /app/publish
+
+
 #debug image
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS debug
-
-RUN mkdir /work/
-WORKDIR /work/
-
-COPY ./Signalling/Signalling.csproj /work/Signalling.csproj
-RUN dotnet restore
-
-
-COPY . /work/
-RUN mkdir /out/
-RUN dotnet publish "Signalling.csproj" --no-restore --output /out/ --configuration Release
+FROM build AS debug
+WORKDIR /src/Signalling
 
 
 RUN apt-get update
@@ -25,19 +29,9 @@ RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdb
 RUN dotnet run
 
 
-#production image
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM base AS release
 WORKDIR /app
-
-COPY Signalling/Signalling.csproj /app/Signalling.csproj
-RUN dotnet restore
-
-COPY . .
-RUN dotnet publish Signalling.csproj -c release -o /app --no-restore
-
-FROM base as release
-WORKDIR /app
-COPY --from=build /app .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Signalling.dll"]
 
 

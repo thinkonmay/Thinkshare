@@ -3,19 +3,23 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+WORKDIR /src
+
+COPY ["Conductor/Conductor.csproj", "Conductor/"]
+RUN dotnet restore "Conductor/Conductor.csproj"
+COPY . .
+WORKDIR "/src/Conductor"
+RUN dotnet build "Conductor.csproj" -c Release -o /app/build
+
+
+FROM build AS publish
+RUN dotnet publish "Conductor.csproj" -c Release -o /app/publish
+
+
 #debug image
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS debug
-
-RUN mkdir /work/
-WORKDIR /work/
-
-COPY ./Conductor/Conductor.csproj /work/Conductor.csproj
-RUN dotnet restore
-
-
-COPY . /work/
-RUN mkdir /out/
-RUN dotnet publish Conductor.csproj --no-restore --output /out/ --configuration Release
+FROM build AS debug
+WORKDIR /src/Conductor
 
 
 RUN apt-get update
@@ -25,19 +29,9 @@ RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdb
 RUN dotnet run
 
 
-#production image
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM base AS release
 WORKDIR /app
-
-COPY /Conductor/Conductor.csproj ./Conductor.csproj
-RUN dotnet restore
-
-COPY . .
-RUN dotnet publish Conductor.csproj -c release -o /app --no-restore
-
-FROM base as release
-WORKDIR /app
-COPY --from=build /app .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Conductor.dll"]
 
 

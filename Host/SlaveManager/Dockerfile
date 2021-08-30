@@ -3,19 +3,23 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+WORKDIR /src
+
+COPY ["SlaveManager/SlaveManager.csproj", "SlaveManager/"]
+RUN dotnet restore "SlaveManager/SlaveManager.csproj"
+COPY . .
+WORKDIR "/src/SlaveManager"
+RUN dotnet build "SlaveManager.csproj" -c Release -o /app/build
+
+
+FROM build AS publish
+RUN dotnet publish "SlaveManager.csproj" -c Release -o /app/publish
+
+
 #debug image
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS debug
-
-RUN mkdir /work/
-WORKDIR /work/
-
-COPY ./SlaveManager/SlaveManager.csproj /work/SlaveManager.csproj
-RUN dotnet restore
-
-
-COPY . /work/
-RUN mkdir /out/
-RUN dotnet publish SlaveManager.csproj --no-restore --output /out/ --configuration Release
+FROM build AS debug
+WORKDIR /src/SlaveManager
 
 
 RUN apt-get update
@@ -25,22 +29,7 @@ RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdb
 RUN dotnet run
 
 
-
-#production image
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM base AS release
 WORKDIR /app
-
-COPY /SlaveManager/SlaveManager.csproj /app/SlaveManager.csproj
-RUN dotnet restore 
-
-COPY . .
-RUN dotnet publish SlaveManager.csproj -c release -o /app --no-restore
-
-FROM base as release
-WORKDIR /app
-COPY --from=build /app .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SlaveManager.dll"]
-
-
-
-
