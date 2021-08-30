@@ -38,8 +38,9 @@ namespace Conductor.Services
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Add")
                 .AddParameter("SlaveID", SlaveID.ToString());
+            get_req.Method = Method.POST;
 
-            var result = _pool.Post(get_req);
+            var result = await _pool.ExecuteAsync(get_req);
             if(result.IsSuccessful)
             {
                 return true;
@@ -55,6 +56,7 @@ namespace Conductor.Services
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Query")
                 .AddParameter("SlaveID", SlaveID.ToString());
+            get_req.Method = Method.GET;
 
             var result = await _pool.ExecuteAsync(get_req);
             return JsonConvert.DeserializeObject<SlaveQueryResult>(result.Content);
@@ -64,7 +66,9 @@ namespace Conductor.Services
         public async Task<List<SlaveQueryResult>> GetSystemSlaveState()
         {
             /*generate rest post to signalling server*/
-            var get_req = new RestRequest("SystemQuery");
+            var get_req = new RestRequest("QueryAll");
+            get_req.Method = Method.GET;
+
             var result = await _pool.ExecuteAsync(get_req);
             return JsonConvert.DeserializeObject<List<SlaveQueryResult>>(result.Content);
         }
@@ -75,17 +79,13 @@ namespace Conductor.Services
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Query")
                 .AddParameter("SlaveID", SlaveID.ToString());
-
             get_req.Method = Method.GET;
+
             var result = await _pool.ExecuteAsync(get_req);
             if (result.StatusCode == HttpStatusCode.OK)
-            {
-                return true;
-            }
+            {  return true; }
             else
-            {
-                return false;
-            }
+            {  return false; }
         }
 
 
@@ -99,6 +99,7 @@ namespace Conductor.Services
             var get_req = new RestRequest("Disconnect")
                 .AddParameter("SlaveID", SlaveID.ToString());
             get_req.Method = Method.DELETE;
+
             var reply = await _pool.ExecuteAsync(get_req);
             if (reply.StatusCode == HttpStatusCode.OK)
             { return true; }
@@ -112,6 +113,7 @@ namespace Conductor.Services
             var get_req = new RestRequest("Reject")
                 .AddParameter("SlaveID", SlaveID.ToString());
             get_req.Method = Method.DELETE;
+
             var reply = await _pool.ExecuteAsync(get_req);
             if (reply.StatusCode == HttpStatusCode.OK)
             { return true; }
@@ -129,8 +131,8 @@ namespace Conductor.Services
             var get_req = new RestRequest("Initialize")
                 .AddParameter("SlaveID", SlaveID.ToString())
                 .AddParameter("ProcessID", ProcessID.ToString());
-
             get_req.Method = Method.POST;
+
             await _shell.ExecuteAsync(get_req);
         }
 
@@ -140,8 +142,8 @@ namespace Conductor.Services
             var get_req = new RestRequest("Terminate")
                 .AddParameter("SlaveID", SlaveID.ToString())
                 .AddParameter("ProcessID", ProcessID.ToString());
-
             get_req.Method = Method.POST;
+
             await _shell.ExecuteAsync(get_req);
         }
 
@@ -150,8 +152,8 @@ namespace Conductor.Services
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("ForwardCommand")
                 .AddJsonBody(command);
-
             get_req.Method = Method.POST;
+
             await _shell.ExecuteAsync(get_req);
         }
 
@@ -169,8 +171,8 @@ namespace Conductor.Services
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Reconnect")
                 .AddParameter("SlaveID", SlaveID.ToString());
-
             get_req.Method = Method.POST;
+
             var result = await _session.ExecuteAsync(get_req);
             if (result.StatusCode == HttpStatusCode.OK)
             {
@@ -187,8 +189,8 @@ namespace Conductor.Services
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Disconnect")
                 .AddParameter("SlaveID", SlaveID.ToString());
-
             get_req.Method = Method.POST;
+
             var result = await _session.ExecuteAsync(get_req);
             if (result.StatusCode == HttpStatusCode.OK)
             {
@@ -205,8 +207,9 @@ namespace Conductor.Services
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Initialize")
                 .AddJsonBody(session);
+            get_req.Method = Method.POST;
 
-            var result = _session.Post(get_req);
+            var result = await _session.ExecuteAsync(get_req);
             if(result.StatusCode == HttpStatusCode.OK)
             {
                 return true;
@@ -222,8 +225,9 @@ namespace Conductor.Services
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Terminate")
                 .AddParameter("SlaveID", SlaveID.ToString());
+            get_req.Method = Method.POST;
 
-            var result = _session.Post(get_req);
+            var result = await _session.ExecuteAsync(get_req);
             if (result.StatusCode == HttpStatusCode.OK)
             {
                 return true;

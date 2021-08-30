@@ -26,7 +26,8 @@ RUN apt-get update
 RUN apt-get install -y unzip
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
 
-RUN dotnet run
+
+ENTRYPOINT ["dotnet", "run"]
 
 
 FROM base AS release
