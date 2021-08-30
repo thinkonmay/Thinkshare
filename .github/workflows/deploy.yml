@@ -7,9 +7,6 @@ jobs:
   deployment:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       # Login to server using ssh
       - name: Deploy backbone container
         uses: appleboy/ssh-action@master
@@ -22,6 +19,7 @@ jobs:
             git checkout master
             git pull https://${{ secrets.OAUTH_TOKEN }}@github.com/pigeatgarlic/personal-cloud-computing.git master
             cd /src/Deployment/backbone
+            docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
             docker-compose pull
             docker-compose up --detach
             cd /src/Deployment/host-release
