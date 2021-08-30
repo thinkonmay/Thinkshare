@@ -5,7 +5,7 @@ version: '3'
 services: 
 #signalling service
   signalling:
-    image: ${DOCKER_REGISTRY}/signalling:debug-latest 
+    image: ${DOCKER_REGISTRY}/signalling:debug_latest 
     restart: always
     ports:
       - "82:80"
@@ -14,7 +14,7 @@ services:
 
 
   conductor:
-    image: ${DOCKER_REGISTRY}/conductor:debug-latest
+    image: ${DOCKER_REGISTRY}/conductor:debug_latest
     restart: always
     ports:
       - "81:80"
@@ -23,7 +23,7 @@ services:
 
 
   slavemanager:
-    image: ${DOCKER_REGISTRY}/slavemanager:debug-latest
+    image: ${DOCKER_REGISTRY}/slavemanager:debug_latest
     restart: always
     ports:
       - "83:80"
