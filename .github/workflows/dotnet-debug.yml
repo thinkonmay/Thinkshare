@@ -21,33 +21,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-
-    # restore other dependencies of slavemanager and build
-    - name: Restore dependencies on slavemanager
-      shell: pwsh
-      working-directory: Host/SlaveManager
-      run: |
-        dotnet restore .
-        dotnet build .
-
-    - name: Restore dependencies on signalling
-      shell: pwsh
-      working-directory: Host/Signalling
-      run: |
-        dotnet restore .
-        dotnet build .
-
-    - name: Restore dependencies on conductor
-      shell: pwsh
-      working-directory: Host/Conductor
-      run: |
-        dotnet restore .
-        dotnet build .  
-
     - name: Log in to Docker Hub
       uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
