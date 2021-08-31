@@ -15,8 +15,6 @@ namespace Conductor.Models
     {
         public ClientSession clientSession { get; set; }
 
-        public string HostUrl {get;set;}
-
         public int ClientID {get;set;}
 
         public bool DevMode {get;set;}

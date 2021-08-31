@@ -19,11 +19,15 @@ namespace SlaveManager.Services
 
         private readonly ISlavePool _slavePool;
 
+        private readonly IConductorSocket _conductor;
 
 
-        public WebSocketConnection(ISlavePool slavePool)
+
+        public WebSocketConnection(ISlavePool slavePool,
+                                    IConductorSocket conductor)
         {
             _slavePool = slavePool;
+            _conductor = conductor;
         }
 
         private async Task<bool> UpgradeToSlave(WebSocket ws, SlaveDeviceInformation device_information)
@@ -53,6 +57,7 @@ namespace SlaveManager.Services
                 slave.ws = ws;
                 _slavePool.AddSlaveDeviceWithKey(device_information.ID, slave);
 
+                await _conductor.ReportSlaveRegistered(device_information);
 
                 Message accept = new Message();
                 accept.From = Module.HOST_MODULE;

@@ -23,10 +23,14 @@ namespace SlaveManager.Services
 
         public ConductorSocket(SystemConfig config)
         {
-            _error = new RestClient("http://" + config.BaseUrl + ":" + config.SlaveManagerPort + "/Error");
-            _session = new RestClient("http://" + config.BaseUrl + ":" + config.SlaveManagerPort + "/ReportSession");
-            _device = new RestClient("http://" + config.BaseUrl + ":" + config.SlaveManagerPort + "/ReportDevices");
-            _shell = new RestClient("http://" + config.BaseUrl + ":" + config.SlaveManagerPort + "/ReportShell");
+            _error =    new RestClient("http://" + 
+                config.BaseUrl + ":" + config.ConductorPort + "/Error");
+            _session =  new RestClient("http://" + 
+                config.BaseUrl + ":" + config.ConductorPort + "/ReportSession");
+            _device =   new RestClient("http://" + 
+                config.BaseUrl + ":" + config.ConductorPort + "/ReportDevices");
+            _shell =    new RestClient("http://" + 
+                config.BaseUrl + ":" + config.ConductorPort + "/ReportShell");
         }
 
 

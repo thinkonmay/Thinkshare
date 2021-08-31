@@ -49,8 +49,6 @@ namespace Conductor.Controllers
 
         private readonly ISlaveManagerSocket _slmsocket;
 
-        private readonly string ConductorUrl;
-
         public SessionController(ApplicationDbContext db,
                                 SystemConfig config, 
                                 IAdmin admin,
@@ -66,7 +64,6 @@ namespace Conductor.Controllers
             Configuration = config;
             Signalling = new RestClient("http://"+Configuration.BaseUrl+":"+ Configuration.SignallingPort+"/System");
             SignallingUrl = "ws://" + Configuration.BaseUrl +":"+ Configuration.SignallingPort + "/Session";
-            ConductorUrl = "http://"+Configuration.BaseUrl+":"+ Configuration.ConductorPort;
         }
 
         /// <summary>
@@ -149,7 +146,6 @@ namespace Conductor.Controllers
             SessionViewModel view = new SessionViewModel();
             view.clientSession = clientSes; 
             view.ClientID = sess.ClientID;
-            view.HostUrl = ConductorUrl;
             view.DevMode = _jwt.IsAdmin(User);
             return View("RemoteControl",view);
         }
@@ -273,7 +269,6 @@ namespace Conductor.Controllers
                 SessionViewModel view = new SessionViewModel();
                 view.clientSession = clientSes; 
                 view.ClientID = ses.ClientID;
-                view.HostUrl = ConductorUrl;
                 view.DevMode = _jwt.IsAdmin(User);
                 return View("RemoteControl",view);
             }

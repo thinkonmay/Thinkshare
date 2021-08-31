@@ -37,8 +37,8 @@ namespace Conductor.Administration
         {
             await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
 
-            var now = DateTime.Now;
             Slave device = new Slave(information);
+            if(_db.Devices.Find(information.ID) != null) {return;}
             _db.Devices.Add(device);
             await _db.SaveChangesAsync();
         }
