@@ -104,7 +104,7 @@ namespace SlaveManager.Services
             if (!SearchForSlaveID(SlaveID)) { return false; }
             if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
 
-            Task.Run(() => slave.TerminateCommandLineSession(ProcessID));
+            Task.Run(() => slave.InitializeCommandLineSession(ProcessID));
             return true;
         }
 
@@ -119,7 +119,7 @@ namespace SlaveManager.Services
             if (!SearchForSlaveID(SlaveID)) { return false; }
             if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
 
-            Task.Run(() => slave.InitializeCommandLineSession(ProcessID));
+            Task.Run(() => slave.TerminateCommandLineSession(ProcessID));
             return true;
         }
 
@@ -189,6 +189,7 @@ namespace SlaveManager.Services
             if (!SearchForSlaveID(slaveid)) { return false; }
             if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
             if (GetSlaveState(slaveid) != SlaveServiceState.OffRemote) { return false; }
+
             Task.Run(() => slave.RemoteControlReconnect());
             return true;
         }

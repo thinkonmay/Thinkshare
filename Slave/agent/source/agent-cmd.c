@@ -8,7 +8,8 @@
 #include <logging.h>
 #include <general-constant.h>
 #include <message-form.h>
-
+#include <error-code.h>
+#include <agent-object.h>
 
 
 
@@ -25,7 +26,6 @@ command_line_output_handle(GBytes* data,
     Message* object = json_object_new();
     json_object_set_int_member(object, "ProcessID", process_id);
     json_object_set_string_member(object, "Command", message);
-    json_object_set_int_member(object, "Time",g_get_real_name());
     
     Message* msg = message_init(AGENT_MODULE, HOST_MODULE,
         COMMAND_LINE_FORWARD, object);
@@ -38,9 +38,14 @@ command_line_process_handle(ChildProcess* proc,
                             DWORD exit_code,
                             AgentObject* agent)
 {
-    if(exit_code != STILL_ACTIVE)
+
+    if(exit_code == STILL_ACTIVE)
     {
-        
+        return;
+    }
+    else
+    {
+        agent_on_cmd_process_terminate(agent);
         close_child_process(proc);
     }
 }
@@ -53,8 +58,9 @@ create_new_cmd_process(AgentObject* agent,
 {
 
     ChildProcess* child_process = create_new_child_process(
-        "C:\\Windows\\System32\\cmd.exe /k ", position, " ",
-        command_line_output_handle,NULL, agent);
+        "C:\\Windows\\System32\\cmd.exe /k ", position," ",
+        command_line_output_handle,
+        command_line_process_handle, agent);
 
     agent_set_child_process(agent,position, 
         child_process);
@@ -70,17 +76,17 @@ agent_send_command_line(AgentObject* agent,
     ChildProcess* cmdproc = agent_get_child_process(agent, order);
 
 	//append new line to the end of commandline by copying command to new cmd_with_enter
-	gchar* cmd_with_enter = malloc(strlen(command)+1);
-	ZeroMemory(cmd_with_enter,strlen(cmd_with_enter));
-	strcat(cmd_with_enter,command);
-	strcat(cmd_with_enter,"\n");
+	gchar* buffer = malloc(1000);
+	ZeroMemory(buffer,1000);
+	strcpy(buffer,command);
+	strcat(buffer,"\n");
 
     // send message to cmd process if it is running
     // otherwise, report error
 	if (get_current_child_process_state(agent,order))
 	{
 	    send_message_to_child_process(cmdproc,
-		    cmd_with_enter,strlen(cmd_with_enter));
+		    command,strlen(command));
 	}
     else
     {

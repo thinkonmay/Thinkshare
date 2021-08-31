@@ -103,9 +103,9 @@ agent_report_error(AgentObject* self,
 
 
 	JsonObject* obj = json_object_new();
-	json_object_set_string_member(obj,
+	json_object_set_int_member(obj,
 		"SlaveID",SlaveID);
-	json_object_set_string_member(obj,
+	json_object_set_int_member(obj,
 		"Module",AGENT_MODULE);	
 	json_object_set_string_member(obj,
 		"ErrorMessage",message);

@@ -98,11 +98,12 @@ on_session_on_commandline_exit(AgentObject* agent,gint ProcessID)
 static void
 on_session_session_core_exit(AgentObject* agent)
 {
-    Message* message = message_init(
-        AGENT_MODULE,HOST_MODULE,
-            SESSION_CORE_EXIT,UNKNOWN_SESSION_CORE_EXIT);
+    Message* message = 
+        empty_message_init(AGENT_MODULE,HOST_MODULE,SESSION_CORE_EXIT);
 
     agent_send_message(agent,message);
+    AgentState* state = transition_to_off_remote_state();
+    agent_set_state(agent,state);
 }
 
 

@@ -48,6 +48,8 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             message.Opcode = Opcode.RECONNECT_REMOTE_CONTROL;
             message.Data = " ";
 
+
+            slave.ChangeState(new OnSession());
             await slave.SendMessage(message);
 
 

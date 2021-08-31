@@ -90,5 +90,5 @@ default_method(AgentState* state)
     state->register_to_host =           default_register_to_host;
     state->on_session_core_exit =       default_on_session_core_exit;
     state->get_current_state =          default_get_current_state;
-    state->on_commandline_exit =        default_on_commandline_exit
+    state->on_commandline_exit =        default_on_commandline_exit;
 }

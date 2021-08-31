@@ -31,4 +31,8 @@ gchar*              get_string_from_json_object (JsonObject* object);
 Message*            get_json_object_from_string (gchar* string,
                                                  GError* error);
 
+Message*            empty_message_init          (Module from,
+			                                    Module to,
+			                                    Opcode opcode);
+
 #endif

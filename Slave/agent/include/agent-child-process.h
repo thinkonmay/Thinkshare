@@ -53,4 +53,7 @@ void				initialize_child_process_system				(AgentObject* agent);
 gboolean			get_current_child_process_state				(AgentObject* agent,
 																 gint order);
 
+
+
+gint 				get_child_process_id						(ChildProcess* process);
 #endif

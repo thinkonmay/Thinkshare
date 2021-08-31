@@ -52,8 +52,7 @@ struct _ChildProcess
 
     ChildStdHandle func;
     ChildStateHandle handler;
-    GThread* handle_thread;
-    gboolean exit;
+    gboolean completed;
 };
 
 
@@ -73,42 +72,44 @@ initialize_child_process_system(AgentObject* agent)
 }
 
 
-
-
-static gpointer
-handle_child_process_thread(ChildProcess* proc)
+gpointer 
+handle_child_process_io(gpointer data)
 {
-
+    ChildProcess* proc = (ChildProcess*)data;
     while (TRUE)
     {
         DWORD dwRead, dwWritten;
         CHAR chBuf[BUFSIZE];
-        ZeroMemory(chBuf, BUFSIZE);
         BOOL bSuccess = FALSE;
+        if (proc->completed) {return;}
 
         for (;;)
         {
+            Sleep(10);
             bSuccess = ReadFile(proc->standard_out, chBuf, BUFSIZE, &dwRead, NULL);
-            if (!bSuccess || dwRead == 0) break;
+            if (!bSuccess || dwRead == 0) { break; }
 
             GBytes* data = g_bytes_new(chBuf, strlen(chBuf));
             proc->func(data, proc->process_id, proc->agent);
             ZeroMemory(chBuf, BUFSIZE);
             break;
         }
-
-        DWORD ret;
-        GetExitCodeProcess(proc->process, &ret);
-        proc->handler(proc,ret,proc->agent);
-        if(proc->exit)
-        {
-            ZeroMemory(proc, sizeof(ChildProcess));
-            g_thread_exit(NULL);
-        }
     }
 }
 
-
+gpointer 
+handle_child_process_state(gpointer data)
+{
+    ChildProcess* proc = (ChildProcess*)data;
+    while (TRUE)
+    {
+        if (proc->completed) {return;}
+        DWORD ret;
+        GetExitCodeProcess(proc->process, &ret);
+        proc->handler(proc,ret,proc->agent);
+        Sleep(100);
+    }
+}
 
 static ChildPipe*
 initialize_process_handle(ChildProcess* self,
@@ -145,23 +146,23 @@ send_message_to_child_process(ChildProcess* self,
     gint size)
 {
     DWORD written;
-    gboolean success = FALSE;
 
-    success = WriteFile(self->standard_in,
+    WriteFile(self->standard_in,
         buffer, size, &written, NULL);
+
+    WriteFile(self->standard_in,
+        "\n", 2, &written, NULL);
 }
 
 
 void
 close_child_process(ChildProcess* proc)
 {
-    proc->exit = TRUE;
-
     write_to_log_file(AGENT_GENERAL_LOG,"Child process closed");
     TerminateProcess(proc->process, FORCE_EXIT);
-    
-    CloseHandle(proc->standard_out);
-    CloseHandle(proc->standard_in);
+    proc->completed = TRUE;
+
+    ZeroMemory(&proc->standard_out,sizeof(HANDLE));
 }
 
 ChildProcess*
@@ -173,12 +174,13 @@ create_new_child_process(gchar* process_name,
                         AgentObject* agent)
 {
     ChildProcess* child_process = agent_get_child_process(agent,process_id);
+    ZeroMemory(child_process,sizeof(ChildProcess));
 
     child_process->agent = agent;
     child_process->process_id = process_id;
     child_process->func = func;
     child_process->handler = handler;
-    child_process->exit = FALSE;
+    child_process->completed = FALSE;
 
 
     ChildPipe* hdl = initialize_process_handle(child_process,agent);
@@ -225,13 +227,8 @@ create_new_child_process(gchar* process_name,
 
     memcpy(&child_process->process, &pi.hProcess, sizeof(HANDLE));
 
-    CloseHandle(pi.hThread);
-    CloseHandle(hdl->standard_out);
-    CloseHandle(hdl->standard_in);
-
-
-    child_process->handle_thread =  g_thread_new("child handle thread", 
-        handle_child_process_thread, child_process);
+    g_thread_new("handle I/O",handle_child_process_io,child_process);
+    g_thread_new("handle State",handle_child_process_state,child_process);
 
     return child_process;
 }
@@ -242,8 +239,19 @@ get_current_child_process_state(AgentObject* agent,
 								gint order)
 {
     ChildProcess* child_process = agent_get_child_process(agent, order);
+    DWORD state = 0;
+    GetExitCodeProcess(child_process->process, &state);
 
-    if(child_process->handler == NULL){ return FALSE;}
-    else if (!child_process->exit){ return FALSE; }
-    else { return TRUE; }
+    if(state == STILL_ACTIVE){ return TRUE;}
+    else { return FALSE; }
+}
+
+
+
+
+
+gint 
+get_child_process_id(ChildProcess* process)
+{
+    return process->process_id;
 }

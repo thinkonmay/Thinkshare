@@ -145,9 +145,9 @@ on_agent_message(AgentObject* agent,
 			}
 			else if (opcode == END_COMMAND_LINE_SESSION)
 			{
-				close_child_process(
-					agent_get_child_process(agent,
-						json_object_get_string_member(json_data, "ProcessID")));
+				gint ID = json_object_get_int_member(json_data, "ProcessID");
+				ChildProcess* process = agent_get_child_process(agent,ID);
+				close_child_process(process);
 			}
 			else if (opcode == COMMAND_LINE_FORWARD)
 			{

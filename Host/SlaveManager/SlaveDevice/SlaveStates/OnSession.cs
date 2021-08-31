@@ -43,6 +43,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             message.Opcode = Opcode.DISCONNECT_REMOTE_CONTROL;
             message.Data = " ";
 
+            slave.ChangeState(new OnSessionOffRemote());
             await slave.SendMessage(message);
 
 
@@ -129,7 +130,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
         public async Task OnSessionCoreExit(ISlaveDevice slave, int SlaveID)
         {
-            await slave.OnRemoteControlDisconnected(SlaveID); ;
+            await slave.OnRemoteControlDisconnected(SlaveID);
         }
     }
 }

@@ -69,6 +69,8 @@ void											agent_remote_control_reconnect		(AgentObject* self);
 gboolean										agent_command_line_passing			(AgentObject* self,
 																					 gchar* command);
 
+void         									agent_on_cmd_process_terminate		(AgentObject* self);
+
 
 
 /// <summary>

@@ -5,6 +5,7 @@ namespace SharedHost.Models.Session
 {
     public class SlaveSession : SessionBase
     {
+        public SlaveSession(){}
         public SlaveSession(RemoteSession session,string stun)
         {
             SessionSlaveID = session.SessionSlaveID;

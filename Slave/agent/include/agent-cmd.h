@@ -28,7 +28,7 @@ void				create_new_cmd_process					(AgentObject* agent,
 /// <returns></returns>
 void				agent_send_command_line					(AgentObject* agent, 
 															gchar* command, 
-															gint order)
+															gint order);
 
 
 

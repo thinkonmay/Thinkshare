@@ -15,7 +15,6 @@ namespace SlaveManager.Controllers
 {
     [Route("/Session")]
     [ApiController]
-    [Authorize]
     [Produces("application/json")]
     public class SessionsController : Controller
     {

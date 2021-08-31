@@ -15,10 +15,9 @@
 static void
 on_open_session_initialize(AgentObject* agent)
 {
-    session_initialize(agent);
-
     AgentState* open_state = transition_to_on_session_state();
     agent_set_state(agent, open_state);
+    session_initialize(agent);
 }
 
 

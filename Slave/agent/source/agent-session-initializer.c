@@ -28,13 +28,7 @@ handler_session_core_state_function(ChildProcess* proc,
         if (exit_code != STILL_ACTIVE)
         {
             agent_on_session_core_exit(agent);
-            //switch to off remote state if session-core terminate during session
-            if(!g_strcmp0(agent_get_current_state_string(agent) , AGENT_ON_SESSION))
-            {
-                AgentState* off_remote = transition_to_off_remote_state();
-                agent_set_state(agent,off_remote);
-                close_child_process(proc);
-            }
+            close_child_process(proc);
             return;
         }
 
