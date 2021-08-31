@@ -126,7 +126,7 @@ namespace Conductor.Controllers
                 .AddQueryParameter("SessionClientID", sessionClientId.ToString());  
 
             // return bad request if fail to create 
-            var reply = Signalling.Get(get_req); 
+            var reply = Signalling.Post(get_req); 
             if(reply.StatusCode != HttpStatusCode.OK)
             {
                 return BadRequest(reply.Content.ToString());
@@ -178,7 +178,7 @@ namespace Conductor.Controllers
                 .AddQueryParameter("SessionClientID", ses.SessionClientID.ToString());      
 
             // return bad request if fail to delete session pair      
-            var deletion_reply = Signalling.Get(get_req); 
+            var deletion_reply = Signalling.Post(get_req); 
             if(deletion_reply.StatusCode != HttpStatusCode.OK)
             {
                 return BadRequest(deletion_reply.Content.ToString());
