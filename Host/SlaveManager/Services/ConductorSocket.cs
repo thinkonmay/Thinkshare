@@ -67,7 +67,7 @@ namespace SlaveManager.Services
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Disconnected")
-                .AddParameter("SlaveID",SlaveID.ToString());
+                .AddQueryParameter("SlaveID",SlaveID.ToString());
             request.Method = Method.POST;
 
 
@@ -100,8 +100,8 @@ namespace SlaveManager.Services
         public async Task ReportShellSessionTerminated(ForwardCommand command)
         {
             var request = new RestRequest("Terminated")
-                    .AddParameter("SlaveID", command.SlaveID.ToString())
-                    .AddParameter("ProcessID", command.ProcessID.ToString());
+                    .AddQueryParameter("SlaveID", command.SlaveID.ToString())
+                    .AddQueryParameter("ProcessID", command.ProcessID.ToString());
             request.Method = Method.POST;
 
             var reply = await _shell.ExecuteAsync(request);
@@ -173,7 +173,7 @@ namespace SlaveManager.Services
         public async Task ReportRemoteControlDisconnected(int SlaveID)
         {
             var request = new RestRequest("Disconnected")
-                .AddParameter("SlaveID",SlaveID.ToString());
+                .AddQueryParameter("SlaveID",SlaveID.ToString());
             request.Method = Method.POST;
 
             var reply = await _session.ExecuteAsync(request);

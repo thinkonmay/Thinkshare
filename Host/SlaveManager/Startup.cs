@@ -79,11 +79,7 @@ namespace SlaveManager
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
             
-            app.UseStaticFiles();
             app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>

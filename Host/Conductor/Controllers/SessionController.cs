@@ -125,8 +125,8 @@ namespace Conductor.Controllers
 
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Generate")
-                .AddParameter("SessionSlaveID", sessionSlaveId.ToString())
-                .AddParameter("SessionClientID", sessionClientId.ToString());  
+                .AddQueryParameter("SessionSlaveID", sessionSlaveId.ToString())
+                .AddQueryParameter("SessionClientID", sessionClientId.ToString());  
 
             // return bad request if fail to create 
             var reply = Signalling.Get(get_req); 
@@ -178,8 +178,8 @@ namespace Conductor.Controllers
 
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Terminate")
-                .AddParameter("SessionSlaveID", ses.SessionSlaveID.ToString())
-                .AddParameter("SessionClientID", ses.SessionClientID.ToString());      
+                .AddQueryParameter("SessionSlaveID", ses.SessionSlaveID.ToString())
+                .AddQueryParameter("SessionClientID", ses.SessionClientID.ToString());      
 
             // return bad request if fail to delete session pair      
             var deletion_reply = Signalling.Get(get_req); 
