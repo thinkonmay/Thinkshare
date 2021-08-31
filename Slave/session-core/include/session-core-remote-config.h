@@ -21,6 +21,8 @@ gint			qoe_get_screen_height				(QoE* qoe);
 
 gint			qoe_get_framerate					(QoE* qoe);
 
+
+
 void			qoe_update_quality					(QoE* qoe,
 													 gint time,
 													 gint framerate,

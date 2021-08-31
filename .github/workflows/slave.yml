@@ -62,4 +62,4 @@ jobs:
         shell: pwsh
         working-directory: Deployment/slave
         run: |
-          ./build-Slave.bat        
+          ./build-slave.bat        

@@ -20,7 +20,6 @@ jobs:
             git pull https://${{ secrets.OAUTH_TOKEN }}@github.com/pigeatgarlic/personal-cloud-computing.git master
             cd /src/Deployment/backbone
             docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-            pigeatgarlic/slavemanager:debug-latest
             docker-compose pull
             docker-compose up --detach
             cd /src/Deployment/host-debug

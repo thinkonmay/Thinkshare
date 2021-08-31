@@ -135,6 +135,7 @@ namespace Conductor
 
             services.AddScoped<IAdmin, Admin>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
+            services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
 
             services.AddTransient<DataSeeder>();
 
