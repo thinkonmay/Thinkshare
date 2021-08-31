@@ -38,7 +38,7 @@ namespace Conductor.Controllers
             _admin = admin;
         }
 
-        [HttpGet("SystemStart")]
+        [HttpPost("SystemStart")]
         public async Task<IActionResult> SystemInitialize([FromBody] LoginModel model)
         {
             if (ModelState.IsValid)

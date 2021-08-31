@@ -36,7 +36,7 @@ namespace SlaveManager.Controllers
         {
             var request = new RestRequest("SystemStart")
                 .AddJsonBody(model);
-            request.Method = Method.GET;
+            request.Method = Method.POST;
 
             var result = await _conductor.ExecuteAsync(request);
             if (result.IsSuccessful)
