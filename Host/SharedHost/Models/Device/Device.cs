@@ -27,7 +27,7 @@ namespace SharedHost.Models.Device
         public string? serviceState { get; set; }
     }
 
-    public class ClientDeviceCapabilities
+    public class DeviceCap
     {
         public Codec audioCodec { get; set; }
 

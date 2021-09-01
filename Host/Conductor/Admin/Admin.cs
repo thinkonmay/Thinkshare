@@ -9,6 +9,8 @@ using SharedHost.Models.Error;
 using SharedHost.Models.Device;
 using SharedHost.Models.Command;
 using SharedHost.Models.Session;
+using RestSharp;
+using SharedHost;
 
 namespace Conductor.Administration
 {
@@ -19,14 +21,17 @@ namespace Conductor.Administration
         private readonly ApplicationDbContext _db;
         private readonly IHubContext<AdminHub, IAdminHub> _adminHubctx;
         private readonly IHubContext<ClientHub, IClientHub> _clientHubctx;
+        private readonly RestClient _slavemanager;
 
         public Admin(ApplicationDbContext db, 
                      IHubContext<AdminHub, IAdminHub> adminHub, 
-                     IHubContext<ClientHub,IClientHub> clientHub)
+                     IHubContext<ClientHub,IClientHub> clientHub,
+                     SystemConfig config)
         {
             _db = db;
             _adminHubctx = adminHub;
             _clientHubctx = clientHub;
+            _slavemanager = new RestClient("http://" + config.BaseUrl + ":" + config.SlaveManagerPort + "/Session");
         }
 
 
@@ -181,6 +186,21 @@ namespace Conductor.Administration
                 i.EndTime = DateTime.Now;
             }
             await _db.SaveChangesAsync();
+        }
+
+        public async Task ReportRemoteControlDisconnectedFromSignalling(SessionPair session)
+        {
+            var remoteSession = _db.RemoteSessions.Where(o => o.SessionClientID == session.SessionClientID &&
+                                                         o.SessionSlaveID == session.SessionSlaveID &&
+                                                        !o.EndTime.HasValue).FirstOrDefault();
+
+            await ReportRemoteControlDisconnected(remoteSession);
+            var request = new RestRequest("Disconnect")
+                .AddQueryParameter("SlaveID", remoteSession.SlaveID.ToString());
+
+            request.Method = Method.POST;
+
+            await _slavemanager.ExecuteAsync(request);                        
         }
     }
 }

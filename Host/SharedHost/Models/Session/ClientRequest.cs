@@ -8,8 +8,6 @@ namespace SharedHost.Models.Session
     /// </summary>
     public class ClientRequest
     {
-
-        public int ClientId { get; set; }
         /// <summary>
         /// slave id that match with requested user
         /// </summary>
@@ -18,6 +16,6 @@ namespace SharedHost.Models.Session
         /// <summary>
         /// quality of experience 
         /// </summary>
-        public ClientDeviceCapabilities cap { get; set; }
+        public DeviceCap cap { get; set; }
     }
 }

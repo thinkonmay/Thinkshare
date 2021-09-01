@@ -68,9 +68,13 @@ namespace Conductor.Interfaces
 
 
         Task ReportRemoteControlDisconnected(int SlaveID);
+
+        Task ReportRemoteControlDisconnectedFromSignalling(SessionPair session);
+
         Task ReportRemoteControlDisconnected(RemoteSession session);
 
         Task ReportRemoteControlReconnect(int SlaveID);
+
         Task ReportRemoteControlReconnect(RemoteSession session);
     }
 }

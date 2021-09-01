@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using SharedHost.Models.Session;
 using Signalling.Filters;
 using Signalling.Interfaces;
 using Signalling.Models;
@@ -14,6 +15,7 @@ namespace Signalling.Controllers
     // [ServiceFilter(typeof(ClientIpFilter))]
     [Route("/System")]
     [ApiController]
+    [Produces("application/json")]
     public class SystemController : ControllerBase
     {
         private readonly IWebSocketHandler _wsHandler;
@@ -26,9 +28,9 @@ namespace Signalling.Controllers
         }
 
         [HttpPost("Generate")]
-        public IActionResult AddSessionPair(int SessionSlaveID, int SessionClientID)
+        public IActionResult AddSessionPair([FromBody] SessionPair session)
         {
-            var ret = _queue.AddSessionPair(SessionSlaveID, SessionClientID);
+            var ret = _queue.AddSessionPair(session);
             if (ret)
             {
                 return Ok("Added session pair");
@@ -39,9 +41,9 @@ namespace Signalling.Controllers
         }
 
         [HttpPost("Terminate")]
-        public IActionResult TerminateSessionPair(int SessionSlaveID, int SessionClientID)
+        public IActionResult TerminateSessionPair([FromBody] SessionPair session)
         {
-            var ret = _queue.RemoveIDPair(SessionSlaveID, SessionClientID);
+            var ret = _queue.RemoveIDPair(session);
             if (ret)
             {
                 return Ok("Terminated session pair");
@@ -56,15 +58,15 @@ namespace Signalling.Controllers
         ///
         /// </summary>
         [HttpGet("GetCurrentSession")]
-        public List<Tuple<int,int>> GetCurrentSession()
+        public IActionResult GetCurrentSession()
         {            
-            return _queue.GetSessionPair();
+            return Ok(_queue.GetSessionPair());
         }
 
         [HttpGet("GetOnlineDevice")]
-        public List<int> GetOnlineDevice()
+        public IActionResult GetOnlineDevice()
         {
-            return _queue.GetOnlineList();
+            return Ok(_queue.GetOnlineList());
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharedHost.Models.Session;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
@@ -8,8 +9,8 @@ namespace Signalling.Interfaces
 {
     public interface ISessionQueue
     {
-        public bool AddSessionPair(int slaveID, int clientID);
-        public bool RemoveIDPair(int SlaveID, int ClientID);
+        public bool AddSessionPair(SessionPair session);
+        public bool RemoveIDPair(SessionPair session);
         public WebSocket GetSlaveSocket(int ClientID);
         public WebSocket GetClientSocket(int SlaveID);
         public bool SlaveInQueue(int ClientID);
@@ -22,7 +23,7 @@ namespace Signalling.Interfaces
         public bool IsClient(int ID);
         public bool IsSlave(int ID);
 
-        public List<Tuple<int, int>> GetSessionPair();
+        public List<SessionPair> GetSessionPair();
         public List<int> GetOnlineList();
 
     }

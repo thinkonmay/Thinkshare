@@ -45,8 +45,6 @@ namespace Conductor.Controllers
 
         private readonly ITokenGenerator _jwt;
 
-        private readonly string SignallingUrl; 
-
         private readonly ISlaveManagerSocket _slmsocket;
 
         public SessionController(ApplicationDbContext db,
@@ -62,68 +60,41 @@ namespace Conductor.Controllers
             _jwt = jwt;
             
             Configuration = config;
-            Signalling = new RestClient("http://"+Configuration.BaseUrl+":"+ Configuration.SignallingPort+"/System");
-            SignallingUrl = "ws://" + Configuration.BaseUrl +":"+ Configuration.SignallingPort + "/Session";
+            Signalling = new RestClient(
+                "http://"+Configuration.BaseUrl+":"+ 
+                Configuration.SignallingPort+"/System");
         }
 
         /// <summary>
         /// initialize session
         /// </summary>
-        /// <param name="SlaveId"></param>
-        /// <param name="ScreenWidth"></param>
-        /// <param name="ScreenHeight"></param>
-        /// <param name="QoEMode"></param>
-        /// <param name="VideoCodec"></param>
-        /// <param name="AudioCodec"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
-        [HttpGet("Initialize")]
-        public async Task<IActionResult> Create(int SlaveId, 
-                                                int ScreenWidth, 
-                                                int ScreenHeight,
-                                                int QoEMode, 
-                                                int VideoCodec, 
-                                                int AudioCodec)
+        [HttpPost("Initialize")]
+        public async Task<IActionResult> Create([FromBody] ClientRequest request)
         {
             int ClientId = _jwt.GetUserFromHttpRequest(User);
 
-            // construct client device capability information
-            var cap = new ClientDeviceCapabilities();
-            cap.screenWidth= ScreenWidth;
-            cap.screenHeight = ScreenHeight;
-            cap.audioCodec = (Codec)AudioCodec;
-            cap.videoCodec = (Codec)VideoCodec;
-            cap.mode = (QoEMode)QoEMode;
-
-            // construct client request
-            var req = new ClientRequest();
-            req.cap = cap;
-            req.ClientId = ClientId;
-            req.SlaveId = SlaveId;
-
-            var Query = await _slmsocket.GetSlaveState(SlaveId);
+            var Query = await _slmsocket.GetSlaveState(request.SlaveId);
 
             // search for availability of slave device
             if (Query.SlaveServiceState != SlaveServiceState.Open) { return BadRequest("Device Not Available"); }
 
-            /*create session id pair randomly*/
-            int sessionSlaveId = Randoms.Next();
-            int sessionClientId = Randoms.Next();
+            var sessionPair = new SessionPair()
+            {
+                SessionClientID = Randoms.Next(),
+                SessionSlaveID = Randoms.Next()
+            };
 
             /*create session from client device capability*/
-            var _QoE = new QoE(cap);
+            var QoE = new QoE(request.cap);
 
             /*create new session with gevin session request from user*/
-            var sess = new RemoteSession(req, 
-                                    _QoE, 
-                                    sessionSlaveId, 
-                                    sessionClientId,
-                                    SignallingUrl,
-                                    Configuration.StunServer);
+            var sess = new RemoteSession(request, QoE,sessionPair,Configuration,ClientId);
 
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Generate")
-                .AddQueryParameter("SessionSlaveID", sessionSlaveId.ToString())
-                .AddQueryParameter("SessionClientID", sessionClientId.ToString());  
+                .AddJsonBody(sessionPair);
 
             // return bad request if fail to create 
             var reply = Signalling.Post(get_req); 
@@ -146,7 +117,6 @@ namespace Conductor.Controllers
             SessionViewModel view = new SessionViewModel();
             view.clientSession = clientSes; 
             view.ClientID = sess.ClientID;
-            view.DevMode = _jwt.IsAdmin(User);
             return View("RemoteControl",view);
         }
 
@@ -172,10 +142,15 @@ namespace Conductor.Controllers
             // return badrequest if session is not available in database
             if (ses == null) return BadRequest();
 
+            var sessionPair = new SessionPair()
+            {
+                SessionClientID = ses.SessionClientID,
+                SessionSlaveID = ses.SessionSlaveID
+            };
+
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Terminate")
-                .AddQueryParameter("SessionSlaveID", ses.SessionSlaveID.ToString())
-                .AddQueryParameter("SessionClientID", ses.SessionClientID.ToString());      
+                .AddJsonBody(sessionPair);
 
             // return bad request if fail to delete session pair      
             var deletion_reply = Signalling.Post(get_req); 
@@ -269,7 +244,6 @@ namespace Conductor.Controllers
                 SessionViewModel view = new SessionViewModel();
                 view.clientSession = clientSes; 
                 view.ClientID = ses.ClientID;
-                view.DevMode = _jwt.IsAdmin(User);
                 return View("RemoteControl",view);
             }
             return BadRequest("Device not in off remote");            

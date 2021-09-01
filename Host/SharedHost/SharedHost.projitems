@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Error\SessionCoreExit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Error\ReportedError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\SlaveServiceState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\Session.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StorageBlock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\ClientRequest.cs" />

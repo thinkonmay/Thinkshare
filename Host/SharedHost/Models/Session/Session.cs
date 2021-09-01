@@ -11,23 +11,18 @@ namespace SharedHost.Models.Session
     { 
         public RemoteSession() { }
 
-        public RemoteSession(ClientRequest req,
-                            QoE qoe, 
-                            int sessionSlaveId,
-                            int sessionClientId, 
-                            string signalling, 
-                            string stun)
+        public RemoteSession(ClientRequest req,QoE qoe, SessionPair pair, SystemConfig config,int clientID)
         {
-            ClientID = req.ClientId;
+            ClientID = clientID;
             SlaveID = req.SlaveId;
 
-            SessionSlaveID = sessionSlaveId;
-            SessionClientID = sessionClientId;
+            SessionSlaveID = pair.SessionSlaveID;
+            SessionClientID = pair.SessionClientID;
 
             QoE = qoe;
             ClientOffer = false;
-            SignallingUrl = signalling;
-            StunServer = stun;
+            SignallingUrl = "ws://" + config.BaseUrl + ":" + config.SignallingPort + "/Session"; ;
+            StunServer = config.StunServer;
             // StartTime = DateTime.Now;
         }
 

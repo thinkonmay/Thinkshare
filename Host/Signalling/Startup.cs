@@ -69,6 +69,9 @@ namespace Signalling
             //     return new ClientIpFilter(Configuration["AdminSafeList"]);
             // });
 
+
+            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
+
             services.AddSingleton<ISessionQueue, SessionQueue>();
             services.AddTransient<IWebSocketHandler, WebSocketHandler>();
             services.AddMvc();

@@ -5,7 +5,7 @@ namespace SharedHost.Models.Session
     public class QoE
     {
         public QoE() { }
-        public QoE(ClientDeviceCapabilities cap)
+        public QoE(DeviceCap cap)
         {
 
             ScreenHeight = cap.screenHeight;

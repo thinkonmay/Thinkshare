@@ -1,4 +1,7 @@
-﻿using Signalling.Interfaces;
+﻿using RestSharp;
+using SharedHost;
+using SharedHost.Models.Session;
+using Signalling.Interfaces;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,31 +14,35 @@ namespace Signalling.Services
 {
     public class SessionQueue : ISessionQueue
     {
-        public SessionQueue()
+        public SessionQueue(SystemConfig config)
         {
             onlineList = new ConcurrentDictionary<int, WebSocket>();
 
-            sessionPair = new ConcurrentDictionary<int, int>();
+            sessionPairs = new List<SessionPair>();
+
+            _conductor = new RestClient("http://" + config.BaseUrl + ":" + config.ConductorPort + "/ReportSession");
         }
+
+        private readonly RestClient _conductor;
 
         private ConcurrentDictionary<int, WebSocket> onlineList;
 
-        private ConcurrentDictionary<int, int> sessionPair; //<ClientID, SlaveID>
+        private List<SessionPair> sessionPairs; //<ClientID, SlaveID>
 
 
-        public bool AddSessionPair(int slaveID, int clientID)
+        public bool AddSessionPair(SessionPair session)
         {
-            return sessionPair.TryAdd(clientID, slaveID);
+            if(sessionPairs.Where(o => o == session).Count() > 0) { return false; }
+            sessionPairs.Add(session);
+            return true;
         }
 
-        public bool RemoveIDPair(int SlaveID, int ClientID)
+        public bool RemoveIDPair(SessionPair session)
         {
-
-            var ret = sessionPair.TryRemove(ClientID, out SlaveID);
-
             WebSocket ws1, ws2;
-            onlineList.TryRemove(SlaveID, out ws2);
-            onlineList.TryRemove(ClientID, out ws1);
+            var ret = sessionPairs.Remove(session);
+            onlineList.TryRemove(session.SessionSlaveID, out ws2);
+            onlineList.TryRemove(session.SessionClientID, out ws1);
             try
             {
                 if (ws1 != null) { ws1.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
@@ -54,10 +61,10 @@ namespace Signalling.Services
 
         public WebSocket GetSlaveSocket(int ClientID)
         {
-            var SlaveID = sessionPair.Where(o => o.Key == ClientID).FirstOrDefault().Value;
-            if (onlineList.Where(i => i.Key == SlaveID).Count() == 1)
+            var session = sessionPairs.Where(o => o.SessionClientID == ClientID).FirstOrDefault();
+            if (onlineList.Where(i => i.Key == session.SessionSlaveID).Count() == 1)
             {
-                return onlineList.Where(i => i.Key == SlaveID).FirstOrDefault().Value;
+                return onlineList.Where(i => i.Key == session.SessionSlaveID).FirstOrDefault().Value;
             }
             else
             {
@@ -67,10 +74,10 @@ namespace Signalling.Services
 
         public WebSocket GetClientSocket(int SlaveID)
         {
-            var ClientID = sessionPair.Where(o => o.Value == SlaveID).FirstOrDefault().Key;
-            if (onlineList.Where(i => i.Key == ClientID).Count() == 1)
+            var session = sessionPairs.Where(o => o.SessionSlaveID == SlaveID).FirstOrDefault();
+            if (onlineList.Where(i => i.Key == session.SessionClientID).Count() == 1)
             {
-                return onlineList.Where(i => i.Key == ClientID).FirstOrDefault().Value;
+                return onlineList.Where(i => i.Key == session.SessionClientID).FirstOrDefault().Value;
             }
             else
             {
@@ -80,7 +87,7 @@ namespace Signalling.Services
 
         public bool ClientInQueue(int ClientID)
         {
-            if (sessionPair.Where(o => o.Key == ClientID).Count() > 0)
+            if (sessionPairs.Where(o => o.SessionClientID == ClientID).Count() > 0)
             {
                 return true;
             }
@@ -92,7 +99,7 @@ namespace Signalling.Services
         }
         public bool SlaveInQueue(int SlaveID)
         {
-            if (sessionPair.Where(o => o.Value == SlaveID).Count() > 0)
+            if (sessionPairs.Where(o => o.SessionSlaveID == SlaveID).Count() > 0)
             {
                 return true;
             }
@@ -116,14 +123,18 @@ namespace Signalling.Services
 
         public bool SlaveIsOnline(int ClientID)
         {
-            var SlaveID = sessionPair.Where(o => o.Key == ClientID).FirstOrDefault().Value;
+            var SlaveID = sessionPairs
+                .Where(o => o.SessionSlaveID == ClientID).FirstOrDefault()
+                .SessionSlaveID;
 
             return DeviceIsOnline(SlaveID);
         }
 
         public bool ClientIsOnline(int SlaveID)
         {
-            var ClientID = sessionPair.Where(o => o.Value == SlaveID).FirstOrDefault().Key;
+            var ClientID = sessionPairs
+                .Where(o => o.SessionSlaveID == SlaveID).FirstOrDefault()
+                .SessionClientID;
 
             return DeviceIsOnline(ClientID);
         }
@@ -134,6 +145,14 @@ namespace Signalling.Services
         {
             WebSocket mock;
             onlineList.TryRemove(ID, out mock);
+            var session = sessionPairs
+                .Where(o => o.SessionClientID == ID || o.SessionSlaveID == ID).FirstOrDefault();
+
+            if(session == null) { return;  }
+            var request = new RestRequest("Disconnected")
+                .AddJsonBody(session);
+
+            _conductor.Post(request);
         }
 
         public void DeviceGoesOnline(int ID, WebSocket ws)
@@ -145,23 +164,18 @@ namespace Signalling.Services
 
         public bool IsClient(int ID)
         {
-            return sessionPair.ContainsKey(ID);
+            return (sessionPairs.Where(session => session.SessionClientID == ID).Count() > 0) ? true : false;
         }
 
         public bool IsSlave(int ID)
         {
-            return (sessionPair.Where(o => o.Value == ID).Count() > 0) ? true : false;
+            return (sessionPairs.Where(session => session.SessionSlaveID == ID).Count() > 0) ? true : false;
         }
 
 
-        public List<Tuple<int, int>> GetSessionPair()
+        public List<SessionPair> GetSessionPair()
         {
-            List<Tuple<int, int>> ret = new List<Tuple<int, int>>();
-            foreach (var i in sessionPair)
-            {
-                ret.Add(new Tuple<int, int>(i.Key, i.Value));
-            }
-            return ret;
+            return sessionPairs;
         }
 
         public List<int> GetOnlineList()
