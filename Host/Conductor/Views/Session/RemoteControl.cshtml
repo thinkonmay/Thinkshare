@@ -2,14 +2,9 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    if(Model.DevMode)
-    {
-        Layout = "_DebugLayout";
-    }
-    else
-    {
-        Layout = "_PublishLayout";
-    }
+
+    Layout = "_PublishLayout";
+
 
     int SessionClientID = Model.clientSession.SessionClientID;
     string SignallingUrl = string.Format("\"{0}\"", Model.clientSession.SignallingUrl,""); //@"""Model.clientSession.SignallingUrl""";
@@ -22,18 +17,7 @@
     int AudioCodec = (int) Model.clientSession.QoE.AudioCodec;
     int VideoCodec = (int) Model.clientSession.QoE.VideoCodec;
     int QoEMode = (int) Model.clientSession.QoE.QoEMode;
-    
-    string HostUrl = "\""+Model.HostUrl+"\"";
-
-
-    string AppSrc = "http://"+Model.HostUrl+"/app.js?ts=1";
-    string InputSrc = "http://"+Model.HostUrl+"/input.js?ts=1";
-    string SignallingSrc = "http://"+Model.HostUrl+"/signalling.js?ts=1";
-    string WebRTCSrc = "http://"+Model.HostUrl+"/webrtc.js?ts=1";
-
     int ClientID = Model.ClientID;
-
-// viewmodel property:
 }
 
 <script type="text/javascript">
@@ -49,8 +33,7 @@ var app = new Vue({
 
     data() 
     {
-        return {                
-            hostUrl: @Html.Raw(HostUrl),
+        return {
             SessionClientID: @SessionClientID, 
             ClientID: @ClientID,
 
