@@ -32,7 +32,7 @@ Pipeline*		session_core_get_pipeline				(SessionCore* self);
 
 WebRTCHub*		session_core_get_rtc_hub				(SessionCore* self);
 
-SessionQoE*		session_core_get_qoe					(SessionCore* self);
+QoE*			session_core_get_qoe					(SessionCore* self);
 
 void			session_core_set_state					(SessionCore* core, 
 														 CoreState state);

@@ -71,8 +71,6 @@ typedef struct 			_QoE					QoE;
 
 typedef struct			_Session				Session;
 
-typedef struct			_SessionQoE				SessionQoE;
-
 typedef struct			_WebRTCHub				WebRTCHub;
 
 typedef struct 			_SignallingHub			SignallingHub;

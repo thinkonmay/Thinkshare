@@ -13,6 +13,8 @@ typedef enum
 	MOUSE_UP,
 	MOUSE_DOWN,
 
+	KEYRESET,
+
 }HidOpcode;
 
 

@@ -6,14 +6,16 @@
 void			attach_bitrate_control				(SessionCore* core);
 
 void			set_dynamic_bitrate					(Pipeline* pipe, 
-												     SessionQoE* qoe);
+												     QoE* qoe);
 
 QoE*			qoe_initialize						();
 
 void			qoe_setup							(QoE* qoe,
-													 gint screen_width,
-													 gint screen_height,
-													 gint framerate);
+		  											gint screen_width,
+		  											gint screen_height,
+		  											Codec audio_codec,
+		  											Codec video_codec,
+		  											QoEMode qoe_mode);
 
 gint			qoe_get_screen_width				(QoE* qoe);
 
@@ -23,7 +25,7 @@ gint			qoe_get_framerate					(QoE* qoe);
 
 
 
-void			qoe_update_quality					(QoE* qoe,
+void			qoe_update_quality					(SessionCore* core,
 													 gint time,
 													 gint framerate,
 													 gint audio_latency,

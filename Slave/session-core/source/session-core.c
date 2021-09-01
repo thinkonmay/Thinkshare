@@ -80,7 +80,6 @@ session_core_setup_session(SessionCore* self)
 	qoe_setup(self->qoe,
 		json_object_get_int_member(qoe, "ScreenWidth"),
 		json_object_get_int_member(qoe, "ScreenHeight"),
-		json_object_get_int_member(qoe, "Framerate"),
 		json_object_get_int_member(qoe, "AudioCodec"),
 		json_object_get_int_member(qoe, "VideoCodec"),
 		json_object_get_int_member(qoe, "QoEMode"));
@@ -115,7 +114,6 @@ session_core_initialize()
 
 	session_core_connect_signalling_server(&core);
 	g_main_loop_run(core.loop);
-	g_main_loop_unref(core.loop);
 	return &core;	
 }
 
@@ -173,13 +171,7 @@ Message*
 get_json_exit_state(ExitState* state)
 {
 	Message* message = json_object_new();
-	
-	GTimeVal current_time;
-	g_get_current_time(&current_time);
-	gchar* iso_time = g_time_val_to_iso8601(&current_time);
-
 	json_object_set_int_member(message, "ExitCode", state->code);
-	json_object_set_int_member(message, "ExitTime", iso_time);
 	json_object_set_string_member(message, "CoreState", state->core_state);
 	json_object_set_string_member(message, "PipelineState", state->pipeline_state);
 	json_object_set_string_member(message, "SignallingState", state->signalling_state);
@@ -255,9 +247,9 @@ report_session_core_error(SessionCore* self,
 
 
 	JsonObject* obj = json_object_new();
-	json_object_set_string_member(obj,
+	json_object_set_int_member(obj,
 		"SlaveID",SlaveID);
-	json_object_set_string_member(obj,
+	json_object_set_int_member(obj,
 		"Module",CORE_MODULE);	
 	json_object_set_string_member(obj,
 		"ErrorMessage",code);
@@ -288,7 +280,7 @@ session_core_get_rtc_hub(SessionCore* self)
 }
 
 
-SessionQoE*
+QoE*
 session_core_get_qoe(SessionCore* self)
 {
 	return self->qoe;
@@ -298,7 +290,7 @@ session_core_get_qoe(SessionCore* self)
 CoreState
 session_core_get_state(SessionCore* self)
 {
-	self->state;
+	return self->state;
 }
 
 void

@@ -90,6 +90,30 @@ mouseWheel(event)
 }
 
 
+function 
+reset_keyboard()
+{
+    var array = [
+            "ControlLeft",
+            "ShiftLeft",
+            "AltLeft",
+            "Home",
+            "MetaLeft",
+            "KeyF",
+            "KeyM",
+            "Escape"
+        ]; 
+    array.forEach(element => {
+        var INPUT = 
+        {
+            "Opcode":HidOpcode.KEYUP,
+            "wVk": element,
+        }
+        SendHID(JSON.stringify(INPUT));
+    });
+}
+
+
 ///handle context menu by disable it
 function 
 contextMenu(event) 
@@ -234,6 +258,7 @@ onFullscreenChange()
         //allow capture function key (ctrl, shift, tab)
         requestKeyboardLock();
     }
+    reset_keyboard();
 }
 
 
@@ -302,6 +327,7 @@ DetachEvent()
 {
     removeListeners(app.EventListeners);
     // exitPointerLock();
+    reset_keyboard();
 }
 
 /**

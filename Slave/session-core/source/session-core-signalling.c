@@ -431,9 +431,9 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
     gchar* text;
 
 
-    if (!g_strcmp0(session_core_get_state(core),SESSION_INFORMATION_SETTLED))
+    if (g_strcmp0(session_core_get_state(core),SESSION_INFORMATION_SETTLED))
     {
-        if (!g_strcmp0(hub->signalling_state,SIGNALLING_SERVER_READY))
+        if (g_strcmp0(hub->signalling_state,SIGNALLING_SERVER_READY))
         {
             GError error;
             error.message = "State conflict";

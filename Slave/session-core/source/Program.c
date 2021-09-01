@@ -16,4 +16,3 @@ main(int argc, char* argv[])
     SessionCore* core = session_core_initialize();
     return 0;
 }
-

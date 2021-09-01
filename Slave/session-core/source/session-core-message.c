@@ -58,7 +58,7 @@ session_core_on_message(SessionCore* core,
 			    Message* json_data = get_json_object_from_string(data_string,&error);
 				if(!error == NULL || object == NULL) {return;}
 				
-				qoe_update_quality(qoe, 
+				qoe_update_quality(core, 
 					g_get_real_time(),
 					json_object_get_int_member(json_data, "FrameRate"),
 					json_object_get_int_member(json_data, "AudioLatency"),

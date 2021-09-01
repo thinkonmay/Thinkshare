@@ -25,7 +25,6 @@ namespace Signalling.Services
 
         public bool AddSessionPair(int slaveID, int clientID)
         {
-
             return sessionPair.TryAdd(clientID, slaveID);
         }
 
