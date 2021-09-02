@@ -38,7 +38,7 @@ namespace Conductor.Controllers
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        [HttpPost("Disconnected")]
+        [HttpPost("SignallingDisconnected")]
         public async Task<IActionResult> SessionDisconnectedFromSignalling([FromBody] SessionPair session)
         {
             await _admin.ReportRemoteControlDisconnectedFromSignalling(session);

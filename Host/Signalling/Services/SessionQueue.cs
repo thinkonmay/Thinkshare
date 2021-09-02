@@ -149,7 +149,7 @@ namespace Signalling.Services
                 .Where(o => o.SessionClientID == ID || o.SessionSlaveID == ID).FirstOrDefault();
 
             if(session == null) { return;  }
-            var request = new RestRequest("Disconnected")
+            var request = new RestRequest("SignallingDisconnected")
                 .AddJsonBody(session);
 
             _conductor.Post(request);

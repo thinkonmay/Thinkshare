@@ -178,7 +178,7 @@ namespace SlaveManager.Services
         {
             var request = new RestRequest("Disconnected")
                 .AddQueryParameter("SlaveID",SlaveID.ToString());
-            request.Method = Method.GET;
+            request.Method = Method.POST;
 
             var reply = await _session.ExecuteAsync(request);
             if (reply.StatusCode != HttpStatusCode.OK)
