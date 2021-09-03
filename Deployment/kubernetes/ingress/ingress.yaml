@@ -1,94 +1,71 @@
-apiVersion: v1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: minimal-ingress
+  name: ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-#
-  - http:
-    paths:
-    - path: /Slave
-      pathType: /Register
-      backend:
-        service:
-          name: slavemanager
-
-  - http:
-    paths:
-    - path: /swagger/slavemanager.html
-      pathType: /swagger/index.html
-      backend:
-        service:
-          name: slavemanager
-
-
-#
-  - http:
-    paths:
-    - path: /swagger/signalling.html
-      pathType: /swagger/index.html
-      backend:
-        service:
-          name: signalling
-
-  - http:
-    paths:
-    - path: /Signalling
-      pathType: /Session
-      backend:
-        service:
-          name: signalling
-
-
-#
   - http:
       paths:
-      - path: /database
-        pathType: /
+      - path: /Slave
+        pathType: Prefix
         backend:
           service:
-            name: systemdb
+            name: slavemanager
+            port:
+              number: 80
 
-#
+      - path: /swagger/slavemanager.html
+        pathType: Prefix
+        backend:
+          service:
+            name: slavemanager
+            port:
+              number: 80
 
-  - http:
-    paths:
-    - path: /Account
-      pathType: /Account
-      backend:
-        service:
-          name: conductor
 
-  - http:
-    paths:
-    - path: /swagger/conductor.html
-      pathType: /swagger/index.html
-      backend:
-        service:
-          name: conductor
+  #
 
-  - http:
-    paths:
-    - path: /Admin
-      pathType: /Admin
-      backend:
-        service:
-          name: conductor
-#
-  - http:
-    paths:
-    - path: /resources
-      pathType: /
-      backend:
-        service:
-          name: resources
+      - path: /Signalling
+        pathType: Prefix
+        backend:
+          service:
+            name: signalling
+            port:
+              number: 80
 
-  - http:
-    paths:
-    - path: /stun
-      pathType: /
-      backend:
-        service:
-          name: coturn
+
+  #
+      - path: /database
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 5432
+
+  #
+      - path: /Account
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+
+      - path: /src
+        pathType: Prefix
+        backend:
+          service:
+            name: resources
+            port:
+              number: 80
+
+      - path: /stun
+        pathType: Prefix
+        backend:
+          service:
+            name: coturn
+            port:
+              number: 80
