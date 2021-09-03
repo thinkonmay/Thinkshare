@@ -30,6 +30,7 @@ spec:
       containers:
       - name: signalling
         image: pigeatgarlic/signalling:release_latest
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "64Mi"

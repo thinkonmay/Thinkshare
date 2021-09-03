@@ -43,6 +43,7 @@ spec:
       containers:
       - name: conductor
         image: pigeatgarlic/conductor:release_latest
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "64Mi"
@@ -54,7 +55,8 @@ spec:
         - containerPort: 80
 
       - name: systemdb
-        image: postgres:latest
+        image: postgres
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             memory: "256Mi"

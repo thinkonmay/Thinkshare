@@ -29,6 +29,7 @@ spec:
       containers:
       - name: resources
         image: pigeatgarlic/resources:latest
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "64Mi"

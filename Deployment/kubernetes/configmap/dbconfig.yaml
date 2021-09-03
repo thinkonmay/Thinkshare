@@ -7,4 +7,4 @@ metadata:
 data:
   POSTGRES_DB: systemdb
   POSTGRES_USER: "thinkmay"
-  POSTGRES_PASSWORD: "thinkmayvantue"
+  POSTGRES_PASSWORD: "thinkmayvantue"WeSh0uldn0TUseThisPassW0rd
