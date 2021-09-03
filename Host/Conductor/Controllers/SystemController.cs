@@ -38,8 +38,8 @@ namespace Conductor.Controllers
             _admin = admin;
         }
 
-        [HttpPost("SystemStart")]
-        public async Task<IActionResult> SystemInitialize([FromBody] LoginModel model)
+        [HttpPost("SeedDevices")]
+        public async Task<IActionResult> SeedDevices([FromBody] LoginModel model)
         {
             if (ModelState.IsValid)
             {
@@ -57,6 +57,27 @@ namespace Conductor.Controllers
                             ret.Add(i.ID);
                         }
                         return Ok(ret);
+                    }
+                }
+
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("SeedSessions")]
+        public async Task<IActionResult> SeedSessions([FromBody] LoginModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
+                if (result.Succeeded)
+                {
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    string rolename = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+                    if (rolename == DataSeeder.ADMIN)
+                    {
+                        var currentSession = _db.RemoteSessions.Where(o => !o.EndTime.HasValue).ToList();
+                        return Ok(currentSession);
                     }
                 }
 

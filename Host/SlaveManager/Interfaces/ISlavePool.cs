@@ -57,12 +57,6 @@ namespace SlaveManager.Interfaces
         bool SearchForSlaveID(int slave_id);
 
 
-        /// <summary>
-        /// Send slave reject signal to slave device without delete slaveid from slavepool
-        /// </summary>
-        /// <param name="slaveid"></param>
-        /// <returns></returns>
-        bool DisconnectSlave(int slaveid);
 
         /// <summary>
         /// Send reject slave message to agent, then remove slavedevice and slave id from slavepool

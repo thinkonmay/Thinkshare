@@ -17,7 +17,7 @@ namespace SlaveManager.Interfaces
         /// </summary>
         /// <param name="information"></param>
         /// <returns></returns>
-        Task ReportSlaveRegistered(SlaveDeviceInformation information);
+        Task<bool> ReportSlaveRegistered(SlaveDeviceInformation information);
 
         /// <summary>
         /// 

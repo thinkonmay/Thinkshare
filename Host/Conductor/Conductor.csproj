@@ -13,7 +13,11 @@
   <PropertyGroup>
   <GenerateDocumentationFile>true</GenerateDocumentationFile>
   <NoWarn>$(NoWarn);1591</NoWarn>
-  </PropertyGroup>  
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="SharedSetting.json" />
+  </ItemGroup>  
 
   <ItemGroup>
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
@@ -49,6 +53,10 @@
     <PackageReference Include="RestSharp" Version="106.12.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.0" />
+  </ItemGroup>  
+
+  <ItemGroup>
+    <Page Include="SharedSetting.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,6 +73,10 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+	
+    <ItemGroup>
+	    <Content Include="..\SharedHost\SharedSettings.json" Link="SharedSettings.json" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 
 	
   <Import Project="..\SharedHost\SharedHost.projitems" Label="Shared" />

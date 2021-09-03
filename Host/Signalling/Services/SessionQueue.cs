@@ -20,7 +20,7 @@ namespace Signalling.Services
 
             sessionPairs = new List<SessionPair>();
 
-            _conductor = new RestClient("http://" + config.BaseUrl + ":" + config.ConductorPort + "/ReportSession");
+            _conductor = new RestClient(config.Conductor + "/ReportSession");
         }
 
         private readonly RestClient _conductor;

@@ -28,19 +28,6 @@ namespace SlaveManager.Services
 
 
 
-        public bool DisconnectSlave(int slaveid)
-        {
-            SlaveDevice slave;
-            if (!SlaveList.TryGetValue(slaveid, out slave)) { return false; }
-
-            Task.Run(() => slave.RejectSlave());
-            var disconnected = new DeviceDisconnected();
-            slave.ChangeState(disconnected);
-            AddSlaveDeviceWithKey(slaveid,slave); 
-            return true;
-        }
-
-
         public SlaveDevice GetSlaveDevice(int ID)
         {
             if (!SearchForSlaveID(ID)) { return null; }

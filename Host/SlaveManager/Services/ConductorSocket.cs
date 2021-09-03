@@ -23,14 +23,10 @@ namespace SlaveManager.Services
 
         public ConductorSocket(SystemConfig config)
         {
-            _error =    new RestClient("http://" + 
-                config.BaseUrl + ":" + config.ConductorPort + "/Error");
-            _session =  new RestClient("http://" + 
-                config.BaseUrl + ":" + config.ConductorPort + "/ReportSession");
-            _device =   new RestClient("http://" + 
-                config.BaseUrl + ":" + config.ConductorPort + "/ReportDevices");
-            _shell =    new RestClient("http://" + 
-                config.BaseUrl + ":" + config.ConductorPort + "/ReportShell");
+            _error =    new RestClient(config.Conductor + "/Error");
+            _session =  new RestClient(config.Conductor + "/ReportSession");
+            _device =   new RestClient(config.Conductor + "/ReportDevices");
+            _shell =    new RestClient(config.Conductor + "/ReportShell");
         }
 
 
@@ -45,26 +41,23 @@ namespace SlaveManager.Services
         /// <summary>
         /// report new slave available to admin and save change in database
         /// </summary>
-        public async Task ReportSlaveRegistered(SlaveDeviceInformation information)
+        public async Task<bool> ReportSlaveRegistered(SlaveDeviceInformation information)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Registered")
                 .AddJsonBody(information);
+
             request.Method = Method.POST;
-
-
-
             var reply = await _device.ExecuteAsync(request);
-            if (reply.StatusCode != HttpStatusCode.OK)
+            if (reply.StatusCode == HttpStatusCode.OK)
             {
-                var error = new ReportedError()
-                {
-                    Module = (int)Module.HOST_MODULE,
-                    ErrorMessage = "Unable to process request",
-                    SlaveID = information.ID
-                };
-                await ReportError(error);
+                return true;
             }
+            else
+            {
+                return false;
+            }
+
         }
 
         public async Task ReportSlaveDisconnected(int SlaveID)

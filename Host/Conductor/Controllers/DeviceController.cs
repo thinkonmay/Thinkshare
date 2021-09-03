@@ -1,7 +1,11 @@
 ﻿using System.Threading.Tasks;
+using Conductor.Data;
 using Conductor.Interfaces;
+using MersenneTwister;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharedHost;
+using SharedHost.Models.Device;
 
 namespace Conductor.Controllers
 {
@@ -15,19 +19,37 @@ namespace Conductor.Controllers
 
         private readonly ISlaveManagerSocket _slmsocket;
 
-        public DeviceController(ISlaveManagerSocket slmSocket)
+        private readonly ApplicationDbContext _db;
+
+        private readonly SystemConfig _config;
+
+        public DeviceController(ISlaveManagerSocket slmSocket,
+                                ApplicationDbContext db,
+                                SystemConfig config)
         {
             _slmsocket = slmSocket;
+            _db = db;
+            _config = config;
         }
         /// <summary>
         /// Add a specific Slave device 
         /// </summary>
-        /// <param name="ID"></param>
         /// <returns></returns>
-        [HttpPost("Add")]
-        public async Task<IActionResult> AddSlaveDevice(int ID)
+        [HttpGet("Add")]
+        public async Task<IActionResult> AddSlaveDevice()
         {
-            return await _slmsocket.AddSlaveId(ID) ? Ok() : BadRequest();
+            var slave = new Slave();
+            slave.ID = Randoms.Next();
+            _db.Devices.Add(slave);
+            await _db.SaveChangesAsync();
+
+            var host_config = new HostConfiguration()
+            {
+                SlaveID = slave.ID,
+                HostUrl = _config.SlaveManagerWs,
+                DisableSSL = true
+            };
+            return Ok(host_config);
         }
 
         /// <summary>

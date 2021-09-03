@@ -27,32 +27,9 @@ namespace Conductor.Services
         {
             _config = config;
 
-            _pool =     new RestClient("http://" + 
-                _config.BaseUrl + ":" + _config.SlaveManagerPort + "/Pool");
-            _session =  new RestClient("http://" + 
-                _config.BaseUrl + ":" + _config.SlaveManagerPort + "/Session");
-            _shell =    new RestClient("http://" + 
-                _config.BaseUrl + ":" + _config.SlaveManagerPort + "/Shell");
-        }
-
-
-
-        public async Task<bool> AddSlaveId(int SlaveID)
-        {
-            /*generate rest post to signalling server*/
-            var request = new RestRequest("Add")
-                 .AddQueryParameter("SlaveID", SlaveID.ToString());
-            request.Method = Method.POST;
-
-            var result = await _pool.ExecuteAsync(request);
-            if(result.IsSuccessful)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            _pool =     new RestClient(_config.SlaveManager + "/Pool");
+            _session =  new RestClient( _config.SlaveManager + "/Session");
+            _shell =    new RestClient(_config.SlaveManager + "/Shell");
         }
 
         public async Task<SlaveQueryResult> GetSlaveState(int SlaveID)

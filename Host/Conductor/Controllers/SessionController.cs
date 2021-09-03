@@ -60,9 +60,7 @@ namespace Conductor.Controllers
             _jwt = jwt;
             
             Configuration = config;
-            Signalling = new RestClient(
-                "http://"+Configuration.BaseUrl+":"+ 
-                Configuration.SignallingPort+"/System");
+            Signalling = new RestClient(Configuration.Signalling+"/System");
         }
 
         /// <summary>

@@ -31,21 +31,42 @@ namespace Conductor.Administration
             _db = db;
             _adminHubctx = adminHub;
             _clientHubctx = clientHub;
-            _slavemanager = new RestClient("http://" + config.BaseUrl + ":" + config.SlaveManagerPort + "/Session");
+            _slavemanager = new RestClient(config.SlaveManager + "/Session");
         }
 
 
         /// <summary>
         /// report new slave available to admin and save change in database
         /// </summary>
-        public async Task ReportSlaveRegistered(SlaveDeviceInformation information)
+        public async Task<bool> ReportSlaveRegistered(SlaveDeviceInformation information)
         {
+            var device = _db.Devices.Find(information.ID);
+            if(device == null) { return false; }
+
             await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
 
-            Slave device = new Slave(information);
-            if(_db.Devices.Find(information.ID) != null) {return;}
-            _db.Devices.Add(device);
-            await _db.SaveChangesAsync();
+            if (device.CPU == null)
+            {
+                device.CPU = information.CPU;
+                device.GPU = information.GPU;
+                device.OS = information.OS;
+                device.RAMcapacity = information.RAMcapacity;
+                return true;
+            }
+            else
+            {
+                if (device.CPU == information.CPU &&
+                   device.GPU == information.GPU &&
+                   device.OS == information.OS &&
+                   device.RAMcapacity == information.RAMcapacity)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         public async Task ReportShellSessionTerminated(int SlaveID, int ProcessID)

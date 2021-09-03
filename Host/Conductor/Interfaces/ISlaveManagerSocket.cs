@@ -10,7 +10,6 @@ namespace Conductor.Interfaces
 {
     public interface ISlaveManagerSocket
     {
-        Task<bool> AddSlaveId(int slaveid);
 
         Task<SlaveQueryResult> GetSlaveState(int ID);
 

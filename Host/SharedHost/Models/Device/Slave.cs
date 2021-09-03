@@ -40,10 +40,10 @@ namespace SharedHost.Models.Device
         /// <summary>
         /// slave device hardware configuration
         /// </summary>
-        public string CPU { get; set; }
-        public string GPU { get; set; }
-        public int RAMcapacity { get; set; }
-        public string OS { get; set; }
+        public string? CPU { get; set; }
+        public string? GPU { get; set; }
+        public int? RAMcapacity { get; set; }
+        public string? OS { get; set; }
 
         /// <summary>
         /// 

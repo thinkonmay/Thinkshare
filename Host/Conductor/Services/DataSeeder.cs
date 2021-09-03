@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SharedHost;
 
 namespace Conductor.Services
 {
@@ -27,20 +28,20 @@ namespace Conductor.Services
             }
         }
 
-        public static void SeedAdminUsers(UserManager<UserAccount> userManager)
+        public static void SeedAdminUsers(UserManager<UserAccount> userManager,SystemConfig config)
         {
             var admins = userManager.GetUsersInRoleAsync(ADMIN).GetAwaiter().GetResult();
             if (admins.Count == 0)
             {
                 UserAccount admin = new UserAccount()
                 {
-                    UserName = "admin@thinkmay.com",
-                    Email = "admin@thinkmay.com",
+                    UserName = config.AdminLogin.Email,
+                    Email = config.AdminLogin.Email,
                     FullName = "Default Admin",
                     EmailConfirmed = true,
                 };
 
-                const string defaultPassword = "ASDFak!C#$%2351531c2c152";
+                string defaultPassword = config.AdminLogin.Password;
 
                 if (userManager.FindByNameAsync(admin.UserName).GetAwaiter().GetResult() == null)
                 {

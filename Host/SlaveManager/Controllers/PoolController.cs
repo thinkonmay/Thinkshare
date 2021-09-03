@@ -68,40 +68,16 @@ namespace SlaveManager.Controllers
         }
 
 
-        /// <summary>
-        /// Add a specific Slave device 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
-        [HttpPost("Add")]
-        public IActionResult AddSlaveDevice(int SlaveID)
-        {
-            return _slavePool.AddSlaveId(SlaveID) ? Ok() : BadRequest();
-        }
-
-
 
         /// <summary>
         /// Reject slave from slavepool but still keep it device infromation in database. 
         /// </summary>
-        /// <param name="ID"></param>
+        /// <param name="SlaveID"></param>
         /// <returns></returns>
         [HttpDelete("Reject")]
         public IActionResult RejectSlave(int SlaveID)
         {
             return _slavePool.RejectSlave(SlaveID) ? Ok() : BadRequest();
-        }
-
-
-        /// <summary>
-        /// Disconnect slave but still keep its ID in slavepool
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
-        [HttpDelete("Disconnect")]
-        public IActionResult DisconnectSlave(int SlaveID)
-        {
-            return _slavePool.DisconnectSlave(SlaveID) ? Ok() : BadRequest();
         }
     }
 }

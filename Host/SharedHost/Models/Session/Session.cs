@@ -21,7 +21,7 @@ namespace SharedHost.Models.Session
 
             QoE = qoe;
             ClientOffer = false;
-            SignallingUrl = "ws://" + config.BaseUrl + ":" + config.SignallingPort + "/Session"; ;
+            SignallingUrl = config.SignallingWs; ;
             StunServer = config.StunServer;
             // StartTime = DateTime.Now;
         }

@@ -22,8 +22,7 @@ namespace Conductor.Controllers
         [HttpPost("Registered")]
         public async Task<IActionResult> ReportSlaveRegistered(SlaveDeviceInformation infor)
         {
-            await _admin.ReportSlaveRegistered(infor);
-            return Ok();
+            return (await _admin.ReportSlaveRegistered(infor))? Ok():BadRequest();
         }
 
         [HttpPost("Disconnected")]

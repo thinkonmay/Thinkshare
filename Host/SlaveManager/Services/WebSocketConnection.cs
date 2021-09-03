@@ -36,8 +36,20 @@ namespace SlaveManager.Services
             //reject request if ID is not found
             if(!_slavePool.SearchForSlaveID(device_information.ID))
             {
-                return false;
+                if (await _conductor.ReportSlaveRegistered(device_information))
+                {
+                    _slavePool.AddSlaveId(device_information.ID);
+                }
+                else
+                {
+                    return false;
+                }
             }
+            else
+            {
+                await _conductor.ReportSlaveRegistered(device_information);
+            }
+
 
 
 
@@ -57,7 +69,7 @@ namespace SlaveManager.Services
                 slave.ws = ws;
                 _slavePool.AddSlaveDeviceWithKey(device_information.ID, slave);
 
-                await _conductor.ReportSlaveRegistered(device_information);
+                
 
                 Message accept = new Message();
                 accept.From = Module.HOST_MODULE;

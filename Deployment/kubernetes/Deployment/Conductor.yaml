@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: conductor
+  labels:
+    app: conductor
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80    
+  selector:
+   app: conductor
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: systemdb-service
+  labels:
+    app: conductor
+spec:
+  type: ClusterIP
+  ports:
+   - port: 5432
+  selector:
+   app: conductor
+---
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: conductor
+spec:
+  selector:
+    matchLabels:
+      app: conductor
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: conductor
+    spec:
+      containers:
+      - name: conductor
+        image: pigeatgarlic/conductor:release_latest
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "300m"
+        ports:
+        - containerPort: 80
+
+      - name: systemdb
+        image: postgres:latest
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "300m"
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - configMapRef:
+            name: systemdb-config
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: systemdb-volume
+
+      volumes:
+      - name: systemdb-volume
+        persistentVolumeClaim:
+          claimName: systemdb-volume-claim

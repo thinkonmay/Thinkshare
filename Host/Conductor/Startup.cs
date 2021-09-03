@@ -158,7 +158,6 @@ namespace Conductor
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
             
-            app.UseStaticFiles();
             app.UseRouting();
 
             app.UseAuthentication();

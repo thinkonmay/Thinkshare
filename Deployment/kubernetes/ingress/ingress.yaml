@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Ingress
+metadata:
+  name: minimal-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+#
+  - http:
+    paths:
+    - path: /Slave
+      pathType: /Register
+      backend:
+        service:
+          name: slavemanager
+
+  - http:
+    paths:
+    - path: /swagger/slavemanager.html
+      pathType: /swagger/index.html
+      backend:
+        service:
+          name: slavemanager
+
+
+#
+  - http:
+    paths:
+    - path: /swagger/signalling.html
+      pathType: /swagger/index.html
+      backend:
+        service:
+          name: signalling
+
+  - http:
+    paths:
+    - path: /Signalling
+      pathType: /Session
+      backend:
+        service:
+          name: signalling
+
+
+#
+  - http:
+      paths:
+      - path: /database
+        pathType: /
+        backend:
+          service:
+            name: systemdb
+
+#
+
+  - http:
+    paths:
+    - path: /Account
+      pathType: /Account
+      backend:
+        service:
+          name: conductor
+
+  - http:
+    paths:
+    - path: /swagger/conductor.html
+      pathType: /swagger/index.html
+      backend:
+        service:
+          name: conductor
+
+  - http:
+    paths:
+    - path: /Admin
+      pathType: /Admin
+      backend:
+        service:
+          name: conductor
+#
+  - http:
+    paths:
+    - path: /resources
+      pathType: /
+      backend:
+        service:
+          name: resources
+
+  - http:
+    paths:
+    - path: /stun
+      pathType: /
+      backend:
+        service:
+          name: coturn
