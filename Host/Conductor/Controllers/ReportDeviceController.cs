@@ -20,7 +20,7 @@ namespace Conductor.Controllers
         }
 
         [HttpPost("Registered")]
-        public async Task<IActionResult> ReportSlaveRegistered(SlaveDeviceInformation infor)
+        public async Task<IActionResult> ReportSlaveRegistered([FromBody] SlaveDeviceInformation infor)
         {
             return (await _admin.ReportSlaveRegistered(infor))? Ok():BadRequest();
         }

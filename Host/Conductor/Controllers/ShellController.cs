@@ -47,8 +47,6 @@ namespace Conductor.Controllers
         /// <summary>
         /// Send a command line to an specific process id of an specific slave device
         /// </summary>
-        /// <param name="slave_id"></param>
-        /// <param name="process_id"></param>
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpPost("ForwardCommand")]

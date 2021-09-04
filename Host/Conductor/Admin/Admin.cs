@@ -51,19 +51,20 @@ namespace Conductor.Administration
                 device.GPU = information.GPU;
                 device.OS = information.OS;
                 device.RAMcapacity = information.RAMcapacity;
-                
+                await _db.SaveChangesAsync();
+                    
                 //broadcast slave register event
                 await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
                 return true;
             }
             else
             {
+                //accept device if the hw configuration match 
                 if (device.CPU == information.CPU &&
                    device.GPU == information.GPU &&
                    device.OS == information.OS &&
                    device.RAMcapacity == information.RAMcapacity)
                 {
-                    //accept device if the hw configuration match 
 
                     //broadcast slave register event
                     await _adminHubctx.Clients.All.ReportSlaveRegistered(information);

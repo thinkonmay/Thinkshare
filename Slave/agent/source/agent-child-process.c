@@ -80,6 +80,7 @@ handle_child_process_io(gpointer data)
     {
         DWORD dwRead, dwWritten;
         CHAR chBuf[BUFSIZE];
+        ZeroMemory(chBuf, BUFSIZE);
         BOOL bSuccess = FALSE;
         if (proc->completed) {return;}
 
