@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Conductor.Models.User;
 using Conductor.Services;
 using System.Threading.Tasks;
+using Conductor.Data;
 using SharedHost;
 using System.IO;
 
