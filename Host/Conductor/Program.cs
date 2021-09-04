@@ -40,7 +40,6 @@ namespace Conductor
                 var systemconfig = services.GetRequiredService<SystemConfig>();
                 var config = services.GetRequiredService<IConfiguration>();
 
-                context.Database.Migrate();
                 DataSeeder.SeedRoles(roleManager);
                 DataSeeder.SeedAdminUsers(userManager,systemconfig);
                 DataSeeder.SeedUserRole(userManager);
