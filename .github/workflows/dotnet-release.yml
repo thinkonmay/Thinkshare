@@ -59,6 +59,7 @@ jobs:
 
   deployment:
     runs-on: ubuntu-latest
+    needs: build
     steps:
     - name: Deploy on kubernetes
       uses: appleboy/ssh-action@master
