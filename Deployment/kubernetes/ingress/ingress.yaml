@@ -26,7 +26,7 @@ spec:
           service:
             name: systemdb
             port:
-              number: 5432
+              number: 80
 
   - host: conductor.thinkmay.net
     http:
