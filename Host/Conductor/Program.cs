@@ -15,24 +15,7 @@ namespace Conductor
     {
         public static void Main(string[] args)
         {
-            var host = CreateHostBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    var env = hostingContext.HostingEnvironment;
-
-                    // find the shared folder in the parent folder
-                    var sharedFolder = Path.Combine(env.ContentRootPath, "..", "SharedHost");
-
-                    //load the SharedSettings first, so that appsettings.json overrwrites it
-                    config
-                        .AddJsonFile(Path.Combine(sharedFolder, "SharedSettings.json"), optional: true) // When running using dotnet run
-                        .AddJsonFile("SharedSettings.json", optional: true) // When app is published
-                        .AddJsonFile("appsettings.json", optional: true)
-                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
-
-                    config.AddEnvironmentVariables();
-                })
-                .Build();
+            var host = CreateHostBuilder(args).Build();
             SeedDatabase(host);
             host.Run();
         }

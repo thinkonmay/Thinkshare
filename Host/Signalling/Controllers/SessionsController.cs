@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Signalling.Models;
 using Signalling.Interfaces;
 using System.Net;
+using SharedHost;
+using Newtonsoft.Json;
+using SharedHost.Models.Session;
+using RestSharp;
 
 namespace Signalling.Controllers
 {
@@ -21,10 +25,30 @@ namespace Signalling.Controllers
 
         private readonly ISessionQueue Queue;
 
-        public SessionsController(IWebSocketHandler wsHandler, ISessionQueue queue)
+        public SessionsController(IWebSocketHandler wsHandler, ISessionQueue queue,SystemConfig cofig)
         {
             _wsHandler = wsHandler;
             Queue = queue;
+            SeedSession(cofig);
+        }
+
+        void SeedSession(SystemConfig systemConfig)
+        {
+
+            var conductor = new RestClient(systemConfig.Conductor+"/System");
+            var request = new RestRequest("SeedSession")
+                .AddJsonBody(systemConfig.AdminLogin);
+
+            var response = conductor.Post(request);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var seededSession = JsonConvert.DeserializeObject<List<SessionPair>>(response.Content);
+                foreach(var i in seededSession)
+                {
+                    Queue.AddSessionPair(i);
+                }
+            }
         }
 
 

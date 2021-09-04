@@ -1,0 +1,54 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: systemdb-service
+  labels:
+    app: systemdb
+spec:
+  type: ClusterIP
+  ports:
+   - port: 5432
+  selector:
+   app: systemdb
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: systemdb
+spec:
+  selector:
+    matchLabels:
+      app: systemdb
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: systemdb
+    spec:
+      containers:
+      - name: systemdb
+        image: postgres
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - configMapRef:
+            name: systemdb-config
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: systemdb-volume
+
+      volumes:
+      - name: systemdb-volume
+        persistentVolumeClaim:
+          claimName: systemdb-volume-claim

@@ -73,10 +73,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-	
-    <ItemGroup>
-	    <Content Include="..\SharedHost\SharedSettings.json" Link="SharedSettings.json" CopyToOutputDirectory="PreserveNewest" />
-    </ItemGroup>
 
 	
   <Import Project="..\SharedHost\SharedHost.projitems" Label="Shared" />

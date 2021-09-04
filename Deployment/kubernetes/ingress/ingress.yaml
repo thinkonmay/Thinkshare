@@ -23,10 +23,7 @@ spec:
             name: slavemanager
             port:
               number: 80
-
-
   #
-
       - path: /Signalling
         pathType: Prefix
         backend:
@@ -41,7 +38,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: conductor
+            name: systemdb
             port:
               number: 5432
 

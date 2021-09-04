@@ -39,10 +39,4 @@
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\Storage\" />
   </ItemGroup>
-  <ItemGroup>
-    <Page Include="$(MSBuildThisFileDirectory)SharedSettings.json">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
 </Project>

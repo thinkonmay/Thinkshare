@@ -42,15 +42,18 @@ namespace Conductor.Administration
         {
             var device = _db.Devices.Find(information.ID);
             if(device == null) { return false; }
-
-            await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
+            
 
             if (device.CPU == null)
             {
+                //setup device infomation for slave device
                 device.CPU = information.CPU;
                 device.GPU = information.GPU;
                 device.OS = information.OS;
                 device.RAMcapacity = information.RAMcapacity;
+                
+                //broadcast slave register event
+                await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
                 return true;
             }
             else
@@ -60,6 +63,10 @@ namespace Conductor.Administration
                    device.OS == information.OS &&
                    device.RAMcapacity == information.RAMcapacity)
                 {
+                    //accept device if the hw configuration match 
+
+                    //broadcast slave register event
+                    await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
                     return true;
                 }
                 else
