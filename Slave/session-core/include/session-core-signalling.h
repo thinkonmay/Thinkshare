@@ -1,3 +1,12 @@
+/// <summary>
+/// @file session-core-signalling.h
+/// @author {Do Huy Hoang} ({huyhoangdo0205@gmail.com})
+/// </summary>
+/// @version 1.0
+/// @date 2021-09-05
+/// 
+/// @copyright Copyright (c) 2021
+/// 
 #ifndef __SESSION_CORE_SIGNALLING_H__
 #define __SESSION_CORE_SIGNALLING_H__
 
@@ -13,78 +22,86 @@
 #include <gst/gst.h>
 
 /*Used as webrtcbin callback function*/
-void                send_ice_candidate_message              (GstElement* webrtc G_GNUC_UNUSED,
-                                                             guint mlineindex,
-                                                             gchar* candidate,
-                                                             SessionCore* core G_GNUC_UNUSED);
-
-void                on_negotiation_needed                   (GstElement* element,
-                                                             SessionCore* core);
-
-
-void                on_ice_gathering_state_notify           (GstElement* webrtcbin,
-                                                             GParamSpec* pspec,
-                                                             gpointer user_data);
-
-
-SignallingHub*      signalling_hub_initialize               (SessionCore* core);
-
-
-gchar*              get_string_from_json_object             (JsonObject* object);
-
-void                on_server_closed                        (SoupWebsocketConnection* conn G_GNUC_UNUSED,
-                                                             SessionCore* core G_GNUC_UNUSED);
 
 /// <summary>
-/// Answer created by our pipeline, to be sent to the peer 
+/// send ice candidate to peer through signalling server
+/// typically emitted when pipeline is set to PLAYING 
 /// </summary>
-/// <param name="promise"></param>
+/// <param name="webrtc"></param>
+/// <param name="mlineindex"></param>
+/// <param name="candidate"></param>
 /// <param name="core"></param>
-void                on_answer_created                       (GstPromise* promise,
-                                                             SessionCore* core);
+void                            send_ice_candidate_message              (GstElement* webrtc,
+                                                                        guint mlineindex,
+                                                                        gchar* candidate,
+                                                                        SessionCore* core);
 
-void                on_server_message                       (SoupWebsocketConnection* conn,
-                                                             SoupWebsocketDataType type,
-                                                             GBytes* message,
-                                                             SessionCore* core);
-
-void                on_server_connected                     (SoupSession* session,
-                                                             GAsyncResult* res,
-                                                             SessionCore* core);
-
-void                connect_to_websocket_signalling_server_async(SessionCore* core);
-
-gboolean            register_with_server                    (SessionCore* core);
-
-void                signalling_hub_setup                    (SignallingHub* hub,
-                                                             gchar* url,
-                                                             gboolean client_offer,
-                                                             gchar* stun_server,
-                                                             gint session_slave_id);
-
-gboolean            signalling_close                        (SignallingHub* hub);
+/// <summary>
+/// handle on negotiation signal from webrtcbin element, 
+/// typically emitted when pipeline is set to PLAYING 
+/// <param name="element"></param>
+/// <param name="core"></param>
+void                            on_negotiation_needed                   (GstElement* element,
+                                                                        SessionCore* core);
 
 
+/// <summary>
+/// handle on ice gathering state from webrtcbin element,
+/// typically emitted when pipeline is set to PLAYING 
+/// </summary>
+/// <param name="webrtcbin"></param>
+/// <param name="pspec"></param>
+/// <param name="user_data"></param>
+void                            on_ice_gathering_state_notify           (GstElement* webrtcbin,
+                                                                        GParamSpec* pspec,
+                                                                        gpointer user_data);
+
+/// <summary>
+/// initialize signalling hub 
+/// </summary>
+/// <param name="core"></param>
+/// <returns></returns>
+SignallingHub*                  signalling_hub_initialize               (SessionCore* core);
 
 
+/// <summary>
+/// connect to signalling server, 
+/// this function should be triggered in initialize process
+/// </summary> 
+/// <param name="core">session core object</param>
+void                            connect_to_websocket_signalling_server_async(SessionCore* core);
 
-void                signalling_hub_set_stun_server          (SignallingHub* hub, 
-                                                             gchar* stun);
+/// <summary>
+/// reegister with server by sending session slave id
+/// </summary> 
+/// <param name="core"></param>
+/// <returns></returns>
+gboolean                        register_with_server                    (SessionCore* core);
 
-gchar*              signalling_hub_get_stun_server          (SignallingHub* hub);
+void                            signalling_hub_setup                    (SignallingHub* hub,
+                                                                        gchar* url,
+                                                                        gboolean client_offer,
+                                                                        gchar* stun_server,
+                                                                        gint session_slave_id);
 
-PeerCallState       signalling_hub_get_peer_call_state      (SignallingHub* hub);
+gboolean                        signalling_close                        (SignallingHub* hub);
 
-SignallingServerState signalling_hub_get_signalling_state   (SignallingHub* hub);
+void                            signalling_hub_set_stun_server          (SignallingHub* hub, 
+                                                                        gchar* stun);
 
-void                signalling_hub_set_peer_call_state      (SignallingHub* hub,
-                                                             PeerCallState state);
+gchar*                          signalling_hub_get_stun_server          (SignallingHub* hub);
 
-void                signalling_hub_set_signalling_state     (SignallingHub* hub,
-                                                             SignallingServerState state);
+PeerCallState                   signalling_hub_get_peer_call_state      (SignallingHub* hub);
 
-SoupWebsocketConnection*
-                    signalling_hub_get_websocket_connection (SignallingHub* hub);
+SignallingServerState           signalling_hub_get_signalling_state     (SignallingHub* hub);
+
+void                            signalling_hub_set_peer_call_state      (SignallingHub* hub,
+                                                                        PeerCallState state);
+
+void                            signalling_hub_set_signalling_state     (SignallingHub* hub,
+                                                                        SignallingServerState state);
+
+
 
 
 #endif // !__SESSION_CORE_SIGNALLING_H

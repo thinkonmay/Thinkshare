@@ -532,7 +532,7 @@ on_sdp_exchange(gchar* data,
     {
         Pipeline* pipe = session_core_get_pipeline(core);
         pipeline_initialize(core);
-        setup_pipeline(core);
+        session_core_setup_pipeline(core);
         return;
     }
 
@@ -699,11 +699,6 @@ signalling_hub_set_stun_server(SignallingHub* hub, gchar* stun)
     hub->stun_server = stun;
 }
 
-SoupWebsocketConnection*
-signalling_hub_get_websocket_connection(SignallingHub* hub)
-{
-    return hub->connection;
-}
 
 SignallingServerState 
 signalling_hub_get_signalling_state(SignallingHub* hub)

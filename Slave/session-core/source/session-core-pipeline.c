@@ -130,6 +130,7 @@ start_pipeline(SessionCore* core)
 #define RTP_CAPS_OPUS "application/x-rtp,media=audio,payload=96,encoding-name="
 #define RTP_CAPS_VIDEO "application/x-rtp,media=video,payload=97,encoding-name="
 
+
 void
 setup_element_factory(SessionCore* core,
     Codec video, 
@@ -148,11 +149,12 @@ setup_element_factory(SessionCore* core,
                     "queue ! videoconvert ! queue ! "
                     "mfh264enc name=videoencoder ! queue ! rtph264pay name=rtp ! "
                     "queue ! " RTP_CAPS_VIDEO "H264 ! sendrecv. "
-                    "audiotestsrc ! audioconvert ! audioresample ! queue ! "
+                    "wasapisrc name=audiocapsrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
                     "opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
 
-
+            pipe->audio_element[WASAPI_SOURCE_SOUND] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audiocapsrc");
             pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
             pipe->video_element[RTP_H264_PAYLOAD] = 
@@ -173,10 +175,13 @@ setup_element_factory(SessionCore* core,
                     " ! queue ! videoconvert ! queue ! "
                     "mfh265enc name=videoencoder ! rtph265pay name=rtp ! "
                     "queue ! " RTP_CAPS_VIDEO "H265 ! sendrecv. "
-                    "audiotestsrc ! audioconvert ! audioresample ! queue ! "
+                    "wasapisrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
                     "opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
 
+
+            pipe->audio_element[WASAPI_SOURCE_SOUND] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audiocapsrc");
             pipe->video_element[NVIDIA_H265_MEDIA_FOUNDATION] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
             pipe->video_element[RTP_H265_PAYLOAD] = 
@@ -197,10 +202,13 @@ setup_element_factory(SessionCore* core,
                     " ! queue ! videoconvert ! queue ! "
                     "vp9enc name=videoencoder ! rtpvp9pay name=rtp ! "
                     "queue ! " RTP_CAPS_VIDEO "VP9 ! sendrecv. "
-                    "audiotestsrc ! audioconvert ! audioresample ! queue ! "
+                    "wasapisrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
                     "opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
 
+
+            pipe->audio_element[WASAPI_SOURCE_SOUND] = 
+                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audiocapsrc");
             pipe->video_element[VP9_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
             pipe->video_element[RTP_VP9_PAYLOAD] = 
@@ -224,7 +232,6 @@ setup_element_factory(SessionCore* core,
 gpointer
 setup_pipeline(SessionCore* core)
 {
-
     SignallingHub* signalling = session_core_get_signalling_hub(core);
     Pipeline* pipe = session_core_get_pipeline(core);
     QoE* qoe= session_core_get_qoe(core);
@@ -233,7 +240,7 @@ setup_pipeline(SessionCore* core)
     pipe->state = PIPELINE_CREATING_ELEMENT;
 
     
-    
+
     setup_element_factory(core, 
         qoe_get_video_codec(qoe),
         qoe_get_audio_codec(qoe));
@@ -297,7 +304,7 @@ setup_element_property(SessionCore* core)
 
     // if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", qoe_get_video_bitrate(qoe), NULL);}
 
-    if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "bitrate", qoe_get_video_bitrate(qoe), NULL);}
+    // if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "bitrate", qoe_get_video_bitrate(qoe), NULL);}
 
 
     // /*set b-frame numbers property*/
@@ -313,7 +320,7 @@ setup_element_property(SessionCore* core)
 
     
 
-    // if (pipe->audio_element[WASAPI_SOURCE_SOUND]) { g_object_set(pipe->audio_element[WASAPI_SOURCE_SOUND], "low-latency", TRUE, NULL);}
+    if (pipe->audio_element[WASAPI_SOURCE_SOUND]) { g_object_set(pipe->audio_element[WASAPI_SOURCE_SOUND], "low-latency", TRUE, NULL);}
 
     // if (pipe->audio_element[OPUS_ENCODER]) { g_object_set(pipe->audio_element[OPUS_ENCODER], "bitrate", qoe_get_audio_bitrate(qoe), NULL);}
 
@@ -341,7 +348,7 @@ incoming_stream(GstElement* element, GstPad* pad, gpointer data)
 
 
 
-void
+static void
 connect_signalling_handler(SessionCore* core)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
@@ -361,8 +368,8 @@ connect_signalling_handler(SessionCore* core)
         G_CALLBACK(send_ice_candidate_message), core);
     g_signal_connect(pipe->webrtcbin, "notify::ice-gathering-state",
         G_CALLBACK(on_ice_gathering_state_notify), core);
-    //g_signal_connect(pipe->webrtcbin, "pad-added", 
-    //    G_CALLBACK(incoming_stream), NULL);
+    g_signal_connect(pipe->webrtcbin, "pad-added", 
+       G_CALLBACK(incoming_stream), NULL);
     //g_main_context_pop_thread_default(session_core_get_main_context(core));
 }
 

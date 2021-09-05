@@ -1,11 +1,5 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-
+﻿@{
     Layout = "_PublishLayout";
-
-
     int SessionClientID = Model.clientSession.SessionClientID;
     string SignallingUrl = string.Format("\"{0}\"", Model.clientSession.SignallingUrl,""); //@"""Model.clientSession.SignallingUrl""";
     string StunServer = string.Format("\"{0}\"", Model.clientSession.StunServer);
@@ -143,6 +137,9 @@ var app = new Vue({
             RTPconfig:   
             {"iceServers":    
                 [
+                    {
+                        "urls": [@Html.Raw(StunServer)]
+                    },
                     {
                         "urls": ["stun:stun.l.google.com:19302"] 
                     }

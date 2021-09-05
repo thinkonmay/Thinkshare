@@ -1,3 +1,12 @@
+/// <summary>
+/// @file session-core-pipeline.h
+/// @author {Do Huy Hoang} ({huyhoangdo0205@gmail.com})
+/// </summary>
+/// @version 1.0
+/// @date 2021-09-05
+/// 
+/// @copyright Copyright (c) 2021
+/// 
 #include <session-core-type.h>
 #include <gst/gst.h>
 
@@ -5,58 +14,36 @@
 #include <qoe.h>
 
 
-/// <summary>
-/// 
-/// </summary>
-/// <param name="core"></param>
-void				connect_signalling_handler		(SessionCore* core);
 
 /// <summary>
-/// 
+/// setup pipeline then start stream, 
+/// the stream will include audio and video
 /// </summary>
 /// <param name="core"></param>
 /// <returns></returns>
 gpointer			setup_pipeline					(SessionCore* core);
 
-/// <summary>
-/// 
-/// </summary>
-/// <param name="core"></param>
-/// <returns></returns>
-gboolean			start_pipeline					(SessionCore* core);
 
 /// <summary>
-/// 
+/// get GstElement pipeline of this pipeline
 /// </summary>
 /// <param name="pipeline"></param>
-/// <returns></returns>
+/// <returns>pipeline element of </returns>
 GstElement*			pipeline_get_pipline			(Pipeline* pipeline);
 
 /// <summary>
-/// 
+/// get webrtcbin element from pipeline
 /// </summary>
 /// <param name="pipeline"></param>
 /// <returns></returns>
 GstElement*			pipeline_get_webrtc_bin			(Pipeline* pipeline);
 
 /// <summary>
-/// 
+/// initliaze pipeline,
+/// include assigning memory to pipeline
 /// </summary>
 /// <returns></returns>
 Pipeline*			pipeline_initialize				(SessionCore* core);
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="core"></param>
-void				setup_element_property			(SessionCore* core);
-
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="core"></param>
-void				setup_element_cap				(SessionCore* core);
 
 /// <summary>
 /// 
@@ -66,7 +53,7 @@ void				setup_element_cap				(SessionCore* core);
 PipelineState		pipeline_get_state				(Pipeline* pipe);
 
 /// <summary>
-/// 
+/// set current state of pipeline
 /// </summary>
 /// <param name="pipe"></param>
 /// <param name="state"></param>
@@ -74,7 +61,6 @@ void                pipeline_set_state              (Pipeline* pipe,
                                                      PipelineState state);
 
 
-void                stop_pipeline                   (Pipeline* pipe);
 
 
 
