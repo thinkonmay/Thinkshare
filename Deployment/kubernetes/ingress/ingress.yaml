@@ -12,7 +12,6 @@ spec:
     - signalling.thinkmay.net
     - slavemanager.thinkmay.net
     - conductor.thinkmay.net
-    - stun.thinkmay.net
     - thinkmay.net
     secretName: secret-tls
   rules:
