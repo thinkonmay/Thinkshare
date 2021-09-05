@@ -9,7 +9,6 @@ spec:
   tls:
   - hosts:
     - resources.thinkmay.net
-    - database.thinkmay.net
     - signalling.thinkmay.net
     - slavemanager.thinkmay.net
     - conductor.thinkmay.net
@@ -17,17 +16,6 @@ spec:
     - thinkmay.net
     secretName: secret-tls
   rules:
-  - host: database.thinkmay.net
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: systemdb
-            port:
-              number: 80
-
   - host: conductor.thinkmay.net
     http:
       paths:

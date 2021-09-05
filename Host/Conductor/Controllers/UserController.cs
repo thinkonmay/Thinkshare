@@ -16,6 +16,9 @@ using SharedHost.Models.Device;
 
 namespace Conductor.Controllers
 {
+    /// <summary>
+    /// Routes used by user to fetch information about the system
+    /// </summary>
     [Route("/User")]
     [ApiController]
     [Authorize]

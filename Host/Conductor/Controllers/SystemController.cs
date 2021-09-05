@@ -14,6 +14,9 @@ using System.Collections.Generic;
 
 namespace Conductor.Controllers
 {
+    /// <summary>
+    /// Controller used by other service to initialize the system
+    /// </summary>
     [Route("/System")]
     [ApiController]
     [Produces("application/json")]
@@ -38,6 +41,11 @@ namespace Conductor.Controllers
             _admin = admin;
         }
 
+        /// <summary>
+        /// [Slavemanager] seed all current device
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("SeedDevices")]
         public async Task<IActionResult> SeedDevices([FromBody] LoginModel model)
         {
@@ -64,6 +72,12 @@ namespace Conductor.Controllers
             return BadRequest();
         }
 
+
+        /// <summary>
+        /// [Signalling] seed current on going session
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost("SeedSessions")]
         public async Task<IActionResult> SeedSessions([FromBody] LoginModel model)
         {

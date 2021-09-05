@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Conductor.Controllers
 {
+    /// <summary>
+    /// Reserve for RESTful request
+    /// </summary>
     [Route("/ReportShell")]
     [ApiController]
     public class ReportShellController : Controller

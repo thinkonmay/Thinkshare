@@ -28,7 +28,7 @@ namespace Conductor.Services
             _config = config;
 
             _pool =     new RestClient(_config.SlaveManager + "/Pool");
-            _session =  new RestClient( _config.SlaveManager + "/Session");
+            _session =  new RestClient(_config.SlaveManager + "/Session");
             _shell =    new RestClient(_config.SlaveManager + "/Shell");
         }
 
