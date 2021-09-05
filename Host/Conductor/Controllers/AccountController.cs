@@ -126,7 +126,7 @@ namespace Conductor.Controllers
         /// <returns></returns>
         [Authorize(Roles= "Administrator")]
         [HttpGet("GetInfor")]
-        public async Task<IActionResult> GetInfor()
+        public async Task<IActionResult> GetUser()
         {
             return(_userManager.Where(o=>_userManager.GetRoles(o).FirstOrDefault() == "User"));
         }
