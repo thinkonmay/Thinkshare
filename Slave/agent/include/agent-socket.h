@@ -82,7 +82,7 @@ gpointer                                update_device_with_host             (Age
 Socket*                                 initialize_socket                   (AgentObject* agent);
 
 /// <summary>
-/// 
+/// close socket, this should be used after agent termination signal is send
 /// </summary>
 /// <param name="socket"></param>
 void                                    socket_close                        (Socket* socket);
@@ -100,7 +100,7 @@ void                                    socket_close                        (Soc
 SoupWebsocketConnection*                socket_get_connection               (Socket* socket);
 
 /// <summary>
-/// set a host url for a specific socket
+/// set host url for socket
 /// </summary>
 /// <param name="socket"></param>
 /// <param name="Host_Url"></param>
