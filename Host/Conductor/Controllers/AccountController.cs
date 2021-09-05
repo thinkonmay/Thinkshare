@@ -114,21 +114,9 @@ namespace Conductor.Controllers
         [HttpGet("GetInfor")]
         public async Task<IActionResult> GetInfor()
         {
-            int ClientId = _tokenGenerator.GetUserFromHttpRequest(User);
+            int UserID = _tokenGenerator.GetUserFromHttpRequest(User);
             var account = await _userManager.FindByIdAsync(UserID.ToString());
             return Ok(account);
-        }
-
-
-        /// <summary>
-        /// get personal information of user
-        /// </summary>
-        /// <returns></returns>
-        [Authorize(Roles= "Administrator")]
-        [HttpGet("GetInfor")]
-        public async Task<IActionResult> GetUser()
-        {
-            return(_userManager.Where(o=>_userManager.GetRoles(o).FirstOrDefault() == "User"));
         }
     }
 }
