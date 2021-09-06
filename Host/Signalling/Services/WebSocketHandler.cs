@@ -58,28 +58,32 @@ namespace Signalling.Services
         public void HandleOnlineList(int subjectID, WebSocket ws)
         {
             WebSocketReceiveResult message;
-            do
+            try
             {
-                using (var memoryStream = new MemoryStream())
+                do
                 {
-                    message = ReceiveMessage(ws, memoryStream).Result;
-                    if (message.Count > 0)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                        var WebSocketMessage = JsonConvert.DeserializeObject<WebSocketMessage>(receivedMessage);
-
-                        switch (WebSocketMessage.RequestType.ToUpper())
+                        message = ReceiveMessage(ws, memoryStream).Result;
+                        if (message.Count > 0)
                         {
-                            case WebSocketMessageResult.OFFER_SDP:
-                                _handleSdpOffer(ws, WebSocketMessage);
-                                break;
-                            case WebSocketMessageResult.OFFER_ICE:
-                                _handleIceOffer(ws, WebSocketMessage);
-                                break;
+                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                            var WebSocketMessage = JsonConvert.DeserializeObject<WebSocketMessage>(receivedMessage);
+
+                            switch (WebSocketMessage.RequestType.ToUpper())
+                            {
+                                case WebSocketMessageResult.OFFER_SDP:
+                                    _handleSdpOffer(ws, WebSocketMessage);
+                                    break;
+                                case WebSocketMessageResult.OFFER_ICE:
+                                    _handleIceOffer(ws, WebSocketMessage);
+                                    break;
+                            }
                         }
                     }
-                }
-            } while (ws.State == WebSocketState.Open);
+                } while (ws.State == WebSocketState.Open);
+            } catch (WebSocketException)
+            { }
             Queue.DevieGoesOffline(subjectID);
         }
 
@@ -216,14 +220,11 @@ namespace Signalling.Services
 
         public async Task Close(WebSocket ws)
         {
-            try{
+            try
+            {
                 await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-            } catch (WebSocketException) {
-                return;
-            }
-
+            } catch (WebSocketException) {  }
+            return;
         }
-
-
     }
 }

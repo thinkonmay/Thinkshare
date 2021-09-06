@@ -18,8 +18,6 @@ namespace SharedHost.Models.Session
 
         public int ScreenHeight { get; set; }
 
-        public int Framerate { get; set; }
-
         public Codec AudioCodec { get; set; }
 
         public Codec VideoCodec { get; set; }

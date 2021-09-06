@@ -60,10 +60,7 @@ namespace Signalling.Controllers
             if (context.WebSockets.IsWebSocketRequest)
             {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                Task t = _wsHandler.Handle(webSocket);
-
-                t.Wait();
-
+                await _wsHandler.Handle(webSocket);
                 await _wsHandler.Close(webSocket);
 
                 return new EmptyResult();
