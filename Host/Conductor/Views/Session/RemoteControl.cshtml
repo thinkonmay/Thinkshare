@@ -1,7 +1,7 @@
 ﻿@{
     Layout = "_PublishLayout";
     int SessionClientID = Model.clientSession.SessionClientID;
-    string SignallingUrl = string.Format("\"{0}\"", Model.clientSession.SignallingUrl,""); //@"""Model.clientSession.SignallingUrl""";
+    string SignallingUrl = string.Format("\"{0}\"", Model.clientSession.SignallingUrl,""); 
     string StunServer = string.Format("\"{0}\"", Model.clientSession.StunServer);
     string ClientOffer = Model.clientSession.ClientOffer? "true":"false";
 
@@ -252,7 +252,7 @@ var app = new Vue({
     watch: {
         showDrawer(newValue) {
             // Detach inputs when menu is shown.
-            if (newValue === true) 
+            if (newValue === true) {
                 webrtc.input.detach();
             } else {
                 webrtc.input.attach();
