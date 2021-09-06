@@ -11,7 +11,8 @@ spec:
     - resources.thinkmay.net
     - signalling.thinkmay.net
     - slavemanager.thinkmay.net
-    - conductor.thinkmay.net
+    - conductor.thinkmay.
+    - document.thinkmay.net
     - thinkmay.net
     secretName: secret-tls
   rules:
@@ -80,6 +81,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: document
+            name: frontend
             port:
               number: 3000
