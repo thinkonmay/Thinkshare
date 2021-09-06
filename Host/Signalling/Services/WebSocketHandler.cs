@@ -82,7 +82,7 @@ namespace Signalling.Services
                         }
                     }
                 } while (ws.State == WebSocketState.Open);
-            } catch (WebSocketException)
+            } catch (Exception)
             { }
             Queue.DevieGoesOffline(subjectID);
         }
@@ -223,7 +223,7 @@ namespace Signalling.Services
             try
             {
                 await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-            } catch (WebSocketException) {  }
+            } catch (Exception) {  }
             return;
         }
     }

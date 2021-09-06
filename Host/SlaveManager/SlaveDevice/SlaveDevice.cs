@@ -55,7 +55,7 @@ namespace SlaveManager.SlaveDevices
                         }
                     }
                 } while (ws.State == WebSocketState.Open);
-            } catch (WebSocketException)
+            } catch (Exception)
             { }
             await _conductor.ReportSlaveDisconnected(SlaveID);
             State = new DeviceDisconnected();

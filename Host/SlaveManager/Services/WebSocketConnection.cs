@@ -120,7 +120,7 @@ namespace SlaveManager.Services
                         }
                     }
                 } while (ws.State == WebSocketState.Open);
-            } catch (WebSocketException)
+            } catch (Exception)
             {
                 return;
             }
@@ -172,7 +172,7 @@ namespace SlaveManager.Services
             try
             {
                 await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-            }  catch (WebSocketException)   {  }
+            }  catch (Exception)   {  }
         }
     }
 }
