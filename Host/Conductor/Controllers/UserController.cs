@@ -70,7 +70,7 @@ namespace Conductor.Controllers
                     resp.Add(device_infor);
                 }
             }
-            return Ok(JsonConvert.SerializeObject(resp));
+            return Ok(resp);
         }
 
 
@@ -102,7 +102,7 @@ namespace Conductor.Controllers
                 };
                 resp.Add(device_infor);                
             }
-            return Ok(JsonConvert.SerializeObject(resp));
+            return Ok(resp);
         }
     }
 }
