@@ -1,8 +1,0 @@
-var searchData=
-[
-  ['register_5fwith_5fhost_0',['register_with_host',['../agent-socket_8h.html#ab6a8747ff67b552fcf48b21d41d80d2b',1,'register_with_host(AgentObject *self):&#160;agent-socket.c'],['../agent-socket_8c.html#af1be14b70e770607415db7a7e4877395',1,'register_with_host(AgentObject *agent):&#160;agent-socket.c']]],
-  ['register_5fwith_5fserver_1',['register_with_server',['../session-core-signalling_8h.html#a51f3b6ecf8538ff0c123273cc0ea470d',1,'register_with_server(SessionCore *core):&#160;session-core-signalling.c'],['../session-core-signalling_8c.html#a51f3b6ecf8538ff0c123273cc0ea470d',1,'register_with_server(SessionCore *core):&#160;session-core-signalling.c']]],
-  ['remote_5fcontrol_5fdisconnect_2',['remote_control_disconnect',['../agent-ipc_8h.html#a5ea3feb484bece99da47844ef436d14f',1,'remote_control_disconnect(AgentObject *object):&#160;agent-ipc.h'],['../agent-session-initializer_8h.html#a5ea3feb484bece99da47844ef436d14f',1,'remote_control_disconnect(AgentObject *object):&#160;agent-session-initializer.h']]],
-  ['remote_5fcontrol_5freconnect_3',['remote_control_reconnect',['../agent-ipc_8h.html#a686552dd015fd231709a0a216d6f83df',1,'remote_control_reconnect(AgentObject *object):&#160;agent-ipc.h'],['../agent-session-initializer_8h.html#a686552dd015fd231709a0a216d6f83df',1,'remote_control_reconnect(AgentObject *object):&#160;agent-session-initializer.h']]],
-  ['report_5fsession_5fcore_5ferror_4',['report_session_core_error',['../session-core_8h.html#a8c490d6e2f0525e61dd7cf65fda41fb1',1,'report_session_core_error(SessionCore *self, ErrorCode code):&#160;session-core.c'],['../session-core_8c.html#a8c490d6e2f0525e61dd7cf65fda41fb1',1,'report_session_core_error(SessionCore *self, ErrorCode code):&#160;session-core.c']]]
-];

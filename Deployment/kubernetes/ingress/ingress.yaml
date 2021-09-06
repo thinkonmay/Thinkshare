@@ -61,3 +61,14 @@ spec:
             name: slavemanager
             port:
               number: 80
+
+  - host: document.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: document
+            port:
+              number: 80
