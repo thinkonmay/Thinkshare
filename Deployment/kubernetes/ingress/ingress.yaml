@@ -72,3 +72,14 @@ spec:
             name: document
             port:
               number: 80
+
+  - host: thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: document
+            port:
+              number: 3000
