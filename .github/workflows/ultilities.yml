@@ -32,24 +32,14 @@ jobs:
         context: Client/static-file-server  
         push: true
         tags: ${{ env.RESOURCES_IMAGE }}
-
-  documentation:
-    needs: build-resources
-    # The type of runner that the job will run on
-    name: build doxygen
-    runs-on: ubuntu-latest
-    steps:
-      # Checks-out our repository
-      - uses: actions/checkout@v2
-
-      # Create temporary conductor dockerfile then build&push in host context
-      - name: build-document container
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        with:
-          context: .
-          file: Document/Dockerfile 
-          push: true
-          tags: ${{ env.DOCUMENT_IMAGE }}
+        
+    - name: build-document 
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: .
+        file: Document/Dockerfile 
+        push: true
+        tags: ${{ env.DOCUMENT_IMAGE }}
 
   deployment:
     runs-on: ubuntu-latest
