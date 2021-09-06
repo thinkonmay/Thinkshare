@@ -71,13 +71,7 @@ session_core_on_message(SessionCore* core,
 		}
 		else if (from == AGENT_MODULE)
 		{
-		}
-		else if (from == LOADER_MODULE)
-		{
-			switch (opcode)
-			{
-
-			}
+			
 		}
 		else if (from == HOST_MODULE)
 		{

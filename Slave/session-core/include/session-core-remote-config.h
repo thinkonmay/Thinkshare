@@ -12,25 +12,31 @@
 #include <gst/gst.h>
 #include <qoe.h>
 
-void			attach_bitrate_control				(SessionCore* core);
 
-void			set_dynamic_bitrate					(Pipeline* pipe, 
-												     QoE* qoe);
 
+
+
+/// <summary>
+/// initialize qoe metric measurement
+/// </summary> 
+/// <returns></returns>
 QoE*			qoe_initialize						();
 
+/// <summary>
+/// setup qoe metric measurement
+/// </summary> 
+/// <param name="qoe"></param>
+/// <param name="screen_width"></param>
+/// <param name="screen_height"></param>
+/// <param name="audio_codec"></param>
+/// <param name="video_codec"></param>
+/// <param name="qoe_mode"></param>
 void			qoe_setup							(QoE* qoe,
 		  											gint screen_width,
 		  											gint screen_height,
 		  											Codec audio_codec,
 		  											Codec video_codec,
 		  											QoEMode qoe_mode);
-
-gint			qoe_get_screen_width				(QoE* qoe);
-
-gint			qoe_get_screen_height				(QoE* qoe);
-
-gint			qoe_get_framerate					(QoE* qoe);
 
 
 /// <summary>
@@ -57,13 +63,6 @@ void			qoe_update_quality					(SessionCore* core,
 												     gint bandwidth,
 													 gint packets_lost);
 
-
-gint			qoe_get_audio_bitrate				(QoE* qoe);
-
-gint			qoe_get_video_bitrate				(QoE* qoe);
-
 Codec			qoe_get_audio_codec					(QoE* qoe);
 
 Codec			qoe_get_video_codec					(QoE* qoe);
-
-QoEMode			qoe_get_mode						(QoE* qoe);

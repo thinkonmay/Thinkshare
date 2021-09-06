@@ -38,8 +38,17 @@ namespace SharedHost.Models.Session
 
     public enum QoEMode
     {
-        AUDIO_PIORITY,
-        VIDEO_PIORITY
+        ULTRA_LOW_CONST = 1,
+        LOW_CONST,
+        MEDIUM_CONST,
+        HIGH_CONST,
+        VERY_HIGH_CONST,
+        ULTRA_HIGH_CONST,
+
+        SEGMENTED_ADAPTIVE_BITRATE,
+        NON_OVER_SAMPLING_ADAPTIVE_BITRATE,
+        OVER_SAMPLING_ADAPTIVE_BITRATE,
+        PREDICTIVE_ADAPTIVE_BITRATE
     }
 
 
@@ -53,10 +62,10 @@ namespace SharedHost.Models.Session
 
 
 
-        public const string    UNDEFINED_ERROR =                "UndefinedError";
-        public const string    AGENT_STATE_CONFLICT =           "Agent state conflict";
-        public const string    CURRUPTED_CONFIG_FILE =          "Corrupted file";
-        public const string    ERROR_FILE_OPERATION =           "Error file operation";
-        public const string    ERROR_PROCESS_OPERATION =        "Error process operation";
+        public const string    UNDEFINED_ERROR =                     "UndefinedError";
+        public const string    AGENT_STATE_CONFLICT =                "Agent state conflict";
+        public const string    CURRUPTED_CONFIG_FILE =               "Corrupted file";
+        public const string    ERROR_FILE_OPERATION =                "Error file operation";
+        public const string    ERROR_PROCESS_OPERATION =             "Error process operation";
     }
 }

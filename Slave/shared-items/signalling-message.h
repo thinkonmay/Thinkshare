@@ -1,3 +1,12 @@
+/// <summary>
+/// @file signalling-message.h
+/// @author {Do Huy Hoang} ({huyhoangdo0205@gmail.com})
+/// </summary>
+/// @version 1.0
+/// @date 2021-09-06
+/// 
+/// 
+/// @copyright Copyright (c) 2021
 #ifndef __SIGNALLING_MESSAGE_H__
 #define __SIGNALLING_MESSAGE_H__
 

@@ -75,11 +75,6 @@ void			session_core_set_state					(SessionCore* core,
 
 CoreState		session_core_get_state					(SessionCore* self);
 
-void			session_core_setup_session				(SessionCore* object,
-														Session* session);
-
-Session*		get_session_information_from_message	(Message* object);
-
 SignallingHub*	session_core_get_signalling_hub			(SessionCore* core);
 
 IPC*			session_core_get_ipc					(SessionCore* core);

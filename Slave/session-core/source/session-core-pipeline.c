@@ -107,7 +107,7 @@ pipeline_initialize(SessionCore* core)
     return &pipeline;
 }
 
-gboolean
+static gboolean
 start_pipeline(SessionCore* core)
 {
     GstStateChangeReturn ret;
@@ -131,10 +131,10 @@ start_pipeline(SessionCore* core)
 #define RTP_CAPS_VIDEO "application/x-rtp,media=video,payload=97,encoding-name="
 
 
-void
+static void
 setup_element_factory(SessionCore* core,
-    Codec video, 
-    Codec audio)
+                      Codec video, 
+                      Codec audio)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
     GError* error = NULL;
@@ -250,7 +250,6 @@ setup_pipeline(SessionCore* core)
     
     pipe->state = PIPELINE_SETTING_UP_ELEMENT;
     setup_element_property(core);
-    attach_bitrate_control(core);
 
 
 
@@ -268,8 +267,13 @@ setup_pipeline(SessionCore* core)
 
 
 
-
-void
+/// <summary>
+/// setup proerty of gst element,
+/// this function should be called after pipeline factory has been done,
+/// each element are assigned to an element in pipeline
+/// </summary>
+/// <param name="core"></param>
+static void
 setup_element_property(SessionCore* core)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
@@ -281,40 +285,36 @@ setup_element_property(SessionCore* core)
     /*turn off screeen cursor*/
     if (pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE], "cursor", FALSE, NULL); }
 
-    // /*monitor to display*/
-    // if (pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE], "monitor", 0, NULL);}
+    /*monitor to display*/
+    if (pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE], "monitor", 0, NULL);}
 
-    // /*variable bitrate mode*/
-    // if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "rc-mode", "cbr", NULL);}
+    /*variable bitrate mode*/
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "rc-mode", "cbr", NULL);}
 
     if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "rc-mode", 0, NULL);}
 
-    // if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", 20000, NULL);}
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", 20000, NULL);}
 
-    // if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "qos", TRUE, NULL);}
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "qos", TRUE, NULL);}
 
-    // if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "qos", TRUE, NULL);}
+    if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "qos", TRUE, NULL);}
 
-    // /*low latency preset*/
-    // if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "preset", "low-latency", NULL);}
+    /*low latency preset*/
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "preset", "low-latency", NULL);}
 
     if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "low-latency", TRUE, NULL);}
 
     if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "quality-vs-speed", 10, NULL);}
 
-    // if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", qoe_get_video_bitrate(qoe), NULL);}
 
-    // if (pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[NVIDIA_H264_MEDIA_FOUNDATION], "bitrate", qoe_get_video_bitrate(qoe), NULL);}
+    /*set b-frame numbers property*/
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bframes", 0, NULL);}
 
+    /**/
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "zerolatency", TRUE, NULL);}
 
-    // /*set b-frame numbers property*/
-    // if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bframes", 0, NULL);}
-
-    // /**/
-    // if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "zerolatency", TRUE, NULL);}
-
-    // /*set zero latency aggregate mode*/
-    // if (pipe->video_element[RTP_H264_PAYLOAD]) { g_object_set(pipe->video_element[RTP_H264_PAYLOAD], "aggregate-mode", 1, NULL);}
+    /*set zero latency aggregate mode*/
+    if (pipe->video_element[RTP_H264_PAYLOAD]) { g_object_set(pipe->video_element[RTP_H264_PAYLOAD], "aggregate-mode", 1, NULL);}
 
 
 
@@ -322,24 +322,28 @@ setup_element_property(SessionCore* core)
 
     if (pipe->audio_element[WASAPI_SOURCE_SOUND]) { g_object_set(pipe->audio_element[WASAPI_SOURCE_SOUND], "low-latency", TRUE, NULL);}
 
-    // if (pipe->audio_element[OPUS_ENCODER]) { g_object_set(pipe->audio_element[OPUS_ENCODER], "bitrate", qoe_get_audio_bitrate(qoe), NULL);}
+    /*
+    * Set the queue max time to 16ms (16000000ns)
+    * If the pipeline is behind by more than 1s, the packets
+    * will be dropped.
+    * This helps buffer out latency in the audio source.
+    */
+    if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-time", 16000000, NULL);}
 
-    // /*
-    // * Set the queue max time to 16ms (16000000ns)
-    // * If the pipeline is behind by more than 1s, the packets
-    // * will be dropped.
-    // * This helps buffer out latency in the audio source.
-    // */
-    // if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-time", 16000000, NULL);}
-
-    // /*
-    // Set the other queue sizes to 0 to make it only time-based.*/
-    // if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-packet", 0, NULL);}
+    /*
+    * Set the other queue sizes to 0 to make it only time-based.
+    */
+    if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-packet", 0, NULL);}
 
 
 }
 
-
+/// <summary>
+/// handle incoming webrtc stream
+/// </summary>
+/// <param name="element"></param>
+/// <param name="pad"></param>
+/// <param name="data"></param>
 void
 incoming_stream(GstElement* element, GstPad* pad, gpointer data)
 {
@@ -347,18 +351,20 @@ incoming_stream(GstElement* element, GstPad* pad, gpointer data)
 }
 
 
-
+/// <summary>
+/// connect webrtc bin to ice and sdp signal handler
+/// </summary>
+/// <param name="core"></param>
 static void
 connect_signalling_handler(SessionCore* core)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
-    //g_main_context_push_thread_default(session_core_get_main_context(core));
-
+    g_main_context_push_thread_default(session_core_get_main_context(core));
     /* Add stun server */
     g_object_set(pipe->webrtcbin, "stun-server", 
-       signalling_hub_get_stun_server(hub), NULL); 
+       signalling_hub_get_stun_server(hub), NULL);
 
     /* This is the gstwebrtc entry point where we create the offer and so on. It
      * will be called when the pipeline goes to PLAYING. */
@@ -370,7 +376,7 @@ connect_signalling_handler(SessionCore* core)
         G_CALLBACK(on_ice_gathering_state_notify), core);
     g_signal_connect(pipe->webrtcbin, "pad-added", 
        G_CALLBACK(incoming_stream), NULL);
-    //g_main_context_pop_thread_default(session_core_get_main_context(core));
+    g_main_context_pop_thread_default(session_core_get_main_context(core));
 }
 
 

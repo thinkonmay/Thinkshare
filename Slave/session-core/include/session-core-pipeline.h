@@ -63,9 +63,20 @@ void                pipeline_set_state              (Pipeline* pipe,
 
 
 
-
+/// <summary>
+/// get audio encoder from pipeline
+/// </summary>
+/// <param name="pipe"></param>
+/// <param name="audio">audio codec of pipeline</param>
+/// <returns></returns>
 GstElement*         pipeline_get_audio_encoder      (Pipeline* pipe,
-                                                     Codec video);
-
-GstElement*         pipeline_get_video_encoder      (Pipeline* pipe,
                                                      Codec audio);
+
+/// <summary>
+/// get video encoder from pipeline
+/// </summary>
+/// <param name="pipe"></param>
+/// <param name="video">video codec</param>
+/// <returns></returns>
+GstElement*         pipeline_get_video_encoder      (Pipeline* pipe,
+                                                     Codec video);

@@ -49,8 +49,11 @@ typedef struct
 }ExitState;
 
 
-
-void
+/// <summary>
+/// setup slave session, this step include get value from json config file 
+/// </summary>
+/// <param name="self"></param>
+static void
 session_core_setup_session(SessionCore* self)
 {
 	JsonNode* root;
@@ -59,7 +62,7 @@ session_core_setup_session(SessionCore* self)
 
 	GError* error = NULL;
 	json_parser_load_from_file(parser, SESSION_SLAVE_FILE, &error);
-	if (!error == NULL)
+	if (error != NULL)
 	{
 		session_core_finalize(self, CORRUPTED_CONFIG_FILE_EXIT, error);
 		return;
@@ -75,7 +78,7 @@ session_core_setup_session(SessionCore* self)
 		json_object_get_string_member(object, "StunServer"),
 		json_object_get_int_member(object, "SessionSlaveID"));
 
-	JsonNode* qoe = json_object_get_object_member(object, "QoE");
+	JsonObject* qoe = json_object_get_object_member(object, "QoE");
 
 	qoe_setup(self->qoe,
 		json_object_get_int_member(qoe, "ScreenWidth"),

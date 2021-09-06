@@ -27,22 +27,50 @@
 
 struct _SignallingHub
 {
+    /// <summary>
+    /// websocket connection object encapsulate websocket connection between slave and signalling server,
+    /// we must provide message handler function.
+    /// </summary>
     SoupWebsocketConnection* connection;
 
+    /// <summary>
+    /// soup session represent a session between session core and signalling server,
+    /// it encapsulate signalling url and disable ssl option
+    /// </summary>
     SoupSession* session;
 
+    /// <summary>
+    /// session slave id use to register session with signalling server
+    /// </summary>
     gint SessionSlaveID;
 
+    /// <summary>
+    /// url of signalling server
+    /// </summary>
 	gchar* signalling_server;
 
+    /// disable ssl option, should only be set to true in development environment
 	gboolean disable_ssl;
 
+    /// <summary>
+    /// decide who offer the sdp. set to true if client offer the sdp
+    /// </summary>
 	gboolean client_offer;
 
+    /// <summary>
+    /// url of stun server
+    /// </summary>
 	gchar* stun_server;
 
+    /// <summary>
+    /// state of signalling connection,
+    /// used to check if any state conflict is avilable
+    /// </summary>
     SignallingServerState signalling_state;
 
+    /// <summary>
+    /// peer call state, include sdp and ice negotiation state
+    /// </summary>
     PeerCallState peer_call_state;
 };
 
@@ -693,11 +721,6 @@ signalling_hub_get_stun_server(SignallingHub* hub)
     return hub->stun_server;
 }
 
-void
-signalling_hub_set_stun_server(SignallingHub* hub, gchar* stun)
-{
-    hub->stun_server = stun;
-}
 
 
 SignallingServerState 

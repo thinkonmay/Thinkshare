@@ -86,9 +86,6 @@ void                            signalling_hub_setup                    (Signall
 
 gboolean                        signalling_close                        (SignallingHub* hub);
 
-void                            signalling_hub_set_stun_server          (SignallingHub* hub, 
-                                                                        gchar* stun);
-
 gchar*                          signalling_hub_get_stun_server          (SignallingHub* hub);
 
 PeerCallState                   signalling_hub_get_peer_call_state      (SignallingHub* hub);
