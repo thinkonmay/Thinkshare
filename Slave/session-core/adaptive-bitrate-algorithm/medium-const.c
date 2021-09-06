@@ -7,8 +7,11 @@
 /// 
 /// @copyright Copyright (c) 2021
 /// 
+#include <medium-const.h>
 #include <session-core-type.h>
 #include <gst/gst.h>
+#include <qoe.h>
+#include <session-core-pipeline.h>
 
 
 
@@ -21,15 +24,18 @@
 /// </summary>
 /// 
 /// <param name="core"></param>
-static void
+void
 medium_const(SessionCore* core, 
              QualitySample sample)
 {
 	Pipeline* pipe = session_core_get_pipeline(core);
 	QoE* qoe = session_core_get_qoe(core);
+	Codec video = qoe_get_video_codec(qoe);
+	Codec audio = qoe_get_audio_codec(qoe);
 
-	GstElement* video_encoder = pipeline_get_video_encoder(pipe,qoe->codec_video);
-	GstElement* audio_encoder = pipeline_get_audio_encoder(pipe,qoe->codec_audio);
+
+	GstElement* video_encoder = pipeline_get_video_encoder(pipe,video);
+	GstElement* audio_encoder = pipeline_get_audio_encoder(pipe,audio);
 
 	g_object_set(video_encoder,"bitrate",
 		(gint)(MEDIUM_CONST_VIDEO_BITRATE),NULL);

@@ -229,40 +229,50 @@ setup_element_factory(SessionCore* core,
 
 }
 
-gpointer
-setup_pipeline(SessionCore* core)
+
+/// <summary>
+/// handle incoming webrtc stream
+/// </summary>
+/// <param name="element"></param>
+/// <param name="pad"></param>
+/// <param name="data"></param>
+void
+incoming_stream(GstElement* element, GstPad* pad, gpointer data)
 {
-    SignallingHub* signalling = session_core_get_signalling_hub(core);
-    Pipeline* pipe = session_core_get_pipeline(core);
-    QoE* qoe= session_core_get_qoe(core);
-
-
-    pipe->state = PIPELINE_CREATING_ELEMENT;
-
-    
-
-    setup_element_factory(core, 
-        qoe_get_video_codec(qoe),
-        qoe_get_audio_codec(qoe));
-
-    pipe->state = PIPELINE_CONNECT_ELEMENT_SIGNAL;
-    connect_signalling_handler(core);
-    
-    pipe->state = PIPELINE_SETTING_UP_ELEMENT;
-    setup_element_property(core);
-
-
-
-    gst_element_change_state(pipe->pipeline, GST_STATE_READY);
-
-    connect_data_channel_signals(core);
-    pipe->state = PIPELINE_SETUP_DONE;
-
-    start_pipeline(core);
-
-    session_core_set_state(core, REMOTE_CONNECT_STARTED);
-    signalling_hub_set_peer_call_state(signalling, PEER_CALL_DONE);
+    return;
 }
+
+
+
+/// <summary>
+/// connect webrtc bin to ice and sdp signal handler
+/// </summary>
+/// <param name="core"></param>
+static void
+connect_signalling_handler(SessionCore* core)
+{
+    Pipeline* pipe = session_core_get_pipeline(core);
+    SignallingHub* hub = session_core_get_signalling_hub(core);
+
+    g_main_context_push_thread_default(session_core_get_main_context(core));
+    /* Add stun server */
+    g_object_set(pipe->webrtcbin, "stun-server", 
+       signalling_hub_get_stun_server(hub), NULL);
+
+    /* This is the gstwebrtc entry point where we create the offer and so on. It
+     * will be called when the pipeline goes to PLAYING. */
+    g_signal_connect(pipe->webrtcbin, "on-negotiation-needed",
+        G_CALLBACK(on_negotiation_needed), core);
+    g_signal_connect(pipe->webrtcbin, "on-ice-candidate",
+        G_CALLBACK(send_ice_candidate_message), core);
+    g_signal_connect(pipe->webrtcbin, "notify::ice-gathering-state",
+        G_CALLBACK(on_ice_gathering_state_notify), core);
+    g_signal_connect(pipe->webrtcbin, "pad-added", 
+       G_CALLBACK(incoming_stream), NULL);
+    g_main_context_pop_thread_default(session_core_get_main_context(core));
+}
+
+
 
 
 
@@ -338,50 +348,44 @@ setup_element_property(SessionCore* core)
 
 }
 
-/// <summary>
-/// handle incoming webrtc stream
-/// </summary>
-/// <param name="element"></param>
-/// <param name="pad"></param>
-/// <param name="data"></param>
-void
-incoming_stream(GstElement* element, GstPad* pad, gpointer data)
-{
-    return;
-}
 
 
-/// <summary>
-/// connect webrtc bin to ice and sdp signal handler
-/// </summary>
-/// <param name="core"></param>
-static void
-connect_signalling_handler(SessionCore* core)
+
+
+gpointer
+setup_pipeline(SessionCore* core)
 {
+    SignallingHub* signalling = session_core_get_signalling_hub(core);
     Pipeline* pipe = session_core_get_pipeline(core);
-    SignallingHub* hub = session_core_get_signalling_hub(core);
+    QoE* qoe= session_core_get_qoe(core);
 
-    g_main_context_push_thread_default(session_core_get_main_context(core));
-    /* Add stun server */
-    g_object_set(pipe->webrtcbin, "stun-server", 
-       signalling_hub_get_stun_server(hub), NULL);
 
-    /* This is the gstwebrtc entry point where we create the offer and so on. It
-     * will be called when the pipeline goes to PLAYING. */
-    g_signal_connect(pipe->webrtcbin, "on-negotiation-needed",
-        G_CALLBACK(on_negotiation_needed), core);
-    g_signal_connect(pipe->webrtcbin, "on-ice-candidate",
-        G_CALLBACK(send_ice_candidate_message), core);
-    g_signal_connect(pipe->webrtcbin, "notify::ice-gathering-state",
-        G_CALLBACK(on_ice_gathering_state_notify), core);
-    g_signal_connect(pipe->webrtcbin, "pad-added", 
-       G_CALLBACK(incoming_stream), NULL);
-    g_main_context_pop_thread_default(session_core_get_main_context(core));
+    pipe->state = PIPELINE_CREATING_ELEMENT;
+
+    
+
+    setup_element_factory(core, 
+        qoe_get_video_codec(qoe),
+        qoe_get_audio_codec(qoe));
+
+    pipe->state = PIPELINE_CONNECT_ELEMENT_SIGNAL;
+    connect_signalling_handler(core);
+    
+    pipe->state = PIPELINE_SETTING_UP_ELEMENT;
+    setup_element_property(core);
+
+
+
+    gst_element_change_state(pipe->pipeline, GST_STATE_READY);
+
+    connect_data_channel_signals(core);
+    pipe->state = PIPELINE_SETUP_DONE;
+
+    start_pipeline(core);
+
+    session_core_set_state(core, REMOTE_CONNECT_STARTED);
+    signalling_hub_set_peer_call_state(signalling, PEER_CALL_DONE);
 }
-
-
-
-
 
 
 

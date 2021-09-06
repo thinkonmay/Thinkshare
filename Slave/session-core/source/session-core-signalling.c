@@ -75,6 +75,11 @@ struct _SignallingHub
 };
 
 
+void
+on_server_connected(SoupSession* session,
+    GAsyncResult* res,
+    SessionCore* core);
+
 SignallingHub*
 signalling_hub_initialize(SessionCore* core)
 {
@@ -430,7 +435,15 @@ on_offer_received(SessionCore* core, GstSDPMessage* sdp)
 
 
 
-
+void
+session_core_logger(SoupLogger* logger,
+            SoupLoggerLogLevel  level,
+            char                direction,
+            const char         *data,
+            gpointer            user_data)
+{
+    write_to_log_file(SESSION_CORE_NETWORK_LOG,data);
+}
 
 
 
@@ -479,6 +492,9 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
     soup_session_add_feature(hub->session, SOUP_SESSION_FEATURE(logger));
     g_object_unref(logger);
 
+
+    soup_logger_set_printer(logger,session_core_logger,NULL,NULL);
+
     message = soup_message_new(SOUP_METHOD_GET, hub->signalling_server);
 
     write_to_log_file(SESSION_CORE_NETWORK_LOG,"connecting to signalling server");
@@ -487,7 +503,6 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
     soup_session_websocket_connect_async(hub->session,
         message, NULL, NULL, NULL,
         (GAsyncReadyCallback)on_server_connected, core);
-    
 }
 
 
@@ -694,10 +709,10 @@ on_server_connected(SoupSession* session,
     g_signal_connect(hub->connection, "closed", G_CALLBACK(on_server_closed), core);
     g_signal_connect(hub->connection, "message", G_CALLBACK(on_server_message), core);
 
+    // register to server after connect to signalling servẻ  
     register_with_server(core);
     return;
 }
-///register to server after connect to signalling server
 
 
 gboolean

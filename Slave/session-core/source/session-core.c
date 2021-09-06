@@ -185,9 +185,6 @@ session_core_finalize(SessionCore* self,
 	Pipeline* pipe = self->pipe;
 		GstElement* pipeline = pipeline_get_pipline(pipe);
 
-	gst_element_set_state(
-		GST_ELEMENT(pipeline), GST_STATE_NULL);
-
 	SignallingHub* signalling = 
 		session_core_get_signalling_hub(self);
 

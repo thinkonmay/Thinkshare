@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "windows.h": "c",
-        "agent-child-process.h": "c"
+        "agent-child-process.h": "c",
+        "gst.h": "c",
+        "ultra-high-const.h": "c"
     }
 }

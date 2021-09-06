@@ -60,27 +60,7 @@ QoE*
 qoe_initialize()
 {
 	static QoE qoe;
-
-
-	qoe.screen_width = DEFAULT_WIDTH;
-	qoe.screen_height = DEFAULT_HEIGHT;
-	qoe.codec_video = DEFAULT_VIDEO_CODEC;
-	qoe.codec_audio = DEFAULT_AUDIO_CODEC;
-	qoe.mode = DEFAULT_MODE;
-	
-	for(int i =0; i<SAMPLE_QUEUE_LENGTH + 1; i++)
-	{
-		qoe.sample[i].time = 0;
-		qoe.sample[i].framerate = DEFAULT_RAMERATE;
-		qoe.sample[i].video_bitrate = 2048;
-		qoe.sample[i].audio_bitrate = 2048;
-		qoe.sample[i].video_latency = 0;
-		qoe.sample[i].audio_latency = 0;
-		qoe.sample[i].available_bandwidth = 2048;
-		qoe.sample[i].packets_lost = 0;
-	}
-	qoe.current_reported_sample = 0;
-	qoe.current_sample = 0;
+	ZeroMemory(&qoe,sizeof(QoE));
 	return &qoe;
 }
 
@@ -123,10 +103,10 @@ qoe_setup(QoE* qoe,
 		qoe->algorithm = medium_const;
 		break;
 	case HIGH_CONST:
-		qoe->algorithm = hight_const
+		qoe->algorithm = high_const;
 		break;
 	case VERY_HIGH_CONST:
-		qoe->algorithm = very_hight_const;
+		qoe->algorithm = very_high_const;
 		break;
 	case ULTRA_HIGH_CONST:
 		qoe->algorithm = ultra_hight_const;
