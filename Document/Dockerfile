@@ -10,7 +10,7 @@ WORKDIR /build
 COPY . .
 
 #install doxygen
-RUN apt install doxygen
+RUN apt-get update && apt-get install -y doxygen
 
 # run doxygen to generate html document
 RUN doxygen Document/slavedoxy
