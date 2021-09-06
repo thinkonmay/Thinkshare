@@ -42,23 +42,12 @@ jobs:
       # Checks-out our repository
       - uses: actions/checkout@v2
 
-      # build slave using bat file
-      - name: doxybuild-slave
-        uses: mattnotmitt/doxygen-action@v1
-        with: 
-          doxyfile-path: 'Document/Host/hostdoxy'
-      
-      # build slave using bat file
-      - name: doxybuild-host
-        uses: mattnotmitt/doxygen-action@v1
-        with: 
-          doxyfile-path: 'Document/Slave/slavedoxy'
-
       # Create temporary conductor dockerfile then build&push in host context
       - name: build-document container
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
-          context: Document 
+          context: .
+          file: Document/Dockerfile 
           push: true
           tags: ${{ env.DOCUMENT_IMAGE }}
 

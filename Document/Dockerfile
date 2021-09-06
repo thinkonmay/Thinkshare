@@ -1,10 +1,23 @@
-FROM nginx AS build
-RUN rmdir -rf /usr/share/nginx/html
-RUN mkdir /usr/share/nginx/html
+# use ubuntu as doxygen build image
+FROM ubuntu:latest AS build
+# make app 
+RUN mkdir /app
+RUN mkdir /build
+
+WORKDIR /build
+
+#copy doxyfile to build image
+COPY . .
+
+#install doxygen
+RUN apt install doxygen
+
+# run doxygen to generate html document
+RUN doxygen Document/slavedoxy
+RUN doxygen Document/hostdoxy
+
+#use nginx as final image
+FROM nginx AS final
 WORKDIR /usr/share/nginx/html
 
-RUN mkdir Host
-RUN mkdir Slave
-
-COPY Host/html /usr/share/nginx/html/Host
-COPY Slave/html /usr/share/nginx/html/Slave
+COPY --from=build /app .
