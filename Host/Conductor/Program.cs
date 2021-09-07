@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Conductor.Models.User;
 using Conductor.Services;
 using System.Threading.Tasks;
+using Conductor.Data;
 using SharedHost;
 using System.IO;
 
@@ -33,6 +34,7 @@ namespace Conductor
             {
                 var services = scope.ServiceProvider;
 
+                var db = services.GetRequiredService<ApplicationDbContext>();
                 var userManager = services.GetRequiredService<UserManager<UserAccount>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
                 var systemconfig = services.GetRequiredService<SystemConfig>();

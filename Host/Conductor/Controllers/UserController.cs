@@ -16,6 +16,9 @@ using SharedHost.Models.Device;
 
 namespace Conductor.Controllers
 {
+    /// <summary>
+    /// Routes used by user to fetch information about the system
+    /// </summary>
     [Route("/User")]
     [ApiController]
     [Authorize]
@@ -67,7 +70,7 @@ namespace Conductor.Controllers
                     resp.Add(device_infor);
                 }
             }
-            return Ok(JsonConvert.SerializeObject(resp));
+            return Ok(resp);
         }
 
 
@@ -99,7 +102,7 @@ namespace Conductor.Controllers
                 };
                 resp.Add(device_infor);                
             }
-            return Ok(JsonConvert.SerializeObject(resp));
+            return Ok(resp);
         }
     }
 }

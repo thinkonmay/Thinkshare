@@ -1,7 +1,0 @@
-var searchData=
-[
-  ['changestate_0',['ChangeState',['../interface_slave_manager_1_1_interfaces_1_1_i_slave_device.html#a9af3f8748a31c2ff29433d9ae8d14ccc',1,'SlaveManager.Interfaces.ISlaveDevice.ChangeState()'],['../class_slave_manager_1_1_slave_devices_1_1_slave_device.html#a9478042e2732b6f6662837b1662d7a01',1,'SlaveManager.SlaveDevices.SlaveDevice.ChangeState()']]],
-  ['close_1',['Close',['../interface_slave_manager_1_1_interfaces_1_1_i_web_socket_connection.html#a876616f59929e89761fc962453f0b60d',1,'SlaveManager.Interfaces.IWebSocketConnection.Close()'],['../class_slave_manager_1_1_services_1_1_web_socket_connection.html#a82575eca8532a9d06b83f7e948f9e087',1,'SlaveManager.Services.WebSocketConnection.Close()']]],
-  ['commandline_2',['CommandLine',['../class_conductor_1_1_controllers_1_1_shell_controller.html#a020298dbb6a13bf3bb2b7a779f5e7026',1,'Conductor.Controllers.ShellController.CommandLine()'],['../class_slave_manager_1_1_controllers_1_1_shell_controller.html#a9b2f3cf21acc5f4f49ccf381f1f51fbe',1,'SlaveManager.Controllers.ShellController.CommandLine()']]],
-  ['create_3',['Create',['../class_conductor_1_1_controllers_1_1_session_controller.html#ae9deaf35c873da902521a889d9c50f38',1,'Conductor.Controllers.SessionController.Create()'],['../class_slave_manager_1_1_controllers_1_1_sessions_controller.html#a34de123b477750f6a0328e1ba4581c90',1,'SlaveManager.Controllers.SessionsController.Create()']]]
-];

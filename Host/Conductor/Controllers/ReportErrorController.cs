@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Conductor.Controllers
 {
+    /// <summary>
+    /// Reserve for RESTful request
+    /// </summary>
     [Route("/Error")]
     [ApiController]
     public class ReportErrorController : Controller

@@ -15,6 +15,9 @@ using SharedHost;
 
 namespace Conductor.Controllers
 {
+    /// <summary>
+    /// Routes used by admin to query current information of the system
+    /// </summary>
     [Authorize(Roles = "Administrator")]
     [Route("/Query")]
     [ApiController]

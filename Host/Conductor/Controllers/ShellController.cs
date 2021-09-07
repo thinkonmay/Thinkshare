@@ -6,6 +6,9 @@ using SharedHost.Models.Device;
 
 namespace Conductor.Controllers
 {
+    /// <summary>
+    /// Route use by admin to create shell remote session with slave devices
+    /// </summary>
     [Authorize(Roles = "Administrator")]
     [Route("/Shell")]
     [ApiController]
@@ -17,8 +20,11 @@ namespace Conductor.Controllers
         {
             _slmsocket = slmSocket;
         }
+
+
+
         /// <summary>
-        /// 
+        /// initialize shell session
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <param name="ProcessID"></param>
@@ -31,7 +37,7 @@ namespace Conductor.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Terminate shell session
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <param name="ProcessID"></param>
@@ -47,8 +53,6 @@ namespace Conductor.Controllers
         /// <summary>
         /// Send a command line to an specific process id of an specific slave device
         /// </summary>
-        /// <param name="slave_id"></param>
-        /// <param name="process_id"></param>
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpPost("ForwardCommand")]

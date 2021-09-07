@@ -1,8 +1,18 @@
- #pragma once
+/// <summary>
+/// @file session-core-type.h
+/// @author {Do Huy Hoang} ({huyhoangdo0205@gmail.com})
+/// </summary>
+/// @version 1.0
+/// @date 2021-09-05
+/// 
+/// 
+/// @copyright Copyright (c) 2021
+#pragma once
 #ifndef  __SESSION_CORE_TYPE_H__
 #define __SESSION_CORE_TYPE_H__
 
 #include <json-glib-1.0/json-glib/json-glib.h>
+#include <glib-2.0/glib.h>
 
 /*session core state*/ 
 #define SESSION_CORE_INITIALIZING					"Session core initializing"
@@ -55,6 +65,27 @@
 #define PEER_CALL_DONE								"Peer call done"
 
 
+/// <summary>
+/// quality sample recorded by client device 
+/// reported to slave through control data channel
+/// each quality sample object is recorded at a specific moment,
+/// all metric recorded in quality sample step is serve for 
+/// adaptive bitrate algorithm
+/// </summary>
+struct _QualitySample
+{
+	gint time;
+	gint framerate;
+
+	gint video_bitrate;
+	gint audio_bitrate;
+	
+	gint video_latency;
+	gint audio_latency;
+
+	gint available_bandwidth;
+	gint packets_lost;
+};
 
 
 
@@ -63,33 +94,55 @@
 
 
 
-typedef struct 			_Pipeline 				Pipeline;
+/// <summary>
+/// Pipeline is a struct contain all GstElement neccessary for
+/// session core to encode video and audio
+/// </summary> 
+typedef struct 			_Pipeline 				                Pipeline;
 
-typedef struct 			_SessionCore 			SessionCore;
+/// <summary>
+/// Session core is a struct represent for session core module
+/// </summary> 
+typedef struct 			_SessionCore 			                SessionCore;
 
-typedef struct 			_QoE					QoE;
+/// <summary>
+/// qoe struct responsible for store recorded qoe metrict and other variable related to 
+/// quality of experience of session core 
+/// </summary> 
+typedef struct 			_QoE					                QoE;
 
-typedef struct			_Session				Session;
+/// <summary>
+/// webrtchub struct responsible for handle datachannel message from client
+/// </summary>
+typedef struct			_WebRTCHub				                WebRTCHub;
 
-typedef struct			_WebRTCHub				WebRTCHub;
+/// <summary>
+/// signalling hub responsible for handle ice candidate and sdp negotiation with client module 
+/// through signalling server.
+/// </summary>
+typedef struct 			_SignallingHub			                SignallingHub;
 
-typedef struct 			_SignallingHub			SignallingHub;
+/// <summary>
+/// ipc struct responsible for handle communication with agent module
+/// </summary>
+typedef	struct			_IPC					                IPC;
 
-typedef	struct			_IPC					IPC;
+typedef struct          _QualitySample                          QualitySample;
 
 
 
 
 
-typedef					gchar*					CoreState;
+typedef					gchar*					                CoreState;
 
-typedef					gchar*					PipelineState;
+typedef					gchar*					                PipelineState;
 
-typedef					gchar*					SignallingServerState;
+typedef					gchar*					                SignallingServerState;
 
-typedef					gchar*					PeerCallState;
+typedef					gchar*					                PeerCallState;
 
-typedef void            (*ProcessBitrateCalculation) (SessionCore* core);
+typedef void            (*ProcessBitrateCalculation)            (SessionCore* core,
+                                                                QualitySample sample);
 
 #endif // ! __SESSION_CORE_TYPE_H__
 

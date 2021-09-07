@@ -33,6 +33,11 @@ namespace Conductor.Controllers
             _tokenGenerator = tokenGenerator;
         }
 
+        /// <summary>
+        /// login to server with email/username and password
+        /// </summary>
+        /// <param name="model">login model</param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("Login")]
@@ -51,6 +56,11 @@ namespace Conductor.Controllers
             return AuthResponse.GenerateFailure(model.Email, "Login failed", -1);
         }
 
+        /// <summary>
+        /// register new account with server
+        /// </summary>
+        /// <param name="model">register model</param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [Route("Register")]
@@ -92,6 +102,21 @@ namespace Conductor.Controllers
             var account = await _userManager.FindByIdAsync(UserID.ToString());
             await _userManager.AddToRoleAsync(account, Role);
             return Ok();
+        }
+
+
+
+        /// <summary>
+        /// get personal information of user
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("GetInfor")]
+        public async Task<IActionResult> GetInfor()
+        {
+            int UserID = _tokenGenerator.GetUserFromHttpRequest(User);
+            var account = await _userManager.FindByIdAsync(UserID.ToString());
+            return Ok(account);
         }
     }
 }

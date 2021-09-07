@@ -257,7 +257,7 @@ Socket*
 initialize_socket(AgentObject* agent)
 {
 
-    const gchar* https_aliases[] = { "ws", NULL };
+    const gchar* https_aliases[] = { "wss", NULL };
     static Socket socket;
     ZeroMemory(&socket,sizeof(Socket));
 
@@ -277,10 +277,11 @@ initialize_socket(AgentObject* agent)
     JsonNode* root = json_parser_get_root(parser);
     JsonObject* obj = json_node_get_object(root);
 
+    gboolean disable_ssl = !json_object_get_boolean_member(obj,DISABLE_SSL);
 
     socket.session =
         soup_session_new_with_options(
-            SOUP_SESSION_SSL_STRICT, !json_object_get_boolean_member(obj,DISABLE_SSL),
+            SOUP_SESSION_SSL_STRICT, disable_ssl,
             SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
             //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
             SOUP_SESSION_HTTPS_ALIASES, https_aliases, NULL);

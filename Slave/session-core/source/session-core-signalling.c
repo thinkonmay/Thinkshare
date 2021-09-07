@@ -27,25 +27,58 @@
 
 struct _SignallingHub
 {
+    /// <summary>
+    /// websocket connection object encapsulate websocket connection between slave and signalling server,
+    /// we must provide message handler function.
+    /// </summary>
     SoupWebsocketConnection* connection;
 
+    /// <summary>
+    /// soup session represent a session between session core and signalling server,
+    /// it encapsulate signalling url and disable ssl option
+    /// </summary>
     SoupSession* session;
 
+    /// <summary>
+    /// session slave id use to register session with signalling server
+    /// </summary>
     gint SessionSlaveID;
 
+    /// <summary>
+    /// url of signalling server
+    /// </summary>
 	gchar* signalling_server;
 
+    /// disable ssl option, should only be set to true in development environment
 	gboolean disable_ssl;
 
+    /// <summary>
+    /// decide who offer the sdp. set to true if client offer the sdp
+    /// </summary>
 	gboolean client_offer;
 
+    /// <summary>
+    /// url of stun server
+    /// </summary>
 	gchar* stun_server;
 
+    /// <summary>
+    /// state of signalling connection,
+    /// used to check if any state conflict is avilable
+    /// </summary>
     SignallingServerState signalling_state;
 
+    /// <summary>
+    /// peer call state, include sdp and ice negotiation state
+    /// </summary>
     PeerCallState peer_call_state;
 };
 
+
+void
+on_server_connected(SoupSession* session,
+    GAsyncResult* res,
+    SessionCore* core);
 
 SignallingHub*
 signalling_hub_initialize(SessionCore* core)
@@ -402,7 +435,15 @@ on_offer_received(SessionCore* core, GstSDPMessage* sdp)
 
 
 
-
+void
+session_core_logger(SoupLogger* logger,
+            SoupLoggerLogLevel  level,
+            char                direction,
+            const char         *data,
+            gpointer            user_data)
+{
+    write_to_log_file(SESSION_CORE_NETWORK_LOG,data);
+}
 
 
 
@@ -451,6 +492,9 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
     soup_session_add_feature(hub->session, SOUP_SESSION_FEATURE(logger));
     g_object_unref(logger);
 
+
+    soup_logger_set_printer(logger,session_core_logger,NULL,NULL);
+
     message = soup_message_new(SOUP_METHOD_GET, hub->signalling_server);
 
     write_to_log_file(SESSION_CORE_NETWORK_LOG,"connecting to signalling server");
@@ -459,7 +503,6 @@ connect_to_websocket_signalling_server_async(SessionCore* core)
     soup_session_websocket_connect_async(hub->session,
         message, NULL, NULL, NULL,
         (GAsyncReadyCallback)on_server_connected, core);
-    
 }
 
 
@@ -532,7 +575,7 @@ on_sdp_exchange(gchar* data,
     {
         Pipeline* pipe = session_core_get_pipeline(core);
         pipeline_initialize(core);
-        setup_pipeline(core);
+        session_core_setup_pipeline(core);
         return;
     }
 
@@ -666,10 +709,10 @@ on_server_connected(SoupSession* session,
     g_signal_connect(hub->connection, "closed", G_CALLBACK(on_server_closed), core);
     g_signal_connect(hub->connection, "message", G_CALLBACK(on_server_message), core);
 
+    // register to server after connect to signalling servẻ  
     register_with_server(core);
     return;
 }
-///register to server after connect to signalling server
 
 
 gboolean
@@ -693,17 +736,7 @@ signalling_hub_get_stun_server(SignallingHub* hub)
     return hub->stun_server;
 }
 
-void
-signalling_hub_set_stun_server(SignallingHub* hub, gchar* stun)
-{
-    hub->stun_server = stun;
-}
 
-SoupWebsocketConnection*
-signalling_hub_get_websocket_connection(SignallingHub* hub)
-{
-    return hub->connection;
-}
 
 SignallingServerState 
 signalling_hub_get_signalling_state(SignallingHub* hub)

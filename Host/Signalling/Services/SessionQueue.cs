@@ -40,23 +40,24 @@ namespace Signalling.Services
         public bool RemoveIDPair(SessionPair session)
         {
             WebSocket ws1, ws2;
-            var ret = sessionPairs.Remove(session);
-            onlineList.TryRemove(session.SessionSlaveID, out ws2);
-            onlineList.TryRemove(session.SessionClientID, out ws1);
-            try
+            foreach (var i in sessionPairs)
             {
-                if (ws1 != null) { ws1.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
-                if (ws2 != null) { ws2.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
-            }catch (WebSocketException){  }
-
-            if(ret)
-            {
-                return true;
+                if (i.SessionClientID == session.SessionClientID &&
+                    i.SessionSlaveID == session.SessionSlaveID)
+                {
+                    sessionPairs.Remove(i);
+                    onlineList.TryRemove(session.SessionSlaveID, out ws2);
+                    onlineList.TryRemove(session.SessionClientID, out ws1);
+                    try
+                    {
+                        if (ws1 != null) { ws1.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
+                        if (ws2 != null) { ws2.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
+                    }
+                    catch (Exception) { }
+                    return true;
+                }
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public WebSocket GetSlaveSocket(int ClientID)

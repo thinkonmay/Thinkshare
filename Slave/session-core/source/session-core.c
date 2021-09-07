@@ -49,8 +49,11 @@ typedef struct
 }ExitState;
 
 
-
-void
+/// <summary>
+/// setup slave session, this step include get value from json config file 
+/// </summary>
+/// <param name="self"></param>
+static void
 session_core_setup_session(SessionCore* self)
 {
 	JsonNode* root;
@@ -59,7 +62,7 @@ session_core_setup_session(SessionCore* self)
 
 	GError* error = NULL;
 	json_parser_load_from_file(parser, SESSION_SLAVE_FILE, &error);
-	if (!error == NULL)
+	if (error != NULL)
 	{
 		session_core_finalize(self, CORRUPTED_CONFIG_FILE_EXIT, error);
 		return;
@@ -75,7 +78,7 @@ session_core_setup_session(SessionCore* self)
 		json_object_get_string_member(object, "StunServer"),
 		json_object_get_int_member(object, "SessionSlaveID"));
 
-	JsonNode* qoe = json_object_get_object_member(object, "QoE");
+	JsonObject* qoe = json_object_get_object_member(object, "QoE");
 
 	qoe_setup(self->qoe,
 		json_object_get_int_member(qoe, "ScreenWidth"),
@@ -129,27 +132,16 @@ session_core_connect_signalling_server(SessionCore* self)
 }
 
 void
-session_core_setup_pipeline (self)
+session_core_setup_pipeline(SessionCore* self)
 {
 	setup_pipeline(self);
 }				
 
-gboolean
-session_core_start_pipeline(SessionCore* core)
-{
-	return start_pipeline(core);
-}
 
 void
 session_core_send_message(SessionCore* core, Message* message)
 {
 	send_message(core, message);
-}
-
-gboolean
-session_core_setup_data_channel(SessionCore* core)
-{
-	connect_data_channel_signals(core);
 }
 
 
@@ -193,15 +185,8 @@ session_core_finalize(SessionCore* self,
 	Pipeline* pipe = self->pipe;
 		GstElement* pipeline = pipeline_get_pipline(pipe);
 
-	gst_element_set_state(
-		GST_ELEMENT(pipeline), GST_STATE_NULL);
-
 	SignallingHub* signalling = 
 		session_core_get_signalling_hub(self);
-
-	SoupWebsocketConnection* connection = 
-		signalling_hub_get_websocket_connection(signalling);
-
 
     //exit current state to report to slave manager
 	ExitState state;
@@ -216,10 +201,7 @@ session_core_finalize(SessionCore* self,
 	state.peer_state = 
 		signalling_hub_get_peer_call_state(self->signalling);
 
-	
-	if (connection != NULL) {
-		soup_websocket_connection_close(connection, 0, "");
-	}
+	signalling_close(signalling);
 
 	write_to_log_file(SESSION_CORE_GENERAL_LOG,"session core exited\n");
 

@@ -1,0 +1,152 @@
+<div class="card-deck">
+                            <div class="card col-lg-12 px-0 mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Last Billings</h5>
+                                    <div class="table-responsive">
+                                        <table class="table center-aligned-table">
+                                            <thead>
+                                                <tr class="text-primary">
+                                                    <th>Order No</th>
+                                                    <th>Product Name</th>
+                                                    <th>Purchased On</th>
+                                                    <th>Shipping Status</th>
+                                                    <th>Payment Method</th>
+                                                    <th>Payment Status</th>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="">
+                                                    <td>034</td>
+                                                    <td>Iphone 7</td>
+                                                    <td>12 May 2017</td>
+                                                    <td>Dispatched</td>
+                                                    <td>Credit card</td>
+                                                    <td><label class="badge badge-success">Approved</label></td>
+                                                    <td><a href="#" class="btn btn-outline-success btn-sm">View Order</a></td>
+                                                    <td><a href="#" class="btn btn-outline-warning btn-sm">Cancel</a></td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td>035</td>
+                                                    <td>Galaxy S8</td>
+                                                    <td>15 May 2017</td>
+                                                    <td>Dispatched</td>
+                                                    <td>Internet banking</td>
+                                                    <td><label class="badge badge-warning">Pending</label></td>
+                                                    <td><a href="#" class="btn btn-outline-success btn-sm">View Order</a></td>
+                                                    <td><a href="#" class="btn btn-outline-warning btn-sm">Cancel</a></td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td>036</td>
+                                                    <td>Amazon Echo</td>
+                                                    <td>17 May 2017</td>
+                                                    <td>Dispatched</td>
+                                                    <td>Credit card</td>
+                                                    <td><label class="badge badge-success">Approved</label></td>
+                                                    <td><a href="#" class="btn btn-outline-success btn-sm">View Order</a></td>
+                                                    <td><a href="#" class="btn btn-outline-warning btn-sm">Cancel</a></td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td>037</td>
+                                                    <td>Google Pixel</td>
+                                                    <td>17 May 2017</td>
+                                                    <td>Dispatched</td>
+                                                    <td>Cash on delivery</td>
+                                                    <td><label class="badge badge-danger">Rejected</label></td>
+                                                    <td><a href="#" class="btn btn-outline-success btn-sm">View Order</a></td>
+                                                    <td><a href="#" class="btn btn-outline-warning btn-sm">Cancel</a></td>
+                                                </tr>
+                                                <tr class="">
+                                                    <td>038</td>
+                                                    <td>Mac Mini</td>
+                                                    <td>19 May 2017</td>
+                                                    <td>Dispatched</td>
+                                                    <td>Debit card</td>
+                                                    <td><label class="badge badge-success">Approved</label></td>
+                                                    <td><a href="#" class="btn btn-outline-success btn-sm">View Order</a></td>
+                                                    <td><a href="#" class="btn btn-outline-warning btn-sm">Cancel</a></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+sidebar
+<li class="nav-item">
+            <a class="nav-link" href="pages/ui-elements/buttons.html">
+                <img src="images/icons/4.png" alt="">
+                <span class="menu-title">Buttons</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="pages/tables/index.html">
+                <img src="images/icons/5.png" alt="">
+                <span class="menu-title">Tables</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="pages/charts/index.html">
+                <img src="images/icons/6.png" alt="">
+                <span class="menu-title">Charts</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="pages/icons/index.html">
+                <img src="images/icons/7.png" alt="">
+                <span class="menu-title">Icons</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="pages/ui-elements/typography.html">
+                <img src="images/icons/8.png" alt="">
+                <span class="menu-title">Typography</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#sample-pages" aria-expanded="false" aria-controls="sample-pages">
+                <img src="images/icons/9.png" alt="">
+                <span class="menu-title">Sample Pages<i class="fa fa-sort-down"></i></span>
+            </a>
+            <div class="collapse" id="sample-pages">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/samples/blank_page.html">
+                            Blank Page
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/samples/login.html">
+                            Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/samples/register.html">
+                            Register
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/samples/404.html">
+                            404
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/samples/500.html">
+                            500
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <img src="images/icons/10.png" alt="">
+                <span class="menu-title">Settings</span>
+            </a>
+        </li>

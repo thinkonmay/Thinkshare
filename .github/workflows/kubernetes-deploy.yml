@@ -29,4 +29,10 @@ jobs:
             kubectl apply -f /deployment/signalling.yaml
             kubectl apply -f /deployment/slavemanager.yaml
 
+            kubectl rollout restart deploy conductor 
+            kubectl rollout restart deploy resources 
+            kubectl rollout restart deploy signalling 
+            kubectl rollout restart deploy slavemanager 
+            kubectl rollout restart deploy document
+
 

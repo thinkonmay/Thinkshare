@@ -3,28 +3,47 @@ kind: Ingress
 metadata:
   name: ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "traefik"
+    cert-manager.io/issuer: "letsencrypt"
 spec:
+  tls:
+  - hosts:
+    - resources.thinkmay.net
+    - signalling.thinkmay.net
+    - slavemanager.thinkmay.net
+    - conductor.thinkmay.
+    - document.thinkmay.net
+    - thinkmay.net
+    secretName: secret-tls
   rules:
-  - http:
+  - host: conductor.thinkmay.net
+    http:
       paths:
-      - path: /Slave
+      - path: /
         pathType: Prefix
         backend:
           service:
-            name: slavemanager
+            name: conductor
             port:
               number: 80
 
-      - path: /swagger/slavemanager.html
+  #
+  - host: resources.thinkmay.net
+    http:
+      paths:
+      - path: /
         pathType: Prefix
         backend:
           service:
-            name: slavemanager
+            name: resources
             port:
               number: 80
+
   #
-      - path: /Signalling
+  - host: signalling.thinkmay.net
+    http:
+      paths:
+      - path: /
         pathType: Prefix
         backend:
           service:
@@ -33,36 +52,35 @@ spec:
               number: 80
 
 
-  #
-      - path: /database
+  - host: slavemanager.thinkmay.net
+    http:
+      paths:
+      - path: /
         pathType: Prefix
         backend:
           service:
-            name: systemdb
-            port:
-              number: 5432
-
-  #
-      - path: /Account
-        pathType: Prefix
-        backend:
-          service:
-            name: conductor
+            name: slavemanager
             port:
               number: 80
 
-      - path: /src
+  - host: document.thinkmay.net
+    http:
+      paths:
+      - path: /
         pathType: Prefix
         backend:
           service:
-            name: resources
+            name: document
             port:
               number: 80
 
-      - path: /stun
+  - host: thinkmay.net
+    http:
+      paths:
+      - path: /
         pathType: Prefix
         backend:
           service:
-            name: coturn
+            name: frontend
             port:
-              number: 80
+              number: 3000

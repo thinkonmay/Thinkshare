@@ -24,13 +24,29 @@ Message*            message_init                (Module from,
                                                  Opcode opcode,
                                                  Message* data);
 
-
+/// <summary>
+/// convert json object to string to save to file or send to other module
+/// </summary>
+/// <param name="object"></param>
+/// <returns></returns>
 gchar*              get_string_from_json_object (JsonObject* object);
 
-
+/// <summary>
+/// convert string to json object
+/// </summary>
+/// <param name="string">string to convert to json</param>
+/// <param name="error">error pointer to receive any error might occour, should be compare to null after call this function</param>
+/// <returns></returns>
 Message*            get_json_object_from_string (gchar* string,
                                                  GError* error);
 
+/// <summary>
+/// create empty messsage to send to host (message with " " data)
+/// </summary>
+/// <param name="from"></param>
+/// <param name="to"></param>
+/// <param name="opcode"></param>
+/// <returns></returns>
 Message*            empty_message_init          (Module from,
 			                                    Module to,
 			                                    Opcode opcode);

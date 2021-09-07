@@ -11,7 +11,11 @@ namespace SharedHost.Models.Session
     { 
         public RemoteSession() { }
 
-        public RemoteSession(ClientRequest req,QoE qoe, SessionPair pair, SystemConfig config,int clientID)
+        public RemoteSession(ClientRequest req,
+                             QoE qoe, 
+                             SessionPair pair, 
+                             SystemConfig config,
+                             int clientID)
         {
             ClientID = clientID;
             SlaveID = req.SlaveId;

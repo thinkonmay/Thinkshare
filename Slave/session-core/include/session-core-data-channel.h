@@ -13,7 +13,10 @@
 /// <returns></returns>
 gboolean                connect_data_channel_signals                (SessionCore* core);
 
-
+/// <summary>
+/// intialize webrtc hub by assigning memory to webrtchub struct
+/// </summary> 
+/// <returns></returns>
 WebRTCHub*				webrtchub_initialize						();
 
 

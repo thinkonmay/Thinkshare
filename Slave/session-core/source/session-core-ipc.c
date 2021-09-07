@@ -17,7 +17,7 @@ struct _IPC
 
 
 
-gpointer
+static gpointer
 handle_thread(gpointer data)
 {
     SessionCore* core = (SessionCore*)data;

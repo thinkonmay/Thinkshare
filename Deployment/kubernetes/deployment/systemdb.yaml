@@ -1,14 +1,15 @@
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: systemdb-service
+  name: systemdb
   labels:
     app: systemdb
 spec:
   type: ClusterIP
   ports:
-   - port: 5432
+  - port: 5432
+    targetPort: 5432
+
   selector:
    app: systemdb
 ---
@@ -30,15 +31,15 @@ spec:
     spec:
       containers:
       - name: systemdb
-        image: postgres
-        imagePullPolicy: IfNotPresent
+        image: postgres:latest
+        imagePullPolicy: Always
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "250m"
+            memory: "128Mi"
+            cpu: "200m"
           limits:
             memory: "1Gi"
-            cpu: "500m"
+            cpu: "300m"
         ports:
         - containerPort: 5432
         envFrom:

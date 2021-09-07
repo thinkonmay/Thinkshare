@@ -28,6 +28,9 @@ using SharedHost;
 
 namespace Conductor.Controllers
 {
+    /// <summary>
+    /// Routes related to session initialize/termination process
+    /// </summary>
     [Route("/Session")]
     [ApiController]
     [Authorize]
