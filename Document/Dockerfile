@@ -19,5 +19,4 @@ RUN doxygen Document/hostdoxy
 #use nginx as final image
 FROM nginx AS final
 WORKDIR /usr/share/nginx/html
-
-COPY --from=build /app .
+COPY --from=build /app /usr/share/nginx/html

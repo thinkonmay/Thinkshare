@@ -1,0 +1,45 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: dbmanager
+  labels:
+    app: dbmanager
+spec:
+  type: ClusterIP
+  ports:
+   - port: 80
+  selector:
+   app: dbmanager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dbmanager
+spec:
+  selector:
+    matchLabels:
+      app: dbmanager
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: dbmanager
+    spec:
+      containers:
+      - name: dbmanager
+        image: dpage/pgadmin4
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: dbmanager-config
