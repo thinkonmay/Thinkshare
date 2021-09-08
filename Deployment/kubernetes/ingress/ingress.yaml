@@ -93,11 +93,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-<<<<<<< HEAD
-            name: landing-page
-=======
             name: admin-page
->>>>>>> 765c21a7d91c4042c3b38fdc0112a21a239cf7cb
             port:
               number: 80
 
