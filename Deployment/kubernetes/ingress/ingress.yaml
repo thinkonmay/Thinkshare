@@ -8,13 +8,14 @@ metadata:
 spec:
   tls:
   - hosts:
-    - resources.thinkmay.net
     - signalling.thinkmay.net
     - slavemanager.thinkmay.net
     - database.thinkmay.net
     - conductor.thinkmay.net
     - document.thinkmay.net
     - thinkmay.net
+    - service.thinkmay.net
+    - admin.thinkmay.net
     secretName: secret-tls
   rules:
   - host: conductor.thinkmay.net
@@ -25,18 +26,6 @@ spec:
         backend:
           service:
             name: conductor
-            port:
-              number: 80
-
-  #
-  - host: resources.thinkmay.net
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: resources
             port:
               number: 80
 
@@ -83,6 +72,32 @@ spec:
         backend:
           service:
             name: landing-page
+            port:
+              number: 80
+
+  - host: service.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: service-page
+            port:
+              number: 80
+
+  - host: admin.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+<<<<<<< HEAD
+            name: landing-page
+=======
+            name: admin-page
+>>>>>>> 765c21a7d91c4042c3b38fdc0112a21a239cf7cb
             port:
               number: 80
 
