@@ -26,12 +26,27 @@
 /// </summary>
 struct _AgentObject
 {
+	/// <summary>
+	/// socket object
+	/// </summary>
 	Socket* socket;
 
+	/// <summary>
+	/// gmainloop will be run in agent process
+	/// </summary>
 	GMainLoop* loop;
 
+	/// <summary>
+	/// state of the slave device
+	/// </summary>
 	AgentState* state;
 
+	/// <summary>
+	/// Child process array, agent module are capable to create 
+	/// new child process in admintrator privillege 
+	/// and has full control of child process
+	/// (include handle stdout, child process state)
+	/// </summary>
 	ChildProcess* child_process[LAST_CHILD_PROCESS];
 };
 
@@ -51,19 +66,22 @@ struct _AgentObject
 AgentObject*
 agent_new(gchar* url)
 {
+	// allocate heap for agent object
 	static AgentObject agent;
 	ZeroMemory(&agent, sizeof(AgentObject));
-
+	
+	//set initial state of agent as unregistered	
 	AgentState* unregistered = transition_to_unregistered_state();
 	agent.state = unregistered;
 
 	//g_thread_new("update device",(GThreadFunc)update_device, &agent);
-
 	initialize_child_process_system(&agent);
 	agent.socket=initialize_socket(&agent);
 	
-	
+	// connect to host with given id
 	agent_connect_to_host(&agent);
+
+	// start gmainloop, 
 	agent.loop = g_main_loop_new(NULL, FALSE);
 	g_main_loop_run(agent.loop);
 	return NULL;

@@ -132,15 +132,30 @@ typedef struct          _QualitySample                          QualitySample;
 
 
 
-
+/// <summary>
+/// session core state in form of string
+/// </summary>
 typedef					gchar*					                CoreState;
 
+/// <summary>
+/// PipelineState in form of string
+/// </summary>
 typedef					gchar*					                PipelineState;
 
+/// <summary>
+/// signalling state in form of string
+/// </summary>
 typedef					gchar*					                SignallingServerState;
 
+/// <summary>
+/// peer call state in form of string
+/// </summary>
 typedef					gchar*					                PeerCallState;
 
+/// <summary>
+/// process bitrate calculation is a function use to calibrate encoder bitrate
+/// correspond to state of network in order to optimize the user's quality of experience 
+/// </summary>
 typedef void            (*ProcessBitrateCalculation)            (SessionCore* core,
                                                                 QualitySample sample);
 

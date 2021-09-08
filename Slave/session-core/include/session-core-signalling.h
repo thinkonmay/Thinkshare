@@ -84,10 +84,28 @@ void                            signalling_hub_setup                            
                                                                                         gchar* stun_server,
                                                                                         gint session_slave_id);
 
+/// <summary>
+/// close websocket connection with signalling server 
+/// (it means session disconnnected event will be triggered)
+/// </summary>
+/// <param name="hub"></param>
+/// <returns></returns>
 gboolean                        signalling_close                                        (SignallingHub* hub);
 
+/// <summary>
+/// get stun server from signallinghub, 
+/// stun server will follow gstreamer format 
+/// (Ex: stun://stun.l.google.com:3475)
+/// </summary>
+/// <param name="hub"></param>
+/// <returns></returns>
 gchar*                          signalling_hub_get_stun_server                          (SignallingHub* hub);
 
+/// <summary>
+/// get peer call state from signalling server
+/// </summary>
+/// <param name="hub"></param>
+/// <returns></returns>
 PeerCallState                   signalling_hub_get_peer_call_state                      (SignallingHub* hub);
 
 SignallingServerState           signalling_hub_get_signalling_state                     (SignallingHub* hub);
