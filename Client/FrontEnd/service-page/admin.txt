@@ -1,3 +1,0 @@
-UserAccount admin = new UserAccount()                {                    UserName = "admin@thinkmay.com",                    Email = "admin@thinkmay.com",                    FullName = "Default Admin",                    EmailConfirmed = true,                };                const string defaultPassword = "ASDFak!C#$%2351531c2c152";
-admin@thinkmay.com
-ASDFak!C#$%2351531c2c152

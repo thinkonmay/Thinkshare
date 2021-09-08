@@ -1,4 +1,4 @@
-/// <summary>
+                /// <summary>
 /// @file session-core-signalling.h
 /// @author {Do Huy Hoang} ({huyhoangdo0205@gmail.com})
 /// </summary>
@@ -31,18 +31,18 @@
 /// <param name="mlineindex"></param>
 /// <param name="candidate"></param>
 /// <param name="core"></param>
-void                            send_ice_candidate_message              (GstElement* webrtc,
-                                                                        guint mlineindex,
-                                                                        gchar* candidate,
-                                                                        SessionCore* core);
+void                            send_ice_candidate_message                              (GstElement* webrtc,
+                                                                                        guint mlineindex,
+                                                                                        gchar* candidate,
+                                                                                        SessionCore* core);
 
 /// <summary>
 /// handle on negotiation signal from webrtcbin element, 
 /// typically emitted when pipeline is set to PLAYING 
 /// <param name="element"></param>
 /// <param name="core"></param>
-void                            on_negotiation_needed                   (GstElement* element,
-                                                                        SessionCore* core);
+void                            on_negotiation_needed                                   (GstElement* element,
+                                                                                        SessionCore* core);
 
 
 /// <summary>
@@ -52,16 +52,16 @@ void                            on_negotiation_needed                   (GstElem
 /// <param name="webrtcbin"></param>
 /// <param name="pspec"></param>
 /// <param name="user_data"></param>
-void                            on_ice_gathering_state_notify           (GstElement* webrtcbin,
-                                                                        GParamSpec* pspec,
-                                                                        gpointer user_data);
+void                            on_ice_gathering_state_notify                           (GstElement* webrtcbin,
+                                                                                        GParamSpec* pspec,
+                                                                                        gpointer user_data);
 
 /// <summary>
 /// initialize signalling hub 
 /// </summary>
 /// <param name="core"></param>
 /// <returns></returns>
-SignallingHub*                  signalling_hub_initialize               (SessionCore* core);
+SignallingHub*                  signalling_hub_initialize                               (SessionCore* core);
 
 
 /// <summary>
@@ -69,34 +69,34 @@ SignallingHub*                  signalling_hub_initialize               (Session
 /// this function should be triggered in initialize process
 /// </summary> 
 /// <param name="core">session core object</param>
-void                            connect_to_websocket_signalling_server_async(SessionCore* core);
+void                            connect_to_websocket_signalling_server_async            (SessionCore* core);
 
 /// <summary>
 /// reegister with server by sending session slave id
 /// </summary> 
 /// <param name="core"></param>
 /// <returns></returns>
-gboolean                        register_with_server                    (SessionCore* core);
+gboolean                        register_with_server                                    (SessionCore* core);
 
-void                            signalling_hub_setup                    (SignallingHub* hub,
-                                                                        gchar* url,
-                                                                        gboolean client_offer,
-                                                                        gchar* stun_server,
-                                                                        gint session_slave_id);
+void                            signalling_hub_setup                                    (SignallingHub* hub,
+                                                                                        gchar* url,
+                                                                                        gboolean client_offer,
+                                                                                        gchar* stun_server,
+                                                                                        gint session_slave_id);
 
-gboolean                        signalling_close                        (SignallingHub* hub);
+gboolean                        signalling_close                                        (SignallingHub* hub);
 
-gchar*                          signalling_hub_get_stun_server          (SignallingHub* hub);
+gchar*                          signalling_hub_get_stun_server                          (SignallingHub* hub);
 
-PeerCallState                   signalling_hub_get_peer_call_state      (SignallingHub* hub);
+PeerCallState                   signalling_hub_get_peer_call_state                      (SignallingHub* hub);
 
-SignallingServerState           signalling_hub_get_signalling_state     (SignallingHub* hub);
+SignallingServerState           signalling_hub_get_signalling_state                     (SignallingHub* hub);
 
-void                            signalling_hub_set_peer_call_state      (SignallingHub* hub,
-                                                                        PeerCallState state);
+void                            signalling_hub_set_peer_call_state                      (SignallingHub* hub,
+                                                                                        PeerCallState state);
 
-void                            signalling_hub_set_signalling_state     (SignallingHub* hub,
-                                                                        SignallingServerState state);
+void                            signalling_hub_set_signalling_state                     (SignallingHub* hub,
+                                                                                        SignallingServerState state);
 
 
 
