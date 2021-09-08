@@ -12,7 +12,7 @@ spec:
     - signalling.thinkmay.net
     - slavemanager.thinkmay.net
     - database.thinkmay.net
-    - conductor.thinkmay.
+    - conductor.thinkmay.net
     - document.thinkmay.net
     - thinkmay.net
     secretName: secret-tls
@@ -82,7 +82,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: frontend
+            name: landing-page
             port:
               number: 80
 
