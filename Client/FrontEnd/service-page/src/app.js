@@ -3,9 +3,11 @@ const createError = require("http-errors")
 const express = require("express")
 const path = require("path")
 const cookieParser = require("cookie-parser")
+const bodyParser = require("body-parser")
 const logger = require("morgan")
 
 const routes = require("./routes")
+const policies = require("./policies")
 
 const app = express()
 
@@ -17,7 +19,24 @@ app.use(logger("dev"))
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use(cookieParser())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, "../public")))
+
+//setup policies
+for (const policyKey in policies) {
+	const query = policies[policyKey]
+	let path = "/"
+	let middleware = null
+	if (policyKey != "*")
+		path = policyKey
+	if (query.length > 0) {
+		middleware = require("./policies/" + query)
+	}
+	console.log(path, middleware)
+	if (middleware)
+		app.use(path, middleware)
+}
 
 // setup routes
 for (const routeKey in routes) {

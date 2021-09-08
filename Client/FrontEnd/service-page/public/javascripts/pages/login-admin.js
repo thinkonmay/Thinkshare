@@ -83,7 +83,7 @@ function login(body) {
                     if (data.status == 200) {
                         if (response.errorCode == 0) {
                             setCookie("token", response.token, MINUTES59);
-                            window.location.replace(API.Dashboard);
+                            window.location.replace(API.Dashboard + '-admin');
                         } else {
                             newSwal.fire({
                                 title: "Lỗi!",
