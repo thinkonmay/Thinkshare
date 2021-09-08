@@ -14,12 +14,7 @@ env:
   SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:release_latest
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:release_latest
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-
-      
+jobs:      
   build-signalling:
     runs-on: ubuntu-latest
     steps:
