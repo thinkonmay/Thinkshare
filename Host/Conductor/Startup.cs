@@ -174,6 +174,7 @@ namespace Conductor
                     
                 endpoints.MapHub<AdminHub>("/AdminHub");
                 endpoints.MapHub<ClientHub>("/ClientHub");
+                endpoints.MapHub<ChatHub>("/ChatHub");
             });
 
             app.UseSwagger();
