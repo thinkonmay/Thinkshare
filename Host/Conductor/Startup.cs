@@ -159,6 +159,8 @@ namespace Conductor
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
+                .WithMethods("GET", "POST")
+                .AllowCredentials()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
             
             app.UseRouting();
