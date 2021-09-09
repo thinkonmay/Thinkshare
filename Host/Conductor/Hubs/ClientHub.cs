@@ -22,7 +22,6 @@ namespace SignalRChat.Hubs
     }
 
 
-    [Authorize]
     public class ClientHub : Hub<IClientHub>
     { 
     }
