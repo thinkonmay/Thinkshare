@@ -1,4 +1,0 @@
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/Slave/build/CMakeFiles/ALL_BUILD.dir
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/Slave/build/CMakeFiles/ZERO_CHECK.dir
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/Slave/build/session-core/source/CMakeFiles/session-core.dir
-D:/OneDrive - VINACADEMY LLC/Desktop/personal-cloud-computing/Slave/build/agent/source/CMakeFiles/agent.dir
