@@ -3,11 +3,10 @@ mkdir "C:/ThinkMay"
 xcopy "..\ThinkMay" "C:\ThinkMay" /s /e
 
 cd ..\..\Slave
-rmdir /Q /S build
 
 mkdir C:/ThinkMay/bin
-mkdir build
-cd build
+mkdir build-cmake
+cd build-cmake
 cmake -G "Visual Studio 16 2019" 
 cmake ..
 

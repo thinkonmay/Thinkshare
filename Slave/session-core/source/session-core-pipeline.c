@@ -432,7 +432,7 @@ GstElement*
 pipeline_get_audio_encoder(Pipeline* pipe, Codec audio)
 {
     
-    if (audio == OPUS_ENC) { return pipe->video_element[OPUS_ENCODER];}
+    if (audio == OPUS_ENC) { return pipe->audio_element[OPUS_ENCODER];}
     else if (audio == AAC_ENC) { return pipe->audio_element[AAC_ENCODER];}
     return NULL;
 }

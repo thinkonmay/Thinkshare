@@ -12,6 +12,7 @@
 #include <gst/gst.h>
 #include <session-core-pipeline.h>
 #include <qoe.h>
+#include <session-core.h>
 #include <session-core-remote-config.h>
 
 

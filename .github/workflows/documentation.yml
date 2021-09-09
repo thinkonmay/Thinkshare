@@ -1,10 +1,7 @@
 name: DOCUMENTATION
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  workflow_dispatch:
 
 
 #setup environment variable
