@@ -27,7 +27,6 @@ namespace SignalRChat.Hubs
     }
 
 
-    [Authorize(Roles = "SystemManager")]
     public class AdminHub : Hub<IAdminHub>
     {
         

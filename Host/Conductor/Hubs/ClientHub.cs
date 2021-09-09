@@ -20,7 +20,7 @@ namespace SignalRChat.Hubs
 
         Task ReportSessionReconnected(int slaveID);
     }
-
+    
 
     public class ClientHub : Hub<IClientHub>
     { 
