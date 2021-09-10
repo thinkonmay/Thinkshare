@@ -209,12 +209,13 @@ namespace Conductor.Administration
             foreach (var i in shell)
             {
                 i.EndTime = DateTime.Now;
+                await _db.SaveChangesAsync();
             }
             foreach (var i in remote)
             {
                 i.EndTime = DateTime.Now;
+                await _db.SaveChangesAsync();
             }
-            await _db.SaveChangesAsync();
         }
 
         public async Task ReportRemoteControlDisconnectedFromSignalling(SessionPair session)
