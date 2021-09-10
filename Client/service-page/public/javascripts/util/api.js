@@ -1,21 +1,82 @@
 import {getCookie} from "./cookie.js"
 
-const server = "http://conductor.thinkmay.net";
+const host = "http://conductor.thinkmay.net" // thinkmay host
 
-export const Login = `${server}/Account/Login`;
-export const LoginAdmin = `${server}/Account/Login-admin`;
-export const Register = `${server}/Account/Register`;
-export const Dashboard = `/dashboard`;
-export const DashboardAdmin = `/dashboard-admin`;
+// local api
+export const Dashboard = "/dashboard"
+export const DashboardAdmin = "/dashboard-admin"
+export const Initialize = "/initialize"
 
-export const BearerAuth = `${server}/User/FetchSlave`;
-export const FetchSlave = `${server}/User/FetchSlave`;
-export const FetchSession = `${server}/User/FetchSession`;
+// thinkmay api
+export const Login = `${host}/Account/Login`
+export const LoginAdmin = `${host}/Account/Login-admin`
+export const Register = `${host}/Account/Register`
+export const FetchSlave = `${host}/User/FetchSlave`
+export const FetchSession = `${host}/User/FetchSession`
+export const RejectDevice = `${host}/Session/Disconnect`
+export const QuerySession = `${host}/Query/Session`
 
-export const Initialize = `/initialize`;
+export const genHeaders = () => {
+	const token = getCookie("token")
+	return Object.assign(
+		{
+			"Content-Type": "application/json"
+		},
+		token
+			? {
+				Authorization: `Bearer ${token}`
+			  }
+			: {}
+	)
+}
 
-export const genHeaders = token => {
-    return {
-    	Authorization: `Bearer ${token}`
-    }
+export const login = body => {
+	return fetch(Login, {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({
+			email: body.email,
+			password: body.password
+		})
+	})
+}
+
+export const register = body => {
+	return fetch(Register, {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({
+			email: body.email,
+			password: body.password,
+			fullName: body.fullName,
+			dayOfBirth: body.dayOfBirth
+		})
+	})
+}
+
+export const fetchSlave = () => {
+	return fetch(FetchSlave, {
+		method: "GET",
+		headers: genHeaders()
+	})
+}
+
+export const querySession = SlaveID => {
+	return fetch(QuerySession, {
+		method: "GET",
+		headers: genHeaders(),
+		body: JSON.stringify({
+			SlaveID
+		})
+	})
+}
+
+export const rejectDevice = sessionClientId => {
+	return fetch(RejectDevice, {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({
+			sessionClientId
+		})
+	})
 }
