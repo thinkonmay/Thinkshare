@@ -156,7 +156,6 @@ namespace Conductor
 
            // global cors policy
             app.UseCors(x => x
-                .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .WithMethods("GET", "POST")
