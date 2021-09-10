@@ -31,7 +31,7 @@ namespace SignalRChat.Hubs
         Task ReportSessionTermination(int SlaveID, int ClietnID);
     }
 
-
+    [Authorize]
     public class AdminHub : Hub<IAdminHub>
     {
         
