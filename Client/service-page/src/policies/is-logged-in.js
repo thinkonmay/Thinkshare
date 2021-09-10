@@ -1,7 +1,5 @@
 module.exports = (req, res, next) => {
-  console.log('asdaaaaaaaaaa')
-  if (req.cookies.token)
-    return next()
+	if (req.cookies.token) return next()
 
-  return res.redirect("/login")
+	return res.redirect("/login")
 }
