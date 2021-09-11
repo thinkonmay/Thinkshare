@@ -24,7 +24,7 @@ module.exports = async (req, res, next) => {
 					"Content-Type": "application/json"
 				},
 				method: "POST",
-				body
+				body: JSON.stringify(body)
 			}
 		)
 		const html = await data.text()
