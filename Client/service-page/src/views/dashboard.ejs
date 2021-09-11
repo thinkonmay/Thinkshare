@@ -2,93 +2,18 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>ThinkMay | Dashboard</title>
-	<!-- Google Font: Source Sans Pro -->
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-	<!-- Font Awesome -->
-	<link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-	<!-- Theme style -->
-	<link rel="stylesheet" href="stylesheets/adminlte.min.css">
-	<link rel="stylesheet" href="stylesheets/style.css">
+	<% include partials/head %>
 </head>
 
 <body class="hold-transition sidebar-mini">
 	<!-- Site wrapper -->
 	<div class="wrapper">
 		<!-- Navbar -->
-		<nav class="main-header navbar navbar-expand navbar-white navbar-light">
-			<!-- Left navbar links -->
-			<ul class="navbar-nav">
-				<li class="nav-item">
-					<a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-				</li>
-			</ul>
-			<!-- Right navbar links -->
-			<ul class="navbar-nav ml-auto">
-				<!-- Notifications Dropdown Menu -->
-				<li class="nav-item">
-					<a class="nav-link" data-widget="fullscreen" href="#" role="button" data-toggle="tooltip" data-placement="bottom" title="Fullscreen">
-						<i class="fas fa-expand-arrows-alt"></i>
-					</a>
-				</li>
-			</ul>
-		</nav>
+		<% include partials/navbar %>
 		<!-- /.navbar -->
 		<!-- Main Sidebar Container -->
-		<aside class="main-sidebar sidebar-dark-primary elevation-4">
-			<!-- Brand Logo -->
-			<a href="." class="brand-link">
-				<img src="images/avtFounder.png" alt="ThinkMay Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-				<span class="brand-text font-weight-light">ThinkMay - User</span>
-			</a>
-			<!-- Sidebar -->
-			<div class="sidebar">
-				<!-- Sidebar user (optional) -->
-				<div class="user-panel mt-3 pb-3 mb-3 d-flex">
-					<div class="image">
-						<img src="images/avtFounder.png" class="img-circle elevation-2" alt="User Image">
-					</div>
-					<div class="info">
-						<a href="#" class="d-block">Le Van Thien</a>
-					</div>
-				</div>
-				<!-- Sidebar Menu -->
-				<nav class="mt-2">
-					<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-						<!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-						<li class="nav-item">
-							<a href="/dashboard" class="nav-link">
-								<i class="nav-icon fas fa-tachometer-alt"></i>
-								<p>
-									Dashboard
-								</p>
-							</a>
-						</li>
-						<!-- <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-edit"></i>
-                <p>
-                  Settings
-                </p>
-              </a>
-            </li> -->
-						<li class="nav-item">
-							<a href="/logout" class="nav-link">
-								<i class="nav-icon fas fa-th"></i>
-								<p>
-									Logout
-								</p>
-							</a>
-						</li>
-					</ul>
-				</nav>
-				<!-- /.sidebar-menu -->
-			</div>
-			<!-- /.sidebar -->
-		</aside>
+		<% include partials/sidebar %>
 		<!-- Content Wrapper. Contains page content -->
 		<div class="content-wrapper">
 			<!-- Content Header (Page header) -->
@@ -98,8 +23,12 @@
 				<div class="card card-solid col">
 					<div class="card-body pb-0">
 						<div class="row" id="slaves">
+							<h2 style="color: #007bff"><b>Session</b></h2>
+							<div class='w-100'></div>
 							<div class="row" id="onlineSlaves"></div>
 							<div class='w-100 line'></div>
+							<h2 style="color: #ffc107"><b>Available</b></h2>
+							<div class='w-100'></div>
 							<div id="availableSlaves" class="row"></div>
 							<!-- asdasd -->
 						</div>
@@ -110,58 +39,47 @@
 			<!-- /.content -->
 		</div>
 		<!-- /.content-wrapper -->
-		<footer class="main-footer">
-			<div class="float-right d-none d-sm-block">
-				<b>Version</b> 1.0.0
-			</div>
-			<strong>Copyright &copy; 2014-2021 <a href="#">ThinkMay</a>.</strong> All rights reserved.
-		</footer>
+		<% include partials/footer %>
 		<!-- Control Sidebar -->
 		<div class="control-sidebar control-sidebar-dark col">
 			<!-- Control sidebar content goes here -->
-			<div class="row blank"><div class="container">
-    <div class="row">&nbsp;</div>
-    <div class="row">
-        <div class="col-2">User</div>
-        <div class="col-4"><input type="text" id="userInput" /></div>
-    </div>
-    <div class="row">
-        <div class="col-2">Message</div>
-        <div class="col-4"><input type="text" id="messageInput" /></div>
-    </div>
-    <div class="row">&nbsp;</div>
-    <div class="row">
-        <div class="col-6">
-            <input type="button" id="sendButton" value="Send Message" />
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-12">
-        <hr />
-    </div>
-</div>
-<div class="row">
-    <div class="col-6">
-        <ul id="messagesList"></ul>
-    </div>
-</div></div>
-			<div class="row blank">Ô trống 2</div>
+			<div class="row blank">
+				<div class="container">
+					<div class="row">&nbsp;</div>
+					<div class="row">
+						<div class="col-2">User</div>
+						<div class="col-4"><input type="text" id="userInput" /></div>
+					</div>
+					<div class="row">
+						<div class="col-2">Message</div>
+						<div class="col-4"><input type="text" id="messageInput" /></div>
+					</div>
+					<div class="row">&nbsp;</div>
+					<div class="row">
+						<div class="col-6">
+							<input type="button" id="sendButton" value="Send Message" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<hr />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6">
+						<ul id="messagesList"></ul>
+					</div>
+				</div>
+			</div>
+			<div class="row blank">
+				Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>Ô trống 2<br>
+			</div>
 		</div>
 		<!-- /.control-sidebar -->
 	</div>
 	<!-- ./wrapper -->
-	<!-- jQuery -->
-	<script src="plugins/jquery/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.7/signalr.min.js"></script>
-    <!-- </snippet_CDN> -->
-    <script src=".../public/javascripts/pages/dashboard.js"></script>
-	<!-- Bootstrap 4 -->
-	<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-	<!-- AdminLTE App -->
-	<script src="javascripts/template/adminlte.min.js"></script>
-	<!-- AdminLTE for demo purposes -->
-	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<% include partials/dependencies %>
 	<script type="module" src="javascripts/pages/dashboard.js"></script>
 </body>
 

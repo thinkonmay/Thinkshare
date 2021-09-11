@@ -22,18 +22,5 @@
   "devDependencies": {
     "eslint": "^7.32.0",
     "nodemon": "^2.0.12"
-  },
-  "description": "***Required [nodejs](https://nodejs.org/en/) v16+**\r ```\r npm install\r ```\r # SCRIPT\r 1. Normal start:\r ```\r npm start\r ```\r 2. Start with **nodemon** (will display error stack trace in **error page**)\r ```\r npm run dev\r ```\r 3. Debug server (use flag \"--inspect-brk\", visit \"edge://inspect\" or \"chrome://inspect\" for more information)\r ```\r npm run debug\r ```\r # CONFIG PATHS",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/epitchi/ThinkMay-Client.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/epitchi/ThinkMay-Client/issues"
-  },
-  "homepage": "https://github.com/epitchi/ThinkMay-Client#readme"
+  }
 }
