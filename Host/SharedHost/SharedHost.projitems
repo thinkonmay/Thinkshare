@@ -15,7 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\Cluster.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Command\ShellSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Command\CommandLog.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Class1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\HostConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Slave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\SlaveQueryResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Error\GeneralError.cs" />
