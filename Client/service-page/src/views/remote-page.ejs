@@ -6,7 +6,7 @@
     <link href="https://thinkmay.net/remote-page-asset/css/googleapi.css" rel="stylesheet" />
     <link href="https://thinkmay.net/remote-page-asset/css/vuetify.css" rel="stylesheet" />
     <link href="https://thinkmay.net/remote-page-asset/css/dev.css" rel="stylesheet" />
-    <title>Remote control page</title>
+    <title>Remote control</title>
 </head>
 <body>
     <div id="app">
@@ -53,6 +53,7 @@
             </div>
 
             <canvas id="capture"></canvas>
+            <script></script>
             </div> 
         </v-app>
     </div>
@@ -62,7 +63,32 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-spinner@1.0.3/dist/vue-spinner.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
-@RenderBody()
+
+
+<script type="module" src="javascripts/pages/remote-page.js"></script>
+
+<script>
+    var 
+    applyTimestamp = (msg) => {
+        var now = new Date();
+        var ts = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+        return "[" + ts + "]" + " " + msg;
+}
+</script>
+<script type="text/javascript">
+    var Module = {"CORE_MODULE":0,"CLIENT_MODULE":1,"LOADER_MODULE":2,"AGENT_MODULE":3,"HOST_MODULE":4};
+    var HidOpcode = {"KEYUP":0,"KEYDOWN":1,"MOUSE_WHEEL":2,"MOUSE_MOVE":3,"MOUSE_UP":4,"MOUSE_DOWN":5};
+    var Opcode = {"SESSION_INFORMATION":0,"REGISTER_SLAVE":1,"SLAVE_ACCEPTED":2,"DENY_SLAVE":3,"REJECT_SLAVE":4,"SESSION_INITIALIZE":5,"SESSION_TERMINATE":6,"RECONNECT_REMOTE_CONTROL":7,"DISCONNECT_REMOTE_CONTROL":8,"QOE_REPORT":9,"RESET_QOE":10,"COMMAND_LINE_FORWARD":11,"SESSION_CORE_EXIT":12,"ERROR_REPORT":13,"NEW_COMMAND_LINE_SESSION":14,"END_COMMAND_LINE_SESSION":15,"FILE_TRANSFER_SERVICE":16,"CLIPBOARD_SERVICE":17};
+    var QoEMode = {"ULTRA_LOW_CONST":1,"LOW_CONST":2,"MEDIUM_CONST":3,"HIGH_CONST":4,"VERY_HIGH_CONST":5,"ULTRA_HIGH_CONST":6,"SEGMENTED_ADAPTIVE_BITRATE":7,"NON_OVER_SAMPLING_ADAPTIVE_BITRATE":8,"OVER_SAMPLING_ADAPTIVE_BITRATE":9,"PREDICTIVE_ADAPTIVE_BITRATE":10};
+    var Codec = {"CODEC_H265":0,"CODEC_H264":1,"CODEC_VP9":2,"OPUS_ENC":3,"AAC_ENC":4};
+</script>
+<script src="https://thinkmay.net/remote-page-asset/src/quality-track.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/key-translate.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/input.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/signalling.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/webrtc.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/client-message.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/clipboard.js?ts=1"></script>
 <script>
     app.connectServer();
 </script>

@@ -1,4 +1,5 @@
-const fetch = require("node-fetch")
+import * as API from "../util/api.js"
+
 
 module.exports = async (req, res, next) => {
 	try {
@@ -17,18 +18,7 @@ module.exports = async (req, res, next) => {
 				screenHeight: 1440 || Number(query.cap.screenHeight)
 			}
 		}
-		const data = await fetch(
-			process.env.THINKMAY_HOST + "/session/initialize", {
-				headers: {
-					Authorization: "Bearer " + atob(req.cookies.token),
-					"Content-Type": "application/json"
-				},
-				method: "POST",
-				body: JSON.stringify(body)
-			}
-		)
-		const html = await data.text()
-		res.send(html)
+		res.send(API.initializeSession(body,atob(req.cookies.token)))
 	} catch (error) {
 		res.status(500).render("error", {
 			status: 500,

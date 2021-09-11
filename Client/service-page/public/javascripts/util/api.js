@@ -1,6 +1,6 @@
 import {getCookie} from "./cookie.js"
 
-const host = "http://conductor.thinkmay.net"
+const host = "https://conductor.thinkmay.net"
 
 // local api
 export const Dashboard = "/dashboard"
@@ -23,6 +23,8 @@ export const DisconnectDevice = `${host}/Device/Disconnect`
 export const TerminateSession = `${host}/Session/Terminate`
 export const DisconnectSession = `${host}/Session/Disconnect`
 export const ReconnectSession = `${host}/Session/Reconnect`
+export const InitializeSession = `${host}/Session/Initialize`
+
 
 export const QuerySession = `${host}/Query/Session`
 
@@ -123,12 +125,27 @@ export const disconnectSession = SlaveID => {
 	})
 }
 
-export const reconnectSession = SlaveID => {
+export const reconnectSession = (SlaveID,token) => {
 	return fetch(ReconnectSession, {
 		method: "POST",
-		headers: genHeaders(),
+		headers: {
+			Authorization: "Bearer " + token,
+			"Content-Type": "application/json"
+		},
 		body: JSON.stringify({
 			SlaveID
 		})
 	})
+}
+
+export const initializeSession = (body,token) => {
+		return fetch(InitializeSession, {
+			headers: {
+				Authorization: "Bearer " + token,
+				"Content-Type": "application/json"
+			},
+			method: "POST",
+			body: JSON.stringify(body)
+		}
+	)
 }

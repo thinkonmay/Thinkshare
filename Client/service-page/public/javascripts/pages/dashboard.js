@@ -84,7 +84,7 @@ $(document).ready(async () => {
 		alert(err.message)
 	}
 
-	const connection = new signalR.HubConnectionBuilder().withUrl("http://conductor.thinkmay.net/ChatHub").build()
+	const connection = new signalR.HubConnectionBuilder().withUrl("https://conductor.thinkmay.net/ChatHub").build()
 	//Disable send button until connection is established
 	document.getElementById("sendButton").disabled = true
 
