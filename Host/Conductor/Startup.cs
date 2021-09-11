@@ -133,7 +133,7 @@ namespace Conductor
             });
 
 
-            services.AddScoped<IAdmin, Admin>();
+            services.AddTransient<IAdmin, Admin>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
             services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
 
