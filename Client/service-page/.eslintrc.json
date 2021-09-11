@@ -29,6 +29,7 @@
     },
 		"globals": {
 			"Swal": "readonly",
-			"$": "readonly"
+			"$": "readonly",
+            "signalR": "readonly"
 		}
 }

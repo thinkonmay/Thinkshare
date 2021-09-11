@@ -1,5 +1,12 @@
 import * as API from "../util/api.js"
-import { getCookie } from "../util/cookie.js"
+
+const AVAILABLE = 1 << 1
+const ONSESSION = 1 << 2
+const DISCONNECT = 1 << 3
+
+API.getInfor().then(async data => {
+	$("#fullName").html((await data.json()).fullName)
+})
 
 $(document).ready(async () => {
 	$("[data-toggle=\"tooltip\"]").tooltip()
@@ -23,64 +30,92 @@ $(document).ready(async () => {
 			}
 		})
 	})
-	$(document).on("click", ".rejectbtn", function () {
-		const slaveId = $(this).attr("id")
-		// await API.rejectDevice()
+
+	const getParent = input => $($(input).parent().parent().parent().parent().parent())
+	const getSlaveID = input => getParent(input).attr("id")
+
+	$(document).on("click", '.overlay :input[name="connect"]', async function () {
+		const SlaveID = getSlaveID(this)
+		window.open(getInitURL(SlaveID), "__blank")
+		const slave = getParent(this)
+		const clone = slave.clone()
+		slave.remove()
+		clone.children().children().children(".slaveState").html(slaveState(ONSESSION))
+		$("#onlineSlaves").append(clone)
 	})
-	const slaves = await getSlaves()
-	for (let i = 0; i < 10; i++) {
-		slaves.push({})
+	$(document).on("click", '.overlay :input[name="disconnect"]', async function () {
+		const SlaveID = getSlaveID(this)
+		await API.disconnectDevice(SlaveID)
+		const slave = getParent(this)
+		const clone = slave.clone()
+		slave.remove()
+		clone.children().children().children(".slaveState").html(slaveState(DISCONNECT))
+		$("#disconnectSlaves").append(clone)
+	})
+	$(document).on("click", '.overlay :input[name="reconnect"]', async function () {
+		const SlaveID = getSlaveID(this)
+		window.open(getReconnectURL(SlaveID, true), "__blank")
+	})
+	$(document).on("click", '.overlay :input[name="terminate"]', async function () {
+		const SlaveID = getSlaveID(this)
+		await API.terminateSession(SlaveID)
+		const slave = getParent(this)
+		const clone = slave.clone()
+		slave.remove()
+		clone.children().children().children(".slaveState").html(slaveState(AVAILABLE))
+		$("#availableSlaves").append(clone)
+	})
+	$(document).on("click", '.overlay :input[name="reject"]', async function () {
+		const SlaveID = getSlaveID(this)
+		await API.rejectDevice(SlaveID)
+		getParent(this).remove()
+	})
+
+	try {
+		const sessions = await (await API.fetchSession()).json()
+		const slaves = await (await API.fetchSlave()).json()
+		for (const slave of sessions) {
+			append("onlineSlaves", createSlave(slave, ONSESSION))
+		}
+		for (const slave of slaves) {
+			append("availableSlaves", createSlave(slave, AVAILABLE))
+		}
+	} catch (err) {
+		alert(err.message)
 	}
-	for (const slave of slaves) {
-		append("onlineSlaves", createSlave(slave))
-	}
-	for (const slave of slaves) {
-		append("availableSlaves", createSlave(slave))
-	}
-	const connection = new signalR.HubConnectionBuilder().withUrl("https://conductor.thinkmay.net/ChatHub").build();
+
+	const connection = new signalR.HubConnectionBuilder().withUrl("http://conductor.thinkmay.net/ChatHub").build()
 	//Disable send button until connection is established
-	document.getElementById("sendButton").disabled = true;
+	document.getElementById("sendButton").disabled = true
 
 	connection.on("ReceiveMessage", function (user, message) {
-		var li = document.createElement("li");
-		document.getElementById("messagesList").appendChild(li);
+		var li = document.createElement("li")
+		document.getElementById("messagesList").appendChild(li)
 		// We can assign user-supplied strings to an element's textContent because it
 		// is not interpreted as markup. If you're assigning in any other way, you 
 		// should be aware of possible script injection concerns.
-		li.textContent = `${user} says ${message}`;
-	});
+		li.textContent = `${user} says ${message}`
+	})
 
 	connection.start().then(function () {
-		document.getElementById("sendButton").disabled = false;
+		document.getElementById("sendButton").disabled = false
 	}).catch(function (err) {
-		return console.error(err.toString());
-	});
+		return console.error(err.toString())
+	})
 
 	document.getElementById("sendButton").addEventListener("click", function (event) {
-		var user = document.getElementById("userInput").value;
-		var message = document.getElementById("messageInput").value;
+		var user = document.getElementById("userInput").value
+		var message = document.getElementById("messageInput").value
 		connection.invoke("SendMessage", user, message).catch(function (err) {
-			return console.error(err.toString());
-		});
-		event.preventDefault();
-	});
+			return console.error(err.toString())
+		})
+		event.preventDefault()
+	})
 })
 
-async function getSlaves() {
-	const token = getCookie("token")
-	if (!token) return []
-	try {
-		const data = await API.fetchSlave()
-		return await data.json()
-	} catch (e) {
-		console.log(e)
-		return []
-	}
-}
-
-function getURL(slaveId) {
+function getInitURL(SlaveID) {
 	return `${API.Initialize}?${serialize({
-		slaveId,
+		SlaveID,
 		cap: {
 			...Quality("best"),
 			mode: 1,
@@ -90,10 +125,13 @@ function getURL(slaveId) {
 	})}`
 }
 
-function createSlave(slave) {
-	const URL = getURL(slave.id)
+function getReconnectURL(SlaveID) {
+	return `${API.Reconnect}?SlaveID=${SlaveID}`
+}
+
+function createSlave(slave, state) {
 	return `
-    <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave">
+    <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${slave.id}">
       <div class="card bg-light d-flex flex-fill">
         <div class="card-header text-muted border-bottom-0">
           <br>
@@ -120,18 +158,34 @@ function createSlave(slave) {
           </div>
         </div>
         <div class="overlay">
-          <div class="row">
-            <div class="col colbut rejectbtn" id="${
-	slave.id
-}"><input class="btn btn-secondary" type="submit" name="" value="Reject device"></div>
-            <div class="col colbut"><a href="${URL}" target="_blank"><input class="btn btn-secondary" type="submit" value="Connect device"></div></a>
-            <div class="w-100"></div>
-            <div class="col colbut"><input class="btn btn-secondary" type="submit" name="" value="AMOGUS"></div>
-            <div class="col colbut"><input class="btn btn-secondary" type="submit" name="" value="SUSSY BAKA"></div>
+          <div class="row slaveState">
+            ${slaveState(state)}
           </div>
         </div>
       </div>
     </div>`
+}
+
+function slaveState(state) {
+	const nl = '<div class="w-100"></div>'
+	const btn = {
+		connect: '<div class="col colbut"><input class="btn btn-primary" name="connect" type="submit" value="Connect"></div>',
+		disconnect: '<div class="col colbut"><input class="btn btn-secondary" name="disconnect" type="submit" value="Disconnect"></div>',
+		reconnect: '<div class="col colbut"><input class="btn btn-primary" name="reconnect" type="submit" value="Reconnect"></div>',
+		terminate: '<div class="col colbut"><input class="btn btn-warning" name="terminate" type="submit" value="Terminate"></div>',
+		reject: '<div class="col colbut"><input class="btn btn-danger" name="reject" type="submit" value="Reject"></div>'
+	}
+	if (window.isAdmin) {
+		if (state == AVAILABLE)
+			return btn.connect + btn.disconnect + nl + btn.reject
+		if (state == DISCONNECT)
+			return btn.connect + btn.reject
+		return btn.reconnect + btn.disconnect + nl + btn.reject + btn.terminate
+	} else {
+		if (state == AVAILABLE)
+			return btn.connect
+		return btn.terminate + btn.reconnect
+	}
 }
 
 function append(id, html) {
