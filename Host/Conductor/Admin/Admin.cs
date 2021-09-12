@@ -209,12 +209,13 @@ namespace Conductor.Administration
             foreach (var i in shell)
             {
                 i.EndTime = DateTime.Now;
+                await _db.SaveChangesAsync();
             }
             foreach (var i in remote)
             {
                 i.EndTime = DateTime.Now;
+                await _db.SaveChangesAsync();
             }
-            await _db.SaveChangesAsync();
         }
 
         public async Task ReportRemoteControlDisconnectedFromSignalling(SessionPair session)
@@ -230,6 +231,12 @@ namespace Conductor.Administration
             request.Method = Method.POST;
 
             await _slavemanager.ExecuteAsync(request);                        
+        }
+
+        public async Task<SlaveDeviceInformation> GetDeviceInfor(int SlaveID)
+        {
+            var slave =_db.Devices.Find(SlaveID);
+            return new SlaveDeviceInformation(slave);
         }
     }
 }

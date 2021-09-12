@@ -15,6 +15,7 @@ namespace Conductor.Interfaces
     /// /// </summary>
     public interface IAdmin
     {
+        Task<SlaveDeviceInformation> GetDeviceInfor(int SlaveID);
         /// <summary>
         /// Report new slave registration to the system
         /// </summary>

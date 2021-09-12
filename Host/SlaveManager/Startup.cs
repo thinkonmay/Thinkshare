@@ -39,7 +39,7 @@ namespace SlaveManager
 
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
-               
+
 
             services.AddSwaggerGen(swagger =>
             {
@@ -73,12 +73,12 @@ namespace SlaveManager
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "slavemanager v1"));
             }
 
-           // global cors policy
+            // global cors policy
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
-            
+
             app.UseRouting();
 
             app.UseWebSockets();
@@ -87,7 +87,7 @@ namespace SlaveManager
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                    
+
             });
 
             app.UseSwagger();

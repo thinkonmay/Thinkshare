@@ -9,6 +9,8 @@
 /// 
 #include <low-const.h>
 #include <session-core-type.h>
+#include <session-core.h>
+#include <session-core-remote-config.h>
 #include <gst/gst.h>
 #include <session-core-pipeline.h>
 

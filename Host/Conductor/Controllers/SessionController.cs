@@ -126,16 +126,16 @@ namespace Conductor.Controllers
         /// <summary>
         /// Terminate session 
         /// </summary>
-        /// <param name="sessionClientId"></param>
+        /// <param name="SlaveID"></param>
         /// <returns></returns>
         [HttpDelete("Terminate")]
-        public async Task<IActionResult> Terminate(int sessionClientId)
+        public async Task<IActionResult> Terminate(int SlaveID)
         {            
             //get client id from request
             var ClientId =  _jwt.GetUserFromHttpRequest(User);
 
             // get session information in database
-            var ses = _db.RemoteSessions.Where(s => s.SessionClientID == sessionClientId 
+            var ses = _db.RemoteSessions.Where(s => s.SlaveID == SlaveID 
                                                && s.ClientID == ClientId  
                                               && !s.EndTime.HasValue).FirstOrDefault();
 
@@ -181,13 +181,13 @@ namespace Conductor.Controllers
         /// <param name="sessionClientId"></param>
         /// <returns></returns>
         [HttpPost("Disconnect")]
-        public async Task<IActionResult> DisconnectRemoteControl(int sessionClientId)
+        public async Task<IActionResult> DisconnectRemoteControl(int SlaveID)
         {   
             // get ClientId from request         
             var ClientId =  _jwt.GetUserFromHttpRequest(User);
 
             // get session from database
-            var ses = _db.RemoteSessions.Where(s => s.SessionClientID == sessionClientId 
+            var ses = _db.RemoteSessions.Where(s => s.SlaveID == SlaveID 
                                                && s.ClientID == ClientId 
                                               && !s.EndTime.HasValue).FirstOrDefault();
 
@@ -215,13 +215,13 @@ namespace Conductor.Controllers
         /// <param name="sessionClientId"></param>
         /// <returns></returns>
         [HttpPost("Reconnect")]
-        public async Task<IActionResult> ReconnectRemoteControl(int sessionClientId)
+        public async Task<IActionResult> ReconnectRemoteControl(int SlaveID)
         {            
             // get ClientId from user request
             var ClientId =  _jwt.GetUserFromHttpRequest(User);
 
             // get session from database
-            var ses = _db.RemoteSessions.Where(s => s.SessionClientID == sessionClientId 
+            var ses = _db.RemoteSessions.Where(s => s.SlaveID == SlaveID 
                                                && s.ClientID == ClientId 
                                               && !s.EndTime.HasValue).FirstOrDefault();
 

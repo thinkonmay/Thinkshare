@@ -133,7 +133,7 @@ namespace Conductor
             });
 
 
-            services.AddScoped<IAdmin, Admin>();
+            services.AddTransient<IAdmin, Admin>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
             services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
 
@@ -158,6 +158,8 @@ namespace Conductor
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
+                .WithMethods("GET", "POST")
+                .AllowCredentials()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
             
             app.UseRouting();
@@ -174,6 +176,7 @@ namespace Conductor
                     
                 endpoints.MapHub<AdminHub>("/AdminHub");
                 endpoints.MapHub<ClientHub>("/ClientHub");
+                endpoints.MapHub<ChatHub>("/ChatHub");
             });
 
             app.UseSwagger();

@@ -13,6 +13,11 @@ namespace SignalRChat.Hubs
 {
     public interface IAdminHub
     {
+        /// <summary>
+        /// like this name
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns></returns>
         Task ReportAgentError(GeneralError error);
 
         Task ReportSessionCoreError(GeneralError error);
@@ -26,8 +31,7 @@ namespace SignalRChat.Hubs
         Task ReportSessionTermination(int SlaveID, int ClietnID);
     }
 
-
-    [Authorize(Roles = "SystemManager")]
+    [Authorize]
     public class AdminHub : Hub<IAdminHub>
     {
         

@@ -65,10 +65,22 @@ void											agent_remote_control_reconnect		(AgentObject* self);
 
 
 
-
+/// <summary>
+/// commandline passing function will be invoked when 
+/// handle child std receive message from commandline process
+/// commandline received then will be format to message and
+/// </summary>
+/// <param name="self"></param>
+/// <param name="command"></param>
+/// <returns></returns>
 gboolean										agent_command_line_passing			(AgentObject* self,
 																					 gchar* command);
 
+/// <summary>
+/// handle cmd process termination, based on current connection state with host,
+/// if in connection, agent will report to host and cmd process termination event will be recorded
+/// </summary>
+/// <param name="self"></param>
 void         									agent_on_cmd_process_terminate		(AgentObject* self);
 
 
@@ -81,6 +93,7 @@ void         									agent_on_cmd_process_terminate		(AgentObject* self);
 void											agent_finalize						(AgentObject* object);
 /// <summary>
 /// Create new agent object based on information of host
+/// this initialize step will include allocate heap and connect to host
 /// </summary>
 /// <param name="Host_URL"></param>
 /// <param name="Host_ID"></param>
@@ -93,7 +106,11 @@ AgentObject*									agent_new							();
 /// <param name="self"></param>
 void											handle_host_connection				(AgentObject* self);
 
-
+/// <summary>
+/// send message to other module
+/// </summary>
+/// <param name="self"></param>
+/// <param name="message">message to send</param>
 void											agent_send_message					(AgentObject* self, Message* message);
 
 /// <summary>
@@ -129,18 +146,28 @@ void											agent_register_with_host			(AgentObject* self);
 
 
 
-
+/// <summary>
+/// handle session core exit event, depend on agent state, 
+/// it will be reported to server to handle remote control disconnected 
+/// otherwise just ignored 
+/// </summary>
+/// <param name="self"></param>
 void											agent_on_session_core_exit		(AgentObject* self);
 
 
-/*get-set function for agent object*/
-
-Socket*											agent_get_socket					(AgentObject* self);
-
-
-
+/// <summary>
+/// report error to host, included error message
+/// error then will be log into database and report to admin imediately
+/// </summary>
+/// <param name="self"></param>
+/// <param name="message">a short description about error</param>
 void											agent_report_error					(AgentObject* self,
 				   																	 gchar* message);
+
+
+/*get-set function for agent object*/
+Socket*											agent_get_socket					(AgentObject* self);
+
 
 
 AgentState*										agent_get_state						(AgentObject* self);
@@ -162,7 +189,7 @@ void											agent_set_child_process				(AgentObject* self,
 																					 ChildProcess* process);
 
 GMainLoop*										agent_get_main_loop					(AgentObject* self);
-
-
 /*END get-set function for agent object*/
+
+
 #endif // !__AGENT_OBJECT__

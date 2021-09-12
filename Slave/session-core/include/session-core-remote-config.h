@@ -63,6 +63,16 @@ void			qoe_update_quality					(SessionCore* core,
 												     gint bandwidth,
 													 gint packets_lost);
 
+/// <summary>
+/// get audio codec from current remote session
+/// </summary>
+/// <param name="qoe"></param>
+/// <returns></returns>
 Codec			qoe_get_audio_codec					(QoE* qoe);
 
+/// <summary>
+/// get video codec from current remote session
+/// </summary>
+/// <param name="qoe"></param>
+/// <returns></returns>
 Codec			qoe_get_video_codec					(QoE* qoe);

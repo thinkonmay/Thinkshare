@@ -74,6 +74,7 @@ qoe_setup(QoE* qoe,
 		  Codec video_codec,
 		  QoEMode qoe_mode)
 {
+	// resize window to fit user's window
 	DEVMODE devmode;
     devmode.dmPelsWidth = screen_width;
     devmode.dmPelsHeight = screen_height;
@@ -91,6 +92,8 @@ qoe_setup(QoE* qoe,
 
 	qoe->mode = qoe_mode;
 
+	// match qoe mode to corresponding adaptive bitrate algorithm 
+	// (included const bitrate)
 	switch (qoe->mode)
 	{
 	case ULTRA_LOW_CONST:
@@ -148,10 +151,10 @@ qoe_update_quality(SessionCore* core,
 					gint bandwidth,
 					gint packets_lost)
 {
-	// implement circular buffer of quality sample
 	QoE* qoe = session_core_get_qoe(core);
 	QualitySample sample;
 
+	// collect a sample of network related parameter
 	sample.available_bandwidth = bandwidth;
 	sample.packets_lost = packets_lost;
 	sample.framerate = framerate;

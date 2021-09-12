@@ -125,7 +125,7 @@ namespace Signalling.Services
         public bool SlaveIsOnline(int ClientID)
         {
             var SlaveID = sessionPairs
-                .Where(o => o.SessionSlaveID == ClientID).FirstOrDefault()
+                .Where(o => o.SessionClientID == ClientID).FirstOrDefault()
                 .SessionSlaveID;
 
             return DeviceIsOnline(SlaveID);
