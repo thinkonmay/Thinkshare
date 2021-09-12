@@ -85,7 +85,7 @@ namespace Conductor
                             // If the request is for our hub...
                             var path = context.HttpContext.Request.Path;
                             if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/ClientHub")))
+                                (path.StartsWithSegments("/ClientHub")) || (path.StartsWithSegments("/AdminHub")))
                             {
                                 // Read the token out of the query string
                                 context.Token = accessToken;
