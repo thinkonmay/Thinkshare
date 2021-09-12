@@ -92,13 +92,7 @@ namespace Conductor.Controllers
             var session = _db.RemoteSessions.Where(s => s.ClientID == ClientId
                                                     && !s.EndTime.HasValue)
                                             .ToList();
-
-            // search for remote session with client id and endtime equal null
-            return Ok(await GetDeviceInfor(session));
-        }
-
-        public async Task<List<SlaveDeviceInformation>> GetDeviceInfor(List<RemoteSession> session)
-        {
+            
             var ret = new List<SlaveDeviceInformation>();
 
             foreach (var i in session)
@@ -110,7 +104,9 @@ namespace Conductor.Controllers
                 
                 ret.Add(device_infor);                
             }
-            return ret;
+
+            // search for remote session with client id and endtime equal null
+            return Ok(ret);
         }
     }
 }
