@@ -1,6 +1,6 @@
 import {getCookie} from "./cookie.js"
 
-const host = "http://conductor.thinkmay.net"
+const host = "https://conductor.thinkmay.net"
 
 // local api
 export const Dashboard = "/dashboard"
