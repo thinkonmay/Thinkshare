@@ -1,4 +1,5 @@
 import * as API from "../util/api.js"
+import {getCookie} from "../util/cookie.js"
 
 const AVAILABLE = 1 << 1
 const ONSESSION = 1 << 2
@@ -83,8 +84,10 @@ $(document).ready(async () => {
 	} catch (err) {
 		alert(err.message)
 	}
-
-	const connection = new signalR.HubConnectionBuilder().withUrl("http://conductor.thinkmay.net/ChatHub").build()
+	// Connect to hub signalR with access-token Bearer Authorzation
+	const connection = new signalR.HubConnectionBuilder().withUrl(`http://conductor.thinkmay.net/AdminHub`,  {
+		accessTokenFactory: () => getCookie("token") // Return access token
+	}).build()
 	//Disable send button until connection is established
 	document.getElementById("sendButton").disabled = true
 
