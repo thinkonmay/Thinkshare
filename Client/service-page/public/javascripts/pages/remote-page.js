@@ -1,10 +1,61 @@
-import * as API from "../util/api.js"
+export function initialize_remote_page(sessionSlave){return `
+<!DOCTYPE html>
+<html>
 
-const fetch = require("node-fetch")
-var data = await API.initializeSession();
+<head>    
+    <link href="https://thinkmay.net/remote-page-asset/material-floating-button/dist/mfb.css" rel="stylesheet">
+    <link href="https://thinkmay.net/remote-page-asset/css/googleapi.css" rel="stylesheet" />
+    <link href="https://thinkmay.net/remote-page-asset/css/vuetify.css" rel="stylesheet" />
+    <link href="https://thinkmay.net/remote-page-asset/css/dev.css" rel="stylesheet" />
+    <title>Remote control</title>
+</head>
+<body>
+    <div id="app">
+        <v-app>
+            <ul class="mfb-component--br mfb-slidein" data-mfb-toggle="hover">
+                <li class="mfb-component__wrap">
+                        <!-- the main menu button -->
+                        <a data-mfb-label=""  class="mfb-component__button--main">
+                        <!-- the main button icon visibile by default -->
+                            <i class="mfb-component__main-icon--resting ion-social-github">                                
+                                <v-icon x-large>home</v-icon>
+                            </i>
+                            <i class="mfb-component__main-icon--active ion-social-github"> 
+                                <v-icon x-large color="black"></v-icon>
+                            </i>
+                        </a>
+                    <ul class="mfb-component__list">
+                        <li>
+                            <a data-mfb-label="Full screen mode" class="mfb-component__button--child">
+                                <i class="mfb-component__child-icon ion-social-twitter">                            
+                                    <v-btn icon v-on:click="enterFullscreen()">
+                                        <v-icon color="black">fullscreen</v-icon>
+                                    </v-btn>
+                                </i>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
 
-const sessionSlave = data.json();
+            <div id="video_container" class="video-container">
+                <video id="stream" autoplay playsinline>
+                    Your browser doesn't support video
+                </video>
+            </div>
 
+            <canvas id="capture"></canvas>
+            <div ></div>
+            </div> 
+        </v-app>
+    </div>
+</body>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-spinner@1.0.3/dist/vue-spinner.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script>
 var ScaleLoader = VueSpinner.ScaleLoader;
 var serverStatus = null;
 var app = new Vue({
@@ -18,8 +69,8 @@ var app = new Vue({
     data() 
     {
         return {
-            SessionClientID: sessionSlave.SessionClientID, 
-            ClientID: sessionSlave.ClientID,
+            SessionClientID: ${sessionSlave.SessionClientID}, 
+            ClientID: ${sessionSlave.ClientID},
 
             showStart: false,
             showDrawer: false,
@@ -33,13 +84,13 @@ var app = new Vue({
             connectionResolution: "",
 
             /*parameter serve for session initialization */
-            Clientoffer: sessionSlave.ClientOffer,
-            SignallingUrl: sessionSlave.Html.Raw(SignallingUrl),
+            Clientoffer: ${sessionSlave.ClientOffer},
+            SignallingUrl: ${sessionSlave.StringUrl},
 
             /*default value from client session fetch from server*/
-            QoEMode: sessionSlave.QoEMode,
-            AudioCodec: sessionSlave.AudioCodec,
-            VideoCodec: sessionSlave.VideoCodec,
+            QoEMode: ${sessionSlave.QoEMode},
+            AudioCodec: ${sessionSlave.AudioCodec},
+            VideoCodec: ${sessionSlave.VideoCodec},
 
             /**
             * default Value of QoE metric, fetch from server
@@ -49,8 +100,8 @@ var app = new Vue({
                 /*
                 * slave screen (determined in session initialize step)
                 */
-                "SlaveWidth":sessionSlave.ScreenWidth,
-                "SlaveHeight": sessionSlave.ScreenHeight,
+                "SlaveWidth":${sessionSlave.ScreenWidth},
+                "SlaveHeight": ${sessionSlave.ScreenHeight},
 
                 /*
                 * frame resolution used to transport to client
@@ -128,7 +179,7 @@ var app = new Vue({
             {"iceServers":    
                 [
                     {
-                        "urls": [sessionSlave.Html.Raw(StunServer)]
+                        "urls": [${sessionSlave.StunServer}]
                     },
                     {
                         "urls": ["stun:stun.l.google.com:19302"] 
@@ -275,3 +326,17 @@ var app = new Vue({
         }
     },
 });
+</script>
+<script src="https://thinkmay.net/remote-page-asset/src/enum.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/quality-track.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/key-translate.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/input.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/signalling.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/webrtc.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/client-message.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/clipboard.js?ts=1"></script>
+<script>
+    app.connectServer();
+</script>
+</html>
+`}
