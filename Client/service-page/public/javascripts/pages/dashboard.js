@@ -84,36 +84,34 @@ $(document).ready(async () => {
 	} catch (err) {
 		alert(err.message)
 	}
+	var stateSignalR = document.getElementById('state-signalr');
 	// Connect to hub signalR with access-token Bearer Authorzation
-	const connection = new signalR.HubConnectionBuilder().withUrl(`http://conductor.thinkmay.net/AdminHub`,  {
+	const connection = new signalR.HubConnectionBuilder().withUrl(`http://conductor.thinkmay.net/ClientHub`,  {
 		accessTokenFactory: () => getCookie("token") // Return access token
 	}).build()
-	//Disable send button until connection is established
-	document.getElementById("sendButton").disabled = true
-
-	connection.on("ReceiveMessage", function (user, message) {
-		var li = document.createElement("li")
-		document.getElementById("messagesList").appendChild(li)
-		// We can assign user-supplied strings to an element's textContent because it
-		// is not interpreted as markup. If you're assigning in any other way, you 
-		// should be aware of possible script injection concerns.
-		li.textContent = `${user} says ${message}`
-	})
-
 	connection.start().then(function () {
-		document.getElementById("sendButton").disabled = false
+		var content = `<p>SignalR Connected</p>`;
+		stateSignalR.innerHTML = content;
 	}).catch(function (err) {
+		var content = `<p>Failed To Connect to SignalR</p>`;
+		stateSignalR.innerHTML = content;
 		return console.error(err.toString())
 	})
 
-	document.getElementById("sendButton").addEventListener("click", function (event) {
-		var user = document.getElementById("userInput").value
-		var message = document.getElementById("messageInput").value
-		connection.invoke("SendMessage", user, message).catch(function (err) {
-			return console.error(err.toString())
+	// receive from function have been trigger on signalr
+	connection.on("ReportSessionReconnected", function (slaveId) {
+		console.log(`Trigger function successful! ${slaveId}`)
+	})
+	
+	//trigger function on signalR
+	document.getElementById("triggerButton").addEventListener("click", function (event) {
+		connection.invoke("trigger", "hello").catch(function (err) {
+			return console.log(err)
 		})
 		event.preventDefault()
 	})
+	
+
 })
 
 function getInitURL(SlaveID) {
@@ -156,7 +154,7 @@ function createSlave(slave, state) {
               </ul>
             </div>
             <div class="col-5 text-center">
-              <img src="images/avtFounder.png" alt="user-avatar" class="img-circle img-fluid">
+              <img src="images/win10-logo.jpg" alt="user-avatar" class="img-circle img-fluid">
             </div>
           </div>
         </div>

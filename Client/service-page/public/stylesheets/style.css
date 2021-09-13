@@ -59,7 +59,7 @@
   background-color: white;
   padding: 10px;
   color: black;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
 }
 
 .line {
