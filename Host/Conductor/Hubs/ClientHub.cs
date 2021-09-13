@@ -49,14 +49,14 @@ namespace SignalRChat.Hubs
         {
             _admin = admin;
         }
-        public void trigger(string message)
+        public async Task trigger(string message)
         {
             var remotesession = new RemoteSession()
             {
                 ClientID = 1,
                 SlaveID = 2
             };
-            _admin.ReportRemoteControlReconnect(remotesession);
+            await _admin.ReportRemoteControlReconnect(remotesession);
         }
     }
 }
