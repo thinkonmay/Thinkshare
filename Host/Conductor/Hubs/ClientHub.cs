@@ -12,6 +12,11 @@ namespace SignalRChat.Hubs
 {
     public interface IClientHub
     {
+        public async Task TriggerFunction(int slaveId)
+        {
+            await ReportSlaveObtained(slaveId);
+        }
+
         /// <summary>
         /// When slave device not use by current user, but obtained by someone => trigger and noti for all user connect this hub (ke ca someone).
         /// </summary>
@@ -43,6 +48,6 @@ namespace SignalRChat.Hubs
     
     [Authorize]
     public class ClientHub : Hub<IClientHub>
-    { 
+    {
     }
 }
