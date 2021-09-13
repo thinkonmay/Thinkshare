@@ -154,7 +154,7 @@ function createSlave(slave, state) {
               </ul>
             </div>
             <div class="col-5 text-center">
-              <img src="images/avtFounder.png" alt="user-avatar" class="img-circle img-fluid">
+              <img src="images/win10-logo.jpg" alt="user-avatar" class="img-circle img-fluid">
             </div>
           </div>
         </div>
