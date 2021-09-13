@@ -11,7 +11,7 @@ using SharedHost.Models.Device;
 namespace SignalRChat.Hubs
 {
     public interface IClientHub
-    {
+    {   
         public async Task TriggerFunction(int slaveId)
         {
             await ReportSlaveObtained(slaveId);
@@ -49,5 +49,8 @@ namespace SignalRChat.Hubs
     [Authorize]
     public class ClientHub : Hub<IClientHub>
     {
+        public async Task CheckTrigger(int slaveId)
+        {
+        }
     }
 }
