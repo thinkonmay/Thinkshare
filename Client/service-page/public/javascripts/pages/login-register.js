@@ -1,6 +1,6 @@
 import * as API from "../util/api.js"
 import * as Validates from "../validates/index.js"
-import {setCookie} from "../util/cookie.js"
+import {getCookie, setCookie} from "../util/cookie.js"
 
 const MINUTES59 = 59 * 60 * 1000
 
@@ -117,6 +117,13 @@ function login(body) {
 					if (data.status == 200) {
 						if (response.errorCode == 0) {
 							setCookie("token", response.token, MINUTES59)
+							// setCookie("cap", JSON.stringify({Mode:'ultra high', AudioCodec: 'opus', VideoCodec: 'h264', screenWidth: 2650, screenHeight: 1400}), 6969)
+							setCookie("Mode","ultra high", 999999);
+							setCookie("AudioCodec","opus", 999999);
+							setCookie("VideoCodec","h264", 999999);
+							setCookie("screenWidth",2650, 999999);
+							setCookie("screenHeight",1400, 999999);
+							console.log(getCookie("cap"));
 							window.location.replace(API.Dashboard)
 						} else {
 							newSwal.fire({

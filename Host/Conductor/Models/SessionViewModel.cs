@@ -17,9 +17,6 @@ namespace Conductor.Models
 
         public int ClientID {get;set;}
 
-        public bool DevMode {get;set;}
-
-
         private string ExportJavaEnum<T>()
         {
             var type = typeof(T);

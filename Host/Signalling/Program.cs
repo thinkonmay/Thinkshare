@@ -1,19 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Signalling.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using RestSharp;
-using SharedHost;
-using Newtonsoft.Json;
-using SharedHost.Models.Session;
-using System.Net;
-using System.IO;
+using Serilog;
+using Serilog.Formatting.Elasticsearch;
 
 namespace Signalling
 {
@@ -27,6 +15,13 @@ namespace Signalling
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseSerilog((ctx, config) => {
+                    config
+                        .MinimumLevel.Information()
+                        .Enrich.FromLogContext();
+
+                    config.WriteTo.Console(new ElasticsearchJsonFormatter());
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

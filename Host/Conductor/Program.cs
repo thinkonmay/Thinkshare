@@ -5,10 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Conductor.Models.User;
 using Conductor.Services;
-using System.Threading.Tasks;
 using Conductor.Data;
 using SharedHost;
-using System.IO;
+using Serilog;
+using Serilog.Formatting.Elasticsearch;
 
 namespace Conductor
 {
@@ -23,6 +23,13 @@ namespace Conductor
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseSerilog((ctx, config) =>{
+                    config
+                        .MinimumLevel.Information()
+                        .Enrich.FromLogContext();
+
+                    config.WriteTo.Console(new ElasticsearchJsonFormatter());
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
