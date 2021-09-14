@@ -101,7 +101,7 @@ namespace Conductor.Administration
                     Module = (int)Module.HOST_MODULE,
                     SlaveID = command.SlaveID
                 };
-                await ReportError(error);
+                System.Console.WriteLine(JsonConvert.SerializeObject(error));
 
                 CommandLog cmdLog = new CommandLog()
                 {
@@ -117,28 +117,6 @@ namespace Conductor.Administration
                 return;
             }
         }
-
-
-
-
-
-
-        public async Task ReportError(ReportedError err)
-        {
-            var slave = _db.Devices.Find(err.SlaveID);
-            var error = new GeneralError()
-            {
-                Machine = slave,
-                Module = err.Module,
-                ErrorMessage = err.ErrorMessage
-            };
-
-            _db.Errors.Add(error);
-            await _db.SaveChangesAsync();
-
-            await _adminHubctx.Clients.All.ReportAgentError(error);
-        }
-
 
 
 
