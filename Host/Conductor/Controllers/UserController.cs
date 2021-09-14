@@ -105,5 +105,16 @@ namespace Conductor.Controllers
             // search for remote session with client id and endtime equal null
             return Ok(ret);
         }
+
+
+        [HttpGet("Session")]
+        public async Task<IActionResult> UserGetSession()
+        {
+            int ClientId = _jwt.GetUserFromHttpRequest(User);
+
+            var account = await _userManager.FindByIdAsync(ClientId.ToString());
+
+            return Ok(account.usedSession);
+        }
     }
 }

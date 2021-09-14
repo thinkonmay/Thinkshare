@@ -107,15 +107,16 @@ function createSlave(slave) {
         <div class="card-body pt-0">
           <div class="row">
             <div class="col-7">
-              <h2 class="lead"><b>${slave.cpu}</b></h2>
+              <h2 class="lead"><b>Device</b></h2>
               <ul class="ml-4 mb-0 fa-ul text-muted">
+			  	<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.cpu}</li>
                 <li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
                 <li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
                 <li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
               </ul>
             </div>
             <div class="col-5 text-center">
-              <img src="images/win10-logo.jpg" alt="user-avatar" class="img-circle img-fluid">
+              <img src="images/window-logo.png" alt="user-avatar" class="img-fluid">
             </div>
           </div>
         </div>
@@ -131,7 +132,7 @@ function createSlave(slave) {
 function slaveState(state) {
 	const nl = '<div class="w-100"></div>'
 	const btn = {
-		connect: '<div class="col colbut"><input class="btn btn-primary" name="connect" type="submit" value="Connect"></div>',
+		connect: '<button type="button" class="btn btn-primary btn-icon-text" name="connect"><i class="ti-file btn-icon-prepend"></i>Connect</button>',
 		disconnect: '<div class="col colbut"><input class="btn btn-secondary" name="disconnect" type="submit" value="Disconnect"></div>',
 		reconnect: '<div class="col colbut"><input class="btn btn-primary" name="reconnect" type="submit" value="Reconnect"></div>',
 		terminate: '<div class="col colbut"><input class="btn btn-warning" name="terminate" type="submit" value="Terminate"></div>'
