@@ -2,17 +2,42 @@ import * as API from "../util/api.js";
 import { getCookie } from "../util/cookie.js"
 
 $(document).ready(async () => {
-  const slaves = await getSlaves()
-  slaves.push({
-    name: "Le Van Thien",
-    OS: "window 7",
-    RAMcapacity: "8GB",
-    CPU: "Intel i5",
-    GPU: "VGA"
-  })
+	$("[data-toggle=\"tooltip\"]").tooltip()
+	$("#addslave").click(() => {
+		Swal.fire({
+			title: "Submit your slave ID",
+			input: "text",
+			showCancelButton: true,
+			confirmButtonText: "Add",
+			showLoaderOnConfirm: true,
+			preConfirm: id => {
+				// fetch goes here
+				return id
+			},
+			allowOutsideClick: () => !Swal.isLoading()
+		}).then(result => {
+			if (result.isConfirmed) {
+				Swal.fire({
+					title: `Added slave ID ${result.value}`
+				})
+			}
+		})
+	})
+
+
   for (const slave of slaves) {
     append("slaves", createSlave(slave))
   }
+	$(document).on("click", '.overlay :input[name="terminate"]', async function () {
+		const SlaveID = getSlaveID(this)
+		await API.terminateSession(SlaveID)
+	})
+	$(document).on("click", '.overlay :input[name="reject"]', async function () {
+		const SlaveID = getSlaveID(this)
+		await API.rejectDevice(SlaveID)
+		getParent(this).remove()
+	})
+
 })
 
 async function getSlaves() {
@@ -104,4 +129,10 @@ function Quality(qual) {
         videoCodec: 0
       }
   }
+}
+
+
+async function rejectDevice(sessionClientId) {
+	const data = await API.rejectDevice(sessionClientId)
+	console.log(await data.text())
 }

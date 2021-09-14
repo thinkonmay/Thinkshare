@@ -23,6 +23,8 @@ export const DisconnectDevice = `${host}/Device/Disconnect`
 export const TerminateSession = `${host}/Session/Terminate`
 export const DisconnectSession = `${host}/Session/Disconnect`
 export const ReconnectSession = `${host}/Session/Reconnect`
+export const InitializeSession = `${host}/Session/Initialize`
+
 
 export const QuerySession = `${host}/Query/Session`
 
@@ -123,7 +125,7 @@ export const disconnectSession = SlaveID => {
 	})
 }
 
-export const reconnectSession = SlaveID => {
+export const reconnectSession = (SlaveID) => {
 	return fetch(ReconnectSession, {
 		method: "POST",
 		headers: genHeaders(),
@@ -132,3 +134,7 @@ export const reconnectSession = SlaveID => {
 		})
 	})
 }
+
+
+
+

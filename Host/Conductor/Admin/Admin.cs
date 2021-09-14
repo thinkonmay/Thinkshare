@@ -152,8 +152,11 @@ namespace Conductor.Administration
             _db.RemoteSessions.Add(session);
             await _db.SaveChangesAsync();
 
+            var slave = _db.Devices.Find(session.SlaveID);
+            var device_infor = new SlaveDeviceInformation(slave);
             await _adminHubctx.Clients.All.ReportSessionStart(session.SlaveID, session.ClientID);
             await _clientHubctx.Clients.All.ReportSlaveObtained(session.SlaveID);
+            await _clientHubctx.Clients.Group(session.ClientID.ToString()).ReportSessionInitialized(device_infor);
         }
 
         public async Task ReportSessionTermination(RemoteSession session)
@@ -165,6 +168,7 @@ namespace Conductor.Administration
             var slave = _db.Devices.Find(session.SlaveID);
             var device_infor = new SlaveDeviceInformation(slave);
             await _adminHubctx.Clients.All.ReportSessionTermination(session.SlaveID, session.ClientID);
+            await _clientHubctx.Clients.Group(session.ClientID.ToString()).ReportSessionTerminated(session.SlaveID);
             await _clientHubctx.Clients.All.ReportNewSlaveAvailable(device_infor);
         }
 
@@ -182,22 +186,22 @@ namespace Conductor.Administration
             RemoteSession ses = _db.RemoteSessions.Where(s =>s.SlaveID == SlaveID  
                                              && !s.EndTime.HasValue).FirstOrDefault();
                                                 
-            await _clientHubctx.Clients.User(ses.ClientID.ToString()).ReportSessionDisconnected(SlaveID);
+            await _clientHubctx.Clients.Group(ses.ClientID.ToString()).ReportSessionDisconnected(SlaveID);
         }
         public async Task ReportRemoteControlDisconnected(RemoteSession session)
         {
-            await _clientHubctx.Clients.User(session.ClientID.ToString()).ReportSessionDisconnected(session.SlaveID);
+            await _clientHubctx.Clients.Group(session.ClientID.ToString()).ReportSessionDisconnected(session.SlaveID);
         }
 
         public async Task ReportRemoteControlReconnect(int SlaveID)
         {
             RemoteSession ses = _db.RemoteSessions.Where(s =>s.SlaveID == SlaveID  
                                              && !s.EndTime.HasValue).FirstOrDefault();
-            await _clientHubctx.Clients.User(ses.ClientID.ToString()).ReportSessionReconnected(SlaveID);
+            await _clientHubctx.Clients.Group(ses.ClientID.ToString()).ReportSessionReconnected(SlaveID);
         }
         public async Task ReportRemoteControlReconnect(RemoteSession session)
         {
-            await _clientHubctx.Clients.User(session.ClientID.ToString()).ReportSessionReconnected(session.SlaveID);
+            await _clientHubctx.Clients.Group(session.ClientID.ToString()).ReportSessionReconnected(session.SlaveID);
         }
 
         public async Task ReportSlaveDisconnected(int SlaveID)

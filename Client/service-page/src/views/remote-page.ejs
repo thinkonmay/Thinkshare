@@ -6,7 +6,7 @@
     <link href="https://thinkmay.net/remote-page-asset/css/googleapi.css" rel="stylesheet" />
     <link href="https://thinkmay.net/remote-page-asset/css/vuetify.css" rel="stylesheet" />
     <link href="https://thinkmay.net/remote-page-asset/css/dev.css" rel="stylesheet" />
-    <title>Remote control page</title>
+    <title>Remote control</title>
 </head>
 <body>
     <div id="app">
@@ -33,15 +33,6 @@
                                 </i>
                             </a>
                         </li>
-                        <li>
-                            <a data-mfb-label="File transfer" class="mfb-component__button--child">
-                                <i class="mfb-component__child-icon ion-social-twitter">                   
-                                    <v-btn icon v-on:click="fileTransfer()">
-                                        <v-icon color="black">mdi-cloud-upload</v-icon>
-                                    </v-btn>
-                                </i>
-                            </a>
-                        </li>
                     </ul>
                 </li>
             </ul>
@@ -53,16 +44,31 @@
             </div>
 
             <canvas id="capture"></canvas>
+            <div ></div>
             </div> 
         </v-app>
     </div>
+    <div id="sessionClient"></div>
 </body>
+
+<script type="module" src="javascripts/pages/remote-page.js"></script>
+
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-spinner@1.0.3/dist/vue-spinner.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
-@RenderBody()
+
+
+<script src="https://thinkmay.net/remote-page-asset/src/app.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/enum.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/quality-track.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/key-translate.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/input.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/signalling.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/webrtc.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/client-message.js?ts=1"></script>
+<script src="https://thinkmay.net/remote-page-asset/src/clipboard.js?ts=1"></script>
 <script>
     app.connectServer();
 </script>

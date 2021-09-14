@@ -114,10 +114,7 @@ namespace Conductor.Controllers
             await _admin.ReportNewSession(sess);
 
             // return view for user
-            SessionViewModel view = new SessionViewModel();
-            view.clientSession = clientSes; 
-            view.ClientID = sess.ClientID;
-            return View("RemoteControl",view);
+            return Ok(clientSes);
         }
 
 
@@ -241,10 +238,7 @@ namespace Conductor.Controllers
 
                 // return view to client
                 ClientSession clientSes = new ClientSession(ses,Configuration.StunServer);   
-                SessionViewModel view = new SessionViewModel();
-                view.clientSession = clientSes; 
-                view.ClientID = ses.ClientID;
-                return View("RemoteControl",view);
+                return Ok(clientSes);
             }
             return BadRequest("Device not in off remote");            
         }
