@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>ThinkMay | Dashboard</title>
+	<% include partials/head %>
+</head>
+
+<body class="hold-transition sidebar-mini">
+	<!-- Site wrapper -->
+	<div class="wrapper">
+		<!-- Navbar -->
+		<% include partials/navbar %>
+		<!-- /.navbar -->
+		<!-- Main Sidebar Container -->
+		<% include partials/sidebar %>
+		<!-- Content Wrapper. Contains page content -->
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<!-- Main content -->
+			<section class="content">
+				<!-- Default box -->
+				<div class="card card-solid col">
+					<div class="card-body pb-0">
+						<div class="row" id="slaves">
+							<h2 style="color: #007bff"><b>Session</b></h2>
+							<div class='w-100'></div>
+							<div class="row" id="onlineSlaves"></div>
+							<div class='w-100 line'></div>
+							<h2 style="color: #ffc107"><b>Available</b></h2>
+							<div class='w-100'></div>
+							<div id="availableSlaves" class="row"></div>
+							<!-- asdasd -->
+						</div>
+					</div>
+				</div>
+				<!-- /.card -->
+			</section>
+			<!-- /.content -->
+		</div>
+		<!-- /.content-wrapper -->
+		<% include partials/footer %>
+		<!-- Control Sidebar -->
+		<div class="control-sidebar control-sidebar-dark col">
+			<!-- Control sidebar content goes here -->
+			<div class="row blank">
+			</div>
+			<div class="row blank">
+			</div>
+		</div>
+		<!-- /.control-sidebar -->
+	</div>
+	<!-- ./wrapper -->
+	<% include partials/dependencies %>
+	<script type="module" src="javascripts/pages/dashboard.js"></script>
+</body>
+
+</html>

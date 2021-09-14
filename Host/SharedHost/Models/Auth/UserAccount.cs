@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
+using SharedHost.Models.Session;
 using System.Collections.Generic;
 
 namespace SharedHost.Models.User
@@ -15,5 +16,6 @@ namespace SharedHost.Models.User
         public string? Jobs { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public DateTime? Created { get; set; }
+        public virtual ICollection<RemoteSession> usedSession {get;set;}
     }
 }

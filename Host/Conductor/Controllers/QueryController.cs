@@ -84,7 +84,7 @@ namespace Conductor.Controllers
         public async Task<IActionResult> GetSession(int SlaveID)
         {
 
-            var Query = _db.Devices.Find(SlaveID).servingSession.ToList();
+            var Query = _db.Devices.Find(SlaveID).servedSession.ToList();
             return Ok(Query);
         }
 
