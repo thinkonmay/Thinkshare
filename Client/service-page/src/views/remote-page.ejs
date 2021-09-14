@@ -1,4 +1,3 @@
-export function initialize_remote_page(sessionSlave){return `
 <!DOCTYPE html>
 <html>
 
@@ -49,7 +48,11 @@ export function initialize_remote_page(sessionSlave){return `
             </div> 
         </v-app>
     </div>
+    <div id="sessionSlave"></div>
 </body>
+
+<script type="module" src="javascripts/pages/remote-page.js"></script>
+
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.9/vue.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.5.14/vuetify.min.js"></script>
@@ -69,7 +72,7 @@ var app = new Vue({
     data() 
     {
         return {
-            SessionClientID: ${sessionSlave.sessionClientID}, 
+            SessionClientID: sessionSlave.sessionClientID, 
 
             showStart: false,
             showDrawer: false,
@@ -83,13 +86,13 @@ var app = new Vue({
             connectionResolution: "",
 
             /*parameter serve for session initialization */
-            Clientoffer: ${sessionSlave.clientOffer},
-            SignallingUrl: ${sessionSlave.signallingUrl},
+            Clientoffer: sessionSlave.clientOffer,
+            SignallingUrl: sessionSlave.signallingUrl,
 
             /*default value from client session fetch from server*/
-            QoEMode: ${sessionSlave.qoE.qoEMode},
-            AudioCodec: ${sessionSlave.qoE.audioCodec},
-            VideoCodec: ${sessionSlave.qoE.videoCodec},
+            QoEMode: sessionSlave.qoE.qoEMode,
+            AudioCodec: sessionSlave.qoE.audioCodec,
+            VideoCodec: sessionSlave.qoE.videoCodec,
 
             /**
             * default Value of QoE metric, fetch from server
@@ -99,8 +102,8 @@ var app = new Vue({
                 /*
                 * slave screen (determined in session initialize step)
                 */
-                "SlaveWidth":${sessionSlave.qoE.screenWidth},
-                "SlaveHeight": ${sessionSlave.qoE.screenHeight},
+                "SlaveWidth":sessionSlave.qoE.screenWidth,
+                "SlaveHeight": sessionSlave.qoE.screenHeight,
 
                 /*
                 * frame resolution used to transport to client
@@ -178,7 +181,7 @@ var app = new Vue({
             {"iceServers":    
                 [
                     {
-                        "urls": [${sessionSlave.stunServer}]
+                        "urls": [sessionSlave.stunServer]
                     },
                     {
                         "urls": ["stun:stun.l.google.com:19302"] 
@@ -338,4 +341,3 @@ var app = new Vue({
     app.connectServer();
 </script>
 </html>
-`}

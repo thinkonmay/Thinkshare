@@ -1,61 +1,31 @@
 import * as API from "../util/api.js"
-import * as RemotePage from "../../../src/remote-page.js"
 
-
-const AVAILABLE = 1 << 1
-const ONSESSION = 1 << 2
-const DISCONNECT = 1 << 3
 
 API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
 $(document).ready(async () => {
-	$("[data-toggle=\"tooltip\"]").tooltip()
-	$("#addslave").click(() => {
-		Swal.fire({
-			title: "Submit your slave ID",
-			input: "text",
-			showCancelButton: true,
-			confirmButtonText: "Add",
-			showLoaderOnConfirm: true,
-			preConfirm: id => {
-				// fetch goes here
-				return id
-			},
-			allowOutsideClick: () => !Swal.isLoading()
-		}).then(result => {
-			if (result.isConfirmed) {
-				Swal.fire({
-					title: `Added slave ID ${result.value}`
-				})
-			}
-		})
-	})
-
 	const getParent = input => $($(input).parent().parent().parent().parent().parent())
 	const getSlaveID = input => getParent(input).attr("id")
+
+
 
 	$(document).on("click", '.overlay :input[name="connect"]', async function () {
 		const SlaveID = getSlaveID(this)
 		window.open(getConnectURL(SlaveID), "__blank")
 	})
-	$(document).on("click", '.overlay :input[name="disconnect"]', async function () {
-		const SlaveID = getSlaveID(this)
-		await API.disconnectDevice(SlaveID)
-	})
 	$(document).on("click", '.overlay :input[name="reconnect"]', async function () {
 		const SlaveID = getSlaveID(this)
 		window.open(getReconnectURL(SlaveID), "__blank")
 	})
+	$(document).on("click", '.overlay :input[name="disconnect"]', async function () {
+		const SlaveID = getSlaveID(this)
+		await API.disconnectDevice(SlaveID)
+	})
 	$(document).on("click", '.overlay :input[name="terminate"]', async function () {
 		const SlaveID = getSlaveID(this)
 		await API.terminateSession(SlaveID)
-	})
-	$(document).on("click", '.overlay :input[name="reject"]', async function () {
-		const SlaveID = getSlaveID(this)
-		await API.rejectDevice(SlaveID)
-		getParent(this).remove()
 	})
 
 	try {
@@ -70,6 +40,9 @@ $(document).ready(async () => {
 	} catch (err) {
 		alert(err.message)
 	}
+
+
+
 	var stateSignalR = document.getElementById('state-signalr');
 	// Connect to hub signalR with access-token Bearer Authorzation
 	const connection = new signalR.HubConnectionBuilder()
@@ -82,14 +55,8 @@ $(document).ready(async () => {
 		return console.error(err.toString())
 	})
 
-	// receive from function have been trigger on signalr
-	connection.on("ReportSlaveObtained", function (slaveId) {
-		slave = document.getElementById(slaveId)
-		slave.remove()
-	})
-	connection.on("ReportNewSlaveAvailable", function (device) {
-		append("#availableSlaves",createSlave(device))
-	})
+	// receive from function have been trigger on 
+	// we use signalR to inform browser about all state changes event of slave and session
 	connection.on("ReportSessionDisconnected", function (slaveId) {
 		button = slave.getElementById(`button${slaveId}`)
 		button.innerHTML = slaveState("OFF_REMOTE")
@@ -98,13 +65,21 @@ $(document).ready(async () => {
 		button = slave.getElementById(`button${slaveId}`)
 		button.innerHTML = slaveState("ON_SESSION")
 	})
-	connection.on("ReportSessionTerminated", function (slaveId) {
-		slave = document.getElementById(slaveId)
+	connection.on("ReportSessionTerminated", function (slaveInfor) {
+		sessionQueue = document.getElementById("onlineSlaves")
+		slave = sessionQueue.getElementById(slaveId)
 		slave.remove()
 	})
-	connection.on("ReportSessionInitialized", function (slaveId) {
-		button = slave.getElementById(`button${slaveId}`)
-		button.innerHTML = slaveState("ON_SESSION")
+	connection.on("ReportSlaveObtained", function (slaveId) {
+		slaveQueue = document.getElementById("availableSlaves")
+		slave = slaveQueue.getElementById(slaveId)
+		slave.remove()
+	})
+	connection.on("ReportSessionInitialized", function (slaveInfor) {
+		append("#availableSlaves",createSlave(slaveInfor))
+	})
+	connection.on("ReportNewSlaveAvailable", function (device) {
+		append("#availableSlaves",createSlave(device))
 	})
 	
 	//trigger function on signalR
@@ -203,8 +178,7 @@ function Mode(mode) {
 	case "high":
 		return {
 			qoEMode: 4
-		}
-	
+		}	
 	case "very high":
 		return {
 			qoEMode: 5
@@ -261,9 +235,4 @@ function serialize(obj, prefix) {
 		}
 	}
 	return str.join("&")
-}
-
-async function rejectDevice(sessionClientId) {
-	const data = await API.rejectDevice(sessionClientId)
-	console.log(await data.text())
 }

@@ -138,13 +138,3 @@ export const reconnectSession = (SlaveID,token) => {
 	})
 }
 
-export const initializeSession = (body,token) => {
-	return fetch(InitializeSession, {
-		headers: {
-			Authorization: "Bearer " + token,
-			"Content-Type": "application/json"
-		},
-		method: "POST",
-		body: JSON.stringify(body)
-	})
-}

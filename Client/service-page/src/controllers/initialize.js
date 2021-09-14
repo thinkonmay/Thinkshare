@@ -1,7 +1,3 @@
-import * as API from "../util/api.js"
-import * as RMP from "../remote-page.js"
-
-
 module.exports = async (req, res, next) => {
 	try {
 		const query = Object.assign({
@@ -19,8 +15,8 @@ module.exports = async (req, res, next) => {
 				screenHeight: Number(query.cap.screenHeight)
 			}
 		}
-		API.initializeSession(body,atob(req.cookies.token)).then( response =>{
-			if(response.statusCode === 200)			{
+		initializeSession(body,atob(req.cookies.token)).then( response =>{
+			if(response.statusCode === 200){
 				var sessionClient = JSON.parse(response.body)
 				res.send(RMP.initialize_remote_page(sessionClient))
 			}else{
@@ -33,4 +29,16 @@ module.exports = async (req, res, next) => {
 			stack: process.env.NODE_ENV == "development" ? error.stack : "Page error"
 		})
 	}
+}
+
+
+const initializeSession = (body,token) => {
+	return fetch(InitializeSession, {
+		headers: {
+			Authorization: "Bearer " + token,
+			"Content-Type": "application/json"
+		},
+		method: "POST",
+		body: JSON.stringify(body)
+	})
 }

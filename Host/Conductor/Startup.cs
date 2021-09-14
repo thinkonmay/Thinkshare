@@ -45,7 +45,8 @@ namespace Conductor
 
             //for postgresql
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection"))
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
+                ServiceLifetime.Transient
             );
             
             // for sql server

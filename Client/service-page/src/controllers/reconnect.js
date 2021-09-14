@@ -1,4 +1,4 @@
-import * as API from "../util/api.js"
+import * as API from "../../public/javascripts/util/api.js"
 
 module.exports = async (req, res, next) => {
 	try {

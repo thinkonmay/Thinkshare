@@ -53,7 +53,7 @@ namespace SignalRChat.Hubs
         /// </summary>
         /// <param name="slaveID"></param>
         /// <returns></returns>
-        Task ReportSessionInitialized(int slaveID);
+        Task ReportSessionInitialized(SlaveDeviceInformation slaveID);
     }
     
     [Authorize]
