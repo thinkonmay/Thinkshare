@@ -40,9 +40,7 @@ namespace Conductor.Data
             builder.Entity<ShellSession>().Property(u => u.StartTime).HasDefaultValueSql("current_timestamp");
             builder.Entity<GeneralError>().Property(u => u.ErrorTime).HasDefaultValueSql("current_timestamp");
             builder.Entity<Slave>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
-
             builder.Entity<RemoteSession>().HasKey(o => new { o.SessionSlaveID, o.SessionClientID });
-            builder.Entity<GeneralError>().HasKey(s => new { s.Id });
         }
 
         
@@ -50,6 +48,5 @@ namespace Conductor.Data
         public DbSet<RemoteSession> RemoteSessions { get; set; }
         public DbSet<CommandLog> CommandLogs { get; set; }
         public DbSet<ShellSession> ShellSession { get; set; }
-        public DbSet<GeneralError> Errors { get; set; }
     }
 }

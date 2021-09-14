@@ -82,7 +82,7 @@ namespace SlaveManager.SlaveDevices
                             var error = JsonConvert.DeserializeObject<ReportedError>(messageForm.Data);
                             error.SlaveID = messageForm.SlaveID;
                             error.Module = (int)Module.AGENT_MODULE;
-                            await _conductor.ReportError(error);
+                            System.Console.WriteLine(JsonConvert.SerializeObject(error));
                             break;
                         }
                         case (int)Opcode.SESSION_CORE_EXIT:
@@ -108,7 +108,7 @@ namespace SlaveManager.SlaveDevices
                             var errabs = JsonConvert.DeserializeObject<ReportedError>(messageForm.Data);
                             errabs.SlaveID = messageForm.SlaveID;
                             errabs.Module = (int)Module.CORE_MODULE;
-                            await _conductor.ReportError(errabs);
+                            System.Console.WriteLine(JsonConvert.SerializeObject(errabs));
                             break;
                         }
                     }

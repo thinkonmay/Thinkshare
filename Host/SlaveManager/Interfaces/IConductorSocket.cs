@@ -41,15 +41,6 @@ namespace SlaveManager.Interfaces
         Task LogSlaveCommandLine(ReceiveCommand result);
 
         /// <summary>
-        /// Report session core error, log error to database or report to admin
-        /// </summary>
-        /// <param name="err"> raw absolute time format reported by slave refactorized by admin to store to database</param>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
-        Task ReportError (ReportedError err);
-
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="SlaveID"></param>
