@@ -1,10 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Conductor.Models.User;
-using System;
-using System.Collections.Generic;
+using SharedHost.Models.User;
 using System.Linq;
-using System.Threading.Tasks;
 using SharedHost;
 
 namespace Conductor.Services

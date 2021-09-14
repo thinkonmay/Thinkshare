@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Conductor.Models;
-using Conductor.Models.User;
+using SharedHost.Models.User;
 using System.Threading.Tasks;
 using SharedHost.Models.Session;
 using SharedHost.Models.Command;
@@ -38,7 +38,6 @@ namespace Conductor.Data
             builder.Entity<UserAccount>().Property(u => u.Created).HasDefaultValueSql("current_timestamp");
             builder.Entity<RemoteSession>().Property(u => u.StartTime).HasDefaultValueSql("current_timestamp");
             builder.Entity<ShellSession>().Property(u => u.StartTime).HasDefaultValueSql("current_timestamp");
-            builder.Entity<GeneralError>().Property(u => u.ErrorTime).HasDefaultValueSql("current_timestamp");
             builder.Entity<Slave>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
             builder.Entity<RemoteSession>().HasKey(o => new { o.SessionSlaveID, o.SessionClientID });
         }

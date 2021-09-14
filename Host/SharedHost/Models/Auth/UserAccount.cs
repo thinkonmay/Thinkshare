@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Conductor.Models.User
+namespace SharedHost.Models.User
 {
     public class UserAccount : IdentityUser<int>
     {
@@ -12,6 +12,7 @@ namespace Conductor.Models.User
         //public virtual ICollection<StorageBlock> currentStorage { get; set; }
 
         public string FullName { get; set; }
+        public string? Jobs { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public DateTime? Created { get; set; }
     }

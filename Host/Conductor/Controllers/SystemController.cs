@@ -6,7 +6,7 @@ using SharedHost.Models.Command;
 using SharedHost.Models.Device;
 using SharedHost.Models.Auth;
 using Microsoft.AspNetCore.Identity;
-using Conductor.Models.User;
+using SharedHost.Models.User;
 using System.Linq;
 using Conductor.Services;
 using Conductor.Data;

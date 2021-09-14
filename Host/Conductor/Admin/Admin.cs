@@ -11,6 +11,9 @@ using SharedHost.Models.Command;
 using SharedHost.Models.Session;
 using RestSharp;
 using SharedHost;
+using Newtonsoft.Json;
+using SharedHost.Models.User;
+using Microsoft.AspNetCore.Identity;
 
 namespace Conductor.Administration
 {
@@ -22,16 +25,19 @@ namespace Conductor.Administration
         private readonly IHubContext<AdminHub, IAdminHub> _adminHubctx;
         private readonly IHubContext<ClientHub, IClientHub> _clientHubctx;
         private readonly RestClient _slavemanager;
+        private readonly UserManager<UserAccount> _userManager;
 
         public Admin(ApplicationDbContext db, 
                      IHubContext<AdminHub, IAdminHub> adminHub, 
                      IHubContext<ClientHub,IClientHub> clientHub,
+                     UserManager<UserAccount> userManager,
                      SystemConfig config)
         {
             _db = db;
             _adminHubctx = adminHub;
             _clientHubctx = clientHub;
             _slavemanager = new RestClient(config.SlaveManager + "/Session");
+            _userManager = userManager;
         }
 
 
@@ -130,11 +136,13 @@ namespace Conductor.Administration
             _db.RemoteSessions.Add(session);
             await _db.SaveChangesAsync();
 
-            var slave = _db.Devices.Find(session.SlaveID);
+            var account = await _userManager.GetUserIdAsync(session.Client);
+
+            var slave = _db.Devices.Find(session.Slave.ID);
             var device_infor = new SlaveDeviceInformation(slave);
-            await _adminHubctx.Clients.All.ReportSessionStart(session.SlaveID, session.ClientID);
-            await _clientHubctx.Clients.All.ReportSlaveObtained(session.SlaveID);
-            await _clientHubctx.Clients.Group(session.ClientID.ToString()).ReportSessionInitialized(device_infor);
+            await _adminHubctx.Clients.All.ReportSessionStart(session.Slave.ID, session.Client);
+            await _clientHubctx.Clients.All.ReportSlaveObtained(session.Slave.ID);
+            await _clientHubctx.Clients.Group(account).ReportSessionInitialized(device_infor);
         }
 
         public async Task ReportSessionTermination(RemoteSession session)
@@ -143,10 +151,12 @@ namespace Conductor.Administration
             _db.RemoteSessions.Update(session);
             await _db.SaveChangesAsync();
 
-            var slave = _db.Devices.Find(session.SlaveID);
+            var account = await _userManager.GetUserIdAsync(session.Client);
+
+            var slave = _db.Devices.Find(session.Slave.ID);
             var device_infor = new SlaveDeviceInformation(slave);
-            await _adminHubctx.Clients.All.ReportSessionTermination(session.SlaveID, session.ClientID);
-            await _clientHubctx.Clients.Group(session.ClientID.ToString()).ReportSessionTerminated(session.SlaveID);
+            await _adminHubctx.Clients.All.ReportSessionTermination(session.Slave.ID, session.Client);
+            await _clientHubctx.Clients.Group(account).ReportSessionTerminated(session.Slave.ID);
             await _clientHubctx.Clients.All.ReportNewSlaveAvailable(device_infor);
         }
 
@@ -161,31 +171,37 @@ namespace Conductor.Administration
         /// </summary>
         public async Task ReportRemoteControlDisconnected(int SlaveID)
         {
-            RemoteSession ses = _db.RemoteSessions.Where(s =>s.SlaveID == SlaveID  
+            RemoteSession session = _db.RemoteSessions.Where(s =>s.Slave.ID == SlaveID  
                                              && !s.EndTime.HasValue).FirstOrDefault();
-                                                
-            await _clientHubctx.Clients.Group(ses.ClientID.ToString()).ReportSessionDisconnected(SlaveID);
+
+            var account = await _userManager.GetUserIdAsync(session.Client);
+
+            await _clientHubctx.Clients.Group(account).ReportSessionDisconnected(SlaveID);
         }
         public async Task ReportRemoteControlDisconnected(RemoteSession session)
         {
-            await _clientHubctx.Clients.Group(session.ClientID.ToString()).ReportSessionDisconnected(session.SlaveID);
+            var account = await _userManager.GetUserIdAsync(session.Client);
+            await _clientHubctx.Clients.Group(account).ReportSessionDisconnected(session.Slave.ID);
         }
 
         public async Task ReportRemoteControlReconnect(int SlaveID)
         {
-            RemoteSession ses = _db.RemoteSessions.Where(s =>s.SlaveID == SlaveID  
+            RemoteSession session = _db.RemoteSessions.Where(s =>s.Slave.ID == SlaveID  
                                              && !s.EndTime.HasValue).FirstOrDefault();
-            await _clientHubctx.Clients.Group(ses.ClientID.ToString()).ReportSessionReconnected(SlaveID);
+
+            var account = await _userManager.GetUserIdAsync(session.Client);
+            await _clientHubctx.Clients.Group(account).ReportSessionReconnected(SlaveID);
         }
         public async Task ReportRemoteControlReconnect(RemoteSession session)
         {
-            await _clientHubctx.Clients.Group(session.ClientID.ToString()).ReportSessionReconnected(session.SlaveID);
+            var account = await _userManager.GetUserIdAsync(session.Client);
+            await _clientHubctx.Clients.Group(account).ReportSessionReconnected(session.Slave.ID);
         }
 
         public async Task ReportSlaveDisconnected(int SlaveID)
         {
             var slave = _db.Devices.Find(SlaveID);
-            var remote = _db.RemoteSessions.Where(o => o.SlaveID == SlaveID && !o.EndTime.HasValue);
+            var remote = _db.RemoteSessions.Where(o => o.Slave.ID == SlaveID && !o.EndTime.HasValue);
             var shell = _db.ShellSession.Where(o => o.Device == slave && !o.EndTime.HasValue);
 
             foreach (var i in shell)
@@ -208,17 +224,11 @@ namespace Conductor.Administration
 
             await ReportRemoteControlDisconnected(remoteSession);
             var request = new RestRequest("Disconnect")
-                .AddQueryParameter("SlaveID", remoteSession.SlaveID.ToString());
+                .AddQueryParameter("SlaveID", remoteSession.Slave.ID.ToString());
 
             request.Method = Method.POST;
 
             await _slavemanager.ExecuteAsync(request);                        
-        }
-
-        public async Task<SlaveDeviceInformation> GetDeviceInfor(int SlaveID)
-        {
-            var slave =_db.Devices.Find(SlaveID);
-            return new SlaveDeviceInformation(slave);
         }
     }
 }

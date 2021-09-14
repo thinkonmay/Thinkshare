@@ -11,7 +11,7 @@ using System.Linq;
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Conductor.Models.User;
+using SharedHost.Models.User;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
 
@@ -34,15 +34,11 @@ namespace Conductor.Controllers
 
         private readonly ITokenGenerator _jwt;
 
-        private readonly IAdmin _admin;
-
         public UserController(ApplicationDbContext db, 
                             UserManager<UserAccount> userManager,
                             ISlaveManagerSocket slm,
-                            ITokenGenerator jwt,
-                            IAdmin admin)
+                            ITokenGenerator jwt)
         {
-            _admin = admin;
             _slmsocket = slm;
             _db = db;
             _userManager = userManager;
@@ -88,20 +84,21 @@ namespace Conductor.Controllers
         public async Task<IActionResult> UserGetCurrentSesssion()
         {
             int ClientId = _jwt.GetUserFromHttpRequest(User);
-            
-            var session = _db.RemoteSessions.Where(s => s.ClientID == ClientId
-                                                    && !s.EndTime.HasValue)
-                                            .ToList();
+
+            var account = await _userManager.FindByIdAsync(ClientId.ToString());
+
+            var session = _db.RemoteSessions.Where(s => s.Client == account
+                                                    && !s.EndTime.HasValue).ToList();
             
             var ret = new List<SlaveDeviceInformation>();
 
             foreach (var i in session)
             {
-                var device_infor = await _admin.GetDeviceInfor(i.SlaveID);
-                var Query = await _slmsocket.GetSlaveState(i.SlaveID);
+                var device_infor = new SlaveDeviceInformation(i.Slave);
+
+                var Query = await _slmsocket.GetSlaveState(i.Slave.ID);
                 device_infor.SessionClientID = i.SessionClientID;
                 device_infor.serviceState = Query.SlaveServiceState;
-                
                 ret.Add(device_infor);                
             }
 

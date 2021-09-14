@@ -1,4 +1,4 @@
-﻿using Conductor.Models.User;
+﻿using SharedHost.Models.User;
 using System.Threading.Tasks;
 using System.Security.Claims;
 

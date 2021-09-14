@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using RestSharp;
 using Microsoft.AspNetCore.Identity;
-using Conductor.Models.User;
+using SharedHost.Models.User;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
 using System.Linq;
@@ -73,32 +73,6 @@ namespace Conductor.Controllers
         }
 
 
-        /// <summary>
-        /// Queries for every slave device in the system for serving state and static information 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("Error")]
-        //manager
-        public async Task<IActionResult> GetError(int SlaveID)
-        {
-            var slave = _db.Devices.Where(i => i.ID == SlaveID);
-            var Query = _db.Errors.Where(o=>o.Machine == slave);
-
-
-
-            var resp = new List<ReportedError>();
-
-            foreach (var i in Query)
-            {
-                resp.Add(new ReportedError()
-                {
-                    Module = i.Module,
-                    SlaveID = i.Machine.ID,
-                    ErrorMessage = i.ErrorMessage
-                });
-            }
-            return Ok(resp);
-        }
 
 
         /// <summary>
@@ -109,7 +83,8 @@ namespace Conductor.Controllers
         //manager
         public async Task<IActionResult> GetSession(int SlaveID)
         {
-            var Query = _db.RemoteSessions.Where(o => o.SlaveID == SlaveID).ToList();
+
+            var Query = _db.Devices.Find(SlaveID).servingSession.ToList();
             return Ok(Query);
         }
 

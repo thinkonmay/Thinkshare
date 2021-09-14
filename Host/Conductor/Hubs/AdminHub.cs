@@ -8,22 +8,19 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
+using SharedHost.Models.User;
 
 namespace SignalRChat.Hubs
 {
     public interface IAdminHub
     {
-        Task ReportAgentError(GeneralError error);
-
-        Task ReportSessionCoreError(GeneralError error);
-
         Task ReportSlaveRegistered(SlaveDeviceInformation information);
 
-        Task ReportSessionStart(int SlaveID,int ClientID);
+        Task ReportSessionStart(int SlaveID, UserAccount Client);
 
         Task LogSlaveCommandLine(int SlaveID, int ProcessID, string Command);
 
-        Task ReportSessionTermination(int SlaveID, int ClietnID);
+        Task ReportSessionTermination(int SlaveID, UserAccount Client );
     }
 
     [Authorize]

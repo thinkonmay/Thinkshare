@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using SharedHost.Models.Device;
+using SharedHost.Models.User;
 
 namespace SharedHost.Models.Session
 {
@@ -11,15 +13,10 @@ namespace SharedHost.Models.Session
     { 
         public RemoteSession() { }
 
-        public RemoteSession(ClientRequest req,
-                             QoE qoe, 
+        public RemoteSession(QoE qoe, 
                              SessionPair pair, 
-                             SystemConfig config,
-                             int clientID)
+                             SystemConfig config)
         {
-            ClientID = clientID;
-            SlaveID = req.SlaveId;
-
             SessionSlaveID = pair.SessionSlaveID;
             SessionClientID = pair.SessionClientID;
 
@@ -34,12 +31,10 @@ namespace SharedHost.Models.Session
         /// <summary>
         /// 
         /// </summary>
-        public int ClientID { get; set; }
+        public virtual UserAccount Client { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public int SlaveID { get; set; }
+
+        public virtual Slave Slave { get; set; }
 
         /// <summary>
         /// 
