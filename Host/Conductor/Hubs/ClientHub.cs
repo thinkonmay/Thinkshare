@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using SharedHost.Models.Device;
 using Conductor.Interfaces;
 using SharedHost.Models.Session;
+using Conductor.Services;
 
 namespace SignalRChat.Hubs
 {
@@ -39,24 +40,36 @@ namespace SignalRChat.Hubs
         /// <param name="slaveID"></param>
         /// <returns></returns>
         Task ReportSessionReconnected(int slaveID);
+        /// <summary>
+        /// Else behind
+        /// </summary>
+        /// <param name="slaveID"></param>
+        /// <returns></returns>
+        Task ReportSessionTerminated(int slaveID);
+        /// <summary>
+        /// Else behind
+        /// </summary>
+        /// <param name="slaveID"></param>
+        /// <returns></returns>
+        Task ReportSessionInitialized(SlaveDeviceInformation slaveID);
     }
 
     [Authorize]
     public class ClientHub : Hub<IClientHub>
     {
-        private readonly IAdmin _admin;
-        public ClientHub(IAdmin admin)
+        private readonly ITokenGenerator _token;
+
+        public ClientHub(ITokenGenerator token)
         {
-            _admin = admin;
+            _token = token;
         }
-        public async Task trigger(string message)
+        
+        public override Task OnConnectedAsync()
         {
-            var remotesession = new RemoteSession()
-            {
-                ClientID = 1,
-                SlaveID = 2
-            };
-            await _admin.ReportRemoteControlReconnect(remotesession);
+            int UserID = _token.GetUserFromHttpRequest(Context.User);
+            Groups.AddToGroupAsync(Context.ConnectionId,UserID.ToString());
+
+            return base.OnConnectedAsync();
         }
     }
 }

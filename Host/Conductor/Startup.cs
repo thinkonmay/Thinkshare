@@ -45,7 +45,8 @@ namespace Conductor
 
             //for postgresql
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection"))
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
+                ServiceLifetime.Transient
             );
             
             // for sql server
@@ -192,7 +193,6 @@ namespace Conductor
                     
                 endpoints.MapHub<AdminHub>("/AdminHub");
                 endpoints.MapHub<ClientHub>("/ClientHub");
-                endpoints.MapHub<ChatHub>("/ChatHub");
             });
 
             app.UseSwagger();
