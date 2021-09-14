@@ -40,6 +40,7 @@
   min-height: calc(100vh - calc(3.5rem + 1px) - calc(3.5rem + 1px));
   width: 300px;
   background-color: #f4f6f9;
+  overflow: hidden;
 }
 
 .content-wrapper {
@@ -47,6 +48,7 @@
   overflow-y: scroll;
   max-height: calc(100vh - calc(3.5rem + 1px) - calc(3.5rem + 1px));
   min-height: calc(100vh - calc(3.5rem + 1px) - calc(3.5rem + 1px)) !important;
+  overflow: hidden;
 }
 
 .blank {
@@ -59,7 +61,8 @@
   background-color: white;
   padding: 10px;
   color: black;
-  /* overflow-y: scroll; */
+  overflow-y: scroll;
+  overflow: hidden;
 }
 
 .line {

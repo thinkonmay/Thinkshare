@@ -6,7 +6,7 @@ var sessionClient;
 API.fetch(
     getCookie("remoteUrl"),{
     method: "POST",
-    headers: genHeaders(),
+    headers: API.genHeaders(),
     body: JSON.parse(getCookie("remoteBody"))}
 ).then( response =>{
     if(response.statusCode === 200){
