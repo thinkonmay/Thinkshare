@@ -54,10 +54,5 @@ namespace SharedHost.Models.Device
         /// (nullable) if slave is in a session, 
         /// </summary>
         public virtual ICollection<RemoteSession> servingSession { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual ICollection<GeneralError> GeneralErrors { get; set; }
     }
 }

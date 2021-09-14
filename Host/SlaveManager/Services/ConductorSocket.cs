@@ -6,6 +6,7 @@ using SharedHost.Models.Error;
 using RestSharp;
 using System.Net;
 using SharedHost;
+using Newtonsoft.Json;
 
 namespace SlaveManager.Services
 {
@@ -13,8 +14,6 @@ namespace SlaveManager.Services
 
     public class ConductorSocket : IConductorSocket
     {
-        private readonly RestClient _error;
-
         private readonly RestClient _session;
 
         private readonly RestClient _device;
@@ -23,7 +22,6 @@ namespace SlaveManager.Services
 
         public ConductorSocket(SystemConfig config)
         {
-            _error =    new RestClient(config.Conductor + "/Error");
             _session =  new RestClient(config.Conductor + "/ReportSession");
             _device =   new RestClient(config.Conductor + "/ReportDevices");
             _shell =    new RestClient(config.Conductor + "/ReportShell");
@@ -78,7 +76,7 @@ namespace SlaveManager.Services
                     ErrorMessage = "Unable to process request",
                     SlaveID = SlaveID
                 };
-                await ReportError(error);
+                System.Console.WriteLine(JsonConvert.SerializeObject(error));
             }
         }
 
@@ -110,7 +108,7 @@ namespace SlaveManager.Services
                     ErrorMessage = "Unable to process request",
                     SlaveID = command.SlaveID
                 };
-                await ReportError(error);
+                System.Console.WriteLine(JsonConvert.SerializeObject(error));
             }
         }
 
@@ -130,7 +128,7 @@ namespace SlaveManager.Services
                     ErrorMessage = "Unable to process request",
                     SlaveID = result.SlaveID
                 };
-                await ReportError(error);
+                System.Console.WriteLine(JsonConvert.SerializeObject(error));
             }
         }
 
@@ -145,24 +143,6 @@ namespace SlaveManager.Services
 
 
 
-
-
-
-
-
-
-
-        /// <summary>
-        /// Report all slave error to admin
-        /// </summary>
-        public async Task ReportError(ReportedError err)
-        {
-            /*generate rest post to signalling server*/
-            var request = new RestRequest("Report")
-                .AddJsonBody(err);
-            request.Method = Method.POST;
-            await _error.ExecuteAsync(request);
-        }
 
         /// <summary>
         /// Report session state change to user 
@@ -182,7 +162,7 @@ namespace SlaveManager.Services
                     ErrorMessage = "Unable to process request",
                     SlaveID = SlaveID
                 };
-                await ReportError(error);
+                System.Console.WriteLine(JsonConvert.SerializeObject(error));
             }
         }
     }

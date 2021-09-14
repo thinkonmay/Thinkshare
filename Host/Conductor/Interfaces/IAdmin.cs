@@ -15,7 +15,6 @@ namespace Conductor.Interfaces
     /// /// </summary>
     public interface IAdmin
     {
-        Task<SlaveDeviceInformation> GetDeviceInfor(int SlaveID);
         /// <summary>
         /// Report new slave registration to the system
         /// </summary>
@@ -45,13 +44,6 @@ namespace Conductor.Interfaces
         /// </summary>
         /// <returns></returns>
         Task LogSlaveCommandLine(ReceiveCommand command);
-
-        /// <summary>
-        /// receive error from agent device and save it to database
-        /// </summary>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        Task ReportError(ReportedError error);
 
         /// <summary>
         /// Report new session start, invoke from sesssions controller

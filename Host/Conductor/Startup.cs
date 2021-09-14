@@ -13,7 +13,7 @@ using Conductor.Administration;
 using Conductor.Data;
 using Conductor.Interfaces;
 using SharedHost.Models.Auth;
-using Conductor.Models.User;
+using SharedHost.Models.User;
 using Conductor.Services;
 using System;
 using System.IO;

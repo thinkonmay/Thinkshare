@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Conductor.Interfaces;
 using SharedHost.Models.Auth;
-using Conductor.Models.User;
+using SharedHost.Models.User;
 using Conductor.Services;
 using System;
 using System.Collections.Generic;
@@ -70,10 +70,12 @@ namespace Conductor.Controllers
             {
                 var user = new UserAccount()
                 {
-                    UserName = model.Email,
+                    UserName = model.UserName,
                     Email = model.Email,
                     FullName = model.FullName,
-                    DateOfBirth = model.DateOfBirth
+                    DateOfBirth = model.DateOfBirth,
+                    PhoneNumber = model.PhoneNumber,
+                    Jobs = model.Jobs
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);

@@ -17,7 +17,7 @@ using RestSharp;
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.AspNetCore.Identity;
-using Conductor.Models.User;
+using SharedHost.Models.User;
 using System.Security.Claims;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
@@ -49,6 +49,8 @@ namespace Conductor.Controllers
 
         private readonly ISlaveManagerSocket _slmsocket;
 
+        private readonly UserManager<UserAccount> _userManager;
+
         public SessionController(ApplicationDbContext db,
                                 SystemConfig config, 
                                 IAdmin admin,
@@ -60,6 +62,7 @@ namespace Conductor.Controllers
             _admin = admin;
             _slmsocket = slmsocket;
             _jwt = jwt;
+            _userManager = userManager;
             
             Configuration = config;
             Signalling = new RestClient(Configuration.Signalling+"/System");
@@ -90,7 +93,9 @@ namespace Conductor.Controllers
             var QoE = new QoE(request.cap);
 
             /*create new session with gevin session request from user*/
-            var sess = new RemoteSession(request, QoE,sessionPair,Configuration,ClientId);
+            var sess = new RemoteSession() { 
+                
+            };
 
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Generate")
@@ -102,7 +107,7 @@ namespace Conductor.Controllers
             {
                 return BadRequest(reply.Content.ToString());
             }
-           
+
             // construct client session and slave session
             SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
             ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
@@ -131,9 +136,13 @@ namespace Conductor.Controllers
             //get client id from request
             var ClientId =  _jwt.GetUserFromHttpRequest(User);
 
+            var userAccount = await _userManager.FindByIdAsync(ClientId.ToString());
+
+            var device = _db.Devices.Find(SlaveID);
+
             // get session information in database
-            var ses = _db.RemoteSessions.Where(s => s.SlaveID == SlaveID 
-                                               && s.ClientID == ClientId  
+            var ses = _db.RemoteSessions.Where(s => s.Slave == device
+                                               && s.Client == userAccount
                                               && !s.EndTime.HasValue).FirstOrDefault();
 
             // return badrequest if session is not available in database
@@ -156,7 +165,7 @@ namespace Conductor.Controllers
                 return BadRequest(deletion_reply.Content.ToString());
             }
 
-            var Query = await _slmsocket.GetSlaveState(ses.SlaveID);
+            var Query = await _slmsocket.GetSlaveState(ses.Slave.ID);
 
             /*slavepool send terminate session signal*/
             if(Query.SlaveServiceState == SlaveServiceState.OnSession
@@ -165,7 +174,7 @@ namespace Conductor.Controllers
                 // report to admmin in case termination return successfully 
                 await _admin.ReportSessionTermination(ses);
 
-                await _slmsocket.SessionTerminate(ses.SlaveID);
+                await _slmsocket.SessionTerminate(ses.Slave.ID);
                 return Ok($"Session {ses.SessionClientID} termination done");
             }
             return BadRequest("Cannot send terminate session signal to slave");            
@@ -183,15 +192,19 @@ namespace Conductor.Controllers
             // get ClientId from request         
             var ClientId =  _jwt.GetUserFromHttpRequest(User);
 
+            var userAccount = await _userManager.FindByIdAsync(ClientId.ToString());
+
+            var device = _db.Devices.Find(SlaveID);
+
             // get session from database
-            var ses = _db.RemoteSessions.Where(s => s.SlaveID == SlaveID 
-                                               && s.ClientID == ClientId 
+            var ses = _db.RemoteSessions.Where(s => s.Slave == device 
+                                               && s.Client == userAccount 
                                               && !s.EndTime.HasValue).FirstOrDefault();
 
             // return bad request if session is not found in database
             if (ses == null) return BadRequest();
 
-            var Query = await _slmsocket.GetSlaveState(ses.SlaveID);
+            var Query = await _slmsocket.GetSlaveState(ses.Slave.ID);
 
             /*slavepool send terminate session signal*/
             if (Query.SlaveServiceState == SlaveServiceState.OnSession)
@@ -200,7 +213,7 @@ namespace Conductor.Controllers
                 await _admin.ReportRemoteControlDisconnected(ses);
 
                 // send disconnect signal to slave
-                await _slmsocket.RemoteControlDisconnect(ses.SlaveID);
+                await _slmsocket.RemoteControlDisconnect(ses.Slave.ID);
                 return Ok();
             }
             return BadRequest("Device not in session");            
@@ -209,7 +222,7 @@ namespace Conductor.Controllers
         /// <summary>
         /// Reconnect remote control after disconnect
         /// </summary>
-        /// <param name="sessionClientId"></param>
+        /// <param name="SlaveID"></param>
         /// <returns></returns>
         [HttpPost("Reconnect")]
         public async Task<IActionResult> ReconnectRemoteControl(int SlaveID)
@@ -217,21 +230,25 @@ namespace Conductor.Controllers
             // get ClientId from user request
             var ClientId =  _jwt.GetUserFromHttpRequest(User);
 
+            var userAccount = await _userManager.FindByIdAsync(ClientId.ToString());
+
+            var device = _db.Devices.Find(SlaveID);
+
             // get session from database
-            var ses = _db.RemoteSessions.Where(s => s.SlaveID == SlaveID 
-                                               && s.ClientID == ClientId 
+            var ses = _db.RemoteSessions.Where(s => s.Slave == device 
+                                               && s.Client == userAccount 
                                               && !s.EndTime.HasValue).FirstOrDefault();
 
             // return null if session is not found
             if (ses == null) return BadRequest();
 
-            var Query = await _slmsocket.GetSlaveState(ses.SlaveID);
+            var Query = await _slmsocket.GetSlaveState(ses.Slave.ID);
 
             /*slavepool send terminate session signal*/
             if (Query.SlaveServiceState == SlaveServiceState.OffRemote)
             {
                 // reconect remote control
-                await _slmsocket.RemoteControlReconnect(ses.SlaveID);   
+                await _slmsocket.RemoteControlReconnect(ses.Slave.ID);   
 
                 // report session reconnect to admin
                 await _admin.ReportRemoteControlReconnect(ses);

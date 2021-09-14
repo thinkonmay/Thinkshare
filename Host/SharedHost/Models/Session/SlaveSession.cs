@@ -1,5 +1,5 @@
 using Conductor.Models;
-
+using SharedHost.Models.Device;
 
 namespace SharedHost.Models.Session
 {
@@ -18,10 +18,11 @@ namespace SharedHost.Models.Session
 
             ClientOffer = session.ClientOffer;
 
-            SlaveID = session.SlaveID;
+            Slave = session.Slave;
         }
 
-        public int SlaveID { get; set; }
+        public Slave Slave { get; set; }
+        
         public int SessionSlaveID { get; set; }
     }
 }

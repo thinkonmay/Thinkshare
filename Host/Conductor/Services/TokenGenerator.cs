@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Conductor.Interfaces;
 using SharedHost.Models.Auth;
-using Conductor.Models.User;
+using SharedHost.Models.User;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
