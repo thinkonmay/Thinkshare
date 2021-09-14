@@ -47,12 +47,6 @@ namespace SignalRChat.Hubs
         /// </summary>
         /// <param name="slaveID"></param>
         /// <returns></returns>
-        Task ReportSessionReconnected(int slaveID);
-        /// <summary>
-        /// Else behind
-        /// </summary>
-        /// <param name="slaveID"></param>
-        /// <returns></returns>
         Task ReportSessionTerminated(int slaveID);
         /// <summary>
         /// Else behind
@@ -67,9 +61,8 @@ namespace SignalRChat.Hubs
     {
         private readonly ITokenGenerator _token;
 
-        public ClientHub(IAdmin admin, ITokenGenerator token)
+        public ClientHub(ITokenGenerator token)
         {
-            _admin = admin;
             _token = token;
         }
         

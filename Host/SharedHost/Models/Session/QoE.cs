@@ -29,7 +29,9 @@ namespace SharedHost.Models.Session
     {
         CODEC_H265,
         CODEC_H264,
+        CODEC_VP8,
         CODEC_VP9,
+
         OPUS_ENC,
         AAC_ENC
     }

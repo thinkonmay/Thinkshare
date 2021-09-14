@@ -154,6 +154,7 @@ namespace Conductor.Administration
 
             await _adminHubctx.Clients.All.ReportSessionStart(session.SlaveID, session.ClientID);
             await _clientHubctx.Clients.All.ReportSlaveObtained(session.SlaveID);
+            await _clientHubctx.Clients.Group(session.ClientID.ToString()).ReportSessionInitialized(device_infor);
         }
 
         public async Task ReportSessionTermination(RemoteSession session)
@@ -165,6 +166,7 @@ namespace Conductor.Administration
             var slave = _db.Devices.Find(session.SlaveID);
             var device_infor = new SlaveDeviceInformation(slave);
             await _adminHubctx.Clients.All.ReportSessionTermination(session.SlaveID, session.ClientID);
+            await _clientHubctx.Clients.Group(session.ClientID.ToString()).ReportSessionTerminated(device_infor);
             await _clientHubctx.Clients.All.ReportNewSlaveAvailable(device_infor);
         }
 

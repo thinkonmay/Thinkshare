@@ -69,8 +69,7 @@ var app = new Vue({
     data() 
     {
         return {
-            SessionClientID: ${sessionSlave.SessionClientID}, 
-            ClientID: ${sessionSlave.ClientID},
+            SessionClientID: ${sessionSlave.sessionClientID}, 
 
             showStart: false,
             showDrawer: false,
@@ -84,13 +83,13 @@ var app = new Vue({
             connectionResolution: "",
 
             /*parameter serve for session initialization */
-            Clientoffer: ${sessionSlave.ClientOffer},
-            SignallingUrl: ${sessionSlave.StringUrl},
+            Clientoffer: ${sessionSlave.clientOffer},
+            SignallingUrl: ${sessionSlave.signallingUrl},
 
             /*default value from client session fetch from server*/
-            QoEMode: ${sessionSlave.QoEMode},
-            AudioCodec: ${sessionSlave.AudioCodec},
-            VideoCodec: ${sessionSlave.VideoCodec},
+            QoEMode: ${sessionSlave.qoE.qoEMode},
+            AudioCodec: ${sessionSlave.qoE.audioCodec},
+            VideoCodec: ${sessionSlave.qoE.videoCodec},
 
             /**
             * default Value of QoE metric, fetch from server
@@ -100,8 +99,8 @@ var app = new Vue({
                 /*
                 * slave screen (determined in session initialize step)
                 */
-                "SlaveWidth":${sessionSlave.ScreenWidth},
-                "SlaveHeight": ${sessionSlave.ScreenHeight},
+                "SlaveWidth":${sessionSlave.qoE.screenWidth},
+                "SlaveHeight": ${sessionSlave.qoE.screenHeight},
 
                 /*
                 * frame resolution used to transport to client
@@ -179,7 +178,7 @@ var app = new Vue({
             {"iceServers":    
                 [
                     {
-                        "urls": [${sessionSlave.StunServer}]
+                        "urls": [${sessionSlave.stunServer}]
                     },
                     {
                         "urls": ["stun:stun.l.google.com:19302"] 

@@ -1,5 +1,5 @@
 import * as API from "../util/api.js"
-import * as RemotePage from "./remote-page.js"
+import * as RemotePage from "../../../src/remote-page.js"
 
 
 const AVAILABLE = 1 << 1
@@ -38,12 +38,7 @@ $(document).ready(async () => {
 
 	$(document).on("click", '.overlay :input[name="connect"]', async function () {
 		const SlaveID = getSlaveID(this)
-		API.Reconnect(SlaveID).then( (response) => {
-			if(response.status === 200){
-				remote_page = window.open()
-				remote_page.innerHTML = response.body
-			}
-		})
+		window.open(getConnectURL(SlaveID), "__blank")
 	})
 	$(document).on("click", '.overlay :input[name="disconnect"]', async function () {
 		const SlaveID = getSlaveID(this)
@@ -51,7 +46,7 @@ $(document).ready(async () => {
 	})
 	$(document).on("click", '.overlay :input[name="reconnect"]', async function () {
 		const SlaveID = getSlaveID(this)
-		window.open(getReconnectURL(SlaveID, true), "__blank")
+		window.open(getReconnectURL(SlaveID), "__blank")
 	})
 	$(document).on("click", '.overlay :input[name="terminate"]', async function () {
 		const SlaveID = getSlaveID(this)
@@ -77,7 +72,8 @@ $(document).ready(async () => {
 	}
 	var stateSignalR = document.getElementById('state-signalr');
 	// Connect to hub signalR with access-token Bearer Authorzation
-	const connection = new signalR.HubConnectionBuilder().withUrl(`http://localhost:5000/ClientHub`,  {
+	const connection = new signalR.HubConnectionBuilder()
+		.withUrl(`http://localhost:5000/ClientHub`,  {
 		accessTokenFactory: () => getCookie("token") // Return access token
 	}).build()
 	connection.start().then(function () {
@@ -102,6 +98,14 @@ $(document).ready(async () => {
 		button = slave.getElementById(`button${slaveId}`)
 		button.innerHTML = slaveState("ON_SESSION")
 	})
+	connection.on("ReportSessionTerminated", function (slaveId) {
+		slave = document.getElementById(slaveId)
+		slave.remove()
+	})
+	connection.on("ReportSessionInitialized", function (slaveId) {
+		button = slave.getElementById(`button${slaveId}`)
+		button.innerHTML = slaveState("ON_SESSION")
+	})
 	
 	//trigger function on signalR
 	document.getElementById("triggerButton").addEventListener("click", function (event) {
@@ -111,14 +115,15 @@ $(document).ready(async () => {
 	})
 })
 
-function getInitURL(SlaveID) {
+function getConnectURL(SlaveID) {
 	return `${API.Initialize}?${serialize({
 		SlaveID,
 		cap: {
-			...Quality("best"),
-			mode: 1,
-			screenWidth: window.innerWidth,
-			screenHeight: window.innerHeight
+			...Mode("ultra high"),
+			...AudioCodec("opus"),
+			...VideoCodec("h264"),
+			screenWidth: 2560,
+			screenHeight: 1440
 		}
 	})}`
 }
@@ -181,38 +186,62 @@ function append(id, html) {
 	$(`#${id}`).append(html)
 }
 
-function Quality(qual) {
-	switch (qual) {
-	case "best":
+function Mode(mode) {
+	switch (mode) {
+	case "ultra low":
 		return {
-			audioCodec: 4,
-			videoCodec: 4
+			qoEMode: 1
 		}
-	case "good":
+	case "low":
 		return {
-			audioCodec: 2,
-			videoCodec: 2
+			qoEMode: 2
 		}
-	case "best":
+	case "medium":
 		return {
-			audioCodec: 4,
-			videoCodec: 4
+			qoEMode: 3
 		}
-	case "good":
+	case "high":
 		return {
-			audioCodec: 2,
-			videoCodec: 2
+			qoEMode: 4
 		}
 	
-	case "best":
+	case "very high":
 		return {
-			audioCodec: 4,
-			videoCodec: 4
+			qoEMode: 5
 		}
-	case "good":
+	case "ultra high":
 		return {
-			audioCodec: 2,
-			videoCodec: 2
+			qoEMode: 6
+		}
+	}
+}
+
+function VideoCodec(codec) {
+	switch (codec) {
+	case "h264":
+		return {
+			videoCodec: 1
+		}
+	case "h265":
+		return {
+			videoCodec: 0
+		}
+	case "vp9":
+		return {
+			videoCodec: 3
+		}
+	}
+}
+
+function AudioCodec(codec) {
+	switch (codec) {
+	case "opus":
+		return {
+			audioCodec: 4
+		}
+	case "aac":
+		return {
+			audioCodec: 5
 		}
 	}
 }
