@@ -125,16 +125,22 @@ export const disconnectSession = SlaveID => {
 	})
 }
 
-export const reconnectSession = (SlaveID,token) => {
+export const reconnectSession = (SlaveID) => {
 	return fetch(ReconnectSession, {
 		method: "POST",
-		headers: {
-			Authorization: "Bearer " + token,
-			"Content-Type": "application/json"
-		},
+		headers: genHeaders(),
 		body: JSON.stringify({
 			SlaveID
 		})
+	})
+}
+
+
+export const initializeSession = (body) => {
+	return fetch(InitializeSession, {
+		headers: genHeaders(),
+		method: "POST",
+		body: JSON.stringify(body)
 	})
 }
 

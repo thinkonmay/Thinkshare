@@ -15,14 +15,6 @@ module.exports = async (req, res, next) => {
 				screenHeight: Number(query.cap.screenHeight)
 			}
 		}
-		initializeSession(body,atob(req.cookies.token)).then( response =>{
-			if(response.statusCode === 200){
-				var sessionClient = JSON.parse(response.body)
-				res.send(RMP.initialize_remote_page(sessionClient))
-			}else{
-				res.render("error")
-			}
-		})
 	} catch (error) {
 		res.status(500).render("error", {
 			status: 500,
@@ -32,13 +24,3 @@ module.exports = async (req, res, next) => {
 }
 
 
-const initializeSession = (body,token) => {
-	return fetch(InitializeSession, {
-		headers: {
-			Authorization: "Bearer " + token,
-			"Content-Type": "application/json"
-		},
-		method: "POST",
-		body: JSON.stringify(body)
-	})
-}
