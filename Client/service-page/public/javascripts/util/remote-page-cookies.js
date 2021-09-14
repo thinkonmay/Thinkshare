@@ -1,8 +1,8 @@
 
-import * as Cookies from "./cookie"
-import { Initialize } from "./api"
-import { InitializeSession } from "./api"
-import { ReconnectSession } from "./api"
+import * as Cookies from "./cookie.js"
+import { Initialize } from "./api.js"
+import { InitializeSession } from "./api.js"
+import { ReconnectSession } from "./api.js"
 
 const coookies_expire = 10 * 1000
 
