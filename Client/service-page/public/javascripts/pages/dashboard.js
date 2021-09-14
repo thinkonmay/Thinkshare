@@ -1,4 +1,5 @@
 import * as API from "../util/api.js"
+import * as RemotePage from "../util/remote-page-cookies.js"
 
 
 API.getInfor().then(async data => {
@@ -13,11 +14,11 @@ $(document).ready(async () => {
 
 	$(document).on("click", '.overlay :input[name="connect"]', async function () {
 		const SlaveID = getSlaveID(this)
-		window.open(getConnectURL(SlaveID), "__blank")
+		RemotePage.sessionInitialize(SlaveID)
 	})
 	$(document).on("click", '.overlay :input[name="reconnect"]', async function () {
 		const SlaveID = getSlaveID(this)
-		window.open(getReconnectURL(SlaveID), "__blank")
+		RemotePage.sessionReconnect(SlaveID)
 	})
 	$(document).on("click", '.overlay :input[name="disconnect"]', async function () {
 		const SlaveID = getSlaveID(this)
@@ -89,23 +90,6 @@ $(document).ready(async () => {
 		})
 	})
 })
-
-function getConnectURL(SlaveID) {
-	return `${API.Initialize}?${serialize({
-		SlaveID,
-		cap: {
-			...Mode("ultra high"),
-			...AudioCodec("opus"),
-			...VideoCodec("h264"),
-			screenWidth: 2560,
-			screenHeight: 1440
-		}
-	})}`
-}
-
-function getReconnectURL(SlaveID) {
-	return `${API.Reconnect}?SlaveID=${SlaveID}`
-}
 
 function createSlave(slave) {
 	return `

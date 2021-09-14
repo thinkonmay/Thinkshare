@@ -136,11 +136,5 @@ export const reconnectSession = (SlaveID) => {
 }
 
 
-export const initializeSession = (body) => {
-	return fetch(InitializeSession, {
-		headers: genHeaders(),
-		method: "POST",
-		body: JSON.stringify(body)
-	})
-}
+
 
