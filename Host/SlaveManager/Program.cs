@@ -20,7 +20,7 @@ namespace SlaveManager
                         .MinimumLevel.Information()
                         .Enrich.FromLogContext();
 
-                    config.WriteTo.Console(new ElasticsearchJsonFormatter());
+                    config.WriteTo.Console();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

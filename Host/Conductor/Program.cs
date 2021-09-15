@@ -28,7 +28,7 @@ namespace Conductor
                     config
                         .MinimumLevel.Information()
                         .Enrich.FromLogContext();
-
+                     
                     config.WriteTo.Console(new ElasticsearchJsonFormatter());
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

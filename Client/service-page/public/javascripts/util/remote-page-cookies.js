@@ -10,7 +10,7 @@ const coookies_expire = 10 * 1000
 
 export const sessionInitialize = (SlaveID) => {
     var body = {
-        slaveId: SlaveID,
+        slaveId: parseInt(SlaveID),
         cap: JSON.parse(Cookies.getCookie("cap"))
     }
 	Cookies.setCookie("remoteUrl",InitializeSession,coookies_expire)

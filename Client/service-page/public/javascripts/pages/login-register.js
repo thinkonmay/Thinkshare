@@ -117,14 +117,6 @@ function login(body) {
 					if (data.status == 200) {
 						if (response.errorCode == 0) {
 							setCookie("token", response.token, MINUTES59)
-							setCookie("cap", "{\"Mode\":\"ultra high\", \"AudioCodec\": \"opus\", \"VideoCodec\": \"h264\", \"screenWidth\": 2650, \"screenHeight\": 1400}", 9999999999999999999)
-							console.log(JSON.stringify(getCookie("cap")));		
-							/// How to convert to JSON 
-							/// var cap = getCookie("cap");
-							//  var parse = JSON.parse(cap);
-							// use "parse" like json 
-							// For ex: parse["mode"]
-
 							window.location.replace(API.Dashboard)
 						} else {
 							newSwal.fire({
