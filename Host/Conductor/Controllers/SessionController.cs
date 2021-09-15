@@ -93,9 +93,7 @@ namespace Conductor.Controllers
             var QoE = new QoE(request.cap);
 
             /*create new session with gevin session request from user*/
-            var sess = new RemoteSession() { 
-                
-            };
+            var sess = new RemoteSession(QoE,sessionPair,Configuration);
 
             /*generate rest post to signalling server*/
             var get_req = new RestRequest("Generate")
