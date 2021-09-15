@@ -1,5 +1,6 @@
 import * as API from "../util/api.js"
 import * as RemotePage from "../util/remote-page-cookies.js"
+import {getCookie} from "../util/cookie.js"
 
 
 API.getInfor().then(async data => {
@@ -141,7 +142,7 @@ function slaveState(state) {
 	if (state === "OFF_REMOTE"){
 		return btn.reconnect + btn.terminate
 	}
-	if (state === "DEVICE_OPEN"){
+	if (state === null){
 		return btn.connect
 	}
 }

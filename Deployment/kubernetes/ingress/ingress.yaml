@@ -16,6 +16,7 @@ spec:
     - thinkmay.net
     - service.thinkmay.net
     - admin.thinkmay.net
+    - logging.thinkmay.net
     secretName: secret-tls
   rules:
   - host: conductor.thinkmay.net
@@ -107,3 +108,14 @@ spec:
             name: dbmanager
             port:
               number: 80
+            
+  - host: logging.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kibana
+            port:
+              number: 5601

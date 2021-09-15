@@ -47,13 +47,6 @@ namespace Conductor.Interfaces
         Task LogSlaveCommandLine(ReceiveCommand command);
 
         /// <summary>
-        /// receive error from agent device and save it to database
-        /// </summary>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        Task ReportError(ReportedError error);
-
-        /// <summary>
         /// Report new session start, invoke from sesssions controller
         /// </summary>
         /// <param name="session"></param>
