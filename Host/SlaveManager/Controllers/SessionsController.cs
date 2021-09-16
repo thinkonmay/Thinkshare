@@ -60,7 +60,7 @@ namespace SlaveManager.Controllers
         public IActionResult Create([FromBody] SlaveSession session)
         {
             // invoke session initialization in slave pool
-            return _slavePool.SessionInitialize(session.Slave.ID, session)? Ok(): BadRequest();
+            return _slavePool.SessionInitialize(session.SlaveID, session)? Ok(): BadRequest();
         }
 
 

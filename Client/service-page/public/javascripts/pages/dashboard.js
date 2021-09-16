@@ -1,6 +1,7 @@
 import * as API from "../util/api.js"
 import * as RemotePage from "../util/remote-page-cookies.js"
-import {getCookie} from "../util/cookie.js"
+import * as Setting from "../util/setting.js"
+import {getCookie,setCookie} from "../util/cookie.js"
 
 
 API.getInfor().then(async data => {
@@ -8,7 +9,7 @@ API.getInfor().then(async data => {
 })
 
 $(document).ready(async () => {
-	const getParent = input => $($(input).parent().parent().parent().parent().parent())
+	const getParent = input => $($(input).parent().parent().parent().parent())
 	const getSlaveID = input => getParent(input).attr("id")
 
 
@@ -29,6 +30,23 @@ $(document).ready(async () => {
 		const SlaveID = getSlaveID(this)
 		await API.terminateSession(SlaveID)
 	})
+
+	var defaultDeviceCap = {
+		...Setting.AudioCodec("opus"),
+		...Setting.VideoCodec("h264"),
+		...Setting.Mode("very high"),
+		screenWidth: 2560,
+		screenHeight: 1440
+	}
+
+	
+	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
+	console.log(JSON.stringify(getCookie("cap")));		
+	/// How to convert to JSON 
+	/// var cap = getCookie("cap");
+	//  var parse = JSON.parse(cap);
+	// use "parse" like json 
+	// For ex: parse["mode"]
 
 	try {
 		const sessions = await (await API.fetchSession()).json()
@@ -97,27 +115,22 @@ $(document).ready(async () => {
 
 })
 
-function createSlave(slave) {
+function 	createSlave(slave) {
 	return `
     <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${slave.id}">
       <div class="card bg-light d-flex flex-fill">
-        <div class="card-header text-muted border-bottom-0">
-          <br>
-        </div>
+        <div style="text-alignt: center" class="card-header text-muted border-bottom-0">
+		<img width="20px" height="20px" src="images/window-logo.png" alt="user-avatar" class="img-fluid">
+		</div>
         <div class="card-body pt-0">
           <div class="row">
-            <div class="col-7">
-              <h2 class="lead"><b>Device</b></h2>
-              <ul class="ml-4 mb-0 fa-ul text-muted">
-			  	<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.cpu}</li>
-                <li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
-                <li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
-                <li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
-              </ul>
-            </div>
-            <div class="col-5 text-center">
-              <img src="images/window-logo.png" alt="user-avatar" class="img-fluid">
-            </div>
+			<h2 class="lead"><b>Device</b></h2>
+			<ul class="ml-4 mb-0 fa-ul text-muted">
+			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.cpu}</li>
+			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
+			<li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
+			<li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
+			</ul>
           </div>
         </div>
         <div class="overlay">
@@ -132,10 +145,10 @@ function createSlave(slave) {
 function slaveState(state) {
 	const nl = '<div class="w-100"></div>'
 	const btn = {
-		connect: '<button type="button" class="btn btn-primary btn-icon-text" name="connect"><i class="ti-file btn-icon-prepend"></i>Connect</button>',
-		disconnect: '<div class="col colbut"><input class="btn btn-secondary" name="disconnect" type="submit" value="Disconnect"></div>',
-		reconnect: '<div class="col colbut"><input class="btn btn-primary" name="reconnect" type="submit" value="Reconnect"></div>',
-		terminate: '<div class="col colbut"><input class="btn btn-warning" name="terminate" type="submit" value="Terminate"></div>'
+		connect:    '<button type="button" class="btn btn-primary btn-icon-text" name="connect"><i class="ti-file btn-icon-prepend"></i>Connect</button></div>',
+		disconnect: '<button type="button" class="btn btn-warning btn-icon-text" name="disconnect"><i class="ti-reload btn-icon-prepend"></i>Disconnect</button>',
+		reconnect:  '<button type="button" class="btn btn-warning btn-icon-text" name="reconnect"><i class="ti-reload btn-icon-prepend"></i>Reconnect</button>',
+		terminate:  '<button type="button" class="btn btn-outline-danger btn-icon-text" name="terminate"><i class="ti-upload btn-icon-prepend"></i>Terminate</button>'
 	}
 	if (state === "ON_SESSION"){
 		return btn.disconnect + btn.terminate
@@ -152,64 +165,6 @@ function append(id, html) {
 	$(`#${id}`).append(html)
 }
 
-function Mode(mode) {
-	switch (mode) {
-	case "ultra low":
-		return {
-			qoEMode: 1
-		}
-	case "low":
-		return {
-			qoEMode: 2
-		}
-	case "medium":
-		return {
-			qoEMode: 3
-		}
-	case "high":
-		return {
-			qoEMode: 4
-		}	
-	case "very high":
-		return {
-			qoEMode: 5
-		}
-	case "ultra high":
-		return {
-			qoEMode: 6
-		}
-	}
-}
-
-function VideoCodec(codec) {
-	switch (codec) {
-	case "h264":
-		return {
-			videoCodec: 1
-		}
-	case "h265":
-		return {
-			videoCodec: 0
-		}
-	case "vp9":
-		return {
-			videoCodec: 3
-		}
-	}
-}
-
-function AudioCodec(codec) {
-	switch (codec) {
-	case "opus":
-		return {
-			audioCodec: 4
-		}
-	case "aac":
-		return {
-			audioCodec: 5
-		}
-	}
-}
 
 function serialize(obj, prefix) {
 	var str = [],

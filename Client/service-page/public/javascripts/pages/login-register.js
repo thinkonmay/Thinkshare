@@ -72,6 +72,10 @@ function register(body) {
 		text: "Vui lòng chờ . . .",
 		didOpen: () => {
 			Swal.showLoading()
+
+			var date = new Date(body.dob);
+			body.dob = date.toISOString(); //will return an ISO representation of the date
+
 			API.register(body)
 				.then(async data => {
 					const response = await data.json()
@@ -117,14 +121,6 @@ function login(body) {
 					if (data.status == 200) {
 						if (response.errorCode == 0) {
 							setCookie("token", response.token, MINUTES59)
-							setCookie("cap", "{\"Mode\":\"ultra high\", \"AudioCodec\": \"opus\", \"VideoCodec\": \"h264\", \"screenWidth\": 2650, \"screenHeight\": 1400}", 9999999999999999999)
-							console.log(JSON.stringify(getCookie("cap")));		
-							/// How to convert to JSON 
-							/// var cap = getCookie("cap");
-							//  var parse = JSON.parse(cap);
-							// use "parse" like json 
-							// For ex: parse["mode"]
-
 							window.location.replace(API.Dashboard)
 						} else {
 							newSwal.fire({

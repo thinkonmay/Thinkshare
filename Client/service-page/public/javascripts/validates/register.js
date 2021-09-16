@@ -5,6 +5,22 @@ export default {
 			minlength: 7,
 			maxlength: 50
 		},
+		userName: {
+			required: true,
+			minlength: 7,
+			maxlength: 50
+		},
+		phoneNumber: {
+			required: true,
+			minlength: 7,
+			maxlength: 50
+		},
+		jobs: {
+			required: true,
+			minlength: 7,
+			maxlength: 50
+		},
+
 		email: {
 			required: true,
 			email: true,
@@ -25,22 +41,37 @@ export default {
 	},
 	messages: {
 		fullName: {
-			required: "Your full name is required",
+			required: "Your full name is require field",
+			minlength: "Minimum character is 7",
+			maxlength: "Maximum character is 50"
+		},
+		userName: {
+			required: "Your username is require field",
+			minlength: "Minimum character is 7",
+			maxlength: "Maximum character is 50"
+		},
+		phoneNumber: {
+			required: "Your phone number is require field",
+			minlength: "Minimum character is 7",
+			maxlength: "Maximum character is 15"
+		},
+		jobs: {
+			required: "Your jobs is require field",
 			minlength: "Minimum character is 7",
 			maxlength: "Maximum character is 50"
 		},
 		email: {
-			required: "Your email address is required",
+			required: "Your email address is require field",
 			email: "Invalid email",
 			minlength: "Minimum character is 10"
 		},
 		password: {
-			required: "Your password is required!",
+			required: "Your password is required field",
 			minlength: "Minimum character is 5",
 			maxlength: "Maximum character is 50"
 		},
 		repassword: {
-			required: "You need to retype your password!",
+			required: "You need to retype your password field!",
 			minlength: "Minimum character is 5",
 			maxlength: "Maximum character is 50",
 			equalTo: "Your retype-password do not match with the original"

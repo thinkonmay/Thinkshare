@@ -13142,6 +13142,7 @@ fieldset:disabled .swal2-modal .swal2-buttonswrapper .swal2-styled,
 }
 
 .card-body {
+  min-width: 90%;
   flex: 1 1 auto;
   padding: 1rem 1rem;
 }
@@ -16159,6 +16160,7 @@ fieldset:disabled .swal2-modal .swal2-buttonswrapper .swal2-styled,
 }
 
 .pb-0 {
+  min-width: 90%;
   padding-bottom: 0 !important;
 }
 

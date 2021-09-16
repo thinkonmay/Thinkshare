@@ -24,16 +24,30 @@ namespace SharedHost.Models.Session
             ClientOffer = false;
             SignallingUrl = config.SignallingWs; ;
             StunServer = config.StunServer;
-            // StartTime = DateTime.Now;
         }
 
-
         /// <summary>
-        /// 
+        /// preserved for database insert,
+        ///  should only be used by admin service to
+        /// insert database
         /// </summary>
+        /// <value></value>
+        [Required]
+        public int ClientId {get;set;}
+
+        [ForeignKey("ClientId")]
         public virtual UserAccount Client { get; set; }
+        
+        /// <summary>
+        /// preserved for database insert,
+        ///  should only be used by admin service to
+        /// insert database
+        /// </summary>
+        /// <value></value>
+        [Required]
+        public int SlaveID {get;set;}
 
-
+        [ForeignKey("SlaveID")]
         public virtual Slave Slave { get; set; }
 
         /// <summary>

@@ -3,14 +3,19 @@ import { getCookie } from "../util/cookie.js";
 
 var sessionClient;
 
-API.fetch(
-    getCookie("remoteUrl"),{
+var HostUrl = getCookie("remoteUrl");
+
+var initializebody = getCookie("remoteBody");
+
+var response = await fetch(
+    HostUrl,{
     method: "POST",
     headers: API.genHeaders(),
-    body: JSON.parse(getCookie("remoteBody"))}
-).then( response =>{
-    if(response.statusCode === 200){
-        sessionClient = JSON.parse(response.body)
-    }else{
-    }
-})
+    body: initializebody}
+)
+
+if(response.statusCode === 200){
+    sessionClient = JSON.parse(response.body)
+}else{
+    window.close();
+}

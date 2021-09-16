@@ -93,8 +93,10 @@ namespace Conductor.Controllers
             var QoE = new QoE(request.cap);
 
             /*create new session with gevin session request from user*/
-            var sess = new RemoteSession() { 
-                
+            var sess = new RemoteSession(QoE,sessionPair,Configuration)
+            {
+                Client = await _userManager.FindByIdAsync(ClientId.ToString()),
+                Slave = _db.Devices.Find(request.SlaveId)
             };
 
             /*generate rest post to signalling server*/
