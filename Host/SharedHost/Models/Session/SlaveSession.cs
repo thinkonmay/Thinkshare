@@ -18,10 +18,10 @@ namespace SharedHost.Models.Session
 
             ClientOffer = session.ClientOffer;
 
-            Slave = session.Slave;
+            SlaveID = session.Slave.ID;
         }
 
-        public Slave Slave { get; set; }
+        public int SlaveID { get; set; }
         
         public int SessionSlaveID { get; set; }
     }
