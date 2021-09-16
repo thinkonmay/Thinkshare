@@ -246,7 +246,7 @@ namespace Conductor.Migrations
                     b.Property<int>("SessionClientID")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ClientId")
+                    b.Property<int>("ClientId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("ClientOffer")
@@ -258,7 +258,7 @@ namespace Conductor.Migrations
                     b.Property<string>("SignallingUrl")
                         .HasColumnType("text");
 
-                    b.Property<int?>("SlaveID")
+                    b.Property<int>("SlaveID")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("StartTime")
@@ -435,11 +435,15 @@ namespace Conductor.Migrations
                 {
                     b.HasOne("SharedHost.Models.User.UserAccount", "Client")
                         .WithMany("usedSession")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SharedHost.Models.Device.Slave", "Slave")
                         .WithMany("servedSession")
-                        .HasForeignKey("SlaveID");
+                        .HasForeignKey("SlaveID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Client");
 

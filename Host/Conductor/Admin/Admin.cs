@@ -133,10 +133,16 @@ namespace Conductor.Administration
         /// </summary>
         public async Task ReportNewSession(RemoteSession session)
         {
+            var account = await _userManager.GetUserIdAsync(session.Client);
+            
+            session.Client = null;
+            session.ClientId = Int32.Parse(account);
+
+            session.SlaveID = session.Slave.ID;
+            session.Slave = null;
+
             _db.RemoteSessions.Add(session);
             await _db.SaveChangesAsync();
-
-            var account = await _userManager.GetUserIdAsync(session.Client);
 
             var slave = _db.Devices.Find(session.Slave.ID);
             var device_infor = new SlaveDeviceInformation(slave);
