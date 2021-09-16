@@ -20,7 +20,9 @@
 }
 
 .slave {
-  min-width: 300px;
+  min-width: 350px;
+  max-width: 350px;
+  word-wrap: break-word;
 }
 
 .space {
