@@ -4,24 +4,20 @@ import { Initialize } from "./api.js"
 import { InitializeSession } from "./api.js"
 import { ReconnectSession } from "./api.js"
 
-const coookies_expire = 10 * 1000
+const coookies_expire = 100 * 1000
 
 
 
 export const sessionInitialize = (SlaveID) => {
-    var body = {
-        slaveId: parseInt(SlaveID),
-        cap: JSON.parse(Cookies.getCookie("cap"))
-    }
-	Cookies.setCookie("remoteUrl",InitializeSession,coookies_expire)
-	Cookies.setCookie("remoteBody",JSON.stringify(body),coookies_expire)
-    getRemotePage(body)
+	Cookies.setCookie("SlaveID",parseInt(SlaveID),coookies_expire)
+	Cookies.setCookie("IsInitialize",true,coookies_expire)
+    getRemotePage()
 }
 
 export const sessionReconnect = (SlaveID) => {
-	Cookies.setCookie("remoteUrl",ReconnectSession+"?SlaveID="+SlaveID,coookies_expire)
-	Cookies.setCookie("remoteBody",' ',coookies_expire)
-    getRemotePage(body)
+	Cookies.setCookie("SlaveID",parseInt(SlaveID),coookies_expire)
+	Cookies.setCookie("IsInitialize",false,coookies_expire)
+    getRemotePage()
 }
 
 const getRemotePage = () => {

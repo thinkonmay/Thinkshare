@@ -133,15 +133,20 @@ export const reconnectSession = (SlaveID) => {
 }
 
 
-export const reconnectSession = (body) => {
-	return fetch(ReconnectSession, {
+export const initializeSession = () => {
+	var body = {
+		SlaveID: parseInt(getCookie("SlaveID")),
+		cap: JSON.parse(getCookie("cap"))
+	}
+	return fetch(InitializeSession, {
 		method: "POST",
+		mode: 'cors',	  
 		headers: genHeaders(),
-		body: JSON.stringify({
-			SlaveID
-		})
+		body: JSON.stringify(body)
 	})
 }
+
+
 
 
 

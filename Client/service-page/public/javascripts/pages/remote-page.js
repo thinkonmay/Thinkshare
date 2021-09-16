@@ -1,28 +1,25 @@
 import * as API from "../util/api.js"
 import { getCookie } from "../util/cookie.js";
 
+var response;
+if(getCookie("IsInitialize")){
+    API.initializeSession().then((response)=>{
+        
+        if(response.status == 200){
+            var sessionClient = response.json();
+            app.SetupSession(sessionClient);
+            app.connectServer();
+        }else{
 
-var initializebody = getCookie("remoteBody");
-
-if (HostUrl == null){
-    window.close()
-}else if (initializebody == null){
-    window.close()
-}
-
-var response = await API.InitializeSession()
-
-if(response.status ==200)
-{
-    var sessionClient = await response.json();
-    app.SetupSession(sessionClient);
-}else{
-    window.close();
+        }
+    })
 }
 
 
+else{response = await API.reconnectSession(getCookie("SlaveID"))}
 
 
 
 
-app.connectServer();
+
+

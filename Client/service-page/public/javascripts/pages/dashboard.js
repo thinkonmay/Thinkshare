@@ -66,53 +66,41 @@ $(document).ready(async () => {
 	var stateSignalR = document.getElementById('state-signalr');
 	// Connect to hub signalR with access-token Bearer Authorzation
 	const connection = new signalR.HubConnectionBuilder()
-		.withUrl(`http://localhost:5000/ClientHub`,  {
+		.withUrl(`https://conductor.thinkmay.net/ClientHub`,  {
 		accessTokenFactory: () => getCookie("token") // Return access token
 	}).build()
 	connection.start().then(function () {
-		var content = `<p>SignalR Connected</p>`;
-		stateSignalR.innerHTML = content;
-	}).catch(function (err) {
-		var content = `<p>Failed To Connect to SignalR</p>`;
-		stateSignalR.innerHTML = content;
-		return console.error(err.toString())
-	})
+		console.log("connected to signalR hub");
 
-	// receive from function have been trigger on 
-	// we use signalR to inform browser about all state changes event of slave and session
-	connection.on("ReportSessionDisconnected", function (slaveId) {
-		button = slave.getElementById(`button${slaveId}`)
-		button.innerHTML = slaveState("OFF_REMOTE")
-	})
-	connection.on("ReportSessionReconnected", function (slaveId) {
-		button = slave.getElementById(`button${slaveId}`)
-		button.innerHTML = slaveState("ON_SESSION")
-	})
-	connection.on("ReportSessionTerminated", function (slaveInfor) {
-		sessionQueue = document.getElementById("onlineSlaves")
-		slave = sessionQueue.getElementById(slaveId)
-		slave.remove()
-	})
-	connection.on("ReportSlaveObtained", function (slaveId) {
-		slaveQueue = document.getElementById("availableSlaves")
-		slave = slaveQueue.getElementById(slaveId)
-		slave.remove()
-	})
-	connection.on("ReportSessionInitialized", function (slaveInfor) {
-		append("#availableSlaves",createSlave(slaveInfor))
-	})
-	connection.on("ReportNewSlaveAvailable", function (device) {
-		append("#availableSlaves",createSlave(device))
-	})
-	
-	//trigger function on signalR
-	document.getElementById("triggerButton").addEventListener("click", function (event) {
-		connection.invoke("trigger", "hello").catch(function (err) {
-			return console.log(err)
+		// we use signalR to inform browser 
+		// about all state changes event of slave and session
+		connection.on("ReportSessionDisconnected", function (slaveId) {
+			button = slave.getElementById(`button${slaveId}`)
+			button.innerHTML = slaveState("OFF_REMOTE")
 		})
+		connection.on("ReportSessionReconnected", function (slaveId) {
+			button = slave.getElementById(`button${slaveId}`)
+			button.innerHTML = slaveState("ON_SESSION")
+		})
+		connection.on("ReportSessionTerminated", function (slaveInfor) {
+			sessionQueue = document.getElementById("onlineSlaves")
+			slave = sessionQueue.getElementById(slaveId)
+			slave.remove()
+		})
+		connection.on("ReportSlaveObtained", function (slaveId) {
+			slaveQueue = document.getElementById("availableSlaves")
+			slave = slaveQueue.getElementById(slaveId)
+			slave.remove()
+		})
+		connection.on("ReportSessionInitialized", function (slaveInfor) {
+			append("#availableSlaves",createSlave(slaveInfor))
+		})
+		connection.on("ReportNewSlaveAvailable", function (device) {
+			append("#availableSlaves",createSlave(device))
+		})
+	}).catch(function (err) {
+		location.reload();
 	})
-	
-
 })
 
 function 	createSlave(slave) {

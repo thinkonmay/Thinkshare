@@ -1,4 +1,3 @@
-var sessionClient = JSON.parse(sessionString);    
 var app = new Vue({
 
     el: '#app',
