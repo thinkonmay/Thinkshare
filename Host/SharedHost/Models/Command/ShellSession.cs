@@ -11,14 +11,12 @@ namespace SharedHost.Models.Command
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        public virtual Slave Device { get; set; }
-
         public int ProcessID { get; set; }
 
         public DateTime StartTime { get; set; }
 
         public DateTime? EndTime { get; set; }
 
-        public virtual ICollection<CommandLog> Command { get; set; }
+        public virtual ICollection<CommandLog> Commands { get; set; }
     }
 }

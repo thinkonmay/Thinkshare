@@ -84,7 +84,7 @@ namespace Conductor.Controllers
         public async Task<IActionResult> GetSession(int SlaveID)
         {
 
-            var Query = _db.Devices.Find(SlaveID).servedSession.ToList();
+            var Query = _db.RemoteSessions.Where(o => !o.EndTime.HasValue);
             return Ok(Query);
         }
 
@@ -97,8 +97,7 @@ namespace Conductor.Controllers
         public async Task<IActionResult> GetCommand(int SlaveID)
         {
             var slave = _db.Devices.Find(SlaveID);
-            var Query = _db.CommandLogs.Where(o => o.Slave == slave).ToList();
-            return Ok(Query);
+            return Ok(slave.ShellSession);
         }
     }
 }

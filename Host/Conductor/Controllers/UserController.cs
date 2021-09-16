@@ -108,13 +108,21 @@ namespace Conductor.Controllers
 
 
         [HttpGet("GetInfor")]
-        public async Task<IActionResult> UserGetSession()
+        public async Task<IActionResult> UserGetInfor()
         {
             int ClientId = _jwt.GetUserFromHttpRequest(User);
-
             var account = await _userManager.FindByIdAsync(ClientId.ToString());
 
             return Ok(account);
+        }
+
+
+        [HttpGet("GetSession")]
+        public async Task<IActionResult> UserGetSession()
+        {
+            int ClientId = _jwt.GetUserFromHttpRequest(User);
+            var sessions = _db.RemoteSessions.Where( o => o.ClientId == ClientId);
+            return Ok(sessions);
         }
     }
 }

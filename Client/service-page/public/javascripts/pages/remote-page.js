@@ -2,9 +2,6 @@ import * as API from "../util/api.js"
 import { getCookie } from "../util/cookie.js";
 
 
-
-
-var HostUrl = getCookie("remoteUrl");
 var initializebody = getCookie("remoteBody");
 
 if (HostUrl == null){
@@ -13,13 +10,7 @@ if (HostUrl == null){
     window.close()
 }
 
-var response = await fetch(
-HostUrl,
-{
-    method: "POST",
-    headers: API.genHeaders(),
-    body: initializebody
-});
+var response = await API.InitializeSession()
 
 if(response.status ==200)
 {

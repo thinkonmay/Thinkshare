@@ -119,16 +119,21 @@ export const terminateSession = SlaveID => {
 }
 
 export const disconnectSession = SlaveID => {
-	return fetch(DisconnectSession, {
+	return fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
 		method: "POST",
-		headers: genHeaders(),
-		body: JSON.stringify({
-			SlaveID
-		})
+		headers: genHeaders()
 	})
 }
 
 export const reconnectSession = (SlaveID) => {
+	return fetch(ReconnectSession + "?SlaveID=" + SlaveID, {
+		method: "POST",
+		headers: genHeaders()
+	})
+}
+
+
+export const reconnectSession = (body) => {
 	return fetch(ReconnectSession, {
 		method: "POST",
 		headers: genHeaders(),

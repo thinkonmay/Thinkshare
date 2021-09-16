@@ -16,6 +16,5 @@ namespace SharedHost.Models.User
         public string? Jobs { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public DateTime? Created { get; set; }
-        public virtual ICollection<RemoteSession> usedSession {get;set;}
     }
 }

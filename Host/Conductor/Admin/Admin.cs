@@ -86,11 +86,8 @@ namespace Conductor.Administration
 
         public async Task ReportShellSessionTerminated(int SlaveID, int ProcessID)
         {
-            var slave = _db.Devices.Find(SlaveID);
-            var session = _db.ShellSession.Where(o =>
-                o.Device == slave &&
-                o.ProcessID == ProcessID &&
-                !o.EndTime.HasValue).FirstOrDefault();
+            var session = _db.Devices.Find(SlaveID).ShellSession.Where(o =>o.ProcessID == ProcessID &&
+                                                                        !o.EndTime.HasValue).FirstOrDefault();
 
             session.EndTime = DateTime.Now;
             await _db.SaveChangesAsync();
@@ -110,14 +107,13 @@ namespace Conductor.Administration
                 };
                 System.Console.WriteLine(JsonConvert.SerializeObject(error));
 
-                CommandLog cmdLog = new CommandLog()
-                {
-                    ProcessID = command.ProcessID,
+                CommandLog cmdLog = new CommandLog(){
                     Command = command.Command
                 };
-                cmdLog.Slave = machine;
 
-                _db.CommandLogs.Add(cmdLog);
+                var device = _db.Devices.Find(command.SlaveID);
+                var Shell = device.ShellSession.Where(o => o.ProcessID == command.ProcessID && !o.EndTime.HasValue).FirstOrDefault();
+                Shell.Commands.Add(cmdLog);                
                 await _db.SaveChangesAsync();
 
                 Serilog.Log.Information("Broadcasting event device {slave} return command log {log}", machine.ID, command.Command);
@@ -209,9 +205,8 @@ namespace Conductor.Administration
 
         public async Task ReportSlaveDisconnected(int SlaveID)
         {
-            var slave = _db.Devices.Find(SlaveID);
+            var shell = _db.Devices.Find(SlaveID).ShellSession.Where(o=>!o.EndTime.HasValue);
             var remote = _db.RemoteSessions.Where(o => o.Slave.ID == SlaveID && !o.EndTime.HasValue);
-            var shell = _db.ShellSession.Where(o => o.Device == slave && !o.EndTime.HasValue);
 
             foreach (var i in shell)
             {
@@ -236,8 +231,10 @@ namespace Conductor.Administration
                 .AddQueryParameter("SlaveID", remoteSession.Slave.ID.ToString());
 
             request.Method = Method.POST;
-
-            await _slavemanager.ExecuteAsync(request);                        
+            await _slavemanager.ExecuteAsync(request);
+            
+            Serilog.Log.Information("Broadcasting event slave device {slave} reconnected during {user} session", session.Slave.ID, session.Client.UserName);
+            await _clientHubctx.Clients.Group(account).ReportSessionReconnected(session.Slave.ID);                 
         }
     }
 }

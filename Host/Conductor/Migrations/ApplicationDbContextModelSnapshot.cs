@@ -162,13 +162,7 @@ namespace Conductor.Migrations
                     b.Property<string>("Command")
                         .HasColumnType("text");
 
-                    b.Property<int>("ProcessID")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("ShellSessionID")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("SlaveID")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Time")
@@ -177,8 +171,6 @@ namespace Conductor.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("ShellSessionID");
-
-                    b.HasIndex("SlaveID");
 
                     b.ToTable("CommandLogs");
                 });
@@ -190,13 +182,13 @@ namespace Conductor.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int?>("DeviceID")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("ProcessID")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("SlaveID")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("StartTime")
@@ -206,7 +198,7 @@ namespace Conductor.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("DeviceID");
+                    b.HasIndex("SlaveID");
 
                     b.ToTable("ShellSession");
                 });
@@ -412,35 +404,27 @@ namespace Conductor.Migrations
             modelBuilder.Entity("SharedHost.Models.Command.CommandLog", b =>
                 {
                     b.HasOne("SharedHost.Models.Command.ShellSession", null)
-                        .WithMany("Command")
+                        .WithMany("Commands")
                         .HasForeignKey("ShellSessionID");
-
-                    b.HasOne("SharedHost.Models.Device.Slave", "Slave")
-                        .WithMany()
-                        .HasForeignKey("SlaveID");
-
-                    b.Navigation("Slave");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Command.ShellSession", b =>
                 {
-                    b.HasOne("SharedHost.Models.Device.Slave", "Device")
-                        .WithMany("CommandLogs")
-                        .HasForeignKey("DeviceID");
-
-                    b.Navigation("Device");
+                    b.HasOne("SharedHost.Models.Device.Slave", null)
+                        .WithMany("ShellSession")
+                        .HasForeignKey("SlaveID");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Session.RemoteSession", b =>
                 {
                     b.HasOne("SharedHost.Models.User.UserAccount", "Client")
-                        .WithMany("usedSession")
+                        .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SharedHost.Models.Device.Slave", "Slave")
-                        .WithMany("servedSession")
+                        .WithMany()
                         .HasForeignKey("SlaveID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -452,19 +436,12 @@ namespace Conductor.Migrations
 
             modelBuilder.Entity("SharedHost.Models.Command.ShellSession", b =>
                 {
-                    b.Navigation("Command");
+                    b.Navigation("Commands");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Device.Slave", b =>
                 {
-                    b.Navigation("CommandLogs");
-
-                    b.Navigation("servedSession");
-                });
-
-            modelBuilder.Entity("SharedHost.Models.User.UserAccount", b =>
-                {
-                    b.Navigation("usedSession");
+                    b.Navigation("ShellSession");
                 });
 #pragma warning restore 612, 618
         }

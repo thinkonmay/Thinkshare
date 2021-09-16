@@ -20,7 +20,8 @@ const MINUTES59 = 59 * 60 * 1000;
 		event.preventDefault()
 		if ($("form").valid()) {
 			const body = serializeArrToObject($("form").serializeArray())
-			login(body)
+			if (window.login) login(body)
+			else if (window.register) register(body)
 		}
 	})
 	$("form").validate(Validates.login)
@@ -83,7 +84,7 @@ function register(body) {
 		text: "Vui lòng chờ . . .",
 		didOpen: () => {
 			Swal.showLoading()
-			console.log(body);
+
 			var date = new Date(body.dob);
 			body.dob = date.toISOString(); //will return an ISO representation of the date
 

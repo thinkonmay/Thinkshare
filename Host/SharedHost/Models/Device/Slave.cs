@@ -48,11 +48,6 @@ namespace SharedHost.Models.Device
         /// <summary>
         /// 
         /// </summary>
-        public virtual ICollection<ShellSession> CommandLogs { get; set; }
-
-        /// <summary>
-        /// (nullable) if slave is in a session, 
-        /// </summary>
-        public virtual ICollection<RemoteSession> servedSession { get; set; }
+        public virtual ICollection<ShellSession> ShellSession { get; set; }
     }
 }
