@@ -1,7 +1,7 @@
 import { getCookie } from "../util/cookie.js";
 
-
-var sessionClient = JSON.parse(getCookie("sessionClient"))
+var cookie = await getCookie("sessionClient");
+var sessionClient = JSON.parse(cookie);
 app.SetupSession(sessionClient);
 app.connectServer();
 

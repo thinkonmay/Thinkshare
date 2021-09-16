@@ -9,13 +9,17 @@ const coookies_expire = 100 * 1000
 
 
 export const sessionInitialize = async (SlaveID) => {
-    var response = await initializeSession(parseInt(SlaveID));
+    initializeSession(parseInt(SlaveID)).then(async response => {
     if(response.status == 200){
-        Cookies.setCookie("sessionClient",response.json())
+        var json = await response.json();
+        var cookie = JSON.stringify(json);
+
+        Cookies.setCookie("sessionClient",cookie)
         getRemotePage()
     }else{
 
     }
+    })
 }
 
 export const sessionReconnect = async (SlaveID) => {
