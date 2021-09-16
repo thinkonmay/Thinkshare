@@ -1,6 +1,4 @@
-
-var ScaleLoader = VueSpinner.ScaleLoader;
-var serverStatus = null;
+var sessionClient = JSON.parse(sessionString);    
 var app = new Vue({
 
     el: '#app',
@@ -30,7 +28,6 @@ var app = new Vue({
             SignallingUrl: sessionClient.signallingUrl,
 
             /*default value from client session fetch from server*/
-            QoEMode: sessionClient.qoE.qoEMode,
             AudioCodec: sessionClient.qoE.audioCodec,
             VideoCodec: sessionClient.qoE.videoCodec,
 
@@ -160,12 +157,12 @@ var app = new Vue({
         ///enter full screen mode, all functional keywill be activated
         enterFullscreen() {
             // Request full screen mode.
-            app.VideoElement.parentElement.requestFullscreen();
+            this.VideoElement.parentElement.requestFullscreen();
         },
         //connect to server method, this method wil be invoked automatically in publish mode 
         connectServer(){
-            app.VideoElement =  document.getElementById("stream");
-            app.setDebug("Connecting to server");
+            this.VideoElement =  document.getElementById("stream");
+            this.setDebug("Connecting to server");
             SignallingConnect();
         },
         ///show debug key, only functional in debug mode
@@ -179,10 +176,10 @@ var app = new Vue({
         },
         onClipboard(Data)
         {
-            if (app.clipboardStatus === 'enabled') 
+            if (this.clipboardStatus === 'enabled') 
             {
                 navigator.clipboard.writeText(content).catch(err =>  {
-                        app.setDebug('Could not copy text to clipboard: ' + err);
+                        this.setDebug('Could not copy text to clipboard: ' + err);
                     }
                 );
             }
@@ -200,11 +197,11 @@ var app = new Vue({
                 "From": Module.CLIENT_MODULE,
                 "To": Module.AGENT_MODULE,
                 "Data": {
-                    "ScreenHeight": app.ScreenHeight,
-                    "ScreenWidth": app.ScreenWidth,
-                    "QoEMode": app.QoEMode,
-                    "VideoCodec": app.VideoCodec,
-                    "AudioCodec":app.AudioCodec          
+                    "ScreenHeight": this.ScreenHeight,
+                    "ScreenWidth": this.ScreenWidth,
+                    "QoEMode": this.QoEMode,
+                    "VideoCodec": this.VideoCodec,
+                    "AudioCodec":this.AudioCodec          
                 }
             }
             sendControlDC(
@@ -217,19 +214,19 @@ var app = new Vue({
         setDebug(message)
         {
             console.log(message);
-            app.debugEntries.push(applyTimestamp(message));
+            this.debugEntries.push(applyTimestamp(message));
         },
         ///report errror in debug mode
         setError(message)
         {
             console.log(message);
-            app.debugEntries.push(applyTimestamp(message));
+            this.debugEntries.push(applyTimestamp(message));
         },
         ///method 
         setStatus(message)
         {
             console.log(message);
-            app.logEntries.push(applyTimestamp(message));
+            this.logEntries.push(applyTimestamp(message));
         }
     },
 
@@ -251,17 +248,17 @@ var app = new Vue({
         signalling_state(newValue) {
             switch (newValue) {
                 case "connected":
-                    app.setStatus("Connection complete");
+                    this.setStatus("Connection complete");
                     break;
 
                 case "disconnected":
-                    app.setError("Peer connection disconnected");
-                    app.VideoElement.load();
+                    this.setError("Peer connection disconnected");
+                    this.VideoElement.load();
                     break;
 
                 case "failed":
-                    app.setError("Peer connection failed");
-                    app.VideoElement.load();
+                    this.setError("Peer connection failed");
+                    this.VideoElement.load();
                     break;
                 default:
             }
