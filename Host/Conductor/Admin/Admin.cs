@@ -133,6 +133,7 @@ namespace Conductor.Administration
         /// </summary>
         public async Task ReportNewSession(RemoteSession session)
         {
+            var device_infor = new SlaveDeviceInformation(session.Slave);
             var account = await _userManager.GetUserIdAsync(session.Client);
             
             session.Client = null;
@@ -144,24 +145,19 @@ namespace Conductor.Administration
             _db.RemoteSessions.Add(session);
             await _db.SaveChangesAsync();
 
-            var slave = _db.Devices.Find(session.Slave.ID);
-            var device_infor = new SlaveDeviceInformation(slave);
-            await _adminHubctx.Clients.All.ReportSessionStart(session.Slave.ID, session.Client);
-            await _clientHubctx.Clients.All.ReportSlaveObtained(session.Slave.ID);
+            await _clientHubctx.Clients.All.ReportSlaveObtained(session.SlaveID);
             await _clientHubctx.Clients.Group(account).ReportSessionInitialized(device_infor);
         }
 
         public async Task ReportSessionTermination(RemoteSession session)
         {
+            var account = await _userManager.GetUserIdAsync(session.Client);
+            var device_infor = new SlaveDeviceInformation(session.Slave);
+
             session.EndTime = DateTime.Now;
             _db.RemoteSessions.Update(session);
             await _db.SaveChangesAsync();
 
-            var account = await _userManager.GetUserIdAsync(session.Client);
-
-            var slave = _db.Devices.Find(session.Slave.ID);
-            var device_infor = new SlaveDeviceInformation(slave);
-            await _adminHubctx.Clients.All.ReportSessionTermination(session.Slave.ID, session.Client);
             await _clientHubctx.Clients.Group(account).ReportSessionTerminated(session.Slave.ID);
             await _clientHubctx.Clients.All.ReportNewSlaveAvailable(device_infor);
         }
