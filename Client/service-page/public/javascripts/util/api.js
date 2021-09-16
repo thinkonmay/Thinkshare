@@ -60,8 +60,11 @@ export const register = body => {
 		body: JSON.stringify({
 			email: body.email,
 			password: body.password,
-			fullName: body.fullName,
-			dayOfBirth: body.dayOfBirth
+			fullName: body.fullname,
+			userName: body.username,
+			dateOfBirth: body.dob,
+			jobs: body.job,
+			phoneNumber: body.phonenumber
 		})
 	})
 }

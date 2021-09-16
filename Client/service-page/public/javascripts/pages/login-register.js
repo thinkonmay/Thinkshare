@@ -72,6 +72,10 @@ function register(body) {
 		text: "Vui lòng chờ . . .",
 		didOpen: () => {
 			Swal.showLoading()
+
+			var date = new Date(body.dob);
+			body.dob = date.toISOString(); //will return an ISO representation of the date
+
 			API.register(body)
 				.then(async data => {
 					const response = await data.json()
