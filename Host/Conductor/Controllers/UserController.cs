@@ -107,14 +107,14 @@ namespace Conductor.Controllers
         }
 
 
-        [HttpGet("Session")]
+        [HttpGet("GetInfor")]
         public async Task<IActionResult> UserGetSession()
         {
             int ClientId = _jwt.GetUserFromHttpRequest(User);
 
             var account = await _userManager.FindByIdAsync(ClientId.ToString());
 
-            return Ok(account.usedSession);
+            return Ok(account);
         }
     }
 }
