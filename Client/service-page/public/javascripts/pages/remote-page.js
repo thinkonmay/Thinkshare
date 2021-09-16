@@ -2,6 +2,8 @@ import * as API from "../util/api.js"
 import { getCookie } from "../util/cookie.js";
 
 
+
+
 var HostUrl = getCookie("remoteUrl");
 var initializebody = getCookie("remoteBody");
 
@@ -12,21 +14,24 @@ if (HostUrl == null){
 }
 
 var response = await fetch(
-    HostUrl,{
+HostUrl,
+{
     method: "POST",
     headers: API.genHeaders(),
-    body: initializebody})
+    body: initializebody
+});
 
 if(response.status ==200)
 {
     var sessionClient = await response.json();
-    var session = document.getElementById("sessionClient");
-    session.innerHTML = 
-    `<script>
-    var sessionString = ${JSON.stringify(sessionClient)};
-    </script>`
+    app.SetupSession(sessionClient);
 }else{
     window.close();
 }
 
 
+
+
+
+
+app.connectServer();

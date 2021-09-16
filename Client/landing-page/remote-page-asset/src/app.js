@@ -10,7 +10,7 @@ var app = new Vue({
     data() 
     {
         return {
-            SessionClientID: sessionClient.sessionClientID, 
+            SessionClientID: 0, 
 
             showStart: false,
             showDrawer: false,
@@ -24,12 +24,12 @@ var app = new Vue({
             connectionResolution: "",
 
             /*parameter serve for session initialization */
-            Clientoffer: sessionClient.clientOffer,
-            SignallingUrl: sessionClient.signallingUrl,
+            Clientoffer: 0,
+            SignallingUrl: 0,
 
             /*default value from client session fetch from server*/
-            AudioCodec: sessionClient.qoE.audioCodec,
-            VideoCodec: sessionClient.qoE.videoCodec,
+            AudioCodec: 0,
+            VideoCodec: 0,
 
             /**
             * default Value of QoE metric, fetch from server
@@ -39,8 +39,8 @@ var app = new Vue({
                 /*
                 * slave screen (determined in session initialize step)
                 */
-                "SlaveWidth":sessionClient.qoE.screenWidth,
-                "SlaveHeight": sessionClient.qoE.screenHeight,
+                "SlaveWidth": 0,
+                "SlaveHeight": 0,
 
                 /*
                 * frame resolution used to transport to client
@@ -118,7 +118,7 @@ var app = new Vue({
             {"iceServers":    
                 [
                     {
-                        "urls": [sessionClient.stunServer]
+                        "urls": ["stun:stun.thinkmay.net:3478"]
                     },
                     {
                         "urls": ["stun:stun.l.google.com:19302"] 
@@ -154,6 +154,15 @@ var app = new Vue({
 
     methods: 
     {
+        SetupSession(sessionClient){
+            this.SessionClientID = sessionClient.sessionClientID;
+            this.Clientoffer = sessionClient.clientOffer;
+            this.SignallingUrl = sessionClient.signallingUrl;
+            this.AudioCodec = sessionClient.qoE.audioCodec;
+            this.VideoCodec = sessionClient.qoE.videoCodec;
+            this.ScreenWidth = sessionClient.qoE.screenWidth;
+            this.ScreenHeight = sessionClient.qoE.screenHeight;
+        },
         ///enter full screen mode, all functional keywill be activated
         enterFullscreen() {
             // Request full screen mode.
