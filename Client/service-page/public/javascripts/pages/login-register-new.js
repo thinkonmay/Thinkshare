@@ -76,3 +76,47 @@ function login(body) {
 		}
 	})
 }
+
+function register(body) {
+	newSwal.fire({
+		title: "Đang đăng kí",
+		text: "Vui lòng chờ . . .",
+		didOpen: () => {
+			Swal.showLoading()
+			console.log(body);
+			var date = new Date(body.dob);
+			body.dob = date.toISOString(); //will return an ISO representation of the date
+
+			API.register(body)
+				.then(async data => {
+					const response = await data.json()
+					if (data.status == 200) {
+						if (response.errorCode == 0) {
+							setCookie("token", response.token, MINUTES59)
+							newSwal.fire({
+								title: "Thành công!",
+								text: "Chuyển hướng tới bảng điều khiển sau 2s",
+								icon: "success",
+								didOpen: () => {
+									setTimeout(() => {
+										window.location.href = "/dashboard"
+									}, 2000)
+								}
+							})
+						} else {
+							newSwal.fire({
+								title: "Lỗi!",
+								text:
+									"Đã gặp lỗi trong quá trình đăng kí, vui lòng liên hệ admin để hỗ trợ!",
+								icon: "error"
+							})
+						}
+					} else {
+						responseErrorHandler(response)
+					}
+				})
+				.catch(fetchErrorHandler)
+		}
+	})
+}
+
