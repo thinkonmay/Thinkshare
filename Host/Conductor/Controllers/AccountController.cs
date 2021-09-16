@@ -45,7 +45,7 @@ namespace Conductor.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
                 if (result.Succeeded)
                 {
                     UserAccount user = await _userManager.FindByEmailAsync(model.Email);
@@ -87,7 +87,6 @@ namespace Conductor.Controllers
                     return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now);
                 }
             }
-
             return AuthResponse.GenerateFailure(model.Email, "Register failed", -1);
         }
 

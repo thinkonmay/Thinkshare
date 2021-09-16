@@ -6,8 +6,7 @@ namespace SharedHost.Models.Auth
     public class LoginModel
     {
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         public string Password { get; set; }
@@ -16,14 +15,17 @@ namespace SharedHost.Models.Auth
     public class RegisterModel : LoginModel
     {
         [Required]
-        public string UserName { get; set; }
+        [EmailAddress]
+        public string Email { get; set; }
 
         [Required]
         public string FullName { get; set; }
 
-        public DateTime? DateOfBirth { get; set; }
+        [Required]
+        public DateTime DateOfBirth { get; set; }
 
-        public string? Jobs { get; set; }
+        [Required]
+        public string Jobs { get; set; }
 
         [Required]
         public string PhoneNumber { get; set; }

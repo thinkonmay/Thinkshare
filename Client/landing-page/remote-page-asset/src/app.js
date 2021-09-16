@@ -39,23 +39,23 @@ var app = new Vue({
                 /*
                 * slave screen (determined in session initialize step)
                 */
-                "SlaveWidth": 0,
-                "SlaveHeight": 0,
+                SlaveWidth: 0,
+                SlaveHeight: 0,
 
                 /*
                 * frame resolution used to transport to client
                 */
-                "StreamWidth": 0,
-                "StreamHeight": 0,
+                StreamWidth: 0,
+                StreamHeight: 0,
 
 
                 /*
                 * client resolution display on client screen
                 */
-                "ClientWidth": 0,
-                "ClientHeight": 0,
+                ClientWidth: 0,
+                ClientHeight: 0,
 
-                "fraction": 0
+                fraction: 0
             },
 
             /**
@@ -99,16 +99,16 @@ var app = new Vue({
             */
             adaptive:
             {
-                "currentTime": 0,
-                "AudioBitrate": 0,
-                "VideoBitrate": 0,
-                "Framerate": 0,
+                currentTime: 0,
+                AudioBitrate: 0,
+                VideoBitrate: 0,
+                Framerate: 0,
 
 
-                "PacketsLost": 0,
-                "AudioLatency": 0,
-                "VideoLatency": 0,
-                "TotalBandwidth":  0,
+                PacketsLost: 0,
+                AudioLatency: 0,
+                VideoLatency: 0,
+                TotalBandwidth:  0,
             },
 
             /**
@@ -160,8 +160,8 @@ var app = new Vue({
             this.SignallingUrl = sessionClient.signallingUrl;
             this.AudioCodec = sessionClient.qoE.audioCodec;
             this.VideoCodec = sessionClient.qoE.videoCodec;
-            this.ScreenWidth = sessionClient.qoE.screenWidth;
-            this.ScreenHeight = sessionClient.qoE.screenHeight;
+            this.Screen.SlaveWidth = sessionClient.qoE.screenWidth;
+            this.Screen.SlaveHeight = sessionClient.qoE.screenHeight;
         },
         ///enter full screen mode, all functional keywill be activated
         enterFullscreen() {
