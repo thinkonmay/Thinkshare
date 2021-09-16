@@ -115,27 +115,22 @@ $(document).ready(async () => {
 
 })
 
-function createSlave(slave) {
+function 	createSlave(slave) {
 	return `
     <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${slave.id}">
       <div class="card bg-light d-flex flex-fill">
-        <div class="card-header text-muted border-bottom-0">
-          <br>
-        </div>
+        <div style="text-alignt: center" class="card-header text-muted border-bottom-0">
+		<img width="20px" height="20px" src="images/window-logo.png" alt="user-avatar" class="img-fluid">
+		</div>
         <div class="card-body pt-0">
           <div class="row">
-            <div class="col-7">
-              <h2 class="lead"><b>Device</b></h2>
-              <ul class="ml-4 mb-0 fa-ul text-muted">
-			  	<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.cpu}</li>
-                <li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
-                <li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
-                <li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
-              </ul>
-            </div>
-            <div class="col-5 text-center">
-              <img src="images/window-logo.png" alt="user-avatar" class="img-fluid">
-            </div>
+			<h2 class="lead"><b>Device</b></h2>
+			<ul class="ml-4 mb-0 fa-ul text-muted">
+			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.cpu}</li>
+			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
+			<li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
+			<li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
+			</ul>
           </div>
         </div>
         <div class="overlay">
