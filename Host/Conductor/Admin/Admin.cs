@@ -233,8 +233,8 @@ namespace Conductor.Administration
             request.Method = Method.POST;
             await _slavemanager.ExecuteAsync(request);
             
-            Serilog.Log.Information("Broadcasting event slave device {slave} reconnected during {user} session", session.Slave.ID, session.Client.UserName);
-            await _clientHubctx.Clients.Group(account).ReportSessionReconnected(session.Slave.ID);                 
+            Serilog.Log.Information("Broadcasting event slave device {slave} reconnected during {user} session", remoteSession.Slave.ID, remoteSession.Client.UserName);
+            await _clientHubctx.Clients.Group( await _userManager.GetUserIdAsync(remoteSession.Client)).ReportSessionReconnected(remoteSession.Slave.ID);                 
         }
     }
 }
