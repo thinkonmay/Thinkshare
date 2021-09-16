@@ -51,10 +51,10 @@ namespace Conductor.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    var user = await _userManager.FindByNameAsync(model.UserName);
                     string rolename = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
                     if(rolename == DataSeeder.ADMIN)
                     {
@@ -83,10 +83,10 @@ namespace Conductor.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    var user = await _userManager.FindByNameAsync(model.UserName);
                     string rolename = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
                     if (rolename == DataSeeder.ADMIN)
                     {

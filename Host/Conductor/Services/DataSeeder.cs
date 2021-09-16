@@ -31,8 +31,8 @@ namespace Conductor.Services
             {
                 UserAccount admin = new UserAccount()
                 {
-                    UserName = config.AdminLogin.Email,
-                    Email = config.AdminLogin.Email,
+                    UserName = config.AdminLogin.UserName,
+                    Email = config.AdminLogin.UserName,
                     FullName = "Default Admin",
                     EmailConfirmed = true,
                 };

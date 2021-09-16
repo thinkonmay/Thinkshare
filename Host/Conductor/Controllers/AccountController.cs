@@ -48,12 +48,12 @@ namespace Conductor.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
                 if (result.Succeeded)
                 {
-                    UserAccount user = await _userManager.FindByEmailAsync(model.Email);
+                    UserAccount user = await _userManager.FindByNameAsync(model.UserName);
                     string token = await _tokenGenerator.GenerateJwt(user);
-                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now.AddHours(1));
+                    return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
                 }
             }
-            return AuthResponse.GenerateFailure(model.Email, "Login failed", -1);
+            return AuthResponse.GenerateFailure(model.UserName, "Login failed", -1);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Conductor.Controllers
                     UserAccount u = await _userManager.FindByEmailAsync(model.Email);
                     await _userManager.AddToRoleAsync(u, DataSeeder.USER);
                     string token = await _tokenGenerator.GenerateJwt(u);
-                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now);
+                    return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now);
                 }
             }
             return AuthResponse.GenerateFailure(model.Email, "Register failed", -1);
