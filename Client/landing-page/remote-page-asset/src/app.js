@@ -1,11 +1,5 @@
 var app = new Vue({
-
     el: '#app',
-
-    components: {
-        ScaleLoader
-    },
-
     data() 
     {
         return {

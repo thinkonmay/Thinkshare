@@ -134,6 +134,8 @@ namespace Conductor.Administration
             var device_infor = new SlaveDeviceInformation(session.Slave);
             var account = await _userManager.GetUserIdAsync(session.Client);
             
+            Serilog.Log.Information("Broadcasting event slave device {slave} obtained by user {user}", session.Slave.ID, session.Client.UserName);
+            
             session.Client = null;
             session.ClientId = Int32.Parse(account);
 
@@ -143,8 +145,7 @@ namespace Conductor.Administration
             _db.RemoteSessions.Add(session);
             await _db.SaveChangesAsync();
 
-            Serilog.Log.Information("Broadcasting event slave device {slave} obtained by user {user}", session.Slave.ID, session.Client.UserName);
-            await _clientHubctx.Clients.All.ReportSlaveObtained(session.Slave.ID);
+            await _clientHubctx.Clients.All.ReportSlaveObtained(session.SlaveID);
             await _clientHubctx.Clients.Group(account).ReportSessionInitialized(device_infor);
         }
 
