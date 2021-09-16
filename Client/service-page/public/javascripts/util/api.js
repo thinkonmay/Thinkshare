@@ -47,7 +47,7 @@ export const login = body => {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({
-			email: body.email,
+			userName: body.username,
 			password: body.password
 		})
 	})
