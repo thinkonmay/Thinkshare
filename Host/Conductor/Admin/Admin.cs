@@ -58,8 +58,9 @@ namespace Conductor.Administration
                 device.OS = information.OS;
                 device.RAMcapacity = information.RAMcapacity;
                 await _db.SaveChangesAsync();
-                    
+
                 //broadcast slave register event
+                Serilog.Log.Information("Broadcasting event device {slave} registered", device.ID);
                 await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
                 return true;
             }
@@ -119,6 +120,7 @@ namespace Conductor.Administration
                 _db.CommandLogs.Add(cmdLog);
                 await _db.SaveChangesAsync();
 
+                Serilog.Log.Information("Broadcasting event device {slave} return command log {log}", machine.ID, command.Command);
                 await _adminHubctx.Clients.All.LogSlaveCommandLine(command.SlaveID, command.ProcessID, command.Command);
                 return;
             }
@@ -145,7 +147,8 @@ namespace Conductor.Administration
             _db.RemoteSessions.Add(session);
             await _db.SaveChangesAsync();
 
-            await _clientHubctx.Clients.All.ReportSlaveObtained(session.SlaveID);
+            Serilog.Log.Information("Broadcasting event slave device {slave} obtained by user {user}", session.Slave.ID, session.Client.UserName);
+            await _clientHubctx.Clients.All.ReportSlaveObtained(session.Slave.ID);
             await _clientHubctx.Clients.Group(account).ReportSessionInitialized(device_infor);
         }
 
@@ -158,6 +161,7 @@ namespace Conductor.Administration
             _db.RemoteSessions.Update(session);
             await _db.SaveChangesAsync();
 
+            Serilog.Log.Information("Broadcasting event slave device {slave} released by user {user}", session.Slave.ID, session.Client.UserName);
             await _clientHubctx.Clients.Group(account).ReportSessionTerminated(session.Slave.ID);
             await _clientHubctx.Clients.All.ReportNewSlaveAvailable(device_infor);
         }
@@ -177,12 +181,13 @@ namespace Conductor.Administration
                                              && !s.EndTime.HasValue).FirstOrDefault();
 
             var account = await _userManager.GetUserIdAsync(session.Client);
-
+            Serilog.Log.Information("Broadcasting event slave device {slave} disconnected during {user} session", session.Slave.ID, session.Client.UserName);
             await _clientHubctx.Clients.Group(account).ReportSessionDisconnected(SlaveID);
         }
         public async Task ReportRemoteControlDisconnected(RemoteSession session)
         {
             var account = await _userManager.GetUserIdAsync(session.Client);
+            Serilog.Log.Information("Broadcasting event slave device {slave} disconnected during {user} session", session.Slave.ID, session.Client.UserName);
             await _clientHubctx.Clients.Group(account).ReportSessionDisconnected(session.Slave.ID);
         }
 
@@ -192,11 +197,13 @@ namespace Conductor.Administration
                                              && !s.EndTime.HasValue).FirstOrDefault();
 
             var account = await _userManager.GetUserIdAsync(session.Client);
+            Serilog.Log.Information("Broadcasting event slave device {slave} reconnected during {user} session", session.Slave.ID, session.Client.UserName);
             await _clientHubctx.Clients.Group(account).ReportSessionReconnected(SlaveID);
         }
         public async Task ReportRemoteControlReconnect(RemoteSession session)
         {
             var account = await _userManager.GetUserIdAsync(session.Client);
+            Serilog.Log.Information("Broadcasting event slave device {slave} reconnected during {user} session", session.Slave.ID, session.Client.UserName);
             await _clientHubctx.Clients.Group(account).ReportSessionReconnected(session.Slave.ID);
         }
 
