@@ -41,7 +41,7 @@ $(document).ready(async () => {
 
 	
 	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
-	console.log(JSON.stringify(getCookie("cap")));		
+	console.log("set default device capability to "+getCookie("cap"));		
 	/// How to convert to JSON 
 	/// var cap = getCookie("cap");
 	//  var parse = JSON.parse(cap);

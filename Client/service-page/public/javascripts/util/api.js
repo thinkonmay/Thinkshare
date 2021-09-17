@@ -134,9 +134,11 @@ export const reconnectSession = (SlaveID) => {
 
 
 export const initializeSession = (SlaveID) => {
+	var cap = getCookie("cap");
+
 	var body = {
 		SlaveID: SlaveID,
-		cap: JSON.parse(getCookie("cap"))
+		cap: JSON.parse(cap)
 	}
 	return fetch(InitializeSession, {
 		method: "POST",
