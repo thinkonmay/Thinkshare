@@ -371,3 +371,4 @@ FodyWeavers.xsd
 # binary folder
 bin/
 *.vcxproj
+.vscode/launch.json

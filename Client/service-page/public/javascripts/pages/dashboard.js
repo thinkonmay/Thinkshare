@@ -9,28 +9,6 @@ API.getInfor().then(async data => {
 })
 
 $(document).ready(async () => {
-	const getParent = input => $($(input).parent().parent().parent().parent())
-	const getSlaveID = input => getParent(input).attr("id")
-
-
-
-	$(document).on("click", '.overlay :input[name="connect"]', async function () {
-		const SlaveID = getSlaveID(this)
-		RemotePage.sessionInitialize(SlaveID)
-	})
-	$(document).on("click", '.overlay :input[name="reconnect"]', async function () {
-		const SlaveID = getSlaveID(this)
-		RemotePage.sessionReconnect(SlaveID)
-	})
-	$(document).on("click", '.overlay :input[name="disconnect"]', async function () {
-		const SlaveID = getSlaveID(this)
-		await API.disconnectDevice(SlaveID)
-	})
-	$(document).on("click", '.overlay :input[name="terminate"]', async function () {
-		const SlaveID = getSlaveID(this)
-		await API.terminateSession(SlaveID)
-	})
-
 	var defaultDeviceCap = {
 		...Setting.AudioCodec("opus"),
 		...Setting.VideoCodec("h264"),
@@ -52,10 +30,10 @@ $(document).ready(async () => {
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
 		for (const slave of sessions) {
-			append("onlineSlaves", createSlave(slave))
+			createSlave(slave,"slavesInUses");
 		}
 		for (const slave of slaves) {
-			append("availableSlaves", createSlave(slave))
+			createSlave(slave,"availableSlaves");
 		}
 	} catch (err) {
 		alert(err.message)
@@ -75,37 +53,36 @@ $(document).ready(async () => {
 		// we use signalR to inform browser 
 		// about all state changes event of slave and session
 		connection.on("ReportSessionDisconnected", function (slaveId) {
-			button = slave.getElementById(`button${slaveId}`)
+			var button = document.getElementById(`button${slaveId}`)
 			button.innerHTML = slaveState("OFF_REMOTE")
 		})
 		connection.on("ReportSessionReconnected", function (slaveId) {
-			button = slave.getElementById(`button${slaveId}`)
+			var button = document.getElementById(`button${slaveId}`)
 			button.innerHTML = slaveState("ON_SESSION")
 		})
-		connection.on("ReportSessionTerminated", function (slaveInfor) {
-			sessionQueue = document.getElementById("onlineSlaves")
-			slave = sessionQueue.getElementById(slaveId)
+		connection.on("ReportSessionTerminated", function (slaveId) {
+			var slave = document.getElementById(`slavesInUses${slaveId}`);
 			slave.remove()
 		})
 		connection.on("ReportSlaveObtained", function (slaveId) {
-			slaveQueue = document.getElementById("availableSlaves")
-			slave = slaveQueue.getElementById(slaveId)
+			var slave = document.getElementById(`availableSlaves${slaveId}`);
 			slave.remove()
 		})
 		connection.on("ReportSessionInitialized", function (slaveInfor) {
-			append("#availableSlaves",createSlave(slaveInfor))
+			slaveInfor.serviceState = "ON_SESSION";
+			createSlave(slaveInfor,"slavesInUses")
 		})
 		connection.on("ReportNewSlaveAvailable", function (device) {
-			append("#availableSlaves",createSlave(device))
+			createSlave(device,"availableSlaves")
 		})
 	}).catch(function (err) {
 		location.reload();
 	})
 })
 
-function 	createSlave(slave) {
-	return `
-    <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${slave.id}">
+function 	createSlave(slave,queue) {
+	append(queue,  `
+    <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${slave.id}">
       <div class="card bg-light d-flex flex-fill">
         <div style="text-alignt: center" class="card-header text-muted border-bottom-0">
 		<img width="20px" height="20px" src="images/window-logo.png" alt="user-avatar" class="img-fluid">
@@ -123,26 +100,56 @@ function 	createSlave(slave) {
         </div>
         <div class="overlay">
           <div class="row slaveState" id="button${slave.id}">
-            ${slaveState(slave.serviceState)}
+            ${slaveState(slave.serviceState,slave.id)}
           </div>
         </div>
       </div>
-    </div>`
+    </div>`)
+
+	if (slave.serviceState === "ON_SESSION"){
+		var initbutt = document.getElementById(`disconnect${slave.id}`)
+		initbutt.addEventListener("click", async function () {
+			await API.disconnectSession(slave.id)
+		});
+		var terminatebutt = document.getElementById(`terminate${slave.id}`)
+		terminatebutt.addEventListener("click", async function () {
+			await API.terminateSession(slave.id)
+		});
+	}
+	if (slave.serviceState === "OFF_REMOTE"){
+		var recbutt = document.getElementById(`reconnect${slave.id}`)
+		recbutt.addEventListener("click",  async function () {
+			RemotePage.sessionReconnect(slave.id)
+		});
+		var terminatebutt = document.getElementById(`terminate${slave.id}`)
+		terminatebutt.addEventListener("click", async function () {
+			await API.terminateSession(slave.id)
+		});;
+	}
+	if (slave.serviceState === null){
+		var connbutt = document.getElementById(`connect${slave.id}`)
+		connbutt.addEventListener("click",  async function () {
+			RemotePage.sessionInitialize(slave.id)
+		});
+	}
 }
 
-function slaveState(state) {
+function slaveState(state,slaveId) {
 	const nl = '<div class="w-100"></div>'
 	const btn = {
-		connect:    '<button type="button" class="btn btn-primary btn-icon-text" name="connect"><i class="ti-file btn-icon-prepend"></i>Connect</button></div>',
-		disconnect: '<button type="button" class="btn btn-warning btn-icon-text" name="disconnect"><i class="ti-reload btn-icon-prepend"></i>Disconnect</button>',
-		reconnect:  '<button type="button" class="btn btn-warning btn-icon-text" name="reconnect"><i class="ti-reload btn-icon-prepend"></i>Reconnect</button>',
-		terminate:  '<button type="button" class="btn btn-outline-danger btn-icon-text" name="terminate"><i class="ti-upload btn-icon-prepend"></i>Terminate</button>'
+		connect:    `<button type="button" class="btn btn-primary btn-icon-text" id="connect${slaveId}"><i class="ti-file btn-icon-prepend"></i>Connect</button></div>`,
+		disconnect: `<button type="button" class="btn btn-warning btn-icon-text" id="disconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Disconnect</button>`,
+		reconnect:  `<button type="button" class="btn btn-warning btn-icon-text" id="reconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Reconnect</button>`,
+		terminate:  `<button type="button" class="btn btn-outline-danger btn-icon-text" id="terminate${slaveId}"><i class="ti-upload btn-icon-prepend"></i>Terminate</button>`
 	}
 	if (state === "ON_SESSION"){
 		return btn.disconnect + btn.terminate
 	}
 	if (state === "OFF_REMOTE"){
 		return btn.reconnect + btn.terminate
+	}
+	if (state === "DEVICE_DISCONNECTED"){
+		return ""
 	}
 	if (state === null){
 		return btn.connect

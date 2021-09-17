@@ -24,19 +24,20 @@ namespace Conductor.Administration
         private readonly ApplicationDbContext _db;
         private readonly IHubContext<AdminHub, IAdminHub> _adminHubctx;
         private readonly IHubContext<ClientHub, IClientHub> _clientHubctx;
-        private readonly RestClient _slavemanager;
+        private readonly ISlaveManagerSocket _slavemanager;
         private readonly UserManager<UserAccount> _userManager;
 
         public Admin(ApplicationDbContext db, 
                      IHubContext<AdminHub, IAdminHub> adminHub, 
                      IHubContext<ClientHub,IClientHub> clientHub,
                      UserManager<UserAccount> userManager,
+                     ISlaveManagerSocket SlaveManager,
                      SystemConfig config)
         {
             _db = db;
             _adminHubctx = adminHub;
             _clientHubctx = clientHub;
-            _slavemanager = new RestClient(config.SlaveManager + "/Session");
+            _slavemanager = SlaveManager;
             _userManager = userManager;
         }
 
@@ -228,14 +229,18 @@ namespace Conductor.Administration
                                                         !o.EndTime.HasValue).FirstOrDefault();
 
             await ReportRemoteControlDisconnected(remoteSession);
-            var request = new RestRequest("Disconnect")
-                .AddQueryParameter("SlaveID", remoteSession.Slave.ID.ToString());
-
-            request.Method = Method.POST;
-            await _slavemanager.ExecuteAsync(request);
-            
-            Serilog.Log.Information("Broadcasting event slave device {slave} reconnected during {user} session", remoteSession.Slave.ID, remoteSession.Client.UserName);
-            await _clientHubctx.Clients.Group( await _userManager.GetUserIdAsync(remoteSession.Client)).ReportSessionReconnected(remoteSession.Slave.ID);                 
+            var result = await _slavemanager.GetSlaveState(remoteSession.Slave.ID);
+            if(result.SlaveServiceState == "ON_SESSION")
+            {
+                _slavemanager.RemoteControlDisconnect(remoteSession.Slave.ID);
+                Serilog.Log.Information("Broadcasting event slave device {slave} reconnected during {user} session", remoteSession.Slave.ID, remoteSession.Client.UserName);
+                await _clientHubctx.Clients.Group( await _userManager.GetUserIdAsync(remoteSession.Client)).ReportSessionReconnected(remoteSession.Slave.ID);                                 
+            }
+            else
+            {
+                // prevent event if slavedevice is not on session
+                return;
+            }
         }
     }
 }

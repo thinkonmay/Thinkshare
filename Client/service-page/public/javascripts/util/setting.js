@@ -3,27 +3,27 @@ export function Mode(mode) {
 	switch (mode) {
 	case "ultra low":
 		return {
-			qoEMode: 1
+			mode: 1
 		}
 	case "low":
 		return {
-			qoEMode: 2
+			mode: 2
 		}
 	case "medium":
 		return {
-			qoEMode: 3
+			mode: 3
 		}
 	case "high":
 		return {
-			qoEMode: 4
+			mode: 4
 		}	
 	case "very high":
 		return {
-			qoEMode: 5
+			mode: 5
 		}
 	case "ultra high":
 		return {
-			qoEMode: 6
+			mode: 6
 		}
 	}
 }

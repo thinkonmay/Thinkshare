@@ -27,7 +27,7 @@
 enum
 {
     /*screen capture source*/
-    DX9_SCREEN_CAPTURE_SOURCE,
+    DXGI_SCREEN_CAPTURE_SOURCE,
 
     /*preprocess before encoding*/
     CUDA_UPLOAD,
@@ -146,7 +146,7 @@ setup_element_factory(SessionCore* core,
             // setup default nvenc encoder (nvidia encoder)
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "dx9screencapsrc name=screencap ! "SCREEN_CAP
+                    "dxgiscreencapsrc name=screencap ! "SCREEN_CAP
                     "queue ! videoconvert ! queue ! "
                     "mfh264enc name=videoencoder ! queue ! rtph264pay name=rtp ! "
                     "queue ! " RTP_CAPS_VIDEO "H264 ! sendrecv. "
@@ -159,7 +159,7 @@ setup_element_factory(SessionCore* core,
             {
                 pipe->pipeline =
                     gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                        "dx9screencapsrc name=screencap ! "SCREEN_CAP
+                        "dxgiscreencapsrc name=screencap ! "SCREEN_CAP
                         "queue ! videoconvert ! queue ! "
                         "mfh264enc name=videoencoder ! queue ! rtph264pay name=rtp ! "
                         "queue ! " RTP_CAPS_VIDEO "H264 ! sendrecv. "
@@ -173,7 +173,7 @@ setup_element_factory(SessionCore* core,
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
             pipe->video_element[RTP_H264_PAYLOAD] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = 
+            pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
             pipe->audio_element[OPUS_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
@@ -186,7 +186,7 @@ setup_element_factory(SessionCore* core,
             // setup default nvenc encoder (nvidia encoder)
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "dx9screencapsrc name=screencap ! "SCREEN_CAP
+                    "dxgiscreencapsrc name=screencap ! "SCREEN_CAP
                     " ! queue ! videoconvert ! queue ! "
                     "mfh265enc name=videoencoder ! rtph265pay name=rtp ! "
                     "queue ! " RTP_CAPS_VIDEO "H265 ! sendrecv. "
@@ -199,7 +199,7 @@ setup_element_factory(SessionCore* core,
             {
                 pipe->pipeline =
                     gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                        "dx9screencapsrc name=screencap ! "SCREEN_CAP
+                        "dxgiscreencapsrc name=screencap ! "SCREEN_CAP
                         "queue ! videoconvert ! queue ! "
                         "mfh264enc name=videoencoder ! queue ! rtph264pay name=rtp ! "
                         "queue ! " RTP_CAPS_VIDEO "H264 ! sendrecv. "
@@ -213,7 +213,7 @@ setup_element_factory(SessionCore* core,
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
             pipe->video_element[RTP_H265_PAYLOAD] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = 
+            pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
             pipe->audio_element[OPUS_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
@@ -225,7 +225,7 @@ setup_element_factory(SessionCore* core,
         {
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "dx9screencapsrc name=screencap ! "SCREEN_CAP
+                    "dxgiscreencapsrc name=screencap ! "SCREEN_CAP
                     " ! queue ! videoconvert ! queue ! "
                     "vp9enc name=videoencoder ! rtpvp9pay name=rtp ! "
                     "queue ! " RTP_CAPS_VIDEO "VP9 ! sendrecv. "
@@ -240,7 +240,7 @@ setup_element_factory(SessionCore* core,
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
             pipe->video_element[RTP_VP9_PAYLOAD] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = 
+            pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
             pipe->audio_element[OPUS_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
@@ -252,7 +252,7 @@ setup_element_factory(SessionCore* core,
         {
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "dx9screencapsrc name=screencap ! "SCREEN_CAP
+                    "dxgiscreencapsrc name=screencap ! "SCREEN_CAP
                     " ! queue ! videoconvert ! queue ! "
                     "vp8enc name=videoencoder ! rtpvp8pay name=rtp ! "
                     "queue ! " RTP_CAPS_VIDEO "VP8 ! sendrecv. "
@@ -267,7 +267,7 @@ setup_element_factory(SessionCore* core,
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
             pipe->video_element[RTP_VP8_PAYLOAD] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE] = 
+            pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
             pipe->audio_element[OPUS_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
@@ -346,10 +346,10 @@ setup_element_property(SessionCore* core)
 
 
     /*turn off screeen cursor*/
-    if (pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE], "cursor", FALSE, NULL); }
+    if (pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE], "cursor", FALSE, NULL); }
 
     /*monitor to display*/
-    if (pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DX9_SCREEN_CAPTURE_SOURCE], "monitor", 0, NULL);}
+    if (pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE], "monitor", 0, NULL);}
 
     /*variable bitrate mode*/
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "rc-mode", "cbr", NULL);}

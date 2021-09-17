@@ -29,26 +29,6 @@ namespace Signalling.Controllers
         {
             _wsHandler = wsHandler;
             Queue = queue;
-            SeedSession(cofig);
-        }
-
-        void SeedSession(SystemConfig systemConfig)
-        {
-
-            var conductor = new RestClient(systemConfig.Conductor+"/System");
-            var request = new RestRequest("SeedSession")
-                .AddJsonBody(systemConfig.AdminLogin);
-
-            var response = conductor.Post(request);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                var seededSession = JsonConvert.DeserializeObject<List<SessionPair>>(response.Content);
-                foreach(var i in seededSession)
-                {
-                    Queue.AddSessionPair(i);
-                }
-            }
         }
 
 

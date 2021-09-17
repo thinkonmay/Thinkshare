@@ -115,18 +115,19 @@ qoe_setup(QoE* qoe,
 		qoe->algorithm = ultra_hight_const;
 		break;
 	case SEGMENTED_ADAPTIVE_BITRATE:
-		/* code */
+		qoe->algorithm = medium_const;
 		break;
 	case NON_OVER_SAMPLING_ADAPTIVE_BITRATE:
-		/* code */
+		qoe->algorithm = medium_const;
 		break;
 	case OVER_SAMPLING_ADAPTIVE_BITRATE:
-		/* code */
+		qoe->algorithm = medium_const;
 		break;
 	case PREDICTIVE_ADAPTIVE_BITRATE:
-		/* code */
+		qoe->algorithm = medium_const;
 		break;	
 	default:
+		qoe->algorithm = medium_const;
 		break;
 	}
 }
