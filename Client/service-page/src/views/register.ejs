@@ -7,6 +7,11 @@
 	<script type="text/javascript">
 		window.login = false
 	</script>
+	<style>
+		.error {
+			color: red;
+		}
+	</style>
 </head>
 <body>
 	
@@ -22,7 +27,7 @@
 						Member Register
 					</span>
 					<label class="error" for="email"></label>
-					<div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
+					<div class="wrap-input100 validate-input">
 						<input class="input100" type="email" name="email" placeholder="Email">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
@@ -30,7 +35,7 @@
 						</span>
 					</div>
 					<label class="error" for="username"></label>
-					<div class="wrap-input100 validate-input" data-validate = "Minimum character is 5">
+					<div class="wrap-input100 validate-input">
 						<input class="input100" type="text" name="username" placeholder="Username">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
@@ -39,7 +44,7 @@
 					</div>
 					
 					<label class="error" for="fullname"></label>
-					<div class="wrap-input100 validate-input" data-validate = "Minimum character is 5">
+					<div class="wrap-input100 validate-input">
 						<input class="input100" type="text" name="fullname" placeholder="Fullname">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
@@ -47,9 +52,9 @@
 						</span>
 					</div>
 
-					<label class="error" for="dateofbirth"></label>
-					<div class="wrap-input100 validate-input" data-validate = "Minimum character is 5">
-						<input class="input100" type="date" name="dob">
+					<label class="error" for="dob"></label>
+					<div class="wrap-input100 validate-input">
+						<input id="dob" class="input100" type="date" name="dob">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
 							<i class="fa fa-birthday-cake" aria-hidden="true"></i>
@@ -57,17 +62,17 @@
 					</div>
 
 					<label class="error" for="jobs"></label>
-					<div class="wrap-input100 validate-input" data-validate = "Minimum character is 5">
-						<input class="input100" type="tel" name="job" placeholder="Job">
+					<div class="wrap-input100 validate-input">
+						<input class="input100" type="text" name="jobs" placeholder="Job">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
-							<i class="fa fa-phone-square" aria-hidden="true"></i>
+							<i class="fa fa-building" aria-hidden="true"></i>
 						</span>
 					</div>
 
-					<label class="error" for="jobs"></label>
-					<div class="wrap-input100 validate-input" data-validate = "Minimum character is 5">
-						<input class="input100" type="tel" name="phonenumber" placeholder="Phone Number">
+					<label class="error" for="phoneNumber"></label>
+					<div class="wrap-input100 validate-input">
+						<input class="input100" type="number" name="phonenumber" placeholder="Phone Number">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
 							<i class="fa fa-phone-square" aria-hidden="true"></i>
@@ -75,16 +80,16 @@
 					</div>
 
 					<label class="error" for="password"></label>
-					<div class="wrap-input100 validate-input" data-validate = "Minimum character is 6 and maximum character is 50">
-						<input class="input100" type="password" name="password" placeholder="Password">
+					<div class="wrap-input100 validate-input">
+						<input id="password" class="input100" type="password" name="password" placeholder="Password">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
 							<i class="fa fa-lock" aria-hidden="true"></i>
 						</span>
 					</div>
 					
-					<label class="error" for="password"></label>
-					<div class="wrap-input100 validate-input" data-validate = "Minimum character is 6 and maximum character is 50">
+					<label class="error" for="repassword"></label>
+					<div class="wrap-input100 validate-input">
 						<input class="input100" type="password" name="repassword" placeholder="Retype password">
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
@@ -96,7 +101,7 @@
 					
 
 					<div class="container-login100-form-btn">
-						<button class="login100-form-btn" id="register">
+						<button class="login100-form-btn submit" id="register">
 							Register
 						</button>
 					</div>

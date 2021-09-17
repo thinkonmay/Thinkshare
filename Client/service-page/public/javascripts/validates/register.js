@@ -1,26 +1,28 @@
 export default {
 	rules: {
-		fullName: {
+		fullname: {
 			required: true,
-			minlength: 7,
+			minlength: 5,
 			maxlength: 50
 		},
-		userName: {
+		dob: {
+			required: true
+		},
+		username: {
 			required: true,
-			minlength: 7,
+			minlength: 3,
 			maxlength: 50
 		},
-		phoneNumber: {
+		phonenumber: {
 			required: true,
-			minlength: 7,
-			maxlength: 50
+			minlength: 10,
+			maxlength: 15
 		},
 		jobs: {
 			required: true,
-			minlength: 7,
+			minlength: 5,
 			maxlength: 50
 		},
-
 		email: {
 			required: true,
 			email: true,
@@ -45,6 +47,9 @@ export default {
 			minlength: "Minimum character is 7",
 			maxlength: "Maximum character is 50"
 		},
+		dob: {
+			required: "Your bỉthday is require field"
+		},
 		userName: {
 			required: "Your username is require field",
 			minlength: "Minimum character is 7",
@@ -53,7 +58,8 @@ export default {
 		phoneNumber: {
 			required: "Your phone number is require field",
 			minlength: "Minimum character is 7",
-			maxlength: "Maximum character is 15"
+			maxlength: "Maximum character is 15",
+			isNaN: "Your numberphone just only number"
 		},
 		jobs: {
 			required: "Your jobs is require field",
