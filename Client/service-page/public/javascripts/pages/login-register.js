@@ -36,7 +36,7 @@ $(document).ready(() => {
 	$("form :input").keyup(handler)
 	$("form :input").change(handler)
 
-	$("#dateOfBirth").focus(function() {
+	$("#dob").focus(function() {
 		$(this).attr("type", "date")
 	})
 })

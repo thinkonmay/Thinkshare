@@ -24,7 +24,24 @@ const MINUTES59 = 59 * 60 * 1000;
 			else if (window.register) register(body)
 		}
 	})
-	$("form").validate(Validates.login)
+	$("form").validate(window.login ? Validates.login : Validates.register)
+
+	const $textInputs = $("input")
+	const $submit = $(".submit")
+	const handler = function() {
+		const $validTextInputs = $("input:valid")
+		if ($textInputs.length === $validTextInputs.length) {
+			$submit.attr("disabled", null)
+		} else {
+			$submit.attr("disabled", "")
+		}
+	}
+	$("form :input").keyup(handler)
+	$("form :input").change(handler)
+
+	$("#dateOfBirth").focus(function() {
+		$(this).attr("type", "date")
+	})
 })(jQuery)
 
 function serializeArrToObject(serializeArr) {
@@ -87,7 +104,6 @@ function register(body) {
 
 			var date = new Date(body.dob);
 			body.dob = date.toISOString(); //will return an ISO representation of the date
-
 			API.register(body)
 				.then(async data => {
 					const response = await data.json()

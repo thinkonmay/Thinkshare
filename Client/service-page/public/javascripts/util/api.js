@@ -58,12 +58,12 @@ export const register = body => {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({
-			email: body.email,
-			password: body.password,
-			fullName: body.fullname,
 			userName: body.username,
+			password: body.password,
+			email: body.email,
+			fullName: body.fullname,
 			dateOfBirth: body.dob,
-			jobs: body.job,
+			jobs: body.jobs,
 			phoneNumber: body.phonenumber
 		})
 	})
