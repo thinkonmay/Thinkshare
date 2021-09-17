@@ -73,9 +73,8 @@ session_core_setup_session(SessionCore* self)
 	object = json_node_get_object(root);
 
 	signalling_hub_setup(self->signalling,
+		json_object_get_string_member(object, "TurnConnection"),
 		json_object_get_string_member(object, "SignallingUrl"),
-		json_object_get_boolean_member(object, "ClientOffer"),
-		json_object_get_string_member(object, "StunServer"),
 		json_object_get_int_member(object, "SessionSlaveID"));
 
 	JsonObject* qoe = json_object_get_object_member(object, "QoE");

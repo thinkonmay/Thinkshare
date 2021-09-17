@@ -73,8 +73,6 @@ agent_reset_qoe(AgentObject* agent, JsonObject* qoe)
 		json_object_get_string_member(obj,"SignallingUrl"));
 	json_object_set_int_member		(new_session_config,"SessionSlaveID",
 		json_object_get_string_member(obj,"SessionSlaveID"));
-	json_object_set_boolean_member	(new_session_config,"ClientOffer",	
-		json_object_get_string_member(obj,"ClientOffer"));
 	json_object_set_string_member	(new_session_config,"StunServer",		
 		json_object_get_string_member(obj,"StunServer"));
 

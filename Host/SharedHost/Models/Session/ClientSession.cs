@@ -1,24 +1,26 @@
 ﻿
 using Conductor.Models;
+using SharedHost;
 
 
 namespace SharedHost.Models.Session
 {
     public class ClientSession : SessionBase
     {
-        public ClientSession(RemoteSession session, string stun)
+        public ClientSession(RemoteSession session, SystemConfig config)
         {
 
             SessionClientID = session.SessionClientID;
 
             SignallingUrl = session.SignallingUrl;
 
-            StunServer = stun;
-
             QoE = session.QoE;
-
-            ClientOffer = session.ClientOffer;
+            
+            turn = config.TurnServer;
         }
+
+        public TurnServer turn {get;set;}
+
         public int SessionClientID { get; set; }
     }
 }

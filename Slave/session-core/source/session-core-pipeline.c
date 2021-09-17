@@ -310,7 +310,11 @@ connect_signalling_handler(SessionCore* core)
     g_main_context_push_thread_default(session_core_get_main_context(core));
     /* Add stun server */
     g_object_set(pipe->webrtcbin, "stun-server", 
-       signalling_hub_get_stun_server(hub), NULL);
+       "stun://stun.thinkmay.net:3478", NULL);
+
+    g_signal_emit_by_name (pipe->webrtcbin, "add-turn-server", 
+        signalling_hub_get_turn_server(hub), NULL);
+
 
     /* This is the gstwebrtc entry point where we create the offer and so on. It
      * will be called when the pipeline goes to PLAYING. */

@@ -79,9 +79,8 @@ void                            connect_to_websocket_signalling_server_async    
 gboolean                        register_with_server                                    (SessionCore* core);
 
 void                            signalling_hub_setup                                    (SignallingHub* hub,
-                                                                                        gchar* url,
-                                                                                        gboolean client_offer,
                                                                                         gchar* stun_server,
+                                                                                        gchar* url,
                                                                                         gint session_slave_id);
 
 /// <summary>
@@ -99,7 +98,7 @@ gboolean                        signalling_close                                
 /// </summary>
 /// <param name="hub"></param>
 /// <returns></returns>
-gchar*                          signalling_hub_get_stun_server                          (SignallingHub* hub);
+gchar*                          signalling_hub_get_turn_server                          (SignallingHub* hub);
 
 /// <summary>
 /// get peer call state from signalling server

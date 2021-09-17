@@ -17,17 +17,6 @@ namespace SharedHost.Models.Session
         /// <summary>
         /// 
         /// </summary>
-        public string StunServer { get; set; }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool ClientOffer { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public virtual QoE QoE { get; set; }
     }
 }

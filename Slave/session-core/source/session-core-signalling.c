@@ -53,14 +53,9 @@ struct _SignallingHub
 	gboolean disable_ssl;
 
     /// <summary>
-    /// decide who offer the sdp. set to true if client offer the sdp
-    /// </summary>
-	gboolean client_offer;
-
-    /// <summary>
     /// url of stun server
     /// </summary>
-	gchar* stun_server;
+	gchar* turn;
 
     /// <summary>
     /// state of signalling connection,
@@ -104,14 +99,12 @@ signalling_hub_initialize(SessionCore* core)
 
 void
 signalling_hub_setup(SignallingHub* hub, 
-                     gchar* url,
-                     gboolean client_offer,
                      gchar* stun_server,
+                     gchar* url,
                      gint session_slave_id)
 {
     hub->signalling_server = url;
-    hub->client_offer = client_offer;
-    hub->stun_server = stun_server;
+    hub->turn = stun_server;
     hub->SessionSlaveID = session_slave_id;
     hub->signalling_state = SIGNALLING_SERVER_READY;
 }
@@ -259,30 +252,13 @@ on_negotiation_needed(GstElement* element, SessionCore* core)
     SignallingHub* signalling = session_core_get_signalling_hub(core);
 
 
-    
+    GstPromise* promise =
+    gst_promise_new_with_change_func(on_offer_created, core, NULL);
 
-    if (signalling->client_offer)
-    {
-        /*send sdp request to client*/
-        JsonObject* request = json_object_new();
-        json_object_set_string_member(request,"type","request");
+    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+        "create-offer", NULL, promise);
 
-        JsonObject* sdp = json_object_new();
-        json_object_set_string_member(sdp,"sdp",request);
-
-        send_message_to_signalling_server(signalling,
-            OFFER_SDP,get_string_from_json_object(sdp));        
-    }
-    else 
-    {
-        GstPromise* promise =
-        gst_promise_new_with_change_func(on_offer_created, core, NULL);
-
-        g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
-            "create-offer", NULL, promise);
-
-        signalling->peer_call_state = PEER_CALL_NEGOTIATING;
-    }
+    signalling->peer_call_state = PEER_CALL_NEGOTIATING;
 }
 
 
@@ -731,9 +707,9 @@ signalling_close(SignallingHub* hub)
 
 /*START get-set function*/
 gchar* 
-signalling_hub_get_stun_server(SignallingHub* hub)
+signalling_hub_get_turn_server(SignallingHub* hub)
 {
-    return hub->stun_server;
+    return hub->turn;
 }
 
 

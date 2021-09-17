@@ -53,12 +53,10 @@ $(document).ready(async () => {
 		// we use signalR to inform browser 
 		// about all state changes event of slave and session
 		connection.on("ReportSessionDisconnected", function (slaveId) {
-			var button = document.getElementById(`button${slaveId}`)
-			button.innerHTML = slaveState("OFF_REMOTE")
+			setState("OFF_REMOTE", slaveId)
 		})
 		connection.on("ReportSessionReconnected", function (slaveId) {
-			var button = document.getElementById(`button${slaveId}`)
-			button.innerHTML = slaveState("ON_SESSION")
+			setState("ON_SESSION", slaveId);
 		})
 		connection.on("ReportSessionTerminated", function (slaveId) {
 			var slave = document.getElementById(`slavesInUses${slaveId}`);
@@ -99,35 +97,40 @@ function 	createSlave(slave,queue) {
           </div>
         </div>
         <div class="overlay">
-          <div class="row slaveState" id="button${slave.id}">
-            ${slaveState(slave.serviceState,slave.id)}
-          </div>
+          <div class="row slaveState" id="button${slave.id}"></div>
         </div>
       </div>
     </div>`)
+	setState(slave.serviceState,slave.id);
+}
 
-	if (slave.serviceState === "ON_SESSION"){
-		var initbutt = document.getElementById(`disconnect${slave.id}`)
+
+function setState(serviceState, slaveID){
+	var button = document.getElementById(`button${slaveID}`);
+	button.innerHTML = slaveState(slave.serviceState,slave.id);
+
+	if (serviceState === "ON_SESSION"){
+		var initbutt = document.getElementById(`disconnect${slaveID}`)
 		initbutt.addEventListener("click", async function () {
 			await API.disconnectSession(slave.id)
 		});
-		var terminatebutt = document.getElementById(`terminate${slave.id}`)
+		var terminatebutt = document.getElementById(`terminate${slaveID}`)
 		terminatebutt.addEventListener("click", async function () {
 			await API.terminateSession(slave.id)
 		});
 	}
-	if (slave.serviceState === "OFF_REMOTE"){
-		var recbutt = document.getElementById(`reconnect${slave.id}`)
+	if (serviceState === "OFF_REMOTE"){
+		var recbutt = document.getElementById(`reconnect${slaveID}`)
 		recbutt.addEventListener("click",  async function () {
 			RemotePage.sessionReconnect(slave.id)
 		});
-		var terminatebutt = document.getElementById(`terminate${slave.id}`)
+		var terminatebutt = document.getElementById(`terminate${slaveID}`)
 		terminatebutt.addEventListener("click", async function () {
 			await API.terminateSession(slave.id)
 		});;
 	}
-	if (slave.serviceState === null){
-		var connbutt = document.getElementById(`connect${slave.id}`)
+	if (serviceState === null){
+		var connbutt = document.getElementById(`connect${slaveID}`)
 		connbutt.addEventListener("click",  async function () {
 			RemotePage.sessionInitialize(slave.id)
 		});
