@@ -256,7 +256,7 @@ namespace Conductor.Controllers
                 await _admin.ReportRemoteControlReconnect(ses);
 
                 // return view to client
-                ClientSession clientSes = new ClientSession(ses,Configuration.StunServer);   
+                ClientSession clientSes = new ClientSession(ses,Configuration);   
                 return Ok(clientSes);
             }
             return BadRequest("Device not in off remote");            

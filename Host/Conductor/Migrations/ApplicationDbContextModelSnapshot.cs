@@ -268,9 +268,6 @@ namespace Conductor.Migrations
                     b.Property<int>("ClientId")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("ClientOffer")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -287,9 +284,6 @@ namespace Conductor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
-
-                    b.Property<string>("StunServer")
-                        .HasColumnType("text");
 
                     b.HasKey("SessionSlaveID", "SessionClientID");
 

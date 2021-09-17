@@ -74,25 +74,16 @@ onServerMessage(event)
         app.setStatus("Registered with server.");
         app.setDebug("[signalling] " + message_json.Result)
 
-        if(app.ClientOffer) {
-            //TODO : in case client want to offer fist
-        }
-        else {
-            /**
-             * client request completed successful, now request SDP from slave
-             */
-            app.setStatus("Requesting for video stream.");
-            var data = 
-            {
-                "sdp":
-                { 
-                    "type":"request" 
-                }
+        app.setStatus("Requesting for video stream.");
+        var data = 
+        {
+            "sdp":
+            { 
+                "type":"request" 
             }
-            app.setDebug("[SDPOUT]   "+JSON.stringify(data))
-            SignallingSend("OFFER_SDP",JSON.stringify(data));
-            return;
         }
+        app.setDebug("[SDPOUT]   "+JSON.stringify(data))
+        SignallingSend("OFFER_SDP",JSON.stringify(data));
     }
 
     /**

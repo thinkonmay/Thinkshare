@@ -99,12 +99,12 @@ signalling_hub_initialize(SessionCore* core)
 
 void
 signalling_hub_setup(SignallingHub* hub, 
-                     gchar* stun_server,
+                     gchar* turn,
                      gchar* url,
                      gint session_slave_id)
 {
     hub->signalling_server = url;
-    hub->turn = stun_server;
+    hub->turn = turn;
     hub->SessionSlaveID = session_slave_id;
     hub->signalling_state = SIGNALLING_SERVER_READY;
 }

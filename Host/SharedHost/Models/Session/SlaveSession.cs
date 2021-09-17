@@ -17,7 +17,7 @@ namespace SharedHost.Models.Session
 
             SlaveID = session.Slave.ID;
 
-            TurnConnection =  "turn://" + config.TurnServer.username + ":" + config.TurnServer.credentials + "@" + urls;
+            TurnConnection =  "turn://" + config.TurnServer.username + ":" + config.TurnServer.credentials + "@" + config.TurnServer.urls;
         }
 
         public int SlaveID { get; set; }

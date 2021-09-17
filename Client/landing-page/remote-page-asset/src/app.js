@@ -17,7 +17,6 @@ var app = new Vue({
             connectionResolution: "",
 
             /*parameter serve for session initialization */
-            Clientoffer: 0,
             SignallingUrl: 0,
 
             /*default value from client session fetch from server*/
