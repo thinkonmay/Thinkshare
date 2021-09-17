@@ -58,10 +58,10 @@ for (const routeKey in routes) {
 
 // error handler
 app.get("*", (req, res) => {
-	res.status(404).render("error", {
+	res.status(404).render("404", {
 		status: 404,
 		stack: "Page not found"
 	})
 })
-
+	
 module.exports = app
