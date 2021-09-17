@@ -14,7 +14,7 @@ export const sessionInitialize = async (SlaveID) => {
         var json = await response.json();
         var cookie = JSON.stringify(json);
 
-        Cookies.setCookie("sessionClient",cookie)
+        Cookies.setCookie("sessionClient",cookie,coookies_expire)
         getRemotePage()
     }else{
 
@@ -27,7 +27,7 @@ export const sessionReconnect = async (SlaveID) => {
             var json = await response.json();
             var cookie = JSON.stringify(json);
     
-            Cookies.setCookie("sessionClient",cookie)
+            Cookies.setCookie("sessionClient",cookie,coookies_expire)
             getRemotePage()
         }else{
             

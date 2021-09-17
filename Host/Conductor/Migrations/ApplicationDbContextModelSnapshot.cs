@@ -230,6 +230,33 @@ namespace Conductor.Migrations
                     b.ToTable("Devices");
                 });
 
+            modelBuilder.Entity("SharedHost.Models.Session.QoE", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("AudioCodec")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QoEMode")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ScreenHeight")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ScreenWidth")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VideoCodec")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("QoE");
+                });
+
             modelBuilder.Entity("SharedHost.Models.Session.RemoteSession", b =>
                 {
                     b.Property<int>("SessionSlaveID")
@@ -246,6 +273,9 @@ namespace Conductor.Migrations
 
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("QoEID")
+                        .HasColumnType("integer");
 
                     b.Property<string>("SignallingUrl")
                         .HasColumnType("text");
@@ -264,6 +294,8 @@ namespace Conductor.Migrations
                     b.HasKey("SessionSlaveID", "SessionClientID");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("QoEID");
 
                     b.HasIndex("SlaveID");
 
@@ -423,6 +455,10 @@ namespace Conductor.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SharedHost.Models.Session.QoE", "QoE")
+                        .WithMany()
+                        .HasForeignKey("QoEID");
+
                     b.HasOne("SharedHost.Models.Device.Slave", "Slave")
                         .WithMany()
                         .HasForeignKey("SlaveID")
@@ -430,6 +466,8 @@ namespace Conductor.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
+
+                    b.Navigation("QoE");
 
                     b.Navigation("Slave");
                 });
