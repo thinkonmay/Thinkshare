@@ -36,13 +36,10 @@ function onIncomingICE(ice) {
         app.setStatus("Remote SDP set");
         if (sdp.type != "offer")
             return;
-        app.setStatus("Got SDP offer");
-
-        app.local_stream_promise.then((stream) => {
-            app.setStatus("Got local stream, creating answer");
-            app.Webrtc.createAnswer()
+        app.setStatus("Got SDP offer");        
+        app.Webrtc.createAnswer()
             .then(onLocalDescription).catch(app.setError);
-        }).catch(app.setError);
+        
     }).catch(app.setError);
 }
 
@@ -202,20 +199,6 @@ WebrtcConnect(msg)
     app.Webrtc.ondatachannel = onControlDataChannel;    
 
     app.Webrtc.ontrack = onRemoteTrack;
-
-    var constraint = 
-    {
-        "video":true,
-        "audio":true
-    }
-    app.local_stream_promise = 
-    navigator.mediaDevices.getUserMedia(constraint).then((stream) => {
-        console.log('Adding local stream');
-        app.Webrtc.addStream(stream);
-        return stream;
-    }).catch(app.setError);
-
-
 
     if (msg != null && !msg.sdp) 
     {

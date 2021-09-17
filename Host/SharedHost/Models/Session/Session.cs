@@ -21,9 +21,7 @@ namespace SharedHost.Models.Session
             SessionClientID = pair.SessionClientID;
 
             QoE = qoe;
-            ClientOffer = false;
-            SignallingUrl = config.SignallingWs; ;
-            StunServer = config.StunServer;
+            SignallingUrl = config.SignallingWs;
         }
 
         /// <summary>

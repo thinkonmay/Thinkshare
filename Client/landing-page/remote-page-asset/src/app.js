@@ -17,7 +17,6 @@ var app = new Vue({
             connectionResolution: "",
 
             /*parameter serve for session initialization */
-            Clientoffer: 0,
             SignallingUrl: 0,
 
             /*default value from client session fetch from server*/
@@ -111,10 +110,10 @@ var app = new Vue({
             {"iceServers":    
                 [
                     {
-                        "urls": ["stun:stun.thinkmay.net:3478"]
+                        urls: ["stun:stun.thinkmay.net:3478"]
                     },
                     {
-                        "urls": ["stun:stun.l.google.com:19302"] 
+                        urls: ["stun:stun.l.google.com:19302"] 
                     }
                 ],
                 "bundle-policy":"max-compat"
@@ -127,8 +126,6 @@ var app = new Vue({
             VideoElement: null,
             ControlDC: null,
             HidDC: null,
-
-            local_stream_promise:null,
 
             /**
              * signalling state, use to track state error
@@ -149,7 +146,8 @@ var app = new Vue({
     {
         SetupSession(sessionClient){
             this.SessionClientID = sessionClient.sessionClientID;
-            this.Clientoffer = sessionClient.clientOffer;
+            this.RTPconfig.iceServers.push(sessionClient.turn);
+
             this.SignallingUrl = sessionClient.signallingUrl;
             this.AudioCodec = sessionClient.qoE.audioCodec;
             this.VideoCodec = sessionClient.qoE.videoCodec;

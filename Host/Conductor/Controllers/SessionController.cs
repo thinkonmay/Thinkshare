@@ -111,8 +111,8 @@ namespace Conductor.Controllers
             }
 
             // construct client session and slave session
-            SlaveSession slaveSes = new SlaveSession(sess,Configuration.StunServerLibsoup);
-            ClientSession clientSes = new ClientSession(sess,Configuration.StunServer);
+            SlaveSession slaveSes = new SlaveSession(sess,Configuration);
+            ClientSession clientSes = new ClientSession(sess,Configuration);
 
             // invoke session initialization in slave pool
             await _slmsocket.SessionInitialize(slaveSes);
@@ -256,7 +256,7 @@ namespace Conductor.Controllers
                 await _admin.ReportRemoteControlReconnect(ses);
 
                 // return view to client
-                ClientSession clientSes = new ClientSession(ses,Configuration.StunServer);   
+                ClientSession clientSes = new ClientSession(ses,Configuration);   
                 return Ok(clientSes);
             }
             return BadRequest("Device not in off remote");            
