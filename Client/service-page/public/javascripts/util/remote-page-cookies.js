@@ -18,18 +18,20 @@ export const sessionInitialize = async (SlaveID) => {
         getRemotePage()
     }else{
 
-    }
-    })
+    }})
 }
 
 export const sessionReconnect = async (SlaveID) => {
-    var response = await reconnectSession(parseInt(SlaveID));
-    if(response.status == 200){
-        Cookies.setCookie("sessionClient",response.json())
-        getRemotePage()
-    }else{
-
-    }
+    reconnectSession(parseInt(SlaveID)).then(async response => {
+        if(response.status == 200){
+            var json = await response.json();
+            var cookie = JSON.stringify(json);
+    
+            Cookies.setCookie("sessionClient",cookie)
+            getRemotePage()
+        }else{
+            
+        }})
 }
 
 const getRemotePage = () => {
