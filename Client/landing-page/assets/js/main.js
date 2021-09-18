@@ -339,17 +339,3 @@
     });
 })();
 
-
-void Subcribe ()
-{
-  data =  {
-    Email: document.getElementById("SubcribeToThinkmay").value    
-  }
-  fetch('https://customer.thinkmay.net/Subcribe',{    
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data) 
-  })
-}
