@@ -152,7 +152,7 @@ send_message_to_child_process(ChildProcess* self,
         buffer, size, &written, NULL);
 
     WriteFile(self->standard_in,
-        "\n", 2, &written, NULL);
+        "\n", 1, &written, NULL);
 }
 
 
@@ -202,7 +202,7 @@ create_new_child_process(gchar* process_name,
     startup_infor.dwFlags |= STARTF_USESTDHANDLES;
     startup_infor.hStdInput = hdl->standard_in;
     startup_infor.hStdOutput = hdl->standard_out;
-    startup_infor.hStdError = hdl->standard_out;
+    // startup_infor.hStdError = hdl->standard_out;
 
     strcat(process_name, parsed_command);
     

@@ -41,13 +41,8 @@ jobs:
         host: ${{ secrets.HOST_IP }}
         password: ${{ secrets.HOST_PASSWORD }}
         script: |
-          cd /personal-cloud-computing
-          git checkout master
-          git pull https://${{ secrets.OAUTH_TOKEN }}@github.com/pigeatgarlic/personal-cloud-computing.git master
-          docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-          cd Deployment/kubernetes
+          cd /personal-cloud-computing/Deployment/kubernetes
           kubectl apply -f deployment/document.yaml
-
           kubectl rollout restart deploy document 
 
 

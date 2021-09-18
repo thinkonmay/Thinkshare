@@ -67,7 +67,10 @@ namespace Conductor.Controllers
                     // Add Device Information to open device Id list;
                     var slave = _db.Devices.Find(i.SlaveID);
 
-                    var device_infor = new SlaveDeviceInformation(slave);
+                    var device_infor = new SlaveDeviceInformation(slave)
+                    {
+                        serviceState = SlaveServiceState.Open
+                    };
                     resp.Add(device_infor);
                 }
             }

@@ -120,7 +120,7 @@ start_pipeline(SessionCore* core)
         error.message = "Fail to start pipeline, this may due to pipeline setup failure";
         session_core_finalize(core, PIPELINE_ERROR_EXIT,&error);
     }
-    write_to_log_file(SESSION_CORE_GENERAL_LOG,"Starting pipeline\n");
+    write_to_log_file(SESSION_CORE_GENERAL_LOG,"Starting pipeline");
     return TRUE;
 }
 

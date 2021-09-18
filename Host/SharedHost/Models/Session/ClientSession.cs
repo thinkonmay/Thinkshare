@@ -17,6 +17,8 @@ namespace SharedHost.Models.Session
             QoE = session.QoE;
             
             turn = config.TurnServer;
+
+            turn.urls = "turn:" + turn.urls;
         }
 
         public TurnServer turn {get;set;}

@@ -29,8 +29,14 @@ namespace Conductor.Interfaces
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
-        Task ReportSlaveDisconnected(int SlaveID);
+        Task EndAllRemoteSession(int SlaveID);
 
+        /// <summary>
+        /// Report new slave registration to the system
+        /// </summary>
+        /// <param name="SlaveID"></param>
+        /// <returns></returns>
+        Task EndAllShellSession(int SlaveID);
 
         /// <summary>
         /// Store slave command line return from agent into database and report to admin via signalR

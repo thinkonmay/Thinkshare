@@ -79,7 +79,6 @@ agent_send_command_line(AgentObject* agent,
 	gchar* buffer = malloc(1000);
 	ZeroMemory(buffer,1000);
 	strcpy(buffer,command);
-	strcat(buffer,"\n");
 
     // send message to cmd process if it is running
     // otherwise, report error

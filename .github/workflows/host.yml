@@ -3,8 +3,12 @@ name: HOST
 on:
   push:
     branches: [ master ]
+    paths: 
+    - 'Host/**'
   pull_request:
     branches: [ master ]
+    paths: 
+    - 'Host/**'
 
 
 #setup environment variable
@@ -13,8 +17,6 @@ env:
   SIGNALLING_IMAGE_NAME:  ${{ secrets.DOCKER_USERNAME }}/signalling:release_latest
   SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:release_latest
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:release_latest
-  SERVICE_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/service-page:latest
-  LANDING_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/landing-page:latest
   DOCUMENT_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/document:latest
 
 jobs:      
@@ -81,55 +83,12 @@ jobs:
         push: true
         tags: ${{ env.CONDUCTOR_IMAGE_NAME }}
 
-  client:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: ServicePage 
-      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-      with:
-        context: Client/service-page 
-        push: true
-        tags: ${{ env.SERVICE_PAGE_IMAGE }}
-
-    - name: LandingPage 
-      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-      with:
-        context: Client/landing-page
-        push: true
-        tags: ${{ env.LANDING_PAGE_IMAGE }}
-
-  documentation:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Log in to Docker Hub
-      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        
-    - name: build-document 
-      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-      with:
-        context: .
-        file: Document/Dockerfile 
-        push: true
-        tags: ${{ env.DOCUMENT_IMAGE }}
 
   deployment:
     runs-on: ubuntu-latest
-    needs: [ build-conductor, build-slavemanager, build-signalling, documentation, client ]
+    needs: [ build-conductor, build-slavemanager, build-signalling]
     steps:
     - name: Deploy on kubernetes
       uses: appleboy/ssh-action@master
@@ -138,22 +97,11 @@ jobs:
         host: ${{ secrets.HOST_IP }}
         password: ${{ secrets.HOST_PASSWORD }}
         script: |
-          cd /personal-cloud-computing
-          git checkout master
-          git pull https://${{ secrets.OAUTH_TOKEN }}@github.com/pigeatgarlic/personal-cloud-computing.git master
-          docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-          cd Deployment/kubernetes
-          kubectl apply -f ingress/ingress.yaml
+          cd /personal-cloud-computing/Deployment/kubernetes
           kubectl apply -f deployment/conductor.yaml
           kubectl apply -f deployment/signalling.yaml
           kubectl apply -f deployment/slavemanager.yaml
-          kubectl apply -f deployment/document.yaml
-          kubectl apply -f deployment/service-page.yaml
-          kubectl apply -f deployment/landing-page.yaml
 
-          kubectl rollout restart deploy service-page 
-          kubectl rollout restart deploy landing-page 
-          kubectl rollout restart deploy document 
           kubectl rollout restart deploy conductor 
           kubectl rollout restart deploy signalling 
           kubectl rollout restart deploy slavemanager 

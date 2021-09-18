@@ -53,7 +53,7 @@ struct _SignallingHub
 	gboolean disable_ssl;
 
     /// <summary>
-    /// url of stun server
+    /// url of turn server
     /// </summary>
 	gchar* turn;
 
@@ -616,7 +616,6 @@ on_server_message(SoupWebsocketConnection* conn,
             const char* data = g_bytes_get_data(message, &size);
             /* Convert to NULL-terminated string */
             text = g_strndup(data, size);
-            strcat(text, "\n");
             write_to_log_file(SESSION_CORE_GENERAL_LOG,text);
             break;
         }

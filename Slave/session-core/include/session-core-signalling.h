@@ -79,7 +79,7 @@ void                            connect_to_websocket_signalling_server_async    
 gboolean                        register_with_server                                    (SessionCore* core);
 
 void                            signalling_hub_setup                                    (SignallingHub* hub,
-                                                                                        gchar* stun_server,
+                                                                                        gchar* turn, 
                                                                                         gchar* url,
                                                                                         gint session_slave_id);
 

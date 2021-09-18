@@ -31,7 +31,8 @@ namespace Conductor.Controllers
         [HttpPost("Disconnected")]
         public async Task<IActionResult> ReportSlaveDisconnected(int SlaveID)
         {
-            await _admin.ReportSlaveDisconnected(SlaveID);
+            await _admin.EndAllShellSession(SlaveID);
+            await _admin.EndAllRemoteSession(SlaveID);
             return Ok();
         }
     }
