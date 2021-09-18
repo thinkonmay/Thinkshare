@@ -18,7 +18,7 @@ namespace SharedHost.Models.Session
             
             turn = config.TurnServer;
 
-            turn.urls = "turn:" + turn.urls;
+            turn.urls = "turn:" + config.TurnServer.urls;
         }
 
         public TurnServer turn {get;set;}
