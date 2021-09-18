@@ -31,9 +31,8 @@ namespace SlaveManager.SlaveDevices
 
 
 
-        public async Task KeepReceiving()
+        public async Task KeepReceiving(int SlaveID)
         {
-            int SlaveID = 0;
             WebSocketReceiveResult message;
             try
             {
@@ -46,7 +45,6 @@ namespace SlaveManager.SlaveDevices
                         {
                             var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
                             var messageForm = JsonConvert.DeserializeObject<MessageWithID>(receivedMessage);
-                            SlaveID = messageForm.SlaveID;
 
                             if (messageForm.To == (int)Module.HOST_MODULE)
                             {

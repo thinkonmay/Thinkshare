@@ -44,8 +44,9 @@ namespace SlaveManager.Services
             /*generate rest post to signalling server*/
             var request = new RestRequest("Registered")
                 .AddJsonBody(information);
-
             request.Method = Method.POST;
+
+            
             var reply = await _device.ExecuteAsync(request);
             if (reply.StatusCode == HttpStatusCode.OK)
             {
@@ -64,7 +65,6 @@ namespace SlaveManager.Services
             var request = new RestRequest("Disconnected")
                 .AddQueryParameter("SlaveID",SlaveID.ToString());
             request.Method = Method.POST;
-
 
 
             var reply = await _device.ExecuteAsync(request);

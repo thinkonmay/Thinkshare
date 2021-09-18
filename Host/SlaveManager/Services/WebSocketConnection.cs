@@ -131,7 +131,7 @@ namespace SlaveManager.Services
         {
             var slave = _slavePool.GetSlaveDevice(slaveID);
             slave.ws = ws;
-            await slave.KeepReceiving();
+            await slave.KeepReceiving(slaveID);
         }
 
         private async Task<WebSocketReceiveResult> ReceiveMessage(WebSocket ws, Stream memoryStream)

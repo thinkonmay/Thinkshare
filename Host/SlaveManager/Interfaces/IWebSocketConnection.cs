@@ -17,7 +17,7 @@ namespace SlaveManager.Interfaces
         /// </summary>
         /// <param name="ws"></param>
         /// <returns></returns>
-        public Task KeepReceiving(WebSocket ws);
+        Task KeepReceiving(WebSocket ws);
         
         /// <summary>
         /// 
@@ -25,6 +25,6 @@ namespace SlaveManager.Interfaces
         /// <param name="ws"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task Send(WebSocket ws, string message);
+        Task Send(WebSocket ws, string message);
     }
 }

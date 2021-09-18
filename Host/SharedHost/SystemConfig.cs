@@ -21,7 +21,7 @@ namespace SharedHost
 
         public string username {get;set;}
 
-        public string credentials {get;set;}
+        public string credential {get;set;}
     } 
 
 }

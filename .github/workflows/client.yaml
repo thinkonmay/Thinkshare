@@ -58,9 +58,6 @@ jobs:
         password: ${{ secrets.HOST_PASSWORD }}
         script: |
           cd /personal-cloud-computing/Deployment/kubernetes
-          kubectl apply -f deployment/service-page.yaml
-          kubectl apply -f deployment/landing-page.yaml
-
           kubectl rollout restart deploy service-page 
           kubectl rollout restart deploy landing-page 
 

@@ -42,7 +42,6 @@ jobs:
         password: ${{ secrets.HOST_PASSWORD }}
         script: |
           cd /personal-cloud-computing/Deployment/kubernetes
-          kubectl apply -f deployment/document.yaml
           kubectl rollout restart deploy document 
 
 
