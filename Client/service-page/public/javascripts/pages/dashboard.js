@@ -129,7 +129,7 @@ function setState(serviceState, slaveID){
 			await API.terminateSession(slaveID)
 		});;
 	}
-	if (serviceState === null){
+	if (serviceState === "DEVICE_OPEN"){
 		var connbutt = document.getElementById(`connect${slaveID}`)
 		connbutt.addEventListener("click",  async function () {
 			RemotePage.sessionInitialize(slaveID)
