@@ -27,8 +27,13 @@ $(document).ready(async () => {
 	// For ex: parse["mode"]
 
 	try {
+		const userinfor = await (await API.getInfor()).json()
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
+
+		document.getElementById("WelcomeUsername").innerHTML = userinfor.userName;
+
+
 		for (const slave of sessions) {
 			createSlave(slave,"slavesInUses");
 		}
@@ -96,7 +101,7 @@ function 	createSlave(slave,queue) {
 			</ul>
           </div>
         </div>
-        <div class="overlay">
+        <div class="devicebutton">
           <div class="row slaveState" id="button${slave.id}"></div>
         </div>
       </div>
@@ -180,3 +185,5 @@ function serialize(obj, prefix) {
 	}
 	return str.join("&")
 }
+
+
