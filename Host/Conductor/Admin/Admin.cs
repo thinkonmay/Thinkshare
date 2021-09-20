@@ -63,6 +63,7 @@ namespace Conductor.Administration
                 //broadcast slave register event
                 Serilog.Log.Information("Broadcasting event device {slave} registered", device.ID);
                 await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
+                await _clientHubctx.Clients.All.ReportNewSlaveAvailable(information);
                 return true;
             }
             else
@@ -76,6 +77,7 @@ namespace Conductor.Administration
 
                     //broadcast slave register event
                     await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
+                await _clientHubctx.Clients.All.ReportNewSlaveAvailable(information);
                     return true;
                 }
                 else
@@ -207,8 +209,8 @@ namespace Conductor.Administration
 
         public async Task EndAllShellSession(int SlaveID)
         {
-            var remote = _db.RemoteSessions.Where(o => o.Slave.ID == SlaveID && !o.EndTime.HasValue).ToList();
-            foreach (var i in remote)
+            var shell = _db.Devices.Find(SlaveID).ShellSession.Where(o=>!o.EndTime.HasValue).ToList();
+            foreach (var i in shell)
             {
                 i.EndTime = DateTime.Now;
             }
@@ -216,12 +218,19 @@ namespace Conductor.Administration
         }
         public async Task EndAllRemoteSession(int SlaveID)
         {
-            var shell = _db.Devices.Find(SlaveID).ShellSession.Where(o=>!o.EndTime.HasValue).ToList();
-            foreach (var i in shell)
+            var remote = _db.RemoteSessions.Where(o => o.Slave.ID == SlaveID && !o.EndTime.HasValue).ToList();
+            if(remote.Count() == 0)
             {
-                i.EndTime = DateTime.Now;
+                _clientHubctx.Clients.All.ReportSlaveObtained(SlaveID);
             }
-            await _db.SaveChangesAsync();
+            else
+            {
+                foreach (var i in remote)
+                {
+                    i.EndTime = DateTime.Now;
+                }
+                await _db.SaveChangesAsync();
+            }
         }
 
 
