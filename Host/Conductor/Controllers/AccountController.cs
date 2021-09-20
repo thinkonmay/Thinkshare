@@ -66,6 +66,7 @@ namespace Conductor.Controllers
         [Route("Register")]
         public async Task<AuthResponse> Register([FromBody] RegisterModel model)
         {
+
             if (ModelState.IsValid)
             {
                 var user = new UserAccount()
@@ -87,7 +88,10 @@ namespace Conductor.Controllers
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now);
                 }
             }
-            return AuthResponse.GenerateFailure(model.Email, "Register failed", -1);
+            var message = string.Join(" | ", ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage));
+            return AuthResponse.GenerateFailure(model.Email, message, -1);
         }
 
         /// <summary>
