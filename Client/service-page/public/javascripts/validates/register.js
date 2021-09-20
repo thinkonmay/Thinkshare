@@ -1,3 +1,10 @@
+$(document).ready(function(){
+
+	jQuery.validator.addMethod("noSpace", function(value, element) { 
+	return value.indexOf(" ") < 0 && value != ""; 
+  }, "No space please and don't leave it empty");
+})
+  
 export default {
 	rules: {
 		fullname: {
@@ -11,7 +18,8 @@ export default {
 		username: {
 			required: true,
 			minlength: 3,
-			maxlength: 50
+			maxlength: 50,
+			noSpace: true,
 		},
 		phonenumber: {
 			required: true,
@@ -53,7 +61,8 @@ export default {
 		userName: {
 			required: "Your username is require field",
 			minlength: "Minimum character is 7",
-			maxlength: "Maximum character is 50"
+			maxlength: "Maximum character is 50",
+			noSpace: true,
 		},
 		phoneNumber: {
 			required: "Your phone number is require field",
