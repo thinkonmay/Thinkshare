@@ -63,6 +63,7 @@ namespace Conductor.Administration
                 //broadcast slave register event
                 Serilog.Log.Information("Broadcasting event device {slave} registered", device.ID);
                 await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
+                await _clientHubctx.Clients.All.ReportNewSlaveAvailable(information);
                 return true;
             }
             else
@@ -76,6 +77,7 @@ namespace Conductor.Administration
 
                     //broadcast slave register event
                     await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
+                await _clientHubctx.Clients.All.ReportNewSlaveAvailable(information);
                     return true;
                 }
                 else
@@ -153,7 +155,7 @@ namespace Conductor.Administration
         public async Task ReportSessionTermination(RemoteSession session)
         {
             var account = await _userManager.GetUserIdAsync(session.Client);
-            var device_infor = new SlaveDeviceInformation(session.Slave);
+            var device_infor = new SlaveDeviceInformation(session.Slave){serviceState = SlaveServiceState.Open};
 
             session.EndTime = DateTime.Now;
             _db.RemoteSessions.Update(session);
@@ -205,22 +207,32 @@ namespace Conductor.Administration
             await _clientHubctx.Clients.Group(account).ReportSessionReconnected(session.Slave.ID);
         }
 
-        public async Task ReportSlaveDisconnected(int SlaveID)
+        public async Task EndAllShellSession(int SlaveID)
         {
-            var shell = _db.Devices.Find(SlaveID).ShellSession.Where(o=>!o.EndTime.HasValue);
-            var remote = _db.RemoteSessions.Where(o => o.Slave.ID == SlaveID && !o.EndTime.HasValue);
-
+            var shell = _db.Devices.Find(SlaveID).ShellSession.Where(o=>!o.EndTime.HasValue).ToList();
             foreach (var i in shell)
             {
                 i.EndTime = DateTime.Now;
-                await _db.SaveChangesAsync();
             }
-            foreach (var i in remote)
+            await _db.SaveChangesAsync();
+        }
+        public async Task EndAllRemoteSession(int SlaveID)
+        {
+            var remote = _db.RemoteSessions.Where(o => o.Slave.ID == SlaveID && !o.EndTime.HasValue).ToList();
+            if(remote.Count() == 0)
             {
-                i.EndTime = DateTime.Now;
+                _clientHubctx.Clients.All.ReportSlaveObtained(SlaveID);
+            }
+            else
+            {
+                foreach (var i in remote)
+                {
+                    i.EndTime = DateTime.Now;
+                }
                 await _db.SaveChangesAsync();
             }
         }
+
 
         public async Task ReportRemoteControlDisconnectedFromSignalling(SessionPair session)
         {

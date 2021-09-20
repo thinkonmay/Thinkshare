@@ -11,6 +11,7 @@ namespace SharedHost
         public string SlaveManagerWs { get; set; }
         public string Flutter { get; set; }
         public string Conductor { get; set; }
+        public string TurnConnection {get;set;}
         public TurnServer TurnServer {get;set;}
         public LoginModel AdminLogin { get; set; }
     }
@@ -21,7 +22,7 @@ namespace SharedHost
 
         public string username {get;set;}
 
-        public string credentials {get;set;}
+        public string credential {get;set;}
     } 
 
 }

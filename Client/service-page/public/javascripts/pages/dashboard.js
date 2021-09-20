@@ -27,8 +27,13 @@ $(document).ready(async () => {
 	// For ex: parse["mode"]
 
 	try {
+		const userinfor = await (await API.getInfor()).json()
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
+
+		document.getElementById("WelcomeUsername").innerHTML = userinfor.userName;
+
+
 		for (const slave of sessions) {
 			createSlave(slave,"slavesInUses");
 		}
@@ -96,7 +101,7 @@ function 	createSlave(slave,queue) {
 			</ul>
           </div>
         </div>
-        <div class="overlay">
+        <div class="devicebutton">
           <div class="row slaveState" id="button${slave.id}"></div>
         </div>
       </div>
@@ -107,32 +112,32 @@ function 	createSlave(slave,queue) {
 
 function setState(serviceState, slaveID){
 	var button = document.getElementById(`button${slaveID}`);
-	button.innerHTML = slaveState(slave.serviceState,slave.id);
+	button.innerHTML = slaveState(serviceState,slaveID);
 
 	if (serviceState === "ON_SESSION"){
 		var initbutt = document.getElementById(`disconnect${slaveID}`)
 		initbutt.addEventListener("click", async function () {
-			await API.disconnectSession(slave.id)
+			await API.disconnectSession(slaveID)
 		});
 		var terminatebutt = document.getElementById(`terminate${slaveID}`)
 		terminatebutt.addEventListener("click", async function () {
-			await API.terminateSession(slave.id)
+			await API.terminateSession(slaveID)
 		});
 	}
 	if (serviceState === "OFF_REMOTE"){
 		var recbutt = document.getElementById(`reconnect${slaveID}`)
 		recbutt.addEventListener("click",  async function () {
-			RemotePage.sessionReconnect(slave.id)
+			RemotePage.sessionReconnect(slaveID)
 		});
 		var terminatebutt = document.getElementById(`terminate${slaveID}`)
 		terminatebutt.addEventListener("click", async function () {
-			await API.terminateSession(slave.id)
+			await API.terminateSession(slaveID)
 		});;
 	}
-	if (serviceState === null){
+	if (serviceState === "DEVICE_OPEN"){
 		var connbutt = document.getElementById(`connect${slaveID}`)
 		connbutt.addEventListener("click",  async function () {
-			RemotePage.sessionInitialize(slave.id)
+			RemotePage.sessionInitialize(slaveID)
 		});
 	}
 }
@@ -154,7 +159,7 @@ function slaveState(state,slaveId) {
 	if (state === "DEVICE_DISCONNECTED"){
 		return ""
 	}
-	if (state === null){
+	if (state === "DEVICE_OPEN"){
 		return btn.connect
 	}
 }
@@ -180,3 +185,5 @@ function serialize(obj, prefix) {
 	}
 	return str.join("&")
 }
+
+

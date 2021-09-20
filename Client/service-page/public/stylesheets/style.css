@@ -3,6 +3,11 @@
   transition: 0.3s;
 }
 
+.devicebutton {
+  width: 50%;  
+  transform: translate(50%,0);
+}
+
 .overlay:hover {
   opacity: 1;
   transform: translateY(-8px);
