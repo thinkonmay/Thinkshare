@@ -88,12 +88,10 @@ namespace Conductor.Controllers
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now);
                 }
             }
-            var message = string.Join(",",
-                    ModelState.Values.Where(E => E.Errors.Count > 0)
-                    .SelectMany(E => E.Errors)
-                    .Select(E => E.ErrorMessage)
-                    .ToArray());
-            return AuthResponse.GenerateFailure(model.Email, message, -1);
+            string messages = string.Join("; ", ModelState.Values
+                                          .SelectMany(x => x.Errors)
+                                          .Select(x => x.ErrorMessage));
+            return AuthResponse.GenerateFailure(model.Email, messages, -1);
         }
 
         /// <summary>
