@@ -1,7 +1,9 @@
 import * as API from "../util/api.js"
 import * as RemotePage from "../util/remote-page-cookies.js"
 import * as Setting from "../util/setting.js"
-import {getCookie,setCookie} from "../util/cookie.js"
+import { getCookie, setCookie } from "../util/cookie.js"
+import * as Utils from "../util/utils.js"
+
 
 
 API.getInfor().then(async data => {
@@ -17,9 +19,13 @@ $(document).ready(async () => {
 		screenHeight: 1440
 	}
 
-	
+	noti()
+	search()
+	inbox()
+	user()
+
 	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
-	console.log("set default device capability to "+getCookie("cap"));		
+	console.log("set default device capability to " + getCookie("cap"));
 	/// How to convert to JSON 
 	/// var cap = getCookie("cap");
 	//  var parse = JSON.parse(cap);
@@ -35,10 +41,10 @@ $(document).ready(async () => {
 
 
 		for (const slave of sessions) {
-			createSlave(slave,"slavesInUses");
+			createSlave(slave, "slavesInUses");
 		}
 		for (const slave of slaves) {
-			createSlave(slave,"availableSlaves");
+			createSlave(slave, "availableSlaves");
 		}
 	} catch (err) {
 		alert(err.message)
@@ -49,9 +55,9 @@ $(document).ready(async () => {
 	var stateSignalR = document.getElementById('state-signalr');
 	// Connect to hub signalR with access-token Bearer Authorzation
 	const connection = new signalR.HubConnectionBuilder()
-		.withUrl(`https://conductor.thinkmay.net/ClientHub`,  {
-		accessTokenFactory: () => getCookie("token") // Return access token
-	}).build()
+		.withUrl(`https://conductor.thinkmay.net/ClientHub`, {
+			accessTokenFactory: () => getCookie("token") // Return access token
+		}).build()
 	connection.start().then(function () {
 		console.log("connected to signalR hub");
 
@@ -73,18 +79,18 @@ $(document).ready(async () => {
 		})
 		connection.on("ReportSessionInitialized", function (slaveInfor) {
 			slaveInfor.serviceState = "ON_SESSION";
-			createSlave(slaveInfor,"slavesInUses")
+			createSlave(slaveInfor, "slavesInUses")
 		})
 		connection.on("ReportNewSlaveAvailable", function (device) {
-			createSlave(device,"availableSlaves")
+			createSlave(device, "availableSlaves")
 		})
 	}).catch(function (err) {
 		location.reload();
 	})
 })
 
-function 	createSlave(slave,queue) {
-	append(queue,  `
+function createSlave(slave, queue) {
+	append(queue, `
     <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${slave.id}">
       <div class="card bg-light d-flex flex-fill">
         <div style="text-alignt: center" class="card-header text-muted border-bottom-0">
@@ -106,15 +112,15 @@ function 	createSlave(slave,queue) {
         </div>
       </div>
     </div>`)
-	setState(slave.serviceState,slave.id);
+	setState(slave.serviceState, slave.id);
 }
 
 
-function setState(serviceState, slaveID){
+function setState(serviceState, slaveID) {
 	var button = document.getElementById(`button${slaveID}`);
-	button.innerHTML = slaveState(serviceState,slaveID);
+	button.innerHTML = slaveState(serviceState, slaveID);
 
-	if (serviceState === "ON_SESSION"){
+	if (serviceState === "ON_SESSION") {
 		var initbutt = document.getElementById(`disconnect${slaveID}`)
 		initbutt.addEventListener("click", async function () {
 			await API.disconnectSession(slaveID)
@@ -124,9 +130,9 @@ function setState(serviceState, slaveID){
 			await API.terminateSession(slaveID)
 		});
 	}
-	if (serviceState === "OFF_REMOTE"){
+	if (serviceState === "OFF_REMOTE") {
 		var recbutt = document.getElementById(`reconnect${slaveID}`)
-		recbutt.addEventListener("click",  async function () {
+		recbutt.addEventListener("click", async function () {
 			RemotePage.sessionReconnect(slaveID)
 		});
 		var terminatebutt = document.getElementById(`terminate${slaveID}`)
@@ -134,32 +140,32 @@ function setState(serviceState, slaveID){
 			await API.terminateSession(slaveID)
 		});;
 	}
-	if (serviceState === "DEVICE_OPEN"){
+	if (serviceState === "DEVICE_OPEN") {
 		var connbutt = document.getElementById(`connect${slaveID}`)
-		connbutt.addEventListener("click",  async function () {
+		connbutt.addEventListener("click", async function () {
 			RemotePage.sessionInitialize(slaveID)
 		});
 	}
 }
 
-function slaveState(state,slaveId) {
+function slaveState(state, slaveId) {
 	const nl = '<div class="w-100"></div>'
 	const btn = {
-		connect:    `<button type="button" class="btn btn-primary btn-icon-text" id="connect${slaveId}"><i class="ti-file btn-icon-prepend"></i>Connect</button></div>`,
+		connect: `<button type="button" class="btn btn-primary btn-icon-text" id="connect${slaveId}"><i class="ti-file btn-icon-prepend"></i>Connect</button></div>`,
 		disconnect: `<button type="button" class="btn btn-warning btn-icon-text" id="disconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Disconnect</button>`,
-		reconnect:  `<button type="button" class="btn btn-warning btn-icon-text" id="reconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Reconnect</button>`,
-		terminate:  `<button type="button" class="btn btn-outline-danger btn-icon-text" id="terminate${slaveId}"><i class="ti-upload btn-icon-prepend"></i>Terminate</button>`
+		reconnect: `<button type="button" class="btn btn-warning btn-icon-text" id="reconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Reconnect</button>`,
+		terminate: `<button type="button" class="btn btn-outline-danger btn-icon-text" id="terminate${slaveId}"><i class="ti-upload btn-icon-prepend"></i>Terminate</button>`
 	}
-	if (state === "ON_SESSION"){
+	if (state === "ON_SESSION") {
 		return btn.disconnect + btn.terminate
 	}
-	if (state === "OFF_REMOTE"){
+	if (state === "OFF_REMOTE") {
 		return btn.reconnect + btn.terminate
 	}
-	if (state === "DEVICE_DISCONNECTED"){
+	if (state === "DEVICE_DISCONNECTED") {
 		return ""
 	}
-	if (state === "DEVICE_OPEN"){
+	if (state === "DEVICE_OPEN") {
 		return btn.connect
 	}
 }
@@ -178,12 +184,34 @@ function serialize(obj, prefix) {
 				v = obj[p]
 			str.push(
 				v !== null && typeof v === "object" ?
-				serialize(v, k) :
-				encodeURIComponent(k) + "=" + encodeURIComponent(v)
+					serialize(v, k) :
+					encodeURIComponent(k) + "=" + encodeURIComponent(v)
 			)
 		}
 	}
 	return str.join("&")
 }
 
+function search() {
+	document.getElementById('searchButton').addEventListener('click', function () {
+		Utils.responseError("Error!!!", "This feature hasn't de	veloped! \n Next version will be update.", "info")
+	});
+}
 
+function noti() {
+	document.getElementById('notiButton').addEventListener('click', function () {
+		Utils.responseError("Error!!!", "This feature hasn't de	veloped! \n Next version will be update.", "info")
+	});
+}
+
+function inbox() {
+	document.getElementById('inboxButton').addEventListener('click', function () {
+		Utils.responseError("Error!!!", "This feature hasn't de	veloped! \n Next version will be update.", "info")
+	});
+}
+
+function user() {
+	document.getElementById('userButton').addEventListener('click', function () {
+		Utils.responseError("Error!!!", "This feature hasn't de	veloped! \n Next version will be update.", "info")
+	});
+}
