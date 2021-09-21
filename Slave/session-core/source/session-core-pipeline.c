@@ -355,6 +355,8 @@ setup_element_property(SessionCore* core)
     /*monitor to display*/
     if (pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE], "monitor", 0, NULL);}
 
+    
+
     /*variable bitrate mode*/
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "rc-mode", "cbr", NULL);}
 
@@ -400,8 +402,6 @@ setup_element_property(SessionCore* core)
     * Set the other queue sizes to 0 to make it only time-based.
     */
     if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-packet", 0, NULL);}
-
-
 }
 
 
