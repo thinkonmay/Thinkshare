@@ -1,12 +1,17 @@
+var ScaleLoader = VueSpinner.ScaleLoader;
+
 var app = new Vue({
+
     el: '#app',
+
+    components: {
+        ScaleLoader
+    },
+    
     data() 
     {
         return {
-            SessionClientID: 0, 
-
-            showStart: false,
-            showDrawer: false,
+            SessionClientID: 0,
 
             loadingText: '',
 

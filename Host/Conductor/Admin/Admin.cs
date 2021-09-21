@@ -60,6 +60,8 @@ namespace Conductor.Administration
                 device.RAMcapacity = information.RAMcapacity;
                 await _db.SaveChangesAsync();
 
+                information.serviceState = SlaveServiceState.Open;
+
                 //broadcast slave register event
                 Serilog.Log.Information("Broadcasting event device {slave} registered", device.ID);
                 await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
@@ -74,10 +76,11 @@ namespace Conductor.Administration
                    device.OS == information.OS &&
                    device.RAMcapacity == information.RAMcapacity)
                 {
+                    information.serviceState = SlaveServiceState.Open;
 
                     //broadcast slave register event
                     await _adminHubctx.Clients.All.ReportSlaveRegistered(information);
-                await _clientHubctx.Clients.All.ReportNewSlaveAvailable(information);
+                    await _clientHubctx.Clients.All.ReportNewSlaveAvailable(information);
                     return true;
                 }
                 else
@@ -227,8 +230,12 @@ namespace Conductor.Administration
             {
                 foreach (var i in remote)
                 {
+                    _clientHubctx.Clients
+                        .Group(await _userManager.GetUserIdAsync(i.Client))
+                        .ReportSessionTerminated(SlaveID);
                     i.EndTime = DateTime.Now;
                 }
+
                 await _db.SaveChangesAsync();
             }
         }

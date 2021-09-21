@@ -38,6 +38,10 @@ html {
     color: #E0E0E0;
 }
 
+body {
+    background-color: rgb(0, 0, 0);
+}
+
 .loading-text {
     margin-top: 1em;
 }

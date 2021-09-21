@@ -5,6 +5,7 @@
 function 
 HidDCConnected(event)  
 {
+    document.getElementById("loading").innerHTML = " ";
     AttachEvent();
 }
 
