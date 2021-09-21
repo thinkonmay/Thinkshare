@@ -194,24 +194,24 @@ function serialize(obj, prefix) {
 
 function search() {
 	document.getElementById('searchButton').addEventListener('click', function () {
-		Utils.responseError("Error!!!", "This feature hasn't de	veloped! \n Next version will be update.", "info")
+		Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
 	});
 }
 
 function noti() {
 	document.getElementById('notiButton').addEventListener('click', function () {
-		Utils.responseError("Error!!!", "This feature hasn't de	veloped! \n Next version will be update.", "info")
+		Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
 	});
 }
 
 function inbox() {
 	document.getElementById('inboxButton').addEventListener('click', function () {
-		Utils.responseError("Error!!!", "This feature hasn't de	veloped! \n Next version will be update.", "info")
+		Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
 	});
 }
 
 function user() {
 	document.getElementById('userButton').addEventListener('click', function () {
-		Utils.responseError("Error!!!", "This feature hasn't de	veloped! \n Next version will be update.", "info")
+		Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
 	});
 }
