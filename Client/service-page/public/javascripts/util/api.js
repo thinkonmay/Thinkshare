@@ -4,7 +4,6 @@ const host = "https://conductor.thinkmay.net"
 
 // local api
 export const Dashboard = "/dashboard"
-export const DashboardAdmin = "/dashboard-admin"
 export const Initialize = "/initialize"
 export const Reconnect = "/reconnect"
 

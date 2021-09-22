@@ -1,17 +1,15 @@
 import * as API from "../util/api.js"
 import * as Validates from "../validates/index.js"
-import {getCookie, setCookie} from "../util/cookie.js"
+import { setCookie } from "../util/cookie.js"
+import * as Utils from "../util/utils.js"
 
-const MINUTES59 = 59 * 60 * 1000
+const MINUTES59 = 59 * 60 * 1000;
 
-const newSwal = Swal.mixin({
-	heightAuto: false,
-	allowOutsideClick: false,
-	allowEscapeKey: false
-})
-
-$(document).ready(() => {
+(function ($) {
 	"use strict"
+
+	/*==================================================================
+	[ Validate ]*/
 
 	$("form").submit(event => {
 		event.preventDefault()
@@ -25,7 +23,7 @@ $(document).ready(() => {
 
 	const $textInputs = $("input")
 	const $submit = $(".submit")
-	const handler = function() {
+	const handler = function () {
 		const $validTextInputs = $("input:valid")
 		if ($textInputs.length === $validTextInputs.length) {
 			$submit.attr("disabled", null)
@@ -36,10 +34,10 @@ $(document).ready(() => {
 	$("form :input").keyup(handler)
 	$("form :input").change(handler)
 
-	$("#dob").focus(function() {
+	$("#dateOfBirth").focus(function () {
 		$(this).attr("type", "date")
 	})
-})
+})(jQuery)
 
 function serializeArrToObject(serializeArr) {
 	const obj = {}
@@ -47,70 +45,8 @@ function serializeArrToObject(serializeArr) {
 	return obj
 }
 
-function fetchErrorHandler(error) {
-	newSwal.fire({
-		title: "Lỗi!",
-		text: error.message,
-		icon: "error"
-	})
-}
-
-function responseErrorHandler(response) {
-	const keys = Object.keys(response.errors)
-	const errors = keys.map(key => response.errors[key])
-	const msg = keys.map((key, index) => `${key}: ${errors[index]}`).join(", ")
-	newSwal.fire({
-		title: "Lỗi!",
-		text: msg,
-		icon: "error"
-	})
-}
-
-function register(body) {
-	newSwal.fire({
-		title: "Đang đăng kí",
-		text: "Vui lòng chờ . . .",
-		didOpen: () => {
-			Swal.showLoading()
-
-			var date = new Date(body.dob);
-			body.dob = date.toISOString(); //will return an ISO representation of the date
-
-			API.register(body)
-				.then(async data => {
-					const response = await data.json()
-					if (data.status == 200) {
-						if (response.errorCode == 0) {
-							setCookie("token", response.token, MINUTES59)
-							newSwal.fire({
-								title: "Thành công!",
-								text: "Chuyển hướng tới bảng điều khiển sau 2s",
-								icon: "success",
-								didOpen: () => {
-									setTimeout(() => {
-										window.location.href = "/dashboard"
-									}, 2000)
-								}
-							})
-						} else {
-							newSwal.fire({
-								title: "Lỗi!",
-								text:
-									"Đã gặp lỗi trong quá trình đăng kí, vui lòng liên hệ admin để hỗ trợ!",
-								icon: "error"
-							})
-						}
-					} else {
-						responseErrorHandler(response)
-					}
-				})
-				.catch(fetchErrorHandler)
-		}
-	})
-}
-
 function login(body) {
-	newSwal.fire({
+	Utils.newSwal.fire({
 		title: "Đang đăng nhập",
 		text: "Vui lòng chờ . . .",
 		didOpen: () => {
@@ -123,14 +59,50 @@ function login(body) {
 							setCookie("token", response.token, MINUTES59)
 							window.location.replace(API.Dashboard)
 						} else {
-							newSwal.fire({
-								title: "Lỗi!",
-								text: "Sai email hoặc mật khẩu!"
-							})
+							Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
 						}
-					} else responseErrorHandler(response)
+					} else Utils.responseErrorHandler(response)
 				})
-				.catch(fetchErrorHandler)
+				.catch(Utils.fetchErrorHandler)
 		}
 	})
 }
+
+function register(body) {
+	Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
+
+	Utils.newSwal.fire({
+		title: "Đang đăng kí",
+		text: "Vui lòng chờ . . .",
+		didOpen: () => {
+			Swal.showLoading()
+			var date = new Date(body.dob);
+			body.dob = date.toISOString(); //will return an ISO representation of the date
+			API.register(body)
+				.then(async data => {
+					const response = await data.json()
+					if (data.status == 200) {
+						if (response.errorCode == 0) {
+							setCookie("token", response.token, MINUTES59)
+							Utils.newSwal.fire({
+								title: "Thành công!",
+								text: "Chuyển hướng tới bảng điều khiển sau 2s",
+								icon: "success",
+								didOpen: () => {
+									setTimeout(() => {
+										window.location.href = "/dashboard"
+									}, 2000)
+								}
+							})
+						} else {
+							Utils.responseError("Lỗi!", "Đã gặp lỗi trong quá trình đăng kí, vui lòng liên hệ admin để hỗ trợ!", "error")
+						}
+					} else {
+						Utils.responseErrorHandler(response)
+					}
+				})
+				.catch(Utils.fetchErrorHandler)
+		}
+	})
+}
+

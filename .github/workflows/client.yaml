@@ -16,6 +16,7 @@ env:
   REGISTRY: ghcr.io
   SERVICE_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/service-page:latest
   LANDING_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/landing-page:latest
+  ADMIN_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/admin-page:latest
 
 jobs:
   client:
@@ -43,6 +44,13 @@ jobs:
         context: Client/landing-page
         push: true
         tags: ${{ env.LANDING_PAGE_IMAGE }}
+        
+    - name: AdminPage 
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Client/admin-page
+        push: true
+        tags: ${{ env.ADMIN_PAGE_IMAGE }}
 
       
 
@@ -60,6 +68,7 @@ jobs:
           cd /personal-cloud-computing/Deployment/kubernetes
           kubectl rollout restart deploy service-page 
           kubectl rollout restart deploy landing-page 
+          kubectl rollout restart deploy admin-page
 
 
 
