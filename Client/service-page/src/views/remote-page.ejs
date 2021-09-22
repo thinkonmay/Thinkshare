@@ -1,45 +1,45 @@
 <!DOCTYPE html>
 <html>
 
-<head>    
-    <link href="remote-page-asset/material-floating-button/dist/mfb.css" rel="stylesheet">
-    <link href="remote-page-asset/css/googleapi.css" rel="stylesheet" />
-    <link href="remote-page-asset/css/vuetify.css" rel="stylesheet" />
-    <link href="remote-page-asset/css/dev.css" rel="stylesheet" />
-    <link href="remote-page-asset/css/loading-icon.css" rel="stylesheet" />
+<head>
+  <link href="remote-page-asset/material-floating-button/dist/mfb.css" rel="stylesheet">
+  <link href="remote-page-asset/css/googleapi.css" rel="stylesheet" />
+  <link href="remote-page-asset/css/vuetify.css" rel="stylesheet" />
+  <link href="remote-page-asset/css/dev.css" rel="stylesheet" />
+  <link href="remote-page-asset/css/loading-icon.css" rel="stylesheet" />
 
-    
-    
-    
 
-    <title>Thinkmay | Remote control</title>
-    <% include partials/head %>
+
+
+
+  <title>Thinkmay | Remote control</title>
+  <% include partials/head %>
 </head>
+
 <body>
-    <div id="app">
-        <v-app>
-            
-            <div id="video_container" class="video-container">
-                <video id="stream" autoplay playsinline>
-                    Your browser doesn't support video
-                </video>
-            </div>
-            
-            <div id="loading">
-              <section class="wrapper dark">
-                <div class="spinner">
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                </div>
-              </section>
-            </div>
-        </v-app>
-    </div>
+  <div id="app">
+    <v-app style="position: relative;">
+      <div id="video_container" class="video-container">
+        <video id="stream" autoplay playsinline> -->
+          Your browser doesn't support video
+        </video>
+      </div>
+      <div id="loading" style="top: 40%; left: 49%; margin: -25px 0 0 -25px;  position: absolute; text-align: center;">
+        <section class="wrapper dark">
+          <div class="spinner">
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+            <i></i>
+          </div>
+        </section>
+      </div>
+
+    </v-app>
+  </div>
 </body>
 
 <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
@@ -58,4 +58,5 @@
 <script src="remote-page-asset/src/clipboard.js?ts=1"></script>
 
 <script type="module" src="javascripts/pages/remote-page.js"></script>
+
 </html>
