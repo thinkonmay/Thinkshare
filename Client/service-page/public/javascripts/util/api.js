@@ -1,4 +1,4 @@
-import {getCookie} from "./cookie.js"
+import { getCookie } from "./cookie.js"
 
 const host = "https://conductor.thinkmay.net"
 
@@ -36,7 +36,7 @@ export const genHeaders = () => {
 		token
 			? {
 				Authorization: `Bearer ${token}`
-			  }
+			}
 			: {}
 	)
 }
@@ -72,6 +72,12 @@ export const getInfor = () => {
 	return fetch(GetInfor, {
 		method: "GET",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -79,6 +85,12 @@ export const fetchSlave = () => {
 	return fetch(FetchSlave, {
 		method: "GET",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -86,6 +98,12 @@ export const fetchSession = () => {
 	return fetch(FetchSession, {
 		method: "GET",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -93,6 +111,12 @@ export const querySession = SlaveID => {
 	return fetch(QuerySession + "?SlaveID=" + SlaveID, {
 		method: "GET",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -100,6 +124,12 @@ export const rejectDevice = SlaveID => {
 	return fetch(RejectDevice + "?SlaveID=" + SlaveID, {
 		method: "DELETE",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -107,6 +137,12 @@ export const disconnectDevice = SlaveID => {
 	return fetch(DisconnectDevice + "?SlaveID=" + SlaveID, {
 		method: "DELETE",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -114,6 +150,12 @@ export const terminateSession = SlaveID => {
 	return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
 		method: "DELETE",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -121,6 +163,12 @@ export const disconnectSession = SlaveID => {
 	return fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
 		method: "POST",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -128,6 +176,12 @@ export const reconnectSession = (SlaveID) => {
 	return fetch(ReconnectSession + "?SlaveID=" + SlaveID, {
 		method: "POST",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -141,8 +195,14 @@ export const initializeSession = (SlaveID) => {
 	}
 	return fetch(InitializeSession, {
 		method: "POST",
-		headers: genHeaders(), 
+		headers: genHeaders(),
 		body: JSON.stringify(body)
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
