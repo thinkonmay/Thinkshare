@@ -16,7 +16,7 @@ namespace SignalRChat.Hubs
     {
         Task ReportSlaveRegistered(SlaveDeviceInformation information);
 
-        Task LogSlaveCommandLine(int SlaveID, int ProcessID, string Command);
+        Task LogShellOutput(int SlaveID, int ProcessID, string Command);
     }
 
     [Authorize]

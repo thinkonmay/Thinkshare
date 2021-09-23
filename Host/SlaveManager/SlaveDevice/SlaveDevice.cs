@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using SharedHost.Models.Command;
+using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Interfaces;
 using System.Net.WebSockets;
@@ -68,13 +69,6 @@ namespace SlaveManager.SlaveDevices
                 {
                     switch (messageForm.Opcode)
                     {
-                        case (int)Opcode.COMMAND_LINE_FORWARD:
-                        {
-                            var cmd = JsonConvert.DeserializeObject<ReceiveCommand>(messageForm.Data);
-                            cmd.SlaveID = messageForm.SlaveID;
-                            await _conductor.LogSlaveCommandLine(cmd);
-                            break;
-                        }
                         case (int)Opcode.ERROR_REPORT:
                         {
                             var error = JsonConvert.DeserializeObject<ReportedError>(messageForm.Data);
@@ -88,9 +82,9 @@ namespace SlaveManager.SlaveDevices
                             await State.OnSessionCoreExit(this, messageForm.SlaveID);
                             break;
                         }
-                        case (int)Opcode.END_COMMAND_LINE_SESSION:
+                        case (int)Opcode.END_SHELL_SESSION:
                         {
-                            var session = JsonConvert.DeserializeObject<ForwardCommand>(messageForm.Data);
+                            var session = JsonConvert.DeserializeObject<ForwardScript>(messageForm.Data);
                             await _conductor.ReportShellSessionTerminated(session);
                             break;
                         }
@@ -196,22 +190,10 @@ namespace SlaveManager.SlaveDevices
 
 
 
-        public async Task InitializeCommandLineSession(int order)
+        public async Task InitializeShellSession(int order)
         {
-            await State.InitializeCommandlineSession(this, order);
+            await State.InitializeShellSession(this, order);
         }
-
-
-        public async Task TerminateCommandLineSession(int order)
-        {
-            await State.TerminateCommandlineSession(this, order);
-        }
-
-        public async Task SendCommand(ForwardCommand command)
-        {
-            await State.SendCommand(this, command);
-        }
-
 
 
 

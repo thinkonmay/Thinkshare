@@ -4,7 +4,7 @@
 #include <agent-socket.h>
 #include <agent-device.h>
 #include <agent-message.h>
-#include <agent-cmd.h>
+#include <agent-shell-session.h>
 #include <agent-device.h>
 #include <agent-state.h>
 #include <agent-state-unregistered.h>
@@ -149,9 +149,9 @@ agent_connect_to_host(AgentObject* self)
 }
 
 void
-agent_on_cmd_process_terminate(AgentObject* self, gint ProcessID)
+agent_on_shell_process_terminate(AgentObject* self, gint ProcessID)
 {
-	self->state->on_commandline_exit(self, ProcessID);
+	self->state->on_shell_process_exit(self, ProcessID);
 }
 
 void

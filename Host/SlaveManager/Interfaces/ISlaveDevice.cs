@@ -69,30 +69,13 @@ namespace SlaveManager.Interfaces
         Task RemoteControlReconnect();
 
         /// <summary>
-        /// Send command line to slave device, 
-        /// the commandline process will be invoked with admin previllege
-        /// </summary>
-        /// <param name="order">order(process-id) of commandline process run on slave</param>
-        /// <param name="command">command line to be process on slave device</param>
-        /// <returns></returns>
-        Task SendCommand(ForwardCommand command);
-
-        /// <summary>
         /// Create new commandline Session, new commandline will run under administrator privillege
         /// after initialize new commandline session, admin will be able to remote control slave 
         /// (similiar to ssh)
         /// </summary>
         /// <param name="order">order(process-id) of commandline process to initialize</param>
         /// <returns></returns>
-        Task InitializeCommandLineSession(int order);
-
-
-        /// <summary>
-        /// Terminate running commandline Session
-        /// </summary>
-        /// <param name="order">order(process-id) of commandline process to terminate</param>
-        /// <returns></returns>
-        Task TerminateCommandLineSession(int order);
+        Task InitializeShellSession(int order);
 
         /// <summary>
         /// Send reject signal to slave device, 

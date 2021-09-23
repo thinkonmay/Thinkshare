@@ -66,22 +66,12 @@ void											agent_remote_control_reconnect		(AgentObject* self);
 
 
 /// <summary>
-/// commandline passing function will be invoked when 
-/// handle child std receive message from commandline process
-/// commandline received then will be format to message and
-/// </summary>
-/// <param name="self"></param>
-/// <param name="command"></param>
-/// <returns></returns>
-gboolean										agent_command_line_passing			(AgentObject* self,
-																					 gchar* command);
-
-/// <summary>
 /// handle cmd process termination, based on current connection state with host,
 /// if in connection, agent will report to host and cmd process termination event will be recorded
 /// </summary>
 /// <param name="self"></param>
-void         									agent_on_cmd_process_terminate		(AgentObject* self);
+void         									agent_on_shell_process_terminate	(AgentObject* self, 
+																					gint process_id);
 
 
 

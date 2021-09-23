@@ -49,7 +49,7 @@ namespace Conductor.Interfaces
         /// Store slave command line return from agent into database and report to admin via signalR
         /// </summary>
         /// <returns></returns>
-        Task LogSlaveCommandLine(ReceiveCommand command);
+        Task LogShellOutput(ShellOutput command);
 
         /// <summary>
         /// Report new session start, invoke from sesssions controller

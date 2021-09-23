@@ -53,7 +53,7 @@ struct _AgentState
 
     RegisterToHost register_to_host;
 
-    OnCommandlineExit on_commandline_exit;
+    OnCommandlineExit on_shell_process_exit;
 
     GetCurrentState get_current_state;
 };

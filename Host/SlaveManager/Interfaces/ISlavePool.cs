@@ -74,19 +74,6 @@ namespace SlaveManager.Interfaces
         /// <param name="ProcessID"></param>
         bool InitializeCommand(int SlaveID, int ProcessID);
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        bool TerminateCommand(int SlaveID,int ProcessID);
-
-        /// <summary>
-        /// send command to a specific process id at an specific slavedevice
-        /// </summary>
-        /// <returns></returns>
-        bool SendCommand(ForwardCommand command);
-
 
 
         bool RemoteControlReconnect(int slaveid);

@@ -8,7 +8,7 @@ class AdminHub
     this.onagenterror = this.ReportAgentError.bind(this);
     this.onslaveregistered = this.ReportSlaveRegistered.bind(this);
     this.onsessionstart = this.ReportSessionStart.bind(this);
-    this.onslavecommandline = this.LogSlaveCommandLine.bind(this);
+    this.onslavecommandline = this.LogShellOutput.bind(this);
 
     this.connection = null;
     this.onadmin = null;
@@ -34,7 +34,7 @@ class AdminHub
       this.onslaveregistered(information) })
     this.connection.on('ReportSessionStart', (SlaveID, ClientID) => { 
       this.onsessionstart(SlaveID,ClientID) })
-    this.connection.on('LogSlaveCommandLine', (SlaveID, result) => { 
+    this.connection.on('LogShellOutput', (SlaveID, result) => { 
       this.onslavecommandline(SlaveID,ProcessID, Command) })
   }
 
@@ -63,7 +63,7 @@ class AdminHub
     this.onadmin(`[SlaveID ${SlaveID}] : session start with user ${ClientID}`);
   }
 
-  LogSlaveCommandLine(SlaveID,ProcessID, Command)
+  LogShellOutput(SlaveID,ProcessID, Command)
   {
     this.onadmin(`[SlaveID ${SlaveID}] [ProcessID ${ProcessID}] : Commandline output : ${Command}`);
   }

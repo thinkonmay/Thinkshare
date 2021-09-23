@@ -45,7 +45,6 @@ namespace Conductor.Data
         
         public DbSet<Slave> Devices { get; set; }
         public DbSet<RemoteSession> RemoteSessions { get; set; }
-        public DbSet<CommandLog> CommandLogs { get; set; }
         public DbSet<ShellSession> ShellSession { get; set; }
     }
 }

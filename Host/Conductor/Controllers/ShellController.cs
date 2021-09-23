@@ -30,9 +30,9 @@ namespace Conductor.Controllers
         /// <param name="ProcessID"></param>
         /// <returns></returns>
         [HttpPost("Initialize")]
-        public IActionResult InitializeCommandlineSession(int SlaveID, int ProcessID)
+        public IActionResult InitializeShellSession(int SlaveID, int ProcessID)
         {
-            _slmsocket.InitializeCommandLineSession(SlaveID, ProcessID);
+            _slmsocket.InitializeShellSession(SlaveID, ProcessID);
             return Ok();
         }
 
@@ -55,8 +55,8 @@ namespace Conductor.Controllers
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPost("ForwardCommand")]
-        public async Task<IActionResult> CommandLine([FromBody] ForwardCommand command)
+        [HttpPost("ForwardScript")]
+        public async Task<IActionResult> CommandLine([FromBody] ForwardScript command)
         {
             await _slmsocket.SendCommand(command);
             return Ok();

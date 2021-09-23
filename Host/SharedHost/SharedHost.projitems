@@ -15,7 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\Cluster.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Command\ShellSession.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Command\CommandLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Command\Command.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\HostConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Slave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\SlaveQueryResult.cs" />
@@ -28,7 +28,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StorageBlock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\ClientRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\ClientSession.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Command\ForwardCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Device.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Message.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\QoE.cs" />

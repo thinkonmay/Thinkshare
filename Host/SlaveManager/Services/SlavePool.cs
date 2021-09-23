@@ -91,41 +91,9 @@ namespace SlaveManager.Services
             if (!SearchForSlaveID(SlaveID)) { return false; }
             if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
 
-            Task.Run(() => slave.InitializeCommandLineSession(ProcessID));
+            Task.Run(() => slave.InitializeShellSession(ProcessID));
             return true;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        public bool TerminateCommand(int SlaveID, int ProcessID)
-        {
-            SlaveDevice slave;
-            if (!SearchForSlaveID(SlaveID)) { return false; }
-            if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
-
-            Task.Run(() => slave.TerminateCommandLineSession(ProcessID));
-            return true;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        public bool SendCommand(ForwardCommand command)
-        {
-            SlaveDevice slave;
-            if (!SearchForSlaveID(command.SlaveID)) { return false; }
-            if (!SlaveList.TryGetValue(command.SlaveID, out slave)) { return false; }
-
-            Task.Run(()=>slave.SendCommand(command));
-            return true;
-        }
-
-
 
 
 

@@ -32,12 +32,6 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             return;
         }
 
-        public async Task SendCommand(ISlaveDevice slave, ForwardCommand command)
-        {
-            return;
-        }
-
-
         public async Task RejectSlave(ISlaveDevice slave)
         {
             return;
@@ -48,7 +42,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             return SlaveServiceState.Disconnected;
         }
 
-        public async Task InitializeCommandlineSession(ISlaveDevice slave, int order)
+        public async Task InitializeShellSession(ISlaveDevice slave, int order)
         {
             return;
         }

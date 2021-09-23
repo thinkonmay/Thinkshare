@@ -107,7 +107,7 @@ namespace Conductor.Services
 
 
 
-        public async Task InitializeCommandLineSession(int SlaveID, int ProcessID)
+        public async Task InitializeShellSession(int SlaveID, int ProcessID)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Initialize")
@@ -129,10 +129,10 @@ namespace Conductor.Services
             await _shell.ExecuteAsync(request);
         }
 
-        public async Task SendCommand(ForwardCommand command)
+        public async Task SendCommand(ForwardScript command)
         {
             /*generate rest post to signalling server*/
-            var request = new RestRequest("ForwardCommand")
+            var request = new RestRequest("ForwardScript")
                 .AddJsonBody(command);
             request.Method = Method.POST;
 

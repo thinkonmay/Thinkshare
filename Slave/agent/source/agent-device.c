@@ -1,7 +1,7 @@
 #include <agent-device.h>
 #include <agent-object.h>
 #include <agent-message.h>
-#include <agent-cmd.h>
+#include <agent-shell-session.h>
 
 #include <logging.h>
 #include <general-constant.h>

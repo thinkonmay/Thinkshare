@@ -34,13 +34,6 @@ ChildProcess*		create_new_child_process					(gchar* binary_name,
 																 ChildStateHandle handler,
 																 AgentObject* agent);
 
-/// <summary>
-/// function used to handle stdout from child process
-/// </summary>
-/// <param name="buffer"></param>
-/// <param name="agent"></param>
-void				command_line_output_handle					(gchar* buffer,
-																 AgentObject* agent);
 
 
 void				initialize_child_process_system				(AgentObject* agent);

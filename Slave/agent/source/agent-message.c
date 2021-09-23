@@ -5,7 +5,7 @@
 #include <agent-type.h>
 #include <agent-state-open.h>
 #include <agent-state.h>
-#include <agent-cmd.h>
+#include <agent-shell-session.h>
 #include <agent-child-process.h>
 
 #include <general-constant.h>
@@ -136,23 +136,11 @@ on_agent_message(AgentObject* agent,
 			Message* json_data = get_json_object_from_string(data_string,&error);
 			if(!error == NULL || json_data == NULL) {return;}
 					
-			if (opcode == NEW_COMMAND_LINE_SESSION)
+			if (opcode == NEW_SHELL_SESSION)
 			{
-				create_new_cmd_process(agent,
+				create_new_shell_process(agent,
 					json_object_get_int_member(json_data, "ProcessID"));
 			}
-			else if (opcode == END_COMMAND_LINE_SESSION)
-			{
-				gint ID = json_object_get_int_member(json_data, "ProcessID");
-				ChildProcess* process = agent_get_child_process(agent,ID);
-				close_child_process(process);
-			}
-			else if (opcode == COMMAND_LINE_FORWARD)
-			{
-				agent_send_command_line(agent,
-					json_object_get_string_member(json_data, "CommandLine"),
-						json_object_get_int_member(json_data, "ProcessID"));
-			}			
 			else if (opcode == SESSION_INITIALIZE)
 			{
 				GFile* file = g_file_parse_name(SESSION_SLAVE_FILE);

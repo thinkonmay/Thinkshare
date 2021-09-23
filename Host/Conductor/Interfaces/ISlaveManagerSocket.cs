@@ -40,11 +40,11 @@ namespace Conductor.Interfaces
 
 
 
-        Task InitializeCommandLineSession(int SlaveID,int ProcessID);
+        Task InitializeShellSession(int SlaveID,int ProcessID);
 
         Task TerminateCommandLineSession(int SlaveID,int ProcessID);
 
-        Task SendCommand(ForwardCommand command);
+        Task SendCommand(ForwardScript command);
 
 
 

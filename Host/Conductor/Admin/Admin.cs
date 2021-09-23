@@ -100,30 +100,29 @@ namespace Conductor.Administration
         }
 
 
-        public async Task LogSlaveCommandLine(ReceiveCommand command)
+        public async Task LogShellOutput(ShellOutput output)
         {
-            Slave machine = _db.Devices.Find(command.SlaveID);
+            Slave machine = _db.Devices.Find(output.SlaveID);
             if (machine == null)
             {
                 var error = new ReportedError()
                 {
-                    ErrorMessage = $"Slave device id {command.SlaveID} not found!",
+                    ErrorMessage = $"Slave device id {output.SlaveID} not found!",
                     Module = (int)Module.HOST_MODULE,
-                    SlaveID = command.SlaveID
+                    SlaveID = output.SlaveID
                 };
                 System.Console.WriteLine(JsonConvert.SerializeObject(error));
 
-                CommandLog cmdLog = new CommandLog(){
-                    Command = command.Command
+                var device = _db.Devices.Find(output.SlaveID);
+                var Shell = device.ShellSession.Where(o => o.ProcessID == output.ProcessID && !o.EndTime.HasValue).FirstOrDefault()
+                {
+                    EndTime = DateTime.Now,
+                    Output = output.Output
                 };
-
-                var device = _db.Devices.Find(command.SlaveID);
-                var Shell = device.ShellSession.Where(o => o.ProcessID == command.ProcessID && !o.EndTime.HasValue).FirstOrDefault();
-                Shell.Commands.Add(cmdLog);                
                 await _db.SaveChangesAsync();
 
-                Serilog.Log.Information("Broadcasting event device {slave} return command log {log}", machine.ID, command.Command);
-                await _adminHubctx.Clients.All.LogSlaveCommandLine(command.SlaveID, command.ProcessID, command.Command);
+                Serilog.Log.Information("Broadcasting event device {slave} return shell output {log}", machine.ID, output.Output);
+                await _adminHubctx.Clients.All.LogShellOutput(output.SlaveID, output.ProcessID, output.Output);
                 return;
             }
         }

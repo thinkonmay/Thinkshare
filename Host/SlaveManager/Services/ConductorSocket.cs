@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
+using SharedHost.Models.Command;
 using RestSharp;
 using System.Net;
 using SharedHost;
@@ -92,7 +93,7 @@ namespace SlaveManager.Services
 
 
 
-        public async Task ReportShellSessionTerminated(ForwardCommand command)
+        public async Task ReportShellSessionTerminated(ForwardScript command)
         {
             var request = new RestRequest("Terminated")
                     .AddQueryParameter("SlaveID", command.SlaveID.ToString())
@@ -112,7 +113,7 @@ namespace SlaveManager.Services
             }
         }
 
-        public async Task LogSlaveCommandLine(ReceiveCommand result)
+        public async Task LogShellOutput(ShellOutput result)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Output")

@@ -15,11 +15,7 @@ namespace SlaveManager.Interfaces
 
         Task RemoteControlReconnect(ISlaveDevice slave);
 
-        Task InitializeCommandlineSession(ISlaveDevice slave, int order);
-
-        Task TerminateCommandlineSession(ISlaveDevice slave, int order);
-
-        Task SendCommand(ISlaveDevice slave, ForwardCommand command);
+        Task InitializeShellSession(ISlaveDevice slave, int order);
 
         Task RejectSlave(ISlaveDevice slave);
 

@@ -17,6 +17,8 @@ namespace SharedHost.Models.Command
 
         public DateTime? EndTime { get; set; }
 
-        public virtual ICollection<CommandLog> Commands { get; set; }
+        public string SendScript { get; set; }
+
+        public string? OutputScript { get; set; }
     }
 }

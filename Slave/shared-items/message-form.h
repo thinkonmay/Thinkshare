@@ -51,4 +51,8 @@ Message*            empty_message_init          (Module from,
 			                                    Module to,
 			                                    Opcode opcode);
 
+
+Message*            get_json_object_from_file   (gchar* file_name,
+                                                 GError** error);
+
 #endif

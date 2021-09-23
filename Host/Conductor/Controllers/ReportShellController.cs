@@ -21,18 +21,11 @@ namespace Conductor.Controllers
         {
             _admin = admin;
         }
-        [HttpPost("Terminated")]
-        public async Task<IActionResult> ReportShellSessionTerminated(int SlaveID, int ProcessID)
-        {
-            await _admin.ReportShellSessionTerminated(SlaveID, ProcessID);
-            return Ok();
-        }
-
 
         [HttpPost("Output")]
-        public async Task<IActionResult> LogCommandline(ReceiveCommand command)
+        public async Task<IActionResult> LogCommandline(ShellOutput command)
         {
-            await _admin.LogSlaveCommandLine(command);
+            await _admin.LogShellOutput(command);
             return Ok();
         }
     }
