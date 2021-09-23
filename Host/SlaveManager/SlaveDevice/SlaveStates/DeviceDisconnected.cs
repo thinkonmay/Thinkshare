@@ -1,6 +1,7 @@
 ﻿using SharedHost.Models;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
+using SharedHost.Models.Command;
 using SlaveManager.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             return SlaveServiceState.Disconnected;
         }
 
-        public async Task InitializeShellSession(ISlaveDevice slave, int order)
+        public async Task InitializeShellSession(ISlaveDevice slave, ShellScript script)
         {
             return;
         }

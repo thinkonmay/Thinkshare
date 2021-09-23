@@ -10,7 +10,7 @@
 #include <message-form.h>
 #include <error-code.h>
 #include <agent-object.h>
-
+#include <child-process-constant.h>
 
    
 
@@ -21,19 +21,21 @@ shell_script_map(gint process_id)
 {
     switch(process_id)
     {
-        case 2:
+        case POWERSHELL_1:
+            return SHELL_SCRIPT_BUFFER_1;
+        case POWERSHELL_2:
             return SHELL_SCRIPT_BUFFER_2;
-        case 3:
+        case POWERSHELL_3:
             return SHELL_SCRIPT_BUFFER_3;
-        case 4:
+        case POWERSHELL_4:
             return SHELL_SCRIPT_BUFFER_4;
-        case 5:
+        case POWERSHELL_5:
             return SHELL_SCRIPT_BUFFER_5;
-        case 6:
+        case POWERSHELL_6:
             return SHELL_SCRIPT_BUFFER_6;
-        case 7:
+        case POWERSHELL_7:
             return SHELL_SCRIPT_BUFFER_7;
-        case 8:
+        case POWERSHELL_8:
             return SHELL_SCRIPT_BUFFER_8;
     }
 }
@@ -43,19 +45,21 @@ shell_output_map(gint process_id)
 {
     switch(process_id)
     {
-        case 2:
+        case POWERSHELL_1:
+            return SHELL_OUTPUT_BUFFER_1;
+        case POWERSHELL_2:
             return SHELL_OUTPUT_BUFFER_2;
-        case 3:
+        case POWERSHELL_3:
             return SHELL_OUTPUT_BUFFER_3;
-        case 4:
+        case POWERSHELL_4:
             return SHELL_OUTPUT_BUFFER_4;
-        case 5:
+        case POWERSHELL_5:
             return SHELL_OUTPUT_BUFFER_5;
-        case 6:
+        case POWERSHELL_6:
             return SHELL_OUTPUT_BUFFER_6;
-        case 7:
+        case POWERSHELL_7:
             return SHELL_OUTPUT_BUFFER_7;
-        case 8:
+        case POWERSHELL_8:
             return SHELL_OUTPUT_BUFFER_8;
     }
 }
@@ -92,22 +96,46 @@ shell_process_handle(ChildProcess* proc,
 
 void
 create_new_shell_process(AgentObject* agent, 
-                         gint position)
+                         gint process_id)
 {
-    GString* string = g_string_new(shell_script_map(position));
+    GString* string = g_string_new(shell_script_map(process_id));
     g_string_append(string, " > ");
-    g_string_append(string, shell_output_map(position));
+    g_string_append(string, shell_output_map(process_id));
 
     ChildProcess* child_process = create_new_child_process(
         "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe ", 
-            position, g_string_free(string,TRUE),
+            process_id, g_string_free(string,TRUE),
                 shell_output_handle,
                 shell_process_handle, agent);
 
-    agent_set_child_process(agent,position, 
+    agent_set_child_process(agent,process_id, 
         child_process);
 }
 
+
+
+void
+initialize_shell_session(AgentObject* agent,
+                         gchar* data_string)
+{
+    GError* error = NULL;
+    Message* json_data = get_json_object_from_string(data_string,&error);
+    if(!error == NULL || json_data == NULL) {return;}
+
+    gint process_id =           json_object_get_int_member(json_data, "ProcessID");
+    gchar* powershell_command = json_object_get_string_member(json_data,"Script");
+    
+    GFile* file = g_file_parse_name(shell_script_map(process_id));
+    if(!g_file_replace_contents(file, powershell_command,strlen(powershell_command),
+        NULL,FALSE,G_FILE_CREATE_REPLACE_DESTINATION,NULL,NULL, NULL,NULL))
+    {
+        agent_report_error(agent,ERROR_FILE_OPERATION);					
+    }
+
+    create_new_shell_process(agent,process_id);
+    return;
+
+}
 
 
 

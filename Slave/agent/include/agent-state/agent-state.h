@@ -25,7 +25,7 @@ typedef void            (*RegisterToHost)               ( AgentObject* agent);
 
 typedef void            (*OnSessionCoreExit)            (AgentObject* agent);
 
-typedef void            (*OnCommandlineExit)            (AgentObject* agent, gint ProcessID);
+typedef void            (*OnShellSessionExit)            (AgentObject* agent, gint ProcessID);
 
 typedef gchar*          (*GetCurrentState)              (void);
 
@@ -53,7 +53,7 @@ struct _AgentState
 
     RegisterToHost register_to_host;
 
-    OnCommandlineExit on_shell_process_exit;
+    OnShellSessionExit on_shell_process_exit;
 
     GetCurrentState get_current_state;
 };

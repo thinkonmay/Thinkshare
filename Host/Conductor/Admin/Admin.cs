@@ -90,14 +90,6 @@ namespace Conductor.Administration
             }
         }
 
-        public async Task ReportShellSessionTerminated(int SlaveID, int ProcessID)
-        {
-            var session = _db.Devices.Find(SlaveID).ShellSession.Where(o =>o.ProcessID == ProcessID &&
-                                                                        !o.EndTime.HasValue).FirstOrDefault();
-
-            session.EndTime = DateTime.Now;
-            await _db.SaveChangesAsync();
-        }
 
 
         public async Task LogShellOutput(ShellOutput output)
@@ -114,7 +106,8 @@ namespace Conductor.Administration
                 System.Console.WriteLine(JsonConvert.SerializeObject(error));
 
                 var device = _db.Devices.Find(output.SlaveID);
-                var Shell = device.ShellSession.Where(o => o.ProcessID == output.ProcessID && !o.EndTime.HasValue).FirstOrDefault()
+                var Shell = device.ShellSession.Where(o => o.ProcessID == output.ProcessID && 
+                                                     !o.EndTime.HasValue).FirstOrDefault()
                 {
                     EndTime = DateTime.Now,
                     Output = output.Output
@@ -122,7 +115,7 @@ namespace Conductor.Administration
                 await _db.SaveChangesAsync();
 
                 Serilog.Log.Information("Broadcasting event device {slave} return shell output {log}", machine.ID, output.Output);
-                await _adminHubctx.Clients.All.LogShellOutput(output.SlaveID, output.ProcessID, output.Output);
+                await _adminHubctx.Clients.All.LogShellOutput(output);
                 return;
             }
         }

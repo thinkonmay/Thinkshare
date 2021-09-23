@@ -91,28 +91,6 @@ namespace SlaveManager.Services
 
 
 
-
-
-        public async Task ReportShellSessionTerminated(ForwardScript command)
-        {
-            var request = new RestRequest("Terminated")
-                    .AddQueryParameter("SlaveID", command.SlaveID.ToString())
-                    .AddQueryParameter("ProcessID", command.ProcessID.ToString());
-            request.Method = Method.POST;
-
-            var reply = await _shell.ExecuteAsync(request);
-            if (reply.StatusCode != HttpStatusCode.OK)
-            {
-                var error = new ReportedError()
-                {
-                    Module = (int)Module.HOST_MODULE,
-                    ErrorMessage = "Unable to process request",
-                    SlaveID = command.SlaveID
-                };
-                System.Console.WriteLine(JsonConvert.SerializeObject(error));
-            }
-        }
-
         public async Task LogShellOutput(ShellOutput result)
         {
             /*generate rest post to signalling server*/

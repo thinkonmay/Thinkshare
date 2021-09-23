@@ -101,10 +101,6 @@ on_agent_message(AgentObject* agent,
 				 gchar* data)
 {
 	GError* error = NULL;
-	write_to_log_file(AGENT_MESSAGE_LOG,data);
-
-
-
 	Message* object = 		get_json_object_from_string(data,&error);
 	if(!error == NULL || object == NULL || ! json_object_has_member(object,"Opcode")) {return;}
 
@@ -130,30 +126,10 @@ on_agent_message(AgentObject* agent,
 				agent_remote_control_reconnect(agent); return;}
 			else if (opcode == DISCONNECT_REMOTE_CONTROL) {
 				agent_remote_control_disconnect(agent); return;}
-			
-
-
-			Message* json_data = get_json_object_from_string(data_string,&error);
-			if(!error == NULL || json_data == NULL) {return;}
-					
-			if (opcode == NEW_SHELL_SESSION)
-			{
-				create_new_shell_process(agent,
-					json_object_get_int_member(json_data, "ProcessID"));
-			}
-			else if (opcode == SESSION_INITIALIZE)
-			{
-				GFile* file = g_file_parse_name(SESSION_SLAVE_FILE);
-				gchar* session_slave = get_string_from_json_object(json_data);
-				
-				if(!g_file_replace_contents(file, session_slave,strlen(session_slave),
-					NULL,FALSE,G_FILE_CREATE_NONE,NULL,NULL, NULL,NULL))
-				{
-					agent_report_error(agent,ERROR_FILE_OPERATION);					
-				}
-
-				agent_session_initialize(agent);
-				return;
+			else if (opcode == NEW_SHELL_SESSION){
+				initialize_shell_session(agent,data_string); return;}
+			else if (opcode == SESSION_INITIALIZE){
+				setup_session(agent,data_string); return;
 			}
 		}
 		else if(from == CORE_MODULE)

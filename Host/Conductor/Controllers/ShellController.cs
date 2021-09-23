@@ -55,8 +55,8 @@ namespace Conductor.Controllers
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPost("ForwardScript")]
-        public async Task<IActionResult> CommandLine([FromBody] ForwardScript command)
+        [HttpPost("ShellScript")]
+        public async Task<IActionResult> CommandLine([FromBody] ShellScript command)
         {
             await _slmsocket.SendCommand(command);
             return Ok();

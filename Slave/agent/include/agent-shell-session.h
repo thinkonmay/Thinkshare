@@ -36,7 +36,11 @@ gchar*				shell_output_map							(gint process_id);
 /// <summary>
 /// 
 /// </summary>
-gchar*				shell_script_map							(gint process_id)
+gchar*				shell_script_map							(gint process_id);
+
+
+void				initialize_shell_session					(AgentObject* agent,
+                    										     gchar* data_string);
 
 #endif
 

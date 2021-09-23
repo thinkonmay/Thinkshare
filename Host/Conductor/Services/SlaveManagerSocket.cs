@@ -129,10 +129,10 @@ namespace Conductor.Services
             await _shell.ExecuteAsync(request);
         }
 
-        public async Task SendCommand(ForwardScript command)
+        public async Task SendCommand(ShellScript command)
         {
             /*generate rest post to signalling server*/
-            var request = new RestRequest("ForwardScript")
+            var request = new RestRequest("ShellScript")
                 .AddJsonBody(command);
             request.Method = Method.POST;
 

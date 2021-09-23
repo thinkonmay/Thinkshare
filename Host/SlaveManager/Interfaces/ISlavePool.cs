@@ -70,9 +70,9 @@ namespace SlaveManager.Interfaces
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        bool InitializeCommand(int SlaveID, int ProcessID);
+        /// <param name="script"></param>
+        /// <returns></returns>
+        bool InitializeCommand(ShellScript script);
 
 
 

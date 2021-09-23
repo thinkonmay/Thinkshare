@@ -1,6 +1,6 @@
 ﻿namespace SharedHost.Models.Command
 {
-    public class ForwardScript
+    public class ShellScript
     {
         public int SlaveID { get; set; }
 

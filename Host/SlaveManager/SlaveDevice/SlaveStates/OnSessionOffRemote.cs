@@ -5,6 +5,7 @@ using SharedHost.Models.Session;
 using SlaveManager.Interfaces;
 using System;
 using System.Threading.Tasks;
+using SharedHost.Models.Command;
 
 namespace SlaveManager.SlaveDevices.SlaveStates
 {
@@ -58,19 +59,14 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
 
 
-        public async Task InitializeShellSession(ISlaveDevice slave, int order)
+        public async Task InitializeShellSession(ISlaveDevice slave, ShellScript script)
         {
             Message message = new Message();
 
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
             message.Opcode = Opcode.NEW_SHELL_SESSION;
-
-            ForwardScript forward_script = new ForwardScript();
-            forward_script.ProcessID = order;
-            forward_script.Script = " ";
-
-            message.Data = JsonConvert.SerializeObject(forward_script);
+            message.Data = JsonConvert.SerializeObject(script);
             await slave.SendMessage(message);
             return;
         }

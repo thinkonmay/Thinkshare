@@ -43,19 +43,14 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             return;
         }
 
-        public async Task InitializeShellSession(ISlaveDevice slave, ForwardScript order)
+        public async Task InitializeShellSession(ISlaveDevice slave, ShellScript script)
         {
             Message message = new Message();
 
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
             message.Opcode = Opcode.NEW_SHELL_SESSION;
-
-            ForwardScript forward_command = new ForwardScript();
-            forward_command.ProcessID = order;
-            forward_command.CommandLine = " ";
-
-            message.Data = JsonConvert.SerializeObject(forward_command);
+            message.Data = JsonConvert.SerializeObject(script);
             await slave.SendMessage(message);
             return;
         }
@@ -82,5 +77,6 @@ namespace SlaveManager.SlaveDevices.SlaveStates
         {
             return;
         }
+
     }
 }

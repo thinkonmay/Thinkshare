@@ -44,7 +44,7 @@ namespace Conductor.Interfaces
 
         Task TerminateCommandLineSession(int SlaveID,int ProcessID);
 
-        Task SendCommand(ForwardScript command);
+        Task SendCommand(ShellScript command);
 
 
 

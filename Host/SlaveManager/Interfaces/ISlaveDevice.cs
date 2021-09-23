@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using SharedHost.Models;
 using SharedHost.Models.Device;
+using SharedHost.Models.Command;
 using SharedHost.Models.Session;
 
 namespace SlaveManager.Interfaces
@@ -75,7 +76,16 @@ namespace SlaveManager.Interfaces
         /// </summary>
         /// <param name="order">order(process-id) of commandline process to initialize</param>
         /// <returns></returns>
-        Task InitializeShellSession(int order);
+        Task InitializeShellSession(ShellScript script);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="order"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        Task EndShellSession(ShellOutput output);
 
         /// <summary>
         /// Send reject signal to slave device, 

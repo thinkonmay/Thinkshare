@@ -84,8 +84,8 @@ namespace SlaveManager.SlaveDevices
                         }
                         case (int)Opcode.END_SHELL_SESSION:
                         {
-                            var session = JsonConvert.DeserializeObject<ForwardScript>(messageForm.Data);
-                            await _conductor.ReportShellSessionTerminated(session);
+                            var output = JsonConvert.DeserializeObject<ShellOutput>(messageForm.Data);
+                            await EndShellSession(output);
                             break;
                         }
 
@@ -190,10 +190,16 @@ namespace SlaveManager.SlaveDevices
 
 
 
-        public async Task InitializeShellSession(int order)
+        public async Task InitializeShellSession(ShellScript script)
         {
-            await State.InitializeShellSession(this, order);
+            await State.InitializeShellSession(this, script);
         }
+
+        public async Task EndShellSession(ShellOutput output)
+        {
+            await _conductor.LogShellOutput(output);
+        }
+
 
 
 

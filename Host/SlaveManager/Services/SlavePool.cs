@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SlaveManager.Interfaces;
 using SharedHost.Models.Session;
+using SharedHost.Models.Command;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
 using SharedHost;
@@ -79,19 +80,17 @@ namespace SlaveManager.Services
 
 
 
-
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        public bool InitializeCommand(int SlaveID, int ProcessID)
+        /// <returns></returns>
+        public bool InitializeCommand(ShellScript script)
         {
             SlaveDevice slave;
-            if (!SearchForSlaveID(SlaveID)) { return false; }
-            if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
+            if (!SearchForSlaveID(script.SlaveID)) { return false; }
+            if (!SlaveList.TryGetValue(script.SlaveID, out slave)) { return false; }
 
-            Task.Run(() => slave.InitializeShellSession(ProcessID));
+            Task.Run(() => slave.InitializeShellSession(script));
             return true;
         }
 
