@@ -38,6 +38,21 @@ $(document).ready(async () => {
 		window.location.replace(API.Error)
 	}
 
+	const queryCommand = await (await API.queryCommand(611212710)).json();
+	for(const i in queryCommand)
+	{
+		var output = remove_linebreaks(queryCommand[i].output);
+		var script = remove_linebreaks(queryCommand[i].script);
+		console.log(script);
+		console.log(output);
+		try{
+		var json = JSON.parse(output);
+		console.log(output);
+		} catch (err){}
+	}
+
+
+	
 
 
 	var stateSignalR = document.getElementById('state-signalr');
@@ -77,42 +92,52 @@ $(document).ready(async () => {
 	})
 
 
-	var stateSignalR = document.getElementById('state-signalr');
-	// Connect to hub signalR with access-token Bearer Authorzation
-	const connection = new signalR.HubConnectionBuilder()
-		.withUrl(`https://conductor.thinkmay.net/AdminHub`, {
-			accessTokenFactory: () => getCookie("token") // Return access token
-		}).build()
-	connection.start().then(function () {
-		console.log("connected to signalR hub");
+	// var stateSignalR = document.getElementById('state-signalr');
+	// // Connect to hub signalR with access-token Bearer Authorzation
+	// const connection = new signalR.HubConnectionBuilder()
+	// 	.withUrl(`https://conductor.thinkmay.net/AdminHub`, {
+	// 		accessTokenFactory: () => getCookie("token") // Return access token
+	// 	}).build()
+	// connection.start().then(function () {
+	// 	console.log("connected to signalR hub");
 
-		// we use signalR to inform browser 
-		// about all state changes event of slave and session
-		connection.on("ReportSessionDisconnected", function (slaveId) {
-			setState("OFF_REMOTE", slaveId)
-		})
-		connection.on("ReportSessionReconnected", function (slaveId) {
-			setState("ON_SESSION", slaveId);
-		})
-		connection.on("ReportSessionTerminated", function (slaveId) {
-			var slave = document.getElementById(`slavesInUses${slaveId}`);
-			slave.remove()
-		})
-		connection.on("ReportSlaveObtained", function (slaveId) {
-			var slave = document.getElementById(`availableSlaves${slaveId}`);
-			slave.remove()
-		})
-		connection.on("ReportSessionInitialized", function (slaveInfor) {
-			slaveInfor.serviceState = "ON_SESSION";
-			createSlave(slaveInfor, "slavesInUses")
-		})
-		connection.on("ReportNewSlaveAvailable", function (device) {
-			createSlave(device, "availableSlaves")
-		})
-	}).catch(function (err) {
-		location.replace();
-	})
+	// 	// we use signalR to inform browser 
+	// 	// about all state changes event of slave and session
+	// 	connection.on("ReportSessionDisconnected", function (slaveId) {
+	// 		setState("OFF_REMOTE", slaveId)
+	// 	})
+	// 	connection.on("ReportSessionReconnected", function (slaveId) {
+	// 		setState("ON_SESSION", slaveId);
+	// 	})
+	// 	connection.on("ReportSessionTerminated", function (slaveId) {
+	// 		var slave = document.getElementById(`slavesInUses${slaveId}`);
+	// 		slave.remove()
+	// 	})
+	// 	connection.on("ReportSlaveObtained", function (slaveId) {
+	// 		var slave = document.getElementById(`availableSlaves${slaveId}`);
+	// 		slave.remove()
+	// 	})
+	// 	connection.on("ReportSessionInitialized", function (slaveInfor) {
+	// 		slaveInfor.serviceState = "ON_SESSION";
+	// 		createSlave(slaveInfor, "slavesInUses")
+	// 	})
+	// 	connection.on("ReportNewSlaveAvailable", function (device) {
+	// 		createSlave(device, "availableSlaves")
+	// 	})
+	// }).catch(function (err) {
+	// 	location.replace();
+	// })
 })
+
+function remove_linebreaks(str) {
+
+	var newstr = "";
+	for( var i = 0; i < str.length; i++ ) 
+		if( !(str[i]+str[i+1] == "\\n" || str[i]+str[i+1] == "\\r") )
+			newstr += str[i];
+	return newstr;
+}
+
 
 function createSlave(slave, queue) {
 	append(queue, `

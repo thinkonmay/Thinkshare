@@ -90,7 +90,7 @@ export const querySession = SlaveID => {
 }
 
 export const queryCommand = SlaveID => {
-	return fetch(QuerySession + "?SlaveID=" + SlaveID, {
+	return fetch(QueryCommand + "?SlaveID=" + SlaveID, {
 		method: "GET",
 		headers: genHeaders()
 	})

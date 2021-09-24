@@ -33,6 +33,10 @@ namespace Conductor.Controllers
         [HttpPost("ShellScript")]
         public async Task<IActionResult> Shell([FromBody] ShellScript command)
         {
+            if((await _slmsocket.GetSlaveState(command.SlaveID)).SlaveServiceState == SlaveServiceState.Disconnected)
+            {
+                return BadRequest("Device not available");
+            }
             await _slmsocket.InitializeShellSession(command);
             return Ok();
         }
