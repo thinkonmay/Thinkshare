@@ -6,7 +6,7 @@ using RestSharp;
 using SlaveManager.SlaveDevices;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SharedHost;
 
 namespace SlaveManager.Controllers

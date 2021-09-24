@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SlaveManager.Interfaces;
 using SharedHost.Models.Session;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
 using SharedHost;

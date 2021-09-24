@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SharedHost.Models.Error;
 using SharedHost.Models.Session;
 

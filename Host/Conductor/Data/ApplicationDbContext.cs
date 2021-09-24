@@ -10,7 +10,7 @@ using Conductor.Models;
 using SharedHost.Models.User;
 using System.Threading.Tasks;
 using SharedHost.Models.Session;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SharedHost.Models.Error;
 using SharedHost.Models.Device;
 
@@ -46,5 +46,6 @@ namespace Conductor.Data
         public DbSet<Slave> Devices { get; set; }
         public DbSet<RemoteSession> RemoteSessions { get; set; }
         public DbSet<ShellSession> ShellSession { get; set; }
+        public DbSet<ScriptModel> ScriptModels { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using SharedHost.Models.Command;
+﻿using SharedHost.Models.Shell;
 using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Interfaces;

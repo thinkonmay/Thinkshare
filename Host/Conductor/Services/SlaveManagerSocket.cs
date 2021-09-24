@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using RestSharp;
 using Newtonsoft;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using Newtonsoft.Json;
 using System.Net;
 using Conductor.Interfaces;

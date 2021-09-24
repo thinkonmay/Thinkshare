@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SharedHost.Models;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;

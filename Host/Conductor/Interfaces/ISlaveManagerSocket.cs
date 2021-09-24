@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using RestSharp;
 
 namespace Conductor.Interfaces

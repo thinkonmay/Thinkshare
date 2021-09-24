@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using SharedHost.Models;
-using Conductor.Administration;
+using Conductor.Services;
 using Conductor.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
 using SharedHost.Models.User;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 
 namespace SignalRChat.Hubs
 {

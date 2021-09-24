@@ -3,7 +3,7 @@ using System;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using RestSharp;
 using System.Net;
 using SharedHost;

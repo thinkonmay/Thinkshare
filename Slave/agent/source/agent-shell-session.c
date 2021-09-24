@@ -31,6 +31,10 @@ struct _ShellSession
     gchar* output_file;
 
     gchar* shell_script;
+    
+    gint model_id;
+    
+    gint id;
 };
 
 
@@ -62,6 +66,18 @@ shell_session_get_script(gint process_id)
         return NULL;
 
     return shell_script;
+}
+
+gint
+shell_session_get_id(gint process_id)
+{
+    return shell_session_pool[process_id].id;
+}
+
+gint
+shell_session_get_model(gint process_id)
+{
+    return shell_session_pool[process_id].model_id;
 }
 
 
@@ -196,6 +212,8 @@ initialize_shell_session(AgentObject* agent,
     session->script_file = shell_script_map(process_id);
     session->output_file = shell_output_map(process_id);
     session->shell_script = json_object_get_string_member(json_data,"Script");
+    session->model_id = json_object_get_int_member(json_data,"ModelID");
+    session->id = json_object_get_int_member(json_data,"ID");
     session->process = process;
 
     write_to_script_file(agent, session);

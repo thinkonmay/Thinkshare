@@ -1,9 +1,9 @@
-﻿using SharedHost.Models.Command;
+﻿using SharedHost.Models.Shell;
 using Newtonsoft.Json;
 using SharedHost.Models;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SlaveManager.Interfaces;
 using System;
 using System.Threading.Tasks;

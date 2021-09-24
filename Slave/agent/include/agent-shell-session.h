@@ -41,6 +41,20 @@ gchar*				shell_session_get_script					(gint process_id);
 void				initialize_shell_session					(AgentObject* agent,
                     										     gchar* data_string);
 
+/// <summary>
+/// </summary>
+/// 
+/// <param name="process_id"></param>
+/// <returns></returns>
+gint				shell_session_get_id						(gint process_id);
+
+/// <summary>
+/// </summary>
+/// 
+/// <param name="process_id"></param>
+/// <returns></returns>
+gint				shell_session_get_model						(gint process_id);
+
 #endif
 
 

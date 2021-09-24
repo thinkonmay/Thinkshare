@@ -3,7 +3,7 @@ using SharedHost.Models.Session;
 using SlaveManager.SlaveDevices;
 using System;
 using System.Collections.Generic;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 
 namespace SlaveManager.Interfaces
 {

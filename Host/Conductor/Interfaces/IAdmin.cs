@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Conductor.Models;
 using SharedHost.Models;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
 using SharedHost.Models.Session;

@@ -5,7 +5,7 @@ using SharedHost.Models.Session;
 using SlaveManager.Interfaces;
 using System;
 using System.Threading.Tasks;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 
 namespace SlaveManager.SlaveDevices.SlaveStates
 {

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using SharedHost.Models;
 using SharedHost.Models.Device;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SharedHost.Models.Session;
 
 namespace SlaveManager.Interfaces

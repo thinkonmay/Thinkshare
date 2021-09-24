@@ -76,6 +76,8 @@ off_remote_on_shell_process_exit(AgentObject* agent,
 {
     gchar* script = shell_session_get_script(process_id);
     gchar* output = shell_session_get_output(process_id);
+    gint id =       shell_session_get_id(process_id);
+    gint model =    shell_session_get_model(process_id);
     if(script == NULL || output == NULL) 
     {
         agent_report_error(agent, "fail to get script output");
@@ -85,6 +87,8 @@ off_remote_on_shell_process_exit(AgentObject* agent,
     Message* shell = json_object_new();
     json_object_set_string_member(shell, "Output", output);
     json_object_set_string_member(shell, "Script", script);
+    json_object_set_int_member(shell, "ID", id);
+    json_object_set_int_member(shell, "ModelID", model);
 
 
     Message* message = message_init(

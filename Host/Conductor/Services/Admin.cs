@@ -7,7 +7,7 @@ using SignalRChat.Hubs;
 using System.Linq;
 using SharedHost.Models.Error;
 using SharedHost.Models.Device;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SharedHost.Models.Session;
 using RestSharp;
 using SharedHost;
@@ -15,10 +15,8 @@ using Newtonsoft.Json;
 using SharedHost.Models.User;
 using Microsoft.AspNetCore.Identity;
 
-namespace Conductor.Administration
+namespace Conductor.Services
 {
-
-
     public class Admin : IAdmin
     {
         private readonly ApplicationDbContext _db;
@@ -206,13 +204,13 @@ namespace Conductor.Administration
             var remote = _db.RemoteSessions.Where(o => o.Slave.ID == SlaveID && !o.EndTime.HasValue).ToList();
             if(remote.Count() == 0)
             {
-                _clientHubctx.Clients.All.ReportSlaveObtained(SlaveID);
+                await _clientHubctx.Clients.All.ReportSlaveObtained(SlaveID);
             }
             else
             {
                 foreach (var i in remote)
                 {
-                    _clientHubctx.Clients
+                    await _clientHubctx.Clients
                         .Group(await _userManager.GetUserIdAsync(i.Client))
                         .ReportSessionTerminated(SlaveID);
                     i.EndTime = DateTime.Now;
@@ -233,7 +231,7 @@ namespace Conductor.Administration
             var result = await _slavemanager.GetSlaveState(remoteSession.Slave.ID);
             if(result.SlaveServiceState == "ON_SESSION")
             {
-                _slavemanager.RemoteControlDisconnect(remoteSession.Slave.ID);
+                await _slavemanager.RemoteControlDisconnect(remoteSession.Slave.ID);
                 Serilog.Log.Information("Broadcasting event slave device {slave} reconnected during {user} session", remoteSession.Slave.ID, remoteSession.Client.UserName);
                 await _clientHubctx.Clients.Group( await _userManager.GetUserIdAsync(remoteSession.Client)).ReportSessionReconnected(remoteSession.Slave.ID);                                 
             }
