@@ -48,9 +48,16 @@ for (const policyKey in policies) {
 	if (middleware) app.use(path, middleware)
 }
 
+app.use("**/:locale/", (req, res, next) => {
+	if (locales.hasOwnProperty(req.params.locale)) {
+		res.cookie("locale", req.params.locale)
+		res.redirect(req.originalUrl.slice(0, req.originalUrl.length - req.params.locale.length - 1))
+	}
+	next()
+})
+
 app.use((req, res, next) => {
-	const key = req.cookies.locale || "en"
-	console.log(key, locales[key])
+	const key = req.cookies.locale || "vi"
 	if (locales.hasOwnProperty(key))
 		res.locals = locales[key]
 	next()
