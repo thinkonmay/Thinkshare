@@ -12,9 +12,9 @@ namespace SharedHost.Models.Command
 
         public ShellSession(ShellOutput output)
         {
-            Script = output.Script.Replace("\\n", "").Replace("\\r", "").Replace(" ","");
+            Script = new string(output.Script.Where(c => !char.IsControl(c)).ToArray());
 
-            Output = output.Output.Replace("\\n", "").Replace("\\r", "").Replace(" ","");
+            Output = new string(output.Output.Where(c => !char.IsControl(c)).ToArray());
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
