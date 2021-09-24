@@ -15,16 +15,7 @@
 
 
 
-/// <summary>
-/// create new window process, new process created should be run under admin privillege,
-/// server are able to send text to child process std input,
-///	two common example of child process are cmd.exe and session-core.exe
-/// </summary>
-/// <param name="position"></param>
-/// <param name="agent"></param>
-/// <param name="first_command"></param>
-void				create_new_shell_process					(AgentObject* agent, 
-																gint position);
+
 
 /// <summary>
 /// </summary>

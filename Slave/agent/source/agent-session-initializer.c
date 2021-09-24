@@ -23,27 +23,27 @@ handler_session_core_state_function(ChildProcess* proc,
                                     DWORD exit_code, 
                                     AgentObject* agent)
 {
-        /*
-        *if child process terminated is session core
-        *let agent handle that
-        */
-        if (exit_code != STILL_ACTIVE)
-        {
-            agent_on_session_core_exit(agent);
-            close_child_process(proc);
-            return;
-        }
+    /*
+    *if child process terminated is session core
+    *let agent handle that
+    */
+    if (exit_code != STILL_ACTIVE)
+    {
+        agent_on_session_core_exit(agent);
+        close_child_process(proc);
+        return;
+    }
 
-        /*
-        *if child process is session core, check for current state of agent,
-        *Terminate process if agent is not in session,
-        */
-    
-        if(g_strcmp0(agent_get_current_state_string(agent) , AGENT_ON_SESSION))
-        {
-            close_child_process(proc);
-            return;
-        }
+    /*
+    *if child process is session core, check for current state of agent,
+    *Terminate process if agent is not in session,
+    */
+
+    if(g_strcmp0(agent_get_current_state_string(agent) , AGENT_ON_SESSION))
+    {
+        close_child_process(proc);
+        return;
+    }
         
 }
 

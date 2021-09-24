@@ -84,7 +84,7 @@ namespace SlaveManager.Services
         /// 
         /// </summary>
         /// <returns></returns>
-        public bool InitializeCommand(ShellScript script)
+        public bool InitShellSession(ShellScript script)
         {
             SlaveDevice slave;
             if (!SearchForSlaveID(script.SlaveID)) { return false; }

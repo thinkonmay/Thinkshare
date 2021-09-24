@@ -60,30 +60,26 @@ struct _AgentObject
 
 
 
-
+static AgentObject agent_declare = {0};
 
 
 AgentObject*
 agent_new(gchar* url)
-{
-	// allocate heap for agent object
-	static AgentObject agent;
-	ZeroMemory(&agent, sizeof(AgentObject));
-	
+{	
 	//set initial state of agent as unregistered	
 	AgentState* unregistered = transition_to_unregistered_state();
-	agent.state = unregistered;
+	agent_declare.state = unregistered;
 
 	//g_thread_new("update device",(GThreadFunc)update_device, &agent);
-	initialize_child_process_system(&agent);
-	agent.socket=initialize_socket(&agent);
+	initialize_child_process_system(&agent_declare);
+	agent_declare.socket=initialize_socket(&agent_declare);
 	
 	// connect to host with given id
-	agent_connect_to_host(&agent);
+	agent_connect_to_host(&agent_declare);
 
 	// start gmainloop, 
-	agent.loop = g_main_loop_new(NULL, FALSE);
-	g_main_loop_run(agent.loop);
+	agent_declare.loop = g_main_loop_new(NULL, FALSE);
+	g_main_loop_run(agent_declare.loop);
 	return NULL;
 }
 

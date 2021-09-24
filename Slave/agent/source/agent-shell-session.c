@@ -77,8 +77,8 @@ shell_output_handle(GBytes* data,
 
 void
 shell_process_handle(ChildProcess* proc,
-                            DWORD exit_code,
-                            AgentObject* agent)
+                    DWORD exit_code,
+                    AgentObject* agent)
 {
     if(exit_code == STILL_ACTIVE)
     {
@@ -94,37 +94,27 @@ shell_process_handle(ChildProcess* proc,
 
 
 
-void
+static void
 create_new_shell_process(AgentObject* agent, 
                          gint process_id)
 {
     GString* string = g_string_new(shell_script_map(process_id));
-    g_string_append(string, " > ");
+    g_string_append(string, " | out-file ");
     g_string_append(string, shell_output_map(process_id));
+    g_string_append(string," -encoding utf8");
+    gchar* command = g_string_free(string,FALSE);
 
     ChildProcess* child_process = create_new_child_process(
         "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe ", 
-            process_id, g_string_free(string,TRUE),
+            process_id, command,
                 shell_output_handle,
                 shell_process_handle, agent);
 
-    agent_set_child_process(agent,process_id, 
-        child_process);
 }
 
-
-
-void
-initialize_shell_session(AgentObject* agent,
-                         gchar* data_string)
+static void 
+write_to_script_file(AgentObject* agent, gint process_id, gchar* powershell_command)
 {
-    GError* error = NULL;
-    Message* json_data = get_json_object_from_string(data_string,&error);
-    if(!error == NULL || json_data == NULL) {return;}
-
-    gint process_id =           json_object_get_int_member(json_data, "ProcessID");
-    gchar* powershell_command = json_object_get_string_member(json_data,"Script");
-    
     GFile* file = g_file_parse_name(shell_script_map(process_id));
     if(!g_file_replace_contents(file, powershell_command,strlen(powershell_command),
         NULL,FALSE,G_FILE_CREATE_REPLACE_DESTINATION,NULL,NULL, NULL,NULL))
@@ -134,7 +124,23 @@ initialize_shell_session(AgentObject* agent,
 
     create_new_shell_process(agent,process_id);
     return;
+}
 
+void
+initialize_shell_session(AgentObject* agent,
+                         gchar* data_string)
+{
+    GError* error = NULL;
+    Message* json_data = get_json_object_from_string(data_string,&error);
+    if(!error == NULL) {return;}
+
+    gint a = json_object_get_int_member(json_data, "ProcessID");
+    gchar* b = json_object_get_string_member(json_data,"Script");
+
+    gint process_id =  6;
+    gchar* powershell_command = "hello";
+    
+    write_to_script_file(agent,process_id,powershell_command);
 }
 
 

@@ -67,16 +67,22 @@ open_on_shell_process_exit(AgentObject* agent,
 {
     GError* error_a = NULL, * error_b = NULL;
     JsonObject* obj = get_json_object_from_file(HOST_CONFIG_FILE,&error_a);
-    JsonObject* output = get_json_object_from_file(shell_output_map(ProcessID), &error_b);
-    if(error_a != NULL|| error_b != NULL)
+    gchar* shell_output;
+    g_file_get_contents(shell_output_map(ProcessID),&shell_output,NULL, &error_b);
+
+    if(error_a != NULL)
     {
         agent_report_error(agent, error_a->message);
+        return;
+    }
+    else if(error_b != NULL)
+    {
         agent_report_error(agent, error_b->message);
         return;
     }
 
     gint SlaveID = json_object_get_int_member(obj, DEVICE_ID);
-    gchar* shell_output = get_string_from_json_object(output);
+    
 
 
     Message* shell = json_object_new();

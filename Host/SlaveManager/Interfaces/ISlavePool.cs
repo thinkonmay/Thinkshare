@@ -3,6 +3,7 @@ using SharedHost.Models.Session;
 using SlaveManager.SlaveDevices;
 using System;
 using System.Collections.Generic;
+using SharedHost.Models.Command;
 
 namespace SlaveManager.Interfaces
 {
@@ -72,7 +73,7 @@ namespace SlaveManager.Interfaces
         /// </summary>
         /// <param name="script"></param>
         /// <returns></returns>
-        bool InitializeCommand(ShellScript script);
+        bool InitShellSession(ShellScript script);
 
 
 

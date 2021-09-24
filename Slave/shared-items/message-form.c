@@ -77,7 +77,7 @@ get_json_object_from_file(gchar* file_name,
     JsonNode* root;
 	JsonParser* parser = json_parser_new();
 	json_parser_load_from_file(parser, file_name, error);
-	root = json_parser_get_root(parser);  
+	root = json_parser_get_root(parser); 
     
     return json_node_get_object(root);
 }

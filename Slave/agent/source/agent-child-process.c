@@ -58,16 +58,18 @@ struct _ChildProcess
 
 
 
+static ChildProcess process_pool[LAST_CHILD_PROCESS];
 
 void
 initialize_child_process_system(AgentObject* agent)
 {
-    static ChildProcess  process_array[LAST_CHILD_PROCESS];
-    ZeroMemory(&process_array,sizeof(process_array));
-
+    memset(&process_pool,0,sizeof(process_pool));
     for(gint i = 0; i < LAST_CHILD_PROCESS;i++)
     {
-        agent_set_child_process(agent,i,&(process_array[i]));
+        process_pool[i].agent = agent;
+        process_pool[i].completed = TRUE;
+
+        agent_set_child_process(agent,i,&(process_pool[i]));
     }
 }
 
@@ -87,7 +89,7 @@ handle_child_process_io(gpointer data)
         for (;;)
         {
             Sleep(10);
-            bSuccess = ReadFile(proc->standard_out, chBuf, BUFSIZE, &dwRead, NULL);
+            bSuccess = ReadFileEx(proc->standard_out, chBuf, BUFSIZE, &dwRead, NULL);
             if (!bSuccess || dwRead == 0) { break; }
 
             GBytes* data = g_bytes_new(chBuf, strlen(chBuf));
@@ -174,8 +176,7 @@ create_new_child_process(gchar* process_name,
                         ChildStateHandle handler,
                         AgentObject* agent)
 {
-    ChildProcess* child_process = agent_get_child_process(agent,process_id);
-    ZeroMemory(child_process,sizeof(ChildProcess));
+    ChildProcess* child_process = &process_pool[process_id];
 
     child_process->agent = agent;
     child_process->process_id = process_id;
@@ -203,13 +204,12 @@ create_new_child_process(gchar* process_name,
     startup_infor.hStdInput = hdl->standard_in;
     startup_infor.hStdOutput = hdl->standard_out;
     // startup_infor.hStdError = hdl->standard_out;
-
-    strcat(process_name, parsed_command);
     
-    LPSTR path = g_win32_locale_filename_from_utf8(process_name);
+    LPSTR process = g_win32_locale_filename_from_utf8(process_name);
+    LPSTR command = g_win32_locale_filename_from_utf8(parsed_command);
     /*START process, all standard input and output are controlled by agent*/
-    gboolean output = CreateProcess(NULL,
-        path,
+    gboolean output = CreateProcess(process,
+        command,
         NULL,
         NULL,
         TRUE,
@@ -220,7 +220,7 @@ create_new_child_process(gchar* process_name,
 
     if(!output)
     {
-        GetLastError();
+        DWORD error = GetLastError();
         agent_report_error(agent,ERROR_PROCESS_OPERATION);
         write_to_log_file(AGENT_GENERAL_LOG,ERROR_PROCESS_OPERATION);
         return NULL;        
@@ -233,7 +233,7 @@ create_new_child_process(gchar* process_name,
 
     return child_process;
 }
-
+ 
 
 gboolean 				
 get_current_child_process_state(AgentObject* agent,
