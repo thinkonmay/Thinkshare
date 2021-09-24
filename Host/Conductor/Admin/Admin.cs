@@ -106,12 +106,8 @@ namespace Conductor.Administration
                 System.Console.WriteLine(JsonConvert.SerializeObject(error));
 
                 var device = _db.Devices.Find(output.SlaveID);
-                var Shell = device.ShellSession.Where(o => o.ProcessID == output.ProcessID && 
-                                                     !o.EndTime.HasValue).FirstOrDefault()
-                {
-                    EndTime = DateTime.Now,
-                    Output = output.Output
-                };
+                var session = new ShellSession(output);
+                device.ShellSession.Add(session);
                 await _db.SaveChangesAsync();
 
                 Serilog.Log.Information("Broadcasting event device {slave} return shell output {log}", machine.ID, output.Output);
@@ -202,15 +198,7 @@ namespace Conductor.Administration
             await _clientHubctx.Clients.Group(account).ReportSessionReconnected(session.Slave.ID);
         }
 
-        public async Task EndAllShellSession(int SlaveID)
-        {
-            var shell = _db.Devices.Find(SlaveID).ShellSession.Where(o=>!o.EndTime.HasValue).ToList();
-            foreach (var i in shell)
-            {
-                i.EndTime = DateTime.Now;
-            }
-            await _db.SaveChangesAsync();
-        }
+        
         public async Task EndAllRemoteSession(int SlaveID)
         {
             var remote = _db.RemoteSessions.Where(o => o.Slave.ID == SlaveID && !o.EndTime.HasValue).ToList();

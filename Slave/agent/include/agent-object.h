@@ -71,7 +71,7 @@ void											agent_remote_control_reconnect		(AgentObject* self);
 /// </summary>
 /// <param name="self"></param>
 void         									agent_on_shell_process_terminate	(AgentObject* self, 
-																					gint process_id);
+																					 gint process_id);
 
 
 

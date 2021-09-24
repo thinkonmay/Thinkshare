@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SharedHost.Models.Command;
 
 namespace Conductor.Controllers
 {
@@ -23,7 +24,7 @@ namespace Conductor.Controllers
         }
 
         [HttpPost("Output")]
-        public async Task<IActionResult> LogCommandline(ShellOutput command)
+        public async Task<IActionResult> LogCommandline([FromBody] ShellOutput command)
         {
             await _admin.LogShellOutput(command);
             return Ok();

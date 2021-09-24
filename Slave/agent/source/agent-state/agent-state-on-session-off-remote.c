@@ -5,7 +5,7 @@
 #include <agent-state-open.h>
 #include <agent-state-on-session.h>
 #include <agent-socket.h>
-
+#include <agent-shell-session.h>
 
 #include <state-indicator.h>
 #include <general-constant.h>
@@ -71,26 +71,20 @@ off_remote_send_message_to_host(AgentObject* agent,
 
 
 static void
-off_remote_on_shell_process_exit(AgentObject* agent, gint ProcessID)
+off_remote_on_shell_process_exit(AgentObject* agent, 
+                                 gint process_id)
 {
-    GError* error_a = NULL, * error_b = NULL;
-    JsonObject* obj = get_json_object_from_file(HOST_CONFIG_FILE,&error_a);
-    JsonObject* output = get_json_object_from_file(shell_output_map(ProcessID), &error_b);
-    if(error_a != NULL|| error_b != NULL)
+    gchar* script = shell_session_get_script(process_id);
+    gchar* output = shell_session_get_output(process_id);
+    if(script == NULL || output == NULL) 
     {
-        agent_report_error(agent, error_a->message);
-        agent_report_error(agent, error_b->message);
+        agent_report_error(agent, "fail to get script output");
         return;
     }
 
-    gint SlaveID = json_object_get_int_member(obj, DEVICE_ID);
-    gchar* shell_output = get_string_from_json_object(output);
-
-
     Message* shell = json_object_new();
-    json_object_set_int_member(shell, "ProcessID", ProcessID);
-    json_object_set_int_member(shell, "SlaveID", SlaveID);
-    json_object_set_string_member(shell, "Output", shell_output);
+    json_object_set_string_member(shell, "Output", output);
+    json_object_set_string_member(shell, "Script", script);
 
 
     Message* message = message_init(
@@ -127,10 +121,10 @@ transition_to_off_remote_state(void)
         default_method(&off_remote_state);
         off_remote_state.session_terminate =            off_remote_session_terminate;
         off_remote_state.remote_control_reconnect =     off_remote_remote_control_reconnect;
-        off_remote_state.send_message_to_host =         send_message_to_host;
+        off_remote_state.send_message_to_host =         off_remote_send_message_to_host;
         off_remote_state.send_message_to_session_core = send_message_to_core;
         off_remote_state.get_current_state =            on_session_off_remote_get_state;
-        off_remote_state.on_shell_process_exit = off_remote_on_shell_process_exit;
+        off_remote_state.on_shell_process_exit =        off_remote_on_shell_process_exit;
 
         initialized = TRUE; 
     }

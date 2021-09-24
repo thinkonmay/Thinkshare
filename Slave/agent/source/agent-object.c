@@ -145,9 +145,9 @@ agent_connect_to_host(AgentObject* self)
 }
 
 void
-agent_on_shell_process_terminate(AgentObject* self, gint ProcessID)
+agent_on_shell_process_terminate(AgentObject* self, gint process_id)
 {
-	self->state->on_shell_process_exit(self, ProcessID);
+	self->state->on_shell_process_exit(self, process_id);
 }
 
 void

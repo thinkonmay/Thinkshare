@@ -48,6 +48,9 @@ typedef	struct _ChildProcess		ChildProcess;
 /// </summary>
 typedef struct _AgentState			AgentState;
 
+
+typedef struct _ShellSession        ShellSession;
+
 /// <summary>
 /// for better maintainance, 
 /// message will be use to replace JsonObject

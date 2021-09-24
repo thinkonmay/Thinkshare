@@ -17,19 +17,27 @@
 
 
 
+
 /// <summary>
 /// </summary>
 /// 
-/// <param name="process_id"></param>
+/// <param name="session"></param>
 /// <returns></returns>
-gchar*				shell_output_map							(gint process_id);
+gchar*				shell_session_get_output					(gint process_id);
 
 /// <summary>
-/// 
 /// </summary>
-gchar*				shell_script_map							(gint process_id);
+/// 
+/// <param name="session"></param>
+/// <returns></returns>
+gchar*				shell_session_get_script					(gint process_id);
 
 
+/// <summary>
+/// </summary>
+/// 
+/// <param name="agent"></param>
+/// <param name="data_string"></param>
 void				initialize_shell_session					(AgentObject* agent,
                     										     gchar* data_string);
 

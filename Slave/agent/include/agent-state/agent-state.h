@@ -25,7 +25,8 @@ typedef void            (*RegisterToHost)               ( AgentObject* agent);
 
 typedef void            (*OnSessionCoreExit)            (AgentObject* agent);
 
-typedef void            (*OnShellSessionExit)            (AgentObject* agent, gint ProcessID);
+typedef void            (*OnShellSessionExit)            (AgentObject* agent, 
+                                                          gint process_id);
 
 typedef gchar*          (*GetCurrentState)              (void);
 

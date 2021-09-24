@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
+using SharedHost.Models.Command;
 using RestSharp;
 
 namespace Conductor.Interfaces
@@ -40,12 +41,7 @@ namespace Conductor.Interfaces
 
 
 
-        Task InitializeShellSession(int SlaveID,int ProcessID);
-
-        Task TerminateCommandLineSession(int SlaveID,int ProcessID);
-
-        Task SendCommand(ShellScript command);
-
+        Task InitializeShellSession(ShellScript script);
 
 
 

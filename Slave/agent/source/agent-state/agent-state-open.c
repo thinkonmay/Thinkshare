@@ -63,32 +63,19 @@ open_get_state(void)
 
 static void
 open_on_shell_process_exit(AgentObject* agent, 
-                           gint ProcessID)
+                           gint process_id)
 {
-    GError* error_a = NULL, * error_b = NULL;
-    JsonObject* obj = get_json_object_from_file(HOST_CONFIG_FILE,&error_a);
-    gchar* shell_output;
-    g_file_get_contents(shell_output_map(ProcessID),&shell_output,NULL, &error_b);
-
-    if(error_a != NULL)
+    gchar* script = shell_session_get_script(process_id);
+    gchar* output = shell_session_get_output(process_id);
+    if(script == NULL || output == NULL) 
     {
-        agent_report_error(agent, error_a->message);
+        agent_report_error(agent, "fail to get script output");
         return;
     }
-    else if(error_b != NULL)
-    {
-        agent_report_error(agent, error_b->message);
-        return;
-    }
-
-    gint SlaveID = json_object_get_int_member(obj, DEVICE_ID);
-    
-
 
     Message* shell = json_object_new();
-    json_object_set_int_member(shell, "ProcessID", ProcessID);
-    json_object_set_int_member(shell, "SlaveID", SlaveID);
-    json_object_set_string_member(shell, "Output", shell_output);
+    json_object_set_string_member(shell, "Output", output);
+    json_object_set_string_member(shell, "Script", script);
 
 
     Message* message = message_init(
@@ -109,7 +96,7 @@ transition_to_on_open_state(void)
     {
         default_method(&open_state);
         open_state.session_initialize = on_open_session_initialize;
-        open_state.send_message_to_host = send_message_to_host;
+        open_state.send_message_to_host = open_state_send_message_to_host;
         open_state.get_current_state = open_get_state;  
         open_state.on_shell_process_exit = open_on_shell_process_exit;
 

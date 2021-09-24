@@ -85,6 +85,7 @@ namespace SlaveManager.SlaveDevices
                         case (int)Opcode.END_SHELL_SESSION:
                         {
                             var output = JsonConvert.DeserializeObject<ShellOutput>(messageForm.Data);
+                            output.SlaveID = messageForm.SlaveID;
                             await EndShellSession(output);
                             break;
                         }

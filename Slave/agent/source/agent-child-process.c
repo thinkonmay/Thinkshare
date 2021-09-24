@@ -67,9 +67,27 @@ initialize_child_process_system(AgentObject* agent)
     for(gint i = 0; i < LAST_CHILD_PROCESS;i++)
     {
         process_pool[i].agent = agent;
+        process_pool[i].process_id = i;
         process_pool[i].completed = TRUE;
 
         agent_set_child_process(agent,i,&(process_pool[i]));
+    }
+}
+
+ChildProcess* 
+get_available_shell_process()
+{
+    while(TRUE)
+    {
+        for(gint i = POWERSHELL_1; i < LAST_CHILD_PROCESS; i++)
+        {
+            if(process_pool[i].completed)
+            {
+                return &process_pool[i];
+            }
+        }
+        // if there is no available process, then wait for 1 second
+        Sleep(1000);
     }
 }
 
@@ -164,8 +182,6 @@ close_child_process(ChildProcess* proc)
     write_to_log_file(AGENT_GENERAL_LOG,"Child process closed");
     TerminateProcess(proc->process, FORCE_EXIT);
     proc->completed = TRUE;
-
-    ZeroMemory(&proc->standard_out,sizeof(HANDLE));
 }
 
 ChildProcess*
@@ -204,12 +220,14 @@ create_new_child_process(gchar* process_name,
     startup_infor.hStdInput = hdl->standard_in;
     startup_infor.hStdOutput = hdl->standard_out;
     // startup_infor.hStdError = hdl->standard_out;
+
+    GString* string_process = g_string_new(process_name);
+    g_string_append(string_process,parsed_command);
     
-    LPSTR process = g_win32_locale_filename_from_utf8(process_name);
-    LPSTR command = g_win32_locale_filename_from_utf8(parsed_command);
+    LPSTR process = g_win32_locale_filename_from_utf8(g_string_free(string_process,FALSE));
     /*START process, all standard input and output are controlled by agent*/
-    gboolean output = CreateProcess(process,
-        command,
+    gboolean output = CreateProcess(NULL,
+        process,
         NULL,
         NULL,
         TRUE,

@@ -37,7 +37,7 @@ namespace Conductor.Data
 
             builder.Entity<UserAccount>().Property(u => u.Created).HasDefaultValueSql("current_timestamp");
             builder.Entity<RemoteSession>().Property(u => u.StartTime).HasDefaultValueSql("current_timestamp");
-            builder.Entity<ShellSession>().Property(u => u.StartTime).HasDefaultValueSql("current_timestamp");
+            builder.Entity<ShellSession>().Property(u => u.Time).HasDefaultValueSql("current_timestamp");
             builder.Entity<Slave>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
             builder.Entity<RemoteSession>().HasKey(o => new { o.SessionSlaveID, o.SessionClientID });
         }

@@ -5,6 +5,7 @@
 #include <agent-object.h>
 #include <agent-state-open.h>
 #include <agent-state-on-session-off-remote.h>
+#include <agent-shell-session.h>
 
 #include <state-indicator.h>
 #include <logging.h>
@@ -75,26 +76,19 @@ on_session_send_message_to_host(AgentObject* agent,
 }
 
 static void
-on_session_on_shell_process_exit(AgentObject* agent,gint ProcessID)
+on_session_on_shell_process_exit(AgentObject* agent,gint process_id)
 {
-    GError* error_a = NULL, * error_b = NULL;
-    JsonObject* obj = get_json_object_from_file(HOST_CONFIG_FILE,&error_a);
-    JsonObject* output = get_json_object_from_file(shell_output_map(ProcessID), &error_b);
-    if(error_a != NULL|| error_b != NULL)
+    gchar* script = shell_session_get_script(process_id);
+    gchar* output = shell_session_get_output(process_id);
+    if(script == NULL || output == NULL) 
     {
-        agent_report_error(agent, error_a->message);
-        agent_report_error(agent, error_b->message);
+        agent_report_error(agent, "fail to get script output");
         return;
     }
 
-    gint SlaveID = json_object_get_int_member(obj, DEVICE_ID);
-    gchar* shell_output = get_string_from_json_object(output);
-
-
     Message* shell = json_object_new();
-    json_object_set_int_member(shell, "ProcessID", ProcessID);
-    json_object_set_int_member(shell, "SlaveID", SlaveID);
-    json_object_set_string_member(shell, "Output", shell_output);
+    json_object_set_string_member(shell, "Output", output);
+    json_object_set_string_member(shell, "Script", script);
 
 
     Message* message = message_init(
@@ -132,13 +126,13 @@ transition_to_on_session_state(void)
     if(!initialized)
     {
         default_method(&on_session_state);
-        on_session_state.session_terminate = on_session_session_terminate;
-        on_session_state.send_message_to_host = send_message_to_host;
+        on_session_state.session_terminate =            on_session_session_terminate;
+        on_session_state.send_message_to_host =         on_session_send_message_to_host;
         on_session_state.send_message_to_session_core = send_message_to_core;
-        on_session_state.remote_control_disconnect = on_session_remote_control_disconnect;
-        on_session_state.on_session_core_exit = on_session_session_core_exit;
-        on_session_state.on_shell_process_exit = on_session_on_shell_process_exit;
-        on_session_state.get_current_state = on_session_get_state;
+        on_session_state.remote_control_disconnect =    on_session_remote_control_disconnect;
+        on_session_state.on_session_core_exit =         on_session_session_core_exit;
+        on_session_state.on_shell_process_exit =        on_session_on_shell_process_exit;
+        on_session_state.get_current_state =            on_session_get_state;
 
         initialized = TRUE; 
     }
