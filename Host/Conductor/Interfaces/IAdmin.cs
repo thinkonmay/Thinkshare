@@ -31,25 +31,12 @@ namespace Conductor.Interfaces
         /// <returns></returns>
         Task EndAllRemoteSession(int SlaveID);
 
-        /// <summary>
-        /// Report new slave registration to the system
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
-        Task EndAllShellSession(int SlaveID);
 
         /// <summary>
         /// Store slave command line return from agent into database and report to admin via signalR
         /// </summary>
         /// <returns></returns>
-        Task ReportShellSessionTerminated(int SlaveID,int ProcessID);
-
-
-        /// <summary>
-        /// Store slave command line return from agent into database and report to admin via signalR
-        /// </summary>
-        /// <returns></returns>
-        Task LogSlaveCommandLine(ReceiveCommand command);
+        Task LogShellOutput(ShellOutput output);
 
         /// <summary>
         /// Report new session start, invoke from sesssions controller
@@ -66,14 +53,39 @@ namespace Conductor.Interfaces
         Task ReportSessionTermination(RemoteSession session);
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SlaveID"></param>
+        /// <returns></returns>
         Task ReportRemoteControlDisconnected(int SlaveID);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
         Task ReportRemoteControlDisconnectedFromSignalling(SessionPair session);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
         Task ReportRemoteControlDisconnected(RemoteSession session);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SlaveID"></param>
+        /// <returns></returns>
         Task ReportRemoteControlReconnect(int SlaveID);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
         Task ReportRemoteControlReconnect(RemoteSession session);
     }
 }

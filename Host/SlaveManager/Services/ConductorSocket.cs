@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
+using SharedHost.Models.Command;
 using RestSharp;
 using System.Net;
 using SharedHost;
@@ -90,29 +91,7 @@ namespace SlaveManager.Services
 
 
 
-
-
-        public async Task ReportShellSessionTerminated(ForwardCommand command)
-        {
-            var request = new RestRequest("Terminated")
-                    .AddQueryParameter("SlaveID", command.SlaveID.ToString())
-                    .AddQueryParameter("ProcessID", command.ProcessID.ToString());
-            request.Method = Method.POST;
-
-            var reply = await _shell.ExecuteAsync(request);
-            if (reply.StatusCode != HttpStatusCode.OK)
-            {
-                var error = new ReportedError()
-                {
-                    Module = (int)Module.HOST_MODULE,
-                    ErrorMessage = "Unable to process request",
-                    SlaveID = command.SlaveID
-                };
-                System.Console.WriteLine(JsonConvert.SerializeObject(error));
-            }
-        }
-
-        public async Task LogSlaveCommandLine(ReceiveCommand result)
+        public async Task LogShellOutput(ShellOutput result)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Output")

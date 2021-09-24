@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SlaveManager.Interfaces;
 using SharedHost.Models.Session;
+using SharedHost.Models.Command;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
 using SharedHost;
@@ -79,53 +80,19 @@ namespace SlaveManager.Services
 
 
 
-
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        public bool InitializeCommand(int SlaveID, int ProcessID)
-        {
-            SlaveDevice slave;
-            if (!SearchForSlaveID(SlaveID)) { return false; }
-            if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
-
-            Task.Run(() => slave.InitializeCommandLineSession(ProcessID));
-            return true;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        public bool TerminateCommand(int SlaveID, int ProcessID)
-        {
-            SlaveDevice slave;
-            if (!SearchForSlaveID(SlaveID)) { return false; }
-            if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
-
-            Task.Run(() => slave.TerminateCommandLineSession(ProcessID));
-            return true;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="command"></param>
         /// <returns></returns>
-        public bool SendCommand(ForwardCommand command)
+        public bool InitShellSession(ShellScript script)
         {
             SlaveDevice slave;
-            if (!SearchForSlaveID(command.SlaveID)) { return false; }
-            if (!SlaveList.TryGetValue(command.SlaveID, out slave)) { return false; }
+            if (!SearchForSlaveID(script.SlaveID)) { return false; }
+            if (!SlaveList.TryGetValue(script.SlaveID, out slave)) { return false; }
 
-            Task.Run(()=>slave.SendCommand(command));
+            Task.Run(() => slave.InitializeShellSession(script));
             return true;
         }
-
-
 
 
 

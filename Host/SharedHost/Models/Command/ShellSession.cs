@@ -8,15 +8,22 @@ namespace SharedHost.Models.Command
 {
     public class ShellSession
     {
+        public ShellSession(){}
+
+        public ShellSession(ShellOutput output)
+        {
+            Script = output.Script;
+
+            Output = output.Output;
+        }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
-        public int ProcessID { get; set; }
+        public DateTime Time { get; set; }
 
-        public DateTime StartTime { get; set; }
+        public string Script { get; set; }
 
-        public DateTime? EndTime { get; set; }
-
-        public virtual ICollection<CommandLog> Commands { get; set; }
+        public string Output { get; set; }
     }
 }

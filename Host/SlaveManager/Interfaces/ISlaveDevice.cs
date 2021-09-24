@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using SharedHost.Models;
 using SharedHost.Models.Device;
+using SharedHost.Models.Command;
 using SharedHost.Models.Session;
 
 namespace SlaveManager.Interfaces
@@ -69,30 +70,22 @@ namespace SlaveManager.Interfaces
         Task RemoteControlReconnect();
 
         /// <summary>
-        /// Send command line to slave device, 
-        /// the commandline process will be invoked with admin previllege
-        /// </summary>
-        /// <param name="order">order(process-id) of commandline process run on slave</param>
-        /// <param name="command">command line to be process on slave device</param>
-        /// <returns></returns>
-        Task SendCommand(ForwardCommand command);
-
-        /// <summary>
         /// Create new commandline Session, new commandline will run under administrator privillege
         /// after initialize new commandline session, admin will be able to remote control slave 
         /// (similiar to ssh)
         /// </summary>
         /// <param name="order">order(process-id) of commandline process to initialize</param>
         /// <returns></returns>
-        Task InitializeCommandLineSession(int order);
+        Task InitializeShellSession(ShellScript script);
 
 
         /// <summary>
-        /// Terminate running commandline Session
+        /// 
         /// </summary>
-        /// <param name="order">order(process-id) of commandline process to terminate</param>
+        /// <param name="order"></param>
+        /// <param name="output"></param>
         /// <returns></returns>
-        Task TerminateCommandLineSession(int order);
+        Task EndShellSession(ShellOutput output);
 
         /// <summary>
         /// Send reject signal to slave device, 

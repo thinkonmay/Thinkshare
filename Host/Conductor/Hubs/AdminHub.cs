@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
 using SharedHost.Models.User;
+using SharedHost.Models.Command;
 
 namespace SignalRChat.Hubs
 {
@@ -16,7 +17,7 @@ namespace SignalRChat.Hubs
     {
         Task ReportSlaveRegistered(SlaveDeviceInformation information);
 
-        Task LogSlaveCommandLine(int SlaveID, int ProcessID, string Command);
+        Task LogShellOutput(ShellOutput output);
     }
 
     [Authorize]

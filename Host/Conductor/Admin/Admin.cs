@@ -90,40 +90,28 @@ namespace Conductor.Administration
             }
         }
 
-        public async Task ReportShellSessionTerminated(int SlaveID, int ProcessID)
+
+
+        public async Task LogShellOutput(ShellOutput output)
         {
-            var session = _db.Devices.Find(SlaveID).ShellSession.Where(o =>o.ProcessID == ProcessID &&
-                                                                        !o.EndTime.HasValue).FirstOrDefault();
-
-            session.EndTime = DateTime.Now;
-            await _db.SaveChangesAsync();
-        }
-
-
-        public async Task LogSlaveCommandLine(ReceiveCommand command)
-        {
-            Slave machine = _db.Devices.Find(command.SlaveID);
+            Slave machine = _db.Devices.Find(output.SlaveID);
             if (machine == null)
             {
                 var error = new ReportedError()
                 {
-                    ErrorMessage = $"Slave device id {command.SlaveID} not found!",
+                    ErrorMessage = $"Slave device id {output.SlaveID} not found!",
                     Module = (int)Module.HOST_MODULE,
-                    SlaveID = command.SlaveID
+                    SlaveID = output.SlaveID
                 };
                 System.Console.WriteLine(JsonConvert.SerializeObject(error));
 
-                CommandLog cmdLog = new CommandLog(){
-                    Command = command.Command
-                };
-
-                var device = _db.Devices.Find(command.SlaveID);
-                var Shell = device.ShellSession.Where(o => o.ProcessID == command.ProcessID && !o.EndTime.HasValue).FirstOrDefault();
-                Shell.Commands.Add(cmdLog);                
+                var device = _db.Devices.Find(output.SlaveID);
+                var session = new ShellSession(output);
+                device.ShellSession.Add(session);
                 await _db.SaveChangesAsync();
 
-                Serilog.Log.Information("Broadcasting event device {slave} return command log {log}", machine.ID, command.Command);
-                await _adminHubctx.Clients.All.LogSlaveCommandLine(command.SlaveID, command.ProcessID, command.Command);
+                Serilog.Log.Information("Broadcasting event device {slave} return shell output {log}", machine.ID, output.Output);
+                await _adminHubctx.Clients.All.LogShellOutput(output);
                 return;
             }
         }
@@ -210,15 +198,7 @@ namespace Conductor.Administration
             await _clientHubctx.Clients.Group(account).ReportSessionReconnected(session.Slave.ID);
         }
 
-        public async Task EndAllShellSession(int SlaveID)
-        {
-            var shell = _db.Devices.Find(SlaveID).ShellSession.Where(o=>!o.EndTime.HasValue).ToList();
-            foreach (var i in shell)
-            {
-                i.EndTime = DateTime.Now;
-            }
-            await _db.SaveChangesAsync();
-        }
+        
         public async Task EndAllRemoteSession(int SlaveID)
         {
             var remote = _db.RemoteSessions.Where(o => o.Slave.ID == SlaveID && !o.EndTime.HasValue).ToList();

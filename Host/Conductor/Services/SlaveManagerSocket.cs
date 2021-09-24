@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using RestSharp;
 using Newtonsoft;
+using SharedHost.Models.Command;
 using Newtonsoft.Json;
 using System.Net;
 using Conductor.Interfaces;
@@ -105,35 +106,11 @@ namespace Conductor.Services
 
 
 
-
-
-        public async Task InitializeCommandLineSession(int SlaveID, int ProcessID)
+        public async Task InitializeShellSession(ShellScript script)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Initialize")
-                .AddQueryParameter("SlaveID", SlaveID.ToString())
-                .AddQueryParameter("ProcessID", ProcessID.ToString());
-            request.Method = Method.POST;
-
-            await _shell.ExecuteAsync(request);
-        }
-
-        public async Task TerminateCommandLineSession(int SlaveID, int ProcessID)
-        {
-            /*generate rest post to signalling server*/
-            var request = new RestRequest("Terminate")
-                .AddQueryParameter("SlaveID", SlaveID.ToString())
-                .AddQueryParameter("ProcessID", ProcessID.ToString());
-            request.Method = Method.POST;
-
-            await _shell.ExecuteAsync(request);
-        }
-
-        public async Task SendCommand(ForwardCommand command)
-        {
-            /*generate rest post to signalling server*/
-            var request = new RestRequest("ForwardCommand")
-                .AddJsonBody(command);
+                .AddJsonBody(script);
             request.Method = Method.POST;
 
             await _shell.ExecuteAsync(request);

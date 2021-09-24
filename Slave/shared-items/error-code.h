@@ -1,6 +1,7 @@
 #ifndef __ERROR_CODE_H__
 #define __ERROR_CODE_H__
 
+#include <glib-2.0/glib.h>
 
 #define         UNKNOWN_ERROR                   "Unknown error"
 #define         DATA_CHANNEL_ERROR              "Datachannel error"

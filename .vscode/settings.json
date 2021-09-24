@@ -3,6 +3,7 @@
         "windows.h": "c",
         "agent-child-process.h": "c",
         "gst.h": "c",
-        "ultra-high-const.h": "c"
+        "ultra-high-const.h": "c",
+        "agent-shell-session.h": "c"
     }
 }

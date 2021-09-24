@@ -5,6 +5,7 @@ using SharedHost.Models.Session;
 using SlaveManager.Interfaces;
 using System;
 using System.Threading.Tasks;
+using SharedHost.Models.Command;
 
 namespace SlaveManager.SlaveDevices.SlaveStates
 {
@@ -58,54 +59,15 @@ namespace SlaveManager.SlaveDevices.SlaveStates
 
 
 
-        public async Task InitializeCommandlineSession(ISlaveDevice slave, int order)
+        public async Task InitializeShellSession(ISlaveDevice slave, ShellScript script)
         {
             Message message = new Message();
 
             message.From = Module.HOST_MODULE;
             message.To = Module.AGENT_MODULE;
-            message.Opcode = Opcode.NEW_COMMAND_LINE_SESSION;
-
-            ForwardCommand forward_command = new ForwardCommand();
-            forward_command.ProcessID = order;
-            forward_command.CommandLine = " ";
-
-            message.Data = JsonConvert.SerializeObject(forward_command);
+            message.Opcode = Opcode.NEW_SHELL_SESSION;
+            message.Data = JsonConvert.SerializeObject(script);
             await slave.SendMessage(message);
-            return;
-        }
-
-        public async Task TerminateCommandlineSession(ISlaveDevice slave, int order)
-        {
-            Message message = new Message();
-
-            message.From = Module.HOST_MODULE;
-            message.To = Module.AGENT_MODULE;
-            message.Opcode = Opcode.END_COMMAND_LINE_SESSION;
-
-            ForwardCommand forward_command = new ForwardCommand();
-            forward_command.ProcessID = order;
-            forward_command.CommandLine = " ";
-
-            message.Data = JsonConvert.SerializeObject(forward_command);
-            await slave.SendMessage(message);
-            return;
-        }
-
-
-        public async Task SendCommand(ISlaveDevice slave, ForwardCommand command)
-        {
-
-            Message message = new Message();
-
-            message.From = Module.HOST_MODULE;
-            message.To = Module.AGENT_MODULE;
-            message.Opcode = Opcode.COMMAND_LINE_FORWARD;
-            message.Data = JsonConvert.SerializeObject(command);
-
-            await slave.SendMessage(message);
-
-
             return;
         }
 

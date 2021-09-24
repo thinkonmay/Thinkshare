@@ -60,6 +60,12 @@ gboolean			remote_control_disconnect						(AgentObject* object);
 /// <returns></returns>
 gboolean			remote_control_reconnect						(AgentObject* object);
 
-
+/// <summary>
+/// 
+/// </summary>
+/// <param name="agent"></param>
+/// <param name="data"></param>
+void				setup_session									(AgentObject* agent, 
+																	 gchar* data);
 																	 
 #endif

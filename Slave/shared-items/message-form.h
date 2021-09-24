@@ -38,7 +38,7 @@ gchar*              get_string_from_json_object (JsonObject* object);
 /// <param name="error">error pointer to receive any error might occour, should be compare to null after call this function</param>
 /// <returns></returns>
 Message*            get_json_object_from_string (gchar* string,
-                                                 GError* error);
+                                                 GError** error);
 
 /// <summary>
 /// create empty messsage to send to host (message with " " data)
@@ -50,5 +50,9 @@ Message*            get_json_object_from_string (gchar* string,
 Message*            empty_message_init          (Module from,
 			                                    Module to,
 			                                    Opcode opcode);
+
+
+Message*            get_json_object_from_file   (gchar* file_name,
+                                                 GError** error);
 
 #endif

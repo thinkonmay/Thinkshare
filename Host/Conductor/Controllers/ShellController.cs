@@ -3,6 +3,7 @@ using Conductor.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedHost.Models.Device;
+using SharedHost.Models.Command;
 
 namespace Conductor.Controllers
 {
@@ -23,42 +24,16 @@ namespace Conductor.Controllers
 
 
 
-        /// <summary>
-        /// initialize shell session
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        /// <returns></returns>
-        [HttpPost("Initialize")]
-        public IActionResult InitializeCommandlineSession(int SlaveID, int ProcessID)
-        {
-            _slmsocket.InitializeCommandLineSession(SlaveID, ProcessID);
-            return Ok();
-        }
-
-        /// <summary>
-        /// Terminate shell session
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        /// <returns></returns>
-        [HttpPost("Terminate")]
-        public IActionResult TerminateCommandlineSession(int SlaveID, int ProcessID)
-        {
-            _slmsocket.TerminateCommandLineSession(SlaveID, ProcessID);
-            return Ok();
-        }
-
 
         /// <summary>
         /// Send a command line to an specific process id of an specific slave device
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        [HttpPost("ForwardCommand")]
-        public async Task<IActionResult> CommandLine([FromBody] ForwardCommand command)
+        [HttpPost("ShellScript")]
+        public async Task<IActionResult> Shell([FromBody] ShellScript command)
         {
-            await _slmsocket.SendCommand(command);
+            await _slmsocket.InitializeShellSession(command);
             return Ok();
         }
     }

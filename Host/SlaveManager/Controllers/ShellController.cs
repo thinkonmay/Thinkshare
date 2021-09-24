@@ -6,6 +6,7 @@ using RestSharp;
 using SlaveManager.SlaveDevices;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
+using SharedHost.Models.Command;
 using SharedHost;
 
 namespace SlaveManager.Controllers
@@ -39,34 +40,10 @@ namespace SlaveManager.Controllers
         /// <param name="ProcessID"></param>
         /// <returns></returns>
         [HttpPost("Initialize")]
-        public IActionResult InitializeCommandlineSession(int SlaveID, int ProcessID)
+        public IActionResult InitializeShellSession([FromBody] ShellScript script)
         {
-            _slavePool.InitializeCommand(SlaveID, ProcessID);
+            _slavePool.InitShellSession(script);
             return Ok();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        /// <returns></returns>
-        [HttpPost("Terminate")]
-        public IActionResult TerminateCommandlineSession(int SlaveID, int ProcessID)
-        {
-            _slavePool.TerminateCommand(SlaveID, ProcessID);
-            return Ok();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [HttpPost("ForwardCommand")]
-        public IActionResult CommandLine(ForwardCommand command)
-        {
-            return _slavePool.SendCommand(command) ? Ok() : BadRequest();
         }
     }
 }

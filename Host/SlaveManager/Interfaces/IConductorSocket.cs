@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using SharedHost.Models;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
+using SharedHost.Models.Command;
 
 namespace SlaveManager.Interfaces
 {
@@ -27,18 +28,11 @@ namespace SlaveManager.Interfaces
         Task ReportSlaveDisconnected(int SlaveID);
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        Task ReportShellSessionTerminated(ForwardCommand command);
-
-        /// <summary>
         /// Store slave command line return from agent into database and report to admin via signalR
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        Task LogSlaveCommandLine(ReceiveCommand result);
+        Task LogShellOutput(ShellOutput result);
 
         /// <summary>
         /// 

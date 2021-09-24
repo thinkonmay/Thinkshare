@@ -4,7 +4,7 @@
 #include <agent-session-initializer.h>
 #include <agent-state-on-session.h>
 #include <agent-socket.h>
-
+#include <agent-shell-session.h>
 
 #include <state-indicator.h>
 #include <general-constant.h>
@@ -62,22 +62,25 @@ open_get_state(void)
 
 
 static void
-open_on_commandline_exit(AgentObject* agent, gint ProcessID)
+open_on_shell_process_exit(AgentObject* agent, 
+                           gint process_id)
 {
-    JsonParser* parser = json_parser_new();
-    json_parser_load_from_file(parser, HOST_CONFIG_FILE, NULL);
-    JsonNode* root = json_parser_get_root(parser);
-    JsonObject* obj = json_node_get_object(root);
-    gint SlaveID = json_object_get_int_member(obj, DEVICE_ID);
+    gchar* script = shell_session_get_script(process_id);
+    gchar* output = shell_session_get_output(process_id);
+    if(script == NULL || output == NULL) 
+    {
+        agent_report_error(agent, "fail to get script output");
+        return;
+    }
 
-    Message* cmd = json_object_new();
-    json_object_set_int_member(cmd, "ProcessID", ProcessID);
-    json_object_set_int_member(cmd, "SlaveID", SlaveID);
+    Message* shell = json_object_new();
+    json_object_set_string_member(shell, "Output", output);
+    json_object_set_string_member(shell, "Script", script);
 
 
     Message* message = message_init(
         AGENT_MODULE, HOST_MODULE,
-        END_COMMAND_LINE_SESSION, cmd);
+        END_SHELL_SESSION, shell);
 
     agent_send_message(agent, message);
 }
@@ -93,9 +96,9 @@ transition_to_on_open_state(void)
     {
         default_method(&open_state);
         open_state.session_initialize = on_open_session_initialize;
-        open_state.send_message_to_host = send_message_to_host;
+        open_state.send_message_to_host = open_state_send_message_to_host;
         open_state.get_current_state = open_get_state;  
-        open_state.on_commandline_exit = open_on_commandline_exit;
+        open_state.on_shell_process_exit = open_on_shell_process_exit;
 
 
         initialized = TRUE; 
