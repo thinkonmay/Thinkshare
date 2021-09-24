@@ -104,10 +104,12 @@ namespace Conductor.Administration
                     SlaveID = output.SlaveID
                 };
                 System.Console.WriteLine(JsonConvert.SerializeObject(error));
-
-                var device = _db.Devices.Find(output.SlaveID);
+                return;
+            }
+            else
+            {
                 var session = new ShellSession(output);
-                device.ShellSession.Add(session);
+                machine.ShellSession.Add(session);
                 await _db.SaveChangesAsync();
 
                 Serilog.Log.Information("Broadcasting event device {slave} return shell output {log}", machine.ID, output.Output);
