@@ -4,9 +4,17 @@ const path = require("path")
 const cookieParser = require("cookie-parser")
 const bodyParser = require("body-parser")
 const logger = require("morgan")
+const { GatewayTimeout } = require("http-errors")
+const { DiffieHellman } = require("crypto")
+const glob = require("glob")
 
 const routes = require("./routes")
 const policies = require("./policies")
+const locales = {}
+glob.sync("./src/lang/*.json").map(file => {
+	const basename = path.basename(file, ".json")
+	locales[basename] = require("./lang/" + basename + ".json")
+})
 
 const app = express()
 
@@ -39,6 +47,14 @@ for (const policyKey in policies) {
 	}
 	if (middleware) app.use(path, middleware)
 }
+
+app.use((req, res, next) => {
+	const key = req.cookies.locale || "en"
+	console.log(key, locales[key])
+	if (locales.hasOwnProperty(key))
+		res.locals = locales[key]
+	next()
+})
 
 // setup routes
 for (const routeKey in routes) {
