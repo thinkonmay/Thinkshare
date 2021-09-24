@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Text;
-
 
 namespace SharedHost.Models.Command
 {
@@ -14,9 +12,9 @@ namespace SharedHost.Models.Command
 
         public ShellSession(ShellOutput output)
         {
-            Script = new string(output.Script.Where(c => !char.IsControl(c)).ToArray());
+            Script = output.Script.Remove(0,1).Replace("\n", "").Replace("\r", "").Replace(@"[^\u0020-\u007F]","");
 
-            Output = new string(output.Output.Where(c => !char.IsControl(c)).ToArray());
+            Output = output.Output.Remove(0,1).Replace("\n", "").Replace("\r", "").Replace(@"[^\u0020-\u007F]","");
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
