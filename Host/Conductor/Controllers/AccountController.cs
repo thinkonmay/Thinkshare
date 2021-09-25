@@ -52,8 +52,13 @@ namespace Conductor.Controllers
                     string token = await _tokenGenerator.GenerateJwt(user);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
                 }
+                else
+                {
+                    return AuthResponse.GenerateFailure(model.UserName, "Wrong username or password", -2);
+                }
             }
-            return AuthResponse.GenerateFailure(model.UserName, "Login failed", -1);
+
+            return AuthResponse.GenerateFailure(model.UserName, "Invalid login model", -1);
         }
 
         /// <summary>
@@ -86,8 +91,28 @@ namespace Conductor.Controllers
                     string token = await _tokenGenerator.GenerateJwt(u);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now);
                 }
+                else
+                {
+                    string dupElem = string.Empty;
+
+                    if (await _userManager.FindByNameAsync(model.UserName) != null)
+                    {
+                        dupElem += "username";
+                    }
+                    if (await _userManager.FindByEmailAsync(model.Email) != null)
+                    {
+                        dupElem += ", email address";
+                    }
+                    if (_userManager.Users.FirstOrDefault(p => p.PhoneNumber == model.PhoneNumber) != null)
+                    {
+                        dupElem += ", phone number";
+                    }
+
+                    return AuthResponse.GenerateFailure(model.Email, $"Duplicate {dupElem}", -2);
+                }
             }
-            return AuthResponse.GenerateFailure(model.Email, "Register failed", -1);
+
+            return AuthResponse.GenerateFailure(model.Email, "Invalid Register model", -1);
         }
 
         /// <summary>
