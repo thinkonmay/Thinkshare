@@ -3,15 +3,17 @@ using System;
 using Conductor.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Conductor.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210924151907_ScriptModel")]
+    partial class ScriptModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,7 +250,9 @@ namespace Conductor.Migrations
             modelBuilder.Entity("SharedHost.Models.Shell.ScriptModel", b =>
                 {
                     b.Property<int>("ID")
-                        .HasColumnType("integer");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -272,9 +276,6 @@ namespace Conductor.Migrations
                     b.Property<string>("Script")
                         .HasColumnType("text");
 
-                    b.Property<int?>("ScriptModelID")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("SlaveID")
                         .HasColumnType("integer");
 
@@ -283,11 +284,14 @@ namespace Conductor.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
 
+                    b.Property<int?>("modelID")
+                        .HasColumnType("integer");
+
                     b.HasKey("ID");
 
-                    b.HasIndex("ScriptModelID");
-
                     b.HasIndex("SlaveID");
+
+                    b.HasIndex("modelID");
 
                     b.ToTable("ShellSession");
                 });
@@ -450,23 +454,20 @@ namespace Conductor.Migrations
 
             modelBuilder.Entity("SharedHost.Models.Shell.ShellSession", b =>
                 {
-                    b.HasOne("SharedHost.Models.Shell.ScriptModel", null)
-                        .WithMany("History")
-                        .HasForeignKey("ScriptModelID");
-
                     b.HasOne("SharedHost.Models.Device.Slave", null)
                         .WithMany("ShellSession")
                         .HasForeignKey("SlaveID");
+
+                    b.HasOne("SharedHost.Models.Shell.ScriptModel", "model")
+                        .WithMany()
+                        .HasForeignKey("modelID");
+
+                    b.Navigation("model");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Device.Slave", b =>
                 {
                     b.Navigation("ShellSession");
-                });
-
-            modelBuilder.Entity("SharedHost.Models.Shell.ScriptModel", b =>
-                {
-                    b.Navigation("History");
                 });
 #pragma warning restore 612, 618
         }

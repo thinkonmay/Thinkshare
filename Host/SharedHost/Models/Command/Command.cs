@@ -1,4 +1,6 @@
-﻿namespace SharedHost.Models.Shell
+﻿using MersenneTwister;
+
+namespace SharedHost.Models.Shell
 {
     public class ShellScript
     {
@@ -8,6 +10,7 @@
         {
             SlaveID = slaveID;
             Script = model.Script;
+            ID = Randoms.Next();
         }
 
         public int SlaveID { get; set; }

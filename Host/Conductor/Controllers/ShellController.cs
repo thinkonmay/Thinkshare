@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using SharedHost.Models.Device;
 using SharedHost.Models.Shell;
 using Conductor.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Conductor.Controllers
 {
@@ -35,7 +38,7 @@ namespace Conductor.Controllers
         /// <param name="ModelID"></param>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
-        [HttpPost("ShellScript")]
+        [HttpPost("Execute")]
         public async Task<IActionResult> Shell(int ModelID, int SlaveID)
         {
             if((await _slmsocket.GetSlaveState(SlaveID)).SlaveServiceState == SlaveServiceState.Disconnected)
@@ -57,8 +60,29 @@ namespace Conductor.Controllers
         [HttpPost("AddModel")]
         public IActionResult Model([FromBody] ScriptModel model)
         {
-            _db.ScriptModels.Add(model);
+            try
+            {
+                _db.ScriptModels.Add(model);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
             return Ok();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetModelHistory")]
+        public IActionResult Model(int modelID)
+        {
+            List<ShellSession> session;
+            try
+            {
+                session = _db.ScriptModels.Find(modelID).History.ToList();
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+            return Ok(session);
         }
     }
 }

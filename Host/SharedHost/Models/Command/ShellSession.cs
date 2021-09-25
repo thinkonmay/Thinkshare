@@ -24,8 +24,6 @@ namespace SharedHost.Models.Shell
 
         public DateTime Time { get; set; }
 
-        public virtual ScriptModel model {get;set;}
-
         public string Script { get; set; }
 
         public string Output { get; set; }
@@ -34,11 +32,13 @@ namespace SharedHost.Models.Shell
 
     public class ScriptModel
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
 
         public string Name { get; set; }
 
         public string Script { get; set; }
+
+        public virtual ICollection<ShellSession> History { get; set; }
     }
 }
