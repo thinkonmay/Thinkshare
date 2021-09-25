@@ -52,8 +52,13 @@ namespace Conductor.Controllers
                     string token = await _tokenGenerator.GenerateJwt(user);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
                 }
+                else
+                {
+                    return AuthResponse.GenerateFailure(model.UserName, "Wrong username or password", -2);
+                }
             }
-            return AuthResponse.GenerateFailure(model.UserName, "Login failed", -1);
+
+            return AuthResponse.GenerateFailure(model.UserName, "Invalid login model", -1);
         }
 
         /// <summary>
@@ -86,8 +91,13 @@ namespace Conductor.Controllers
                     string token = await _tokenGenerator.GenerateJwt(u);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now);
                 }
+                else
+                {
+                    return AuthResponse.GenerateFailure(model.Email, "Duplicate account information", -2);
+                }
             }
-            return AuthResponse.GenerateFailure(model.Email, "Register failed", -1);
+
+            return AuthResponse.GenerateFailure(model.Email, "Invalid Register model", -1);
         }
 
         /// <summary>
