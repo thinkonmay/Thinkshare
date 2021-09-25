@@ -93,7 +93,22 @@ namespace Conductor.Controllers
                 }
                 else
                 {
-                    return AuthResponse.GenerateFailure(model.Email, "Duplicate account information", -2);
+                    string dupElem = string.Empty;
+
+                    if (await _userManager.FindByNameAsync(model.UserName) != null)
+                    {
+                        dupElem += "username";
+                    }
+                    if (await _userManager.FindByEmailAsync(model.Email) != null)
+                    {
+                        dupElem += ", email address";
+                    }
+                    if (_userManager.Users.FirstOrDefault(p => p.PhoneNumber == model.PhoneNumber) != null)
+                    {
+                        dupElem += ", phone number";
+                    }
+
+                    return AuthResponse.GenerateFailure(model.Email, $"Duplicate {dupElem}", -2);
                 }
             }
 
