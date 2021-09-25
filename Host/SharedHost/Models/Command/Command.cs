@@ -11,6 +11,7 @@ namespace SharedHost.Models.Shell
             SlaveID = slaveID;
             Script = model.Script;
             ID = Randoms.Next();
+            ModelID = model.ID;
         }
 
         public int SlaveID { get; set; }

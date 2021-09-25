@@ -61,6 +61,15 @@ open_get_state(void)
 }
 
 
+void
+character_remover(gchar** string, gchar* character)
+{
+    char **split = g_strsplit(*string, character, -1);
+    memset(*string,0,strlen(*string));
+    *string = g_strjoinv("", split);
+    g_strfreev(split);
+}
+
 static void
 open_on_shell_process_exit(AgentObject* agent, 
                            gint process_id)
@@ -75,11 +84,18 @@ open_on_shell_process_exit(AgentObject* agent,
         return;
     }
 
+    gchar* temp = malloc(strlen(output));
+    memcpy(temp,output+3,strlen(output));
+
+    character_remover(&temp, "\n");
+    character_remover(&temp, "\r");
+
     Message* shell = json_object_new();
-    json_object_set_string_member(shell, "Output", output);
+    json_object_set_string_member(shell, "Output", temp);
     json_object_set_string_member(shell, "Script", script);
     json_object_set_int_member(shell, "ID", id);
     json_object_set_int_member(shell, "ModelID", model);
+
 
 
     Message* message = message_init(
@@ -110,3 +126,6 @@ transition_to_on_open_state(void)
     write_to_log_file(AGENT_GENERAL_LOG, open_get_state());    
     return &open_state;
 }
+
+
+

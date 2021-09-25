@@ -12,9 +12,9 @@ namespace SharedHost.Models.Shell
 
         public ShellSession(ShellOutput output)
         {
-            Script = output.Script.Remove(0, 1).Replace("\n", "").Replace("\r", "").Replace(@"[^\u0020-\u007F]", "");
+            Script = output.Script;
 
-            Output = output.Output.Remove(0, 1).Replace("\n", "").Replace("\r", "").Replace(@"[^\u0020-\u007F]", "");
+            Output = output.Output;
 
             ID = output.ID;
         }

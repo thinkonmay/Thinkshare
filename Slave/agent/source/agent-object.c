@@ -154,8 +154,8 @@ void
 agent_send_message(AgentObject* self,
 	Message* message)
 {
-	write_to_log_file(AGENT_GENERAL_LOG, 
-		get_string_from_json_object(message));
+	// write_to_log_file(AGENT_GENERAL_LOG, 
+	// 	get_string_from_json_object(message));
 	send_message(self, message);
 }
 

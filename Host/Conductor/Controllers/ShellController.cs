@@ -85,5 +85,21 @@ namespace Conductor.Controllers
             catch (Exception ex) { return BadRequest(ex.Message); }
             return Ok(session);
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetModel")]
+        public IActionResult Model()
+        {
+            var model = _db.ScriptModels.ToList();
+            foreach ( var item in model)
+            {
+                item.History = null;
+            };
+            return Ok(model);
+        }
     }
 }
