@@ -14,8 +14,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\LoginModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\Cluster.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Command\ShellSession.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Command\Command.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\ScriptModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\ShellSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\Command.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\HostConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Slave.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\SlaveQueryResult.cs" />

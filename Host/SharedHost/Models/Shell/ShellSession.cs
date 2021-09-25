@@ -27,18 +27,7 @@ namespace SharedHost.Models.Shell
         public string Script { get; set; }
 
         public string Output { get; set; }
-    }
 
-
-    public class ScriptModel
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int ID { get; set; }
-
-        public string Name { get; set; }
-
-        public string Script { get; set; }
-
-        public virtual ICollection<ShellSession> History { get; set; }
+        public virtual Slave Slave {get;set;}
     }
 }

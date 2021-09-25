@@ -87,17 +87,5 @@ namespace Conductor.Controllers
             var Query = _db.RemoteSessions.Where(o => !o.EndTime.HasValue);
             return Ok(Query);
         }
-
-        /// <summary>
-        /// Queries for every slave device in the system for serving state and static information 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("Command")]
-        //manager
-        public async Task<IActionResult> GetCommand(int SlaveID)
-        {
-            var slave = _db.Devices.Find(SlaveID);
-            return Ok(slave.ShellSession);
-        }
     }
 }

@@ -44,10 +44,5 @@ namespace SharedHost.Models.Device
         public string? GPU { get; set; }
         public int? RAMcapacity { get; set; }
         public string? OS { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual ICollection<ShellSession> ShellSession { get; set; }
     }
 }

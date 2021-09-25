@@ -107,11 +107,11 @@ namespace Conductor.Services
             else
             {
                 var session = new ShellSession(output);
+                session.Slave = _db.Devices.Find(output.SlaveID);
                 var model = _db.ScriptModels.Find(output.ModelID);
                 model.History.Add(session);
                 await _db.SaveChangesAsync();
 
-                Serilog.Log.Information("Broadcasting event device {slave} return shell output {log}", machine.ID, output.Output);
                 await _adminHubctx.Clients.All.LogShellOutput(output);
                 return;
             }

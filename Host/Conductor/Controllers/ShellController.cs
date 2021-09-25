@@ -94,12 +94,14 @@ namespace Conductor.Controllers
         [HttpGet("GetModel")]
         public IActionResult Model()
         {
+            var ret = new List<ScriptModel>();
             var model = _db.ScriptModels.ToList();
             foreach ( var item in model)
             {
                 item.History = null;
+                ret.Add(item);
             };
-            return Ok(model);
+            return Ok(ret);
         }
     }
 }
