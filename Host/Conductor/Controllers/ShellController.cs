@@ -60,12 +60,20 @@ namespace Conductor.Controllers
         [HttpPost("AddModel")]
         public IActionResult Model([FromBody] ScriptModel model)
         {
-            try
-            {
-                _db.ScriptModels.Add(model);
-            }
-            catch (Exception ex) { return BadRequest(ex.Message); }
+            _db.ScriptModels.Add(model);
             return Ok();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpGet("GetModel")]
+        public IActionResult GetModel()
+        {
+            return Ok(_db.ScriptModels.ToList());
         }
 
 
@@ -76,12 +84,7 @@ namespace Conductor.Controllers
         [HttpGet("GetModelHistory")]
         public IActionResult Model(int modelID)
         {
-            List<ShellSession> session;
-            try
-            {
-                session = _db.ScriptModels.Find(modelID).History.ToList();
-            }
-            catch (Exception ex) { return BadRequest(ex.Message); }
+            var session = _db.ScriptModels.Find(modelID).History.ToList();
             return Ok(session);
         }
     }
