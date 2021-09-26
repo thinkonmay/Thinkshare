@@ -98,7 +98,7 @@ namespace Conductor.Controllers
             var model = _db.ScriptModels.ToList();
             foreach ( var item in model)
             {
-                item.History = new List<ScriptModel>();
+                item.History = null;
                 ret.Add(item);
             };
             return Ok(ret);
