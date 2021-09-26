@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlaveManager", "SlaveManage
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conductor", "Conductor\Conductor.csproj", "{A972CF97-DE50-4CF3-A9AF-23A0815A3E29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShellExtractor", "ShellExtractor\ShellExtractor.csproj", "{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedHost\SharedHost.projitems*{00c0924c-717c-42ee-b3d1-3b7970d5ed4b}*SharedItemsImports = 5
@@ -35,6 +37,10 @@ Global
 		{A972CF97-DE50-4CF3-A9AF-23A0815A3E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A972CF97-DE50-4CF3-A9AF-23A0815A3E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A972CF97-DE50-4CF3-A9AF-23A0815A3E29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
