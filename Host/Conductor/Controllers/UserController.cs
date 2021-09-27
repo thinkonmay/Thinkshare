@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using SharedHost.Models.User;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
+using SharedHost.Models.ResponseModel;
 
 namespace Conductor.Controllers
 {
@@ -87,11 +88,8 @@ namespace Conductor.Controllers
         public async Task<IActionResult> UserGetCurrentSesssion()
         {
             int ClientId = _jwt.GetUserFromHttpRequest(User);
-
-            var account = await _userManager.FindByIdAsync(ClientId.ToString());
-
-            var session = _db.RemoteSessions.Where(s => s.Client == account
-                                                    && !s.EndTime.HasValue).ToList();
+            var session = _db.RemoteSessions.Where(s => s.ClientId == ClientId &&
+                                                  !s.EndTime.HasValue).ToList();
             
             var ret = new List<SlaveDeviceInformation>();
 
@@ -119,13 +117,28 @@ namespace Conductor.Controllers
             return Ok(account);
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("GetSession")]
         public async Task<IActionResult> UserGetSession()
         {
             int ClientId = _jwt.GetUserFromHttpRequest(User);
-            var sessions = _db.RemoteSessions.Where( o => o.ClientId == ClientId);
-            return Ok(sessions);
+
+            //get session in recent 7 days
+            var sessions = _db.RemoteSessions.Where( o => o.ClientId == ClientId &&
+                                                     o.StartTime.Value.AddDays(7) >  DateTime.Now);
+
+            var ret = new List<GetSessionResponse>();
+            foreach(var item in sessions)
+            {
+                var i = new GetSessionResponse();
+                i.DayofWeek = item.StartTime.Value.DayOfWeek;
+                i.SessionTime = (item.EndTime - item.StartTime).Value.TotalMinutes;
+                ret.Add(i);
+            }            
+            return Ok(ret);
         }
     }
 }
