@@ -87,7 +87,7 @@ namespace Conductor.Controllers
                 if (result.Succeeded)
                 {
                     UserAccount u = await _userManager.FindByEmailAsync(model.Email);
-                    await _userManager.AddToRoleAsync(u, DataSeeder.USER);
+                    await _userManager.AddToRoleAsync(u, AccountSeeder.USER);
                     string token = await _tokenGenerator.GenerateJwt(u);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now);
                 }

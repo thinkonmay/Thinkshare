@@ -36,6 +36,7 @@ $(document).ready(async () => {
 		const userinfor = await (await API.getInfor()).json()
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
+		const sessionInfor = await (await API.getSession()).json()
 
 		document.getElementById("WelcomeUsername").innerHTML = userinfor.userName;
 
@@ -336,6 +337,9 @@ function user() {
 		var saleGradientBg2 = graphGradient2.createLinearGradient(10, 0, 0, 150);
 		saleGradientBg2.addColorStop(0, 'rgba(0, 208, 255, 0.19)');
 		saleGradientBg2.addColorStop(1, 'rgba(34, 36, 55, 0.2)');
+
+		
+
 		var salesTopDataDark = {
 			labels: ["SUN","sun", "MON", "mon", "TUE","tue", "WED", "wed", "THU", "thu", "FRI", "fri", "SAT"],
 			datasets: [{
