@@ -14,7 +14,6 @@ using Conductor.Data;
 using Conductor.Interfaces;
 using SharedHost.Models.Auth;
 using SharedHost.Models.User;
-using Conductor.Services;
 using System;
 using System.IO;
 using System.Reflection;
@@ -70,12 +69,17 @@ namespace Conductor
             });
 
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
+                .AddGoogle(options =>
+                {
+                    options.ClientId = "550478024185-0suq9lqrvh1qqfdbdtrifilrl0hs5vmm.apps.googleusercontent.com";
+                    options.ClientSecret = "vuLwHarCNERcMNfe_kndQ5ya";
+                }
+                )
                 .AddJwtBearer(options =>
                 {
                     options.Events = new JwtBearerEvents
