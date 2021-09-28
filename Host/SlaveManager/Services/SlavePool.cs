@@ -27,10 +27,10 @@ namespace SlaveManager.Services
 
         public SlavePool(SystemConfig config, IConductorSocket socket)
         {
-            SamplePeriod = 60000;
             _config = config;
             _socket = socket;
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
+            SamplePeriod = 60* 1000;
             Task.Run(() => SystemHeartBeat());
         }
 
