@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ShellExtractor.Model
 {
-    public enum ScriptModel
+    public enum ScriptModelEnum
     {
         GET_CPU = 1,
         GET_GPU,

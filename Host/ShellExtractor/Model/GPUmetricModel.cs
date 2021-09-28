@@ -5,7 +5,17 @@ using System.Threading.Tasks;
 
 namespace ShellExtractor.Model
 {
-    public class Class
+    public class GPUmetricModel
     {
+        public int GPUMem { get; set; }
+
+        public int GPUEngine { get; set; }
+    }
+
+    public class GPUDataModel
+    {
+        public DateTime Time { get; set; }
+
+        public GPUmetricModel Result { get; set; }
     }
 }

@@ -14,7 +14,6 @@ namespace Conductor.Controllers
     /// <summary>
     /// Route use by admin to create shell remote session with slave devices
     /// </summary>
-    [Authorize(Roles = "Administrator")]
     [Route("/Shell")]
     [ApiController]
     public class ShellController : Controller
@@ -75,12 +74,12 @@ namespace Conductor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetModelHistory")]
-        public IActionResult Model(int modelID)
+        public IActionResult Model(int modelID, int SlaveID)
         {
             List<ShellSession> session;
             try
             {
-                session = _db.ScriptModels.Find(modelID).History.ToList();
+                session = _db.ScriptModels.Find(modelID).History.Where(o => o.Slave.ID == SlaveID).ToList();
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
             return Ok(session);
