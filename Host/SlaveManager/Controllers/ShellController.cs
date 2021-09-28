@@ -51,16 +51,7 @@ namespace SlaveManager.Controllers
         [HttpPost("Broadcast")]
         public IActionResult Broadcast([FromBody] ShellScript script)
         {
-            var slave = _slavePool.GetSystemSlaveState();
-            foreach(var item in slave)
-            {
-                if(item.SlaveServiceState != SlaveServiceState.Disconnected)
-                {
-                    script.SlaveID = item.SlaveID;
-                    _slavePool.InitShellSession(script);
-                }
-            }
-            return Ok();
+            return _slavePool.BroadcastShellScript(script) ? Ok() : BadRequest();
         }
     }
 }
