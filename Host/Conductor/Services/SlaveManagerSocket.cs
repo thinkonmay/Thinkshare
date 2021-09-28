@@ -116,6 +116,15 @@ namespace Conductor.Services
             await _shell.ExecuteAsync(request);
         }
 
+        public async Task BroadcastShellScript(ShellScript script)
+        {
+            var request = new RestRequest("Broadcast")
+                .AddJsonBody(script);
+            request.Method = Method.POST;
+
+            await _shell.ExecuteAsync(request);
+        }
+
 
 
 

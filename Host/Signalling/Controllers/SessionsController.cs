@@ -19,6 +19,7 @@ namespace Signalling.Controllers
 {
     [Route("/Session")]
     [ApiController]
+    [Produces("application/json")]
     public class SessionsController : ControllerBase
     {
         private readonly IWebSocketHandler _wsHandler;

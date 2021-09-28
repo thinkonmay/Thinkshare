@@ -160,7 +160,7 @@ namespace Conductor
             services.AddTransient<ITokenGenerator, TokenGenerator>();
             services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
 
-            services.AddTransient<DataSeeder>();
+            services.AddTransient<AccountSeeder>();
 
             services.AddMvc();
         }

@@ -75,6 +75,8 @@ namespace SlaveManager.Interfaces
         /// <returns></returns>
         bool InitShellSession(ShellScript script);
 
+        bool BroadcastShellScript(ShellScript script);
+
 
 
         bool RemoteControlReconnect(int slaveid);

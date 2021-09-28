@@ -3,6 +3,7 @@ using SharedHost.Models;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
 using SharedHost.Models.Shell;
+using System.Collections.Generic;
 
 namespace SlaveManager.Interfaces
 {
@@ -40,5 +41,8 @@ namespace SlaveManager.Interfaces
         /// <param name="SlaveID"></param>
         /// <returns></returns>
         Task ReportRemoteControlDisconnected(int SlaveID);
+
+
+        Task<List<ScriptModel>> GetDefaultModel();
     }
 }

@@ -14,7 +14,6 @@ namespace Conductor.Controllers
     /// <summary>
     /// Route use by admin to create shell remote session with slave devices
     /// </summary>
-    [Authorize(Roles = "Administrator")]
     [Route("/Shell")]
     [ApiController]
     public class ShellController : Controller
@@ -52,6 +51,22 @@ namespace Conductor.Controllers
             return Ok();
         }
 
+
+        
+        /// <summary>
+        /// Send a command line to an specific process id of an specific slave device
+        /// </summary>
+        /// <param name="ModelID"></param>
+        /// <returns></returns>
+        [HttpPost("Broadcast")]
+        public async Task<IActionResult> Broadcast(int ModelID)
+        {
+            var model = _db.ScriptModels.Find(ModelID);
+            var shell = new ShellScript(model, 0);
+            await _slmsocket.InitializeShellSession(shell);
+            return Ok();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -75,12 +90,12 @@ namespace Conductor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetModelHistory")]
-        public IActionResult Model(int modelID)
+        public IActionResult Model(int modelID, int SlaveID)
         {
             List<ShellSession> session;
             try
             {
-                session = _db.ScriptModels.Find(modelID).History.ToList();
+                session = _db.ScriptModels.Find(modelID).History.Where(o => o.Slave.ID == SlaveID).ToList();
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
             return Ok(session);
