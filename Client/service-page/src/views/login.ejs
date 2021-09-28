@@ -45,12 +45,24 @@
 							Login
 						</button>
 					</div>
-
 					<div class="container-login100-form-btn">
-						<a href="https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=code&client_id=550478024185-0suq9lqrvh1qqfdbdtrifilrl0hs5vmm.apps.googleusercontent.com&redirect_uri=https://conductor.thinkmay.net/signin-google&scope=openid%20profile%20email" class="txt2">
-							SignIn Google
-							<i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
-						</a>
+						<div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+						<script>
+							function onSignIn(googleUser) {
+								// Useful data for your client-side scripts:
+								var profile = googleUser.getBasicProfile();
+								console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+								console.log('Full Name: ' + profile.getName());
+								console.log('Given Name: ' + profile.getGivenName());
+								console.log('Family Name: ' + profile.getFamilyName());
+								console.log("Image URL: " + profile.getImageUrl());
+								console.log("Email: " + profile.getEmail());
+
+								// The ID token you need to pass to your backend:
+								var id_token = googleUser.getAuthResponse().id_token;
+								console.log("ID Token: " + id_token);
+							}
+						</script>
 					</div>
 
 					<!-- <div class="text-center p-t-12">
