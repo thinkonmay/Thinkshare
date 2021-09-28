@@ -79,7 +79,7 @@ namespace Conductor
                     var gconfig = Configuration.GetSection("Authentication:Google");
                     options.ClientId = gconfig["ClientId"];
                     options.ClientSecret = gconfig["ClientSecret"];
-                    options.CallbackPath = "https://service.thinkmay.net/signin-google";
+                    options.CallbackPath = "/login-google";
                 }
                 )
                 .AddJwtBearer(options =>
