@@ -10,6 +10,7 @@ using System.Net;
 using SharedHost;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Threading;
 
 namespace SlaveManager.Services
 {
@@ -136,9 +137,15 @@ namespace SlaveManager.Services
                     SlaveID = 0
                 };
                 System.Console.WriteLine(JsonConvert.SerializeObject(error));
+                var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
+                return allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
             }
-            var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
-            return allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
+            else
+            {
+                // Repeat get default model if the request fail
+                Thread.Sleep(10000);
+                return await GetDefaultModel();
+            }
         }
 
 
