@@ -36,13 +36,30 @@ namespace SlaveManager.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
         /// <returns></returns>
         [HttpPost("Initialize")]
         public IActionResult InitializeShellSession([FromBody] ShellScript script)
         {
             _slavePool.InitShellSession(script);
+            return Ok();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("Broadcast")]
+        public IActionResult Broadcast([FromBody] ShellScript script)
+        {
+            var slave = _slavePool.GetSystemSlaveState();
+            foreach(var item in slave)
+            {
+                if(item.SlaveServiceState != SlaveServiceState.Disconnected)
+                {
+                    script.SlaveID = item.SlaveID;
+                    _slavePool.InitShellSession(script);
+                }
+            }
             return Ok();
         }
     }

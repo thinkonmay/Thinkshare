@@ -42,6 +42,7 @@ namespace Conductor.Interfaces
 
 
         Task InitializeShellSession(ShellScript script);
+        Task BroadcastShellScript(ShellScript script);
 
 
 

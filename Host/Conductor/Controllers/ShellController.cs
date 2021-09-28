@@ -51,6 +51,23 @@ namespace Conductor.Controllers
             return Ok();
         }
 
+
+        
+        /// <summary>
+        /// Send a command line to an specific process id of an specific slave device
+        /// </summary>
+        /// <param name="ModelID"></param>
+        /// <param name="SlaveID"></param>
+        /// <returns></returns>
+        [HttpPost("Broadcast")]
+        public async Task<IActionResult> Broadcast(int ModelID)
+        {
+            var model = _db.ScriptModels.Find(ModelID);
+            var shell = new ShellScript(model, 0);
+            await _slmsocket.InitializeShellSession(shell);
+            return Ok();
+        }
+
         /// <summary>
         /// 
         /// </summary>

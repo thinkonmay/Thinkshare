@@ -61,6 +61,40 @@ namespace Conductor.Controllers
             return AuthResponse.GenerateFailure(model.UserName, "Invalid login model", -1);
         }
 
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("AdminLogin")]
+        public async Task<AuthResponse> AdminLogin([FromBody] LoginModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
+                if (result.Succeeded)
+                {
+                    UserAccount user = await _userManager.FindByNameAsync(model.UserName);
+                    var role = await _userManager.GetRolesAsync(user);
+
+                    // check admin role
+                    if(role.Contains("Administrator"))
+                    {
+                        string token = await _tokenGenerator.GenerateJwt(user);
+                        return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
+                    }
+                    else
+                    {
+                        return AuthResponse.GenerateFailure(model.UserName, "You are not admin", -1);
+                    }
+                }
+                else
+                {
+                    return AuthResponse.GenerateFailure(model.UserName, "Wrong username or password", -2);
+                }
+            }
+
+            return AuthResponse.GenerateFailure(model.UserName, "Invalid login model", -1);
+        }
+
         /// <summary>
         /// register new account with server
         /// </summary>
