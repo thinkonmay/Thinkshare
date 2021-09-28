@@ -76,8 +76,9 @@ namespace Conductor
             })
                 .AddGoogle(options =>
                 {
-                    options.ClientId = "550478024185-0suq9lqrvh1qqfdbdtrifilrl0hs5vmm.apps.googleusercontent.com";
-                    options.ClientSecret = "vuLwHarCNERcMNfe_kndQ5ya";
+                    var gconfig = Configuration.GetSection("Authentication:Google");
+                    options.ClientId = gconfig["ClientId"];
+                    options.ClientSecret = gconfig["ClientSecret"];
                     options.CallbackPath = "/login-google";
                 }
                 )
