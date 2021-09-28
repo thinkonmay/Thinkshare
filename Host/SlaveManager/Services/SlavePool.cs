@@ -41,7 +41,8 @@ namespace SlaveManager.Services
                 {
                     BroadcastShellScript(new ShellScript(i,0));
                 }
-                Thread.Sleep(5000);
+                var period = 1 *60 *1000;
+                Thread.Sleep(period);
             }
         }
 
