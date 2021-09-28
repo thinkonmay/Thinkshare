@@ -9,6 +9,7 @@ using RestSharp;
 using System.Net;
 using SharedHost;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace SlaveManager.Services
 {
@@ -136,7 +137,8 @@ namespace SlaveManager.Services
                 };
                 System.Console.WriteLine(JsonConvert.SerializeObject(error));
             }
-            return JsonConvert.DeserializeObject<List<ScriptModel>>(result.Content);
+            var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
+            return allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
         }
 
 

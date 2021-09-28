@@ -63,5 +63,7 @@ namespace SharedHost.Models.Shell
         GET_GPU,
         GET_RAM,
         GET_STORAGE,
+
+        LAST_DEFAULT_MODEL
     }
 }
