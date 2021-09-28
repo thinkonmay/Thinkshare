@@ -2,7 +2,6 @@ import * as API from "../util/api.js"
 import * as Validates from "../validates/index.js"
 import { setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
-
 const MINUTES59 = 59 * 60 * 1000;
 
 (function ($) {
@@ -10,14 +9,28 @@ const MINUTES59 = 59 * 60 * 1000;
 
 	/*==================================================================
 	[ Validate ]*/
+	$('#login-google').click(() => {
 
-	$("form").submit(event => {
-		event.preventDefault()
-		if ($("form").valid()) {
-			const body = serializeArrToObject($("form").serializeArray())
-			if (window.login) login(body)
-			else if (window.register) register(body)
-		}
+	} )
+	$('#login').click(() => {
+		$("form").submit(event => {
+			event.preventDefault()
+			if ($("form").valid()) {
+				const body = serializeArrToObject($("form").serializeArray())
+				if (window.login) login(body)
+				else if (window.register) register(body)
+			}
+		})
+	})	
+	$('#register').click(() =>{
+		$("form").submit(event => {
+			event.preventDefault()
+			if ($("form").valid()) {
+				const body = serializeArrToObject($("form").serializeArray())
+				if (window.login) login(body)
+				else if (window.register) register(body)
+			}
+		})
 	})
 	$("form").validate(window.login ? Validates.login : Validates.register)
 
