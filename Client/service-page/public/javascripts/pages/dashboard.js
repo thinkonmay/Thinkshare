@@ -36,7 +36,7 @@ $(document).ready(async () => {
 		const userinfor = await (await API.getInfor()).json()
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
-		const sessionInfor = await (await API.getSession()).json()
+		// const sessionInfor = await (await API.getSession()).json()
 
 		document.getElementById("WelcomeUsername").innerHTML = userinfor.userName;
 
