@@ -36,14 +36,20 @@ namespace SlaveManager.Services
 
         public async Task SystemHeartBeat()
         {
-            var model_list = await _socket.GetDefaultModel();
-            while(true)
+            try
             {
-                foreach(var i in model_list)
+                var model_list = await _socket.GetDefaultModel();
+                while(true)
                 {
-                    BroadcastShellScript(new ShellScript(i,0));
+                    foreach(var i in model_list)
+                    {
+                        BroadcastShellScript(new ShellScript(i,0));
+                    }
+                    Thread.Sleep(SamplePeriod);
                 }
-                Thread.Sleep(SamplePeriod);
+            }catch(Exception ex)
+            {
+                await SystemHeartBeat();
             }
         }
 
