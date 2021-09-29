@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ShellExtractor.Model
+namespace MetricCollector.Model
 {
     public class GPUmetricModel
     {

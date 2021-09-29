@@ -1,5 +1,5 @@
-﻿using ShellExtractor.Interface;
-using ShellExtractor.Model;
+﻿using MetricCollector.Interface;
+using MetricCollector.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using RestSharp;
 using SharedHost;
 using SharedHost.Models.Shell;
 
-namespace ShellExtractor.Service
+namespace MetricCollector.Service
 {
     public class ScriptGetter : IScriptGetter
     {

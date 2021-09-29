@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "ShellExtractor": {
+    "MetricCollector": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

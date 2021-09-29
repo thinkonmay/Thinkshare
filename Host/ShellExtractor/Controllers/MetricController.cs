@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using ShellExtractor.Interface;
+using MetricCollector.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ShellExtractor.Controllers
+namespace MetricCollector.Controllers
 {
     [ApiController]
     [Route("/Metric")]
