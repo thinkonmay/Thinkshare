@@ -29,5 +29,7 @@ namespace SharedHost.Models.Shell
         public string Output { get; set; }
 
         public virtual Slave Slave {get;set;}
+
+        public virtual ScriptModel Model { get; set; }
     }
 }

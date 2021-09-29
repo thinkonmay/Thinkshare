@@ -95,7 +95,9 @@ namespace Conductor.Controllers
             List<ShellSession> session;
             try
             {
-                session = _db.ScriptModels.Find(modelID).History.Where(o => o.Slave.ID == SlaveID).ToList();
+                session = _db.ShellSession
+                    .Where(o => o.Slave.ID == SlaveID && o.Model.ID == modelID)
+                    .ToList();
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
             return Ok(session);
@@ -111,11 +113,6 @@ namespace Conductor.Controllers
         {
             var ret = new List<ScriptModel>();
             var model = _db.ScriptModels.ToList();
-            foreach ( var item in model)
-            {
-                item.History = null;
-                ret.Add(item);
-            };
             return Ok(ret);
         }
     }

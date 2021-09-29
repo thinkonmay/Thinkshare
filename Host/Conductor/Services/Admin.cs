@@ -108,8 +108,8 @@ namespace Conductor.Services
             {
                 var session = new ShellSession(output);
                 session.Slave = _db.Devices.Find(output.SlaveID);
-                var model = _db.ScriptModels.Find(output.ModelID);
-                model.History.Add(session);
+                session.Model = _db.ScriptModels.Find(output.ModelID);
+                _db.ShellSession.Add(session);
                 await _db.SaveChangesAsync();
 
                 await _adminHubctx.Clients.All.LogShellOutput(output);
