@@ -1,10 +1,10 @@
-﻿using ShellExtractor.Model;
+﻿using MetricCollector.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ShellExtractor.Interface
+namespace MetricCollector.Interface
 {
     public interface IScriptGetter
     {

@@ -16,16 +16,14 @@ namespace Conductor.Services
             {
                 ID = (int)ScriptModelEnum.GET_CPU,
                 Name = "GetCpuUsage",
-                Script = DefaultScriptModel.GetCpuUsage,
-                History = new List<ShellSession>()
+                Script = DefaultScriptModel.GetCpuUsage
             });
 
             default_model.Add(new ScriptModel()
             {
                 ID = (int)ScriptModelEnum.GET_GPU,
                 Name = "GetGPUusage",
-                Script = DefaultScriptModel.GetGPUusage,
-                History = new List<ShellSession>()
+                Script = DefaultScriptModel.GetGPUusage
             });
 
 
@@ -33,16 +31,14 @@ namespace Conductor.Services
             {
                 ID = (int)ScriptModelEnum.GET_RAM,
                 Name = "GetRamUsage",
-                Script = DefaultScriptModel.GetRamUsage,
-                History = new List<ShellSession>()
+                Script = DefaultScriptModel.GetRamUsage
             });
 
             default_model.Add(new ScriptModel()
             {
                 ID = (int)ScriptModelEnum.GET_STORAGE,
                 Name = "GetStorageState",
-                Script = DefaultScriptModel.GetStorageState,
-                History = new List<ShellSession>()
+                Script = DefaultScriptModel.GetStorageState
             });
 
 

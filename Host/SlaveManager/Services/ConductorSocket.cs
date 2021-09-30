@@ -10,6 +10,7 @@ using System.Net;
 using SharedHost;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Threading;
 
 namespace SlaveManager.Services
 {
@@ -127,8 +128,14 @@ namespace SlaveManager.Services
             request.Method = Method.GET;
 
             var result = await _scriptmodel.ExecuteAsync(request);
-            if(result.StatusCode != HttpStatusCode.OK)
+            if(result.StatusCode == HttpStatusCode.OK)
             {
+                var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
+                return allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
+            }
+            else
+            {
+                // Repeat get default model if the request fail
                 var error = new ReportedError()
                 {
                     Module = (int)Module.HOST_MODULE,
@@ -136,9 +143,9 @@ namespace SlaveManager.Services
                     SlaveID = 0
                 };
                 System.Console.WriteLine(JsonConvert.SerializeObject(error));
+                Thread.Sleep(10000);
+                return await GetDefaultModel();
             }
-            var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
-            return allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
         }
 
 

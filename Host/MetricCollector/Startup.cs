@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SharedHost;
-using ShellExtractor.Interface;
-using ShellExtractor.Service;
+using MetricCollector.Interface;
+using MetricCollector.Service;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +16,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 
 
-namespace ShellExtractor
+namespace MetricCollector
 {
     public class Startup
     {
@@ -50,7 +50,7 @@ namespace ShellExtractor
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "ShellExtractor",
+                    Title = "MetricCollector",
                     Version =
                     "v1"
                 });
@@ -79,7 +79,7 @@ namespace ShellExtractor
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ShellExtractor v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MetricCollector v1"));
             }
 
 
@@ -100,7 +100,7 @@ namespace ShellExtractor
             app.UseSwaggerUI(c =>
             {
                 c.OAuthClientId("swagger");
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ShellExtractor");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MetricCollector");
             }
             );
         }

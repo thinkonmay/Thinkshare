@@ -92,12 +92,9 @@ namespace Conductor.Controllers
         [HttpGet("GetModelHistory")]
         public IActionResult Model(int modelID, int SlaveID)
         {
-            List<ShellSession> session;
-            try
-            {
-                session = _db.ScriptModels.Find(modelID).History.Where(o => o.Slave.ID == SlaveID).ToList();
-            }
-            catch (Exception ex) { return BadRequest(ex.Message); }
+            var session = _db.ShellSession
+                    .Where(o => o.Slave.ID == SlaveID && o.Model.ID == modelID)
+                    .ToList();
             return Ok(session);
         }
 
@@ -109,14 +106,8 @@ namespace Conductor.Controllers
         [HttpGet("GetModel")]
         public IActionResult Model()
         {
-            var ret = new List<ScriptModel>();
             var model = _db.ScriptModels.ToList();
-            foreach ( var item in model)
-            {
-                item.History = null;
-                ret.Add(item);
-            };
-            return Ok(ret);
+            return Ok(model);
         }
     }
 }

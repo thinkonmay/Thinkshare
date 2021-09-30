@@ -131,6 +131,10 @@ namespace Conductor.Controllers
                                                      o.StartTime.Value.AddDays(7) >  DateTime.Now);
 
             var ret = new List<GetSessionResponse>();
+            if(sessions == null)
+            {
+                return Ok(ret);
+            }
             foreach(var item in sessions)
             {
                 var i = new GetSessionResponse();

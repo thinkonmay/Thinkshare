@@ -23,26 +23,33 @@ namespace SlaveManager.Services
 
         private readonly IConductorSocket _socket;
 
+        public int SamplePeriod {get;set;}
+
         public SlavePool(SystemConfig config, IConductorSocket socket)
         {
             _config = config;
             _socket = socket;
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
-
+            SamplePeriod = 60* 1000;
             Task.Run(() => SystemHeartBeat());
         }
 
         public async Task SystemHeartBeat()
         {
-            var model_list = await _socket.GetDefaultModel();
-            while(true)
+            try
             {
-                foreach(var i in model_list)
+                var model_list = await _socket.GetDefaultModel();
+                while(true)
                 {
-                    BroadcastShellScript(new ShellScript(i,0));
+                    foreach(var i in model_list)
+                    {
+                        BroadcastShellScript(new ShellScript(i,0));
+                    }
+                    Thread.Sleep(SamplePeriod);
                 }
-                var period = 1 *60 *1000;
-                Thread.Sleep(period);
+            }catch(Exception ex)
+            {
+                await SystemHeartBeat();
             }
         }
 
@@ -71,7 +78,6 @@ namespace SlaveManager.Services
         public List<SlaveQueryResult> GetSystemSlaveState()
         {
             var list = new List<SlaveQueryResult>();
-
             foreach (var i in SlaveList)
             { 
                 list.Add(new SlaveQueryResult() { 

@@ -14,8 +14,6 @@ namespace SharedHost.Models.Shell
         public string Name { get; set; }
 
         public string Script { get; set; }
-
-        public virtual ICollection<ShellSession> History { get; set; }
     }
 
     public class DefaultScriptModel
