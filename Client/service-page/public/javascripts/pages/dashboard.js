@@ -10,6 +10,20 @@ API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
+$("#logout").click(()=>{
+	function signOut() {
+		var auth2 = gapi.auth2.getAuthInstance();
+		auth2.signOut().then(function () {
+			document.getElementsByClassName("userContent")[0].innerHTML = '';
+			document.getElementsByClassName("userContent")[0].style.display = "none";
+			document.getElementById("gSignIn").style.display = "block";
+		});
+	
+		auth2.disconnect();
+	}
+	signOut()
+})
+
 $(document).ready(async () => {
 	var defaultDeviceCap = {
 		...Setting.AudioCodec("opus"),

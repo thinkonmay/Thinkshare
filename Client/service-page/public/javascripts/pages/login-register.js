@@ -28,7 +28,7 @@ const MINUTES59 = 59 * 60 * 1000;
 			if ($("form").valid()) {
 				const body = serializeArrToObject($("form").serializeArray())
 				if (window.login) login(body)
-				else if (window.register) register(body)
+				else if (window.register) register(body, true)
 			}
 		})
 	})
@@ -92,7 +92,7 @@ function login(body) {
 	})
 }
 
-function register(body) {
+function register(body, status) {
 
 	console.log(body);
 	Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
@@ -121,9 +121,11 @@ function register(body) {
 								}
 							})
 						} else {
+							if(status)
 							Utils.responseError("Lỗi!", response.message, "error")
 						}
 					} else {
+						if(status)
 						Utils.responseErrorHandler(response)
 					}
 				})
