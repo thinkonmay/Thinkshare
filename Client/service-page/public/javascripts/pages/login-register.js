@@ -177,7 +177,7 @@ function onFailure(error) {
 }
 
 // Sign out the user
-function signOut() {
+export function signOut() {
 	var auth2 = gapi.auth2.getAuthInstance();
 	auth2.signOut().then(function () {
 		document.getElementsByClassName("userContent")[0].innerHTML = '';
