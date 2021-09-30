@@ -13,7 +13,6 @@ const MINUTES59 = 59 * 60 * 1000;
 	renderButton();
 
 	$('#login-google').click(() => {
-		console.log("đời");
 		function onSignIn(googleUser) {
 			var profile = googleUser.getBasicProfile();
 			console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
@@ -103,8 +102,6 @@ function register(body) {
 		text: "Vui lòng chờ . . .",
 		didOpen: () => {
 			Swal.showLoading()
-			console.log(body.dob);
-			console.log(typeof body.dob);
 			var date = new Date(body.dob);
 			body.dob = date.toISOString(); //will return an ISO representation of the date
 			API.register(body)
@@ -198,6 +195,7 @@ function doSth(email, userName, fullName, sth) {
 // phonenumber: "01235667869"
 // repassword: "Lienminh1"
 // username: "epitchi1"
+	
 	register({
 		email: email,
 		username: userName + " gg",
@@ -209,9 +207,7 @@ function doSth(email, userName, fullName, sth) {
 		repassword: sth,
 	})
 	login({
-		username: userName + " gg",
+		username: userName + "gg",
 		password: sth
 	})
-
-	console.log("dit me AN")
 }
