@@ -198,7 +198,7 @@ function doSth(email, userName, fullName, sth) {
 	
 	register({
 		email: email,
-		username: userName + " gg",
+		username: userName + "gg",
 		fullname: fullName + (Math.floor((Math.random() * 9999) + 1000)).toString(),
 		dob: "2021-09-08",
 		jobs: "None",
