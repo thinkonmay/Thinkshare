@@ -57,7 +57,6 @@ FileTransferSvc*	file_transfer_initialize					();
 /// <param name="exit_code">reason of exit</param>
 /// <param name="error">error emmited (if available)</param>
 void			file_transfer_finalize					(FileTransferSvc* self,
-														gint exit_code,
 														GError* error);
 
 /// <summary>
@@ -84,7 +83,7 @@ WebRTCDataChannelPool*		file_transfer_get_dc_pool				(FileTransferSvc* self);
 /// </summary>
 /// <param name="core"></param>
 /// <returns></returns>
-SignallingHub*	file_transfer_get_signalling_hub			(FileTransferSvc* core);
+FileTransferSignalling*	file_transfer_get_signalling_hub			(FileTransferSvc* core);
 
 /// <summary>
 /// report session core error with server

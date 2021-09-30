@@ -1,0 +1,7 @@
+#ifndef __AGENT_FILE_TRANSFER_SERVICE_H__
+#define __AGENT_FILE_TRANSFER_SERVICE_H__
+
+
+
+
+#endif

@@ -33,7 +33,7 @@ typedef struct			_WebRTCDataChannelPool				    WebRTCDataChannelPool;
 /// signalling hub responsible for handle ice candidate and sdp negotiation with client module 
 /// through signalling server.
 /// </summary>
-typedef struct 			_SignallingHub			                SignallingHub;
+typedef struct 			_FileTransferSignalling			                FileTransferSignalling;
 
 
 

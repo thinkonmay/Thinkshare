@@ -1,4 +1,4 @@
-﻿#include <file-transfer-pipeline.h>
+﻿#include <file-transfer-webrtcbin.h>
 #include <file-transfer-type.h>
 #include <file-transfer-data-channel.h>
 #include <file-transfer-signalling.h>
@@ -19,15 +19,19 @@
 
 
 
+struct _WebRTChub
+{
+    GstElement* pipeline;
+
+    GstElement* webrtcbin;
+};
 
 WebRTChub*
 webrtcbin_initialize(FileTransferSvc* core)
 {
-    SignallingHub* hub = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);    
 
-    
-
-    return &pipeline;
+    return &hub;
 }
 
 static gboolean
@@ -45,7 +49,6 @@ start_file_transfer(FileTransferSvc* core)
         error.message = "Fail to start pipeline, this may due to pipeline setup failure";
         file_transfer_finalize(core, PIPELINE_ERROR_EXIT,&error);
     }
-    write_to_log_file(SESSION_CORE_GENERAL_LOG,"Starting pipeline");
     return TRUE;
 }
 
@@ -60,7 +63,7 @@ static void
 connect_signalling_handler(FileTransferSvc* core)
 {
     WebRTChub* pipe = file_transfer_get_pipeline(core);
-    SignallingHub* hub = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
 
     g_main_context_push_thread_default(file_transfer_get_main_context(core));
     /* Add stun server */
@@ -89,13 +92,13 @@ connect_signalling_handler(FileTransferSvc* core)
 gpointer
 setup_pipeline(FileTransferSvc* core)
 {
-    SignallingHub* signalling = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* signalling = file_transfer_get_signalling_hub(core);
     WebRTChub* pipe = file_transfer_get_pipeline(core);
 
     connect_signalling_handler(core);
     
-    GError* error = NULL
-    gst_parse_launch("webrtcbin",&error);
+    GError* error = NULL;
+    pipe->pipeline = gst_parse_launch("webrtcbin",&error);
     if(error != NULL)
         return NULL;
 
@@ -104,9 +107,6 @@ setup_pipeline(FileTransferSvc* core)
     connect_data_channel_signals(core);
 
     start_file_transfer(core);
-
-    file_transfer_set_state(core, REMOTE_CONNECT_STARTED);
-    signalling_hub_set_peer_call_state(signalling, PEER_CALL_DONE);
 }
 
 

@@ -61,7 +61,7 @@ void                            on_ice_gathering_state_notify                   
 /// </summary>
 /// <param name="core"></param>
 /// <returns></returns>
-SignallingHub*                  signalling_hub_initialize                               (FileTransferSvc* core);
+FileTransferSignalling*                  signalling_hub_initialize                               (FileTransferSvc* core);
 
 
 /// <summary>
@@ -78,7 +78,7 @@ void                            connect_to_websocket_signalling_server_async    
 /// <returns></returns>
 gboolean                        register_with_server                                    (FileTransferSvc* core);
 
-void                            signalling_hub_setup                                    (SignallingHub* hub,
+void                            signalling_hub_setup                                    (FileTransferSignalling* hub,
                                                                                         gchar* turn, 
                                                                                         gchar* url,
                                                                                         gint session_slave_id);
@@ -89,7 +89,7 @@ void                            signalling_hub_setup                            
 /// </summary>
 /// <param name="hub"></param>
 /// <returns></returns>
-gboolean                        signalling_close                                        (SignallingHub* hub);
+gboolean                        signalling_close                                        (FileTransferSignalling* hub);
 
 /// <summary>
 /// get stun server from signallinghub, 
@@ -98,6 +98,6 @@ gboolean                        signalling_close                                
 /// </summary>
 /// <param name="hub"></param>
 /// <returns></returns>
-gchar*                          signalling_hub_get_turn_server                          (SignallingHub* hub);
+gchar*                          signalling_hub_get_turn_server                          (FileTransferSignalling* hub);
 
 #endif // !__SESSION_CORE_SIGNALLING_H

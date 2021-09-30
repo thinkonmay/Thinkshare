@@ -21,6 +21,8 @@
 #include <agent-object.h>
 #include <child-process-constant.h>
 
+
+
    
 struct _ShellSession
 {
@@ -38,7 +40,7 @@ struct _ShellSession
 };
 
 
-static ShellSession shell_session_pool[LAST_CHILD_PROCESS] = {0};
+static ShellSession shell_session_pool[MAX_POWERSHELL_INSTANCE] = {0};
 
 
 gchar*
@@ -82,53 +84,7 @@ shell_session_get_model(gint process_id)
 
 
 
-gchar*
-shell_script_map(gint process_id)
-{
-    switch(process_id)
-    {
-        case POWERSHELL_1:
-            return SHELL_SCRIPT_BUFFER_1;
-        case POWERSHELL_2:
-            return SHELL_SCRIPT_BUFFER_2;
-        case POWERSHELL_3:
-            return SHELL_SCRIPT_BUFFER_3;
-        case POWERSHELL_4:
-            return SHELL_SCRIPT_BUFFER_4;
-        case POWERSHELL_5:
-            return SHELL_SCRIPT_BUFFER_5;
-        case POWERSHELL_6:
-            return SHELL_SCRIPT_BUFFER_6;
-        case POWERSHELL_7:
-            return SHELL_SCRIPT_BUFFER_7;
-        case POWERSHELL_8:
-            return SHELL_SCRIPT_BUFFER_8;
-    }
-}
 
-gchar*
-shell_output_map(gint process_id)
-{
-    switch(process_id)
-    {
-        case POWERSHELL_1:
-            return SHELL_OUTPUT_BUFFER_1;
-        case POWERSHELL_2:
-            return SHELL_OUTPUT_BUFFER_2;
-        case POWERSHELL_3:
-            return SHELL_OUTPUT_BUFFER_3;
-        case POWERSHELL_4:
-            return SHELL_OUTPUT_BUFFER_4;
-        case POWERSHELL_5:
-            return SHELL_OUTPUT_BUFFER_5;
-        case POWERSHELL_6:
-            return SHELL_OUTPUT_BUFFER_6;
-        case POWERSHELL_7:
-            return SHELL_OUTPUT_BUFFER_7;
-        case POWERSHELL_8:
-            return SHELL_OUTPUT_BUFFER_8;
-    }
-}
 
 static ShellSession* 
 get_shell_session(gint process_id)
@@ -205,7 +161,7 @@ initialize_shell_session(AgentObject* agent,
     Message* json_data = get_json_object_from_string(data_string,&error);
     if(!error == NULL) {return;}
 
-    ChildProcess* process = get_available_shell_process();
+    ChildProcess* process = get_available_child_process();
     gint process_id = get_child_process_id(process);
 
     ShellSession* session = get_shell_session(process_id);
@@ -218,4 +174,40 @@ initialize_shell_session(AgentObject* agent,
 
     write_to_script_file(agent, session);
     create_new_shell_process(agent, session);
+}
+
+
+void
+report_shell_session(AgentObject* agent,
+                    gint process_id)
+{
+    gchar* script = shell_session_get_script(process_id);
+    gchar* output = shell_session_get_output(process_id);
+    gint id =       shell_session_get_id(process_id);
+    gint model =    shell_session_get_model(process_id);
+    if(script == NULL || output == NULL) 
+    {
+        agent_report_error(agent, "fail to get script output");
+        return;
+    }
+
+    gchar* temp = malloc(strlen(output));
+    memcpy(temp,output+3,strlen(output));
+
+    character_remover(&temp, "\n");
+    character_remover(&temp, "\r");
+
+    Message* shell = json_object_new();
+    json_object_set_string_member(shell, "Output", temp);
+    json_object_set_string_member(shell, "Script", script);
+    json_object_set_int_member(shell, "ID", id);
+    json_object_set_int_member(shell, "ModelID", model);
+
+
+
+    Message* message = message_init(
+        AGENT_MODULE, HOST_MODULE,
+        END_SHELL_SESSION, shell);
+
+    agent_send_message(agent, message);
 }

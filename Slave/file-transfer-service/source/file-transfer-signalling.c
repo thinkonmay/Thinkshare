@@ -1,4 +1,12 @@
-
+/// <summary>
+/// @file file-transfer-signalling.c
+/// @author {Do Huy Hoang} ({huyhoangdo0205@gmail.com})
+/// </summary>
+/// @version 1.0
+/// @date 2021-09-30
+/// 
+/// @copyright Copyright (c) 2021
+/// 
 #include <file-transfer-signalling.h>
 #include <file-transfer.h>
 #include <file-transfer-webrtcbin.h>
@@ -25,7 +33,7 @@
 
 
 
-struct _SignallingHub
+struct _FileTransferSignalling
 {
     /// <summary>
     /// websocket connection object encapsulate websocket connection between slave and signalling server,
@@ -53,6 +61,14 @@ struct _SignallingHub
     /// url of turn server
     /// </summary>
 	gchar* turn;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    gboolean disable_ssl;
+
+
+    gint SessionSlaveID;
 };
 
 
@@ -61,10 +77,10 @@ on_server_connected(SoupSession* session,
     GAsyncResult* res,
     FileTransferSvc* core);
 
-SignallingHub*
+FileTransferSignalling*
 signalling_hub_initialize(FileTransferSvc* core)
 {
-    static SignallingHub hub;
+    static FileTransferSignalling hub;
     GFile* config = g_file_parse_name(HOST_CONFIG_FILE);
     GBytes* byte_config = g_file_load_bytes(config, NULL, NULL, NULL);
 
@@ -81,7 +97,7 @@ signalling_hub_initialize(FileTransferSvc* core)
 
 
 void
-signalling_hub_setup(SignallingHub* hub, 
+signalling_hub_setup(FileTransferSignalling* hub, 
                      gchar* turn,
                      gchar* url,
                      gint session_slave_id)
@@ -95,7 +111,7 @@ signalling_hub_setup(SignallingHub* hub,
 
 
 void
-send_message_to_signalling_server(SignallingHub* signalling,
+send_message_to_signalling_server(FileTransferSignalling* signalling,
                                 gchar* request_type,
                                 gchar* content)
 {
@@ -122,7 +138,7 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
     gchar* text;
     JsonObject* ice, * msg;
 
-    SignallingHub* hub = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
 
 
     ice = json_object_new();
@@ -148,7 +164,7 @@ send_sdp_to_peer(FileTransferSvc* core,
     gchar* text;
     JsonObject* msg, * sdp;
 
-    SignallingHub* hub = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
 
     text = gst_sdp_message_as_text(desc->sdp);
     sdp = json_object_new();
@@ -186,7 +202,7 @@ on_offer_created( GstPromise* promise, FileTransferSvc* core)
     const GstStructure* reply;
 
     WebRTChub* pipe = file_transfer_get_pipeline(core);
-    SignallingHub* hub = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
 
 
     g_assert_cmphex(gst_promise_wait(promise), == , GST_PROMISE_RESULT_REPLIED);
@@ -213,7 +229,7 @@ void
 on_negotiation_needed(GstElement* element, FileTransferSvc* core)
 {
     WebRTChub* pipe = file_transfer_get_pipeline(core);
-    SignallingHub* signalling = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* signalling = file_transfer_get_signalling_hub(core);
 
 
     GstPromise* promise =
@@ -259,7 +275,7 @@ register_with_server(FileTransferSvc* core)
 {
     gchar* hello;
     JsonObject* json_object = json_object_new();
-    SignallingHub* hub = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
 
     
     //gchar* buffer = malloc(10);
@@ -280,8 +296,6 @@ void
 on_server_closed(SoupWebsocketConnection* conn G_GNUC_UNUSED,
     FileTransferSvc* core G_GNUC_UNUSED)
 {
-    hub->connection = NULL;
-    hub->session = NULL;
 
 }
 
@@ -294,7 +308,7 @@ on_answer_created(GstPromise* promise,
     const GstStructure* reply;
 
     WebRTChub* pipe = file_transfer_get_pipeline(core);
-    SignallingHub* hub = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
 
     g_assert_cmphex(gst_promise_wait(promise), == , GST_PROMISE_RESULT_REPLIED);
     reply = gst_promise_get_reply(promise);
@@ -384,17 +398,17 @@ connect_to_websocket_signalling_server_async(FileTransferSvc* core)
     SoupLogger* logger;
     SoupMessage* message;
 
-    const char* https_aliases[] = { "ws", NULL };
+    const char* https_aliases[] = { "wss", NULL };
     JsonObject* json_object;
 
-    SignallingHub* hub = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
 
     gchar* text;
 
 
 
     hub->session =
-        soup_session_new_with_options(SOUP_SESSION_SSL_STRICT, !hub->disable_ssl,
+        soup_session_new_with_options(SOUP_SESSION_SSL_STRICT, TRUE,
             SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
             //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
             SOUP_SESSION_HTTPS_ALIASES, https_aliases, NULL);
@@ -445,7 +459,7 @@ static void
 on_sdp_exchange(gchar* data, 
                 FileTransferSvc* core)
 {
-    SignallingHub* hub = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
     WebRTChub* pipe = file_transfer_get_pipeline(core);
 
     GError* error = NULL;
@@ -587,7 +601,7 @@ on_server_connected(SoupSession* session,
     FileTransferSvc* core)
 {
     GError* error = NULL;
-    SignallingHub* hub = file_transfer_get_signalling_hub(core);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
 
     
     hub->connection = soup_session_websocket_connect_finish(session, res, &error);
@@ -607,7 +621,7 @@ on_server_connected(SoupSession* session,
 
 
 gboolean
-signalling_close(SignallingHub* hub)
+signalling_close(FileTransferSignalling* hub)
 {
     if (hub->connection)
     {
@@ -622,7 +636,7 @@ signalling_close(SignallingHub* hub)
 
 /*START get-set function*/
 gchar* 
-signalling_hub_get_turn_server(SignallingHub* hub)
+signalling_hub_get_turn_server(FileTransferSignalling* hub)
 {
     return hub->turn;
 }

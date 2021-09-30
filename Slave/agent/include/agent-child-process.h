@@ -38,7 +38,19 @@ ChildProcess*		create_new_child_process					(gchar* binary_name,
 /// 
 /// </summary>
 /// <returns></returns>
-ChildProcess* 		get_available_shell_process					();
+ChildProcess* 		get_available_child_process					();
+
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
+ChildProcess* 		get_available_file_transceiver				();
+
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
+ChildProcess* 		get_available_file_commpressor				();
 
 /// <summary>
 /// 

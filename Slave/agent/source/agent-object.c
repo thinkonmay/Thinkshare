@@ -7,6 +7,7 @@
 #include <agent-shell-session.h>
 #include <agent-device.h>
 #include <agent-state.h>
+#include <agent-child-process.h>
 #include <agent-state-unregistered.h>
 
 

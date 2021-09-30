@@ -14,8 +14,7 @@ pkg_check_modules(CONTROLLER REQUIRED gstreamer-controller-1.0)
 
 
 file(GLOB SOURCE_LIST 
-${CMAKE_SOURCE_DIR}/file-transfer/source/*.c
-${CMAKE_SOURCE_DIR}/file-transfer/adaptive-bitrate-algorithm/*.c
+${CMAKE_SOURCE_DIR}/file-transfer-service/source/*.c
 ${CMAKE_SOURCE_DIR}/shared-items/*.c)
 
 add_executable(file-transfer ${SOURCE_LIST})
@@ -25,8 +24,7 @@ add_executable(file-transfer ${SOURCE_LIST})
 
 target_include_directories(file-transfer 
 PUBLIC
-    ${CMAKE_SOURCE_DIR}/file-transfer/include
-    ${CMAKE_SOURCE_DIR}/file-transfer/adaptive-bitrate-algorithm
+    ${CMAKE_SOURCE_DIR}/file-transfer-service/include
 
     ${CMAKE_SOURCE_DIR}/shared-items
     ${LIBSOUP_INCLUDE_DIRS}

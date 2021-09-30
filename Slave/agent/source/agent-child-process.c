@@ -58,7 +58,7 @@ struct _ChildProcess
 
 
 
-static ChildProcess process_pool[LAST_CHILD_PROCESS];
+static ChildProcess process_pool[LAST_CHILD_PROCESS] = {0};
 
 void
 initialize_child_process_system(AgentObject* agent)
@@ -74,12 +74,17 @@ initialize_child_process_system(AgentObject* agent)
     }
 }
 
+
+
+
+
+
 ChildProcess* 
-get_available_shell_process()
+get_available_child_process()
 {
     while(TRUE)
     {
-        for(gint i = POWERSHELL_1; i < LAST_CHILD_PROCESS; i++)
+        for(gint i = 1; i < FILE_COMPRESSOR_SERVICE_1; i++)
         {
             if(process_pool[i].completed)
             {
@@ -90,6 +95,10 @@ get_available_shell_process()
         Sleep(1000);
     }
 }
+
+
+
+
 
 
 gpointer 

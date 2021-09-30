@@ -60,7 +60,7 @@ QoE*
 qoe_initialize()
 {
 	static QoE qoe;
-	ZeroMemory(&qoe,sizeof(QoE));
+	memset(&qoe, 0, sizeof(QoE));
 	return &qoe;
 }
 
