@@ -9,9 +9,20 @@ const MINUTES59 = 59 * 60 * 1000;
 
 	/*==================================================================
 	[ Validate ]*/
-	$('#login-google').click(() => {
 
-	} )
+	renderButton();
+
+	$('#login-google').click(() => {
+		console.log("đời");
+		function onSignIn(googleUser) {
+			var profile = googleUser.getBasicProfile();
+			console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+			console.log('Name: ' + profile.getName());
+			console.log('Image URL: ' + profile.getImageUrl());
+			console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+		}
+		onSignIn(auth2.isSignedIn.get())
+	})
 	$('#login').click(() => {
 		$("form").submit(event => {
 			event.preventDefault()
@@ -21,8 +32,8 @@ const MINUTES59 = 59 * 60 * 1000;
 				else if (window.register) register(body)
 			}
 		})
-	})	
-	$('#register').click(() =>{
+	})
+	$('#register').click(() => {
 		$("form").submit(event => {
 			event.preventDefault()
 			if ($("form").valid()) {
@@ -59,6 +70,7 @@ function serializeArrToObject(serializeArr) {
 }
 
 function login(body) {
+	console.log(body);
 	Utils.newSwal.fire({
 		title: "Đang đăng nhập",
 		text: "Vui lòng chờ . . .",
@@ -82,6 +94,8 @@ function login(body) {
 }
 
 function register(body) {
+
+	console.log(body);
 	Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
 
 	Utils.newSwal.fire({
@@ -89,6 +103,8 @@ function register(body) {
 		text: "Vui lòng chờ . . .",
 		didOpen: () => {
 			Swal.showLoading()
+			console.log(body.dob);
+			console.log(typeof body.dob);
 			var date = new Date(body.dob);
 			body.dob = date.toISOString(); //will return an ISO representation of the date
 			API.register(body)
@@ -108,7 +124,7 @@ function register(body) {
 								}
 							})
 						} else {
-							Utils.responseError("Lỗi!", "Đã gặp lỗi trong quá trình đăng kí, vui lòng liên hệ admin để hỗ trợ!", "error")
+							Utils.responseError("Lỗi!", response.message, "error")
 						}
 					} else {
 						Utils.responseErrorHandler(response)
@@ -119,3 +135,78 @@ function register(body) {
 	})
 }
 
+function renderButton() {
+	gapi.signin2.render('gSignIn', {
+		'scope': 'profile email',
+		'width': 240,
+		'height': 50,
+		'longtitle': true,
+		'theme': 'dark',
+		'onsuccess': onSuccess,
+		'onfailure': onFailure
+	});
+}
+
+// Sign-in success callback
+function onSuccess(googleUser) {
+	// Get the Google profile data (basic)
+	//var profile = googleUser.getBasicProfile();
+
+	// Retrieve the Google account data
+	gapi.client.load('oauth2', 'v2', function () {
+		var request = gapi.client.oauth2.userinfo.get({
+			'userId': 'me'
+		});
+		request.execute(function (resp) {
+
+			let userName = ((resp.given_name).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D')).split(" ")[0];
+
+			doSth(resp.email, userName, resp.given_name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'), resp.link +"123")
+			// given_name
+			// picture
+			// email
+			// gender
+			// locale
+			// link
+		});
+	});
+}
+
+// Sign-in failure callback
+function onFailure(error) {
+	alert("Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại!")
+}
+
+// Sign out the user
+function signOut() {
+	var auth2 = gapi.auth2.getAuthInstance();
+	auth2.signOut().then(function () {
+		document.getElementsByClassName("userContent")[0].innerHTML = '';
+		document.getElementsByClassName("userContent")[0].style.display = "none";
+		document.getElementById("gSignIn").style.display = "block";
+	});
+
+	auth2.disconnect();
+}
+
+function doSth(email, userName, fullName, sth) {
+	// 	dob: "2021-09-08"
+// email: "thienvanlea2@gmail.com"
+// fullname: "Lê Văn Thiện"
+// jobs: "hacker123123"
+// password: "Lienminh1"
+// phonenumber: "01235667869"
+// repassword: "Lienminh1"
+// username: "epitchi1"
+	register({
+		email: email,
+		username: userName + (Math.floor((Math.random() * 9999) + 1000)).toString(),
+		fullname: fullName + (Math.floor((Math.random() * 9999) + 1000)).toString(),
+		dob: "2021-09-08",
+		jobs: "None",
+		phonenumber: (Math.floor((Math.random() * 849999999) + 841111111)).toString(),
+		password: sth,
+		repassword: sth,
+	})
+	console.log("dit me AN")
+}
