@@ -1,6 +1,6 @@
 import * as API from "../util/api.js"
 import * as Validates from "../validates/index.js"
-import { setCookie } from "../util/cookie.js"
+import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 const MINUTES59 = 59 * 60 * 1000;
 
