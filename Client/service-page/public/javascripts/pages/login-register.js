@@ -148,13 +148,13 @@ function renderButton() {
 }
 
 // Sign-in success callback
-function onSuccess(googleUser) {
+function onSuccess(googleUser)  {
 	// Get the Google profile data (basic)
 	//var profile = googleUser.getBasicProfile();
 
 	// Retrieve the Google account data
-	gapi.client.load('oauth2', 'v2', function () {
-		var request = gapi.client.oauth2.userinfo.get({
+	 gapi.client.load('oauth2', 'v2', function ()  {
+		var request =  gapi.client.oauth2.userinfo.get({
 			'userId': 'me'
 		});
 		request.execute(function (resp) {
@@ -174,7 +174,7 @@ function onSuccess(googleUser) {
 
 // Sign-in failure callback
 function onFailure(error) {
-	alert("Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại!")
+	alert("Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại! ")
 }
 
 // Sign out the user
@@ -200,7 +200,7 @@ function doSth(email, userName, fullName, sth) {
 // username: "epitchi1"
 	register({
 		email: email,
-		username: userName + (Math.floor((Math.random() * 9999) + 1000)).toString(),
+		username: userName + " gg",
 		fullname: fullName + (Math.floor((Math.random() * 9999) + 1000)).toString(),
 		dob: "2021-09-08",
 		jobs: "None",
@@ -208,5 +208,10 @@ function doSth(email, userName, fullName, sth) {
 		password: sth,
 		repassword: sth,
 	})
+	login({
+		username: userName + " gg",
+		password: sth
+	})
+
 	console.log("dit me AN")
 }
