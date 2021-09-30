@@ -4,64 +4,6 @@ import { setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 const MINUTES59 = 59 * 60 * 1000;
 
-(function ($) {
-	"use strict"
-
-	/*==================================================================
-	[ Validate ]*/
-
-	renderButton();
-
-	$('#login-google').click(() => {
-		function onSignIn(googleUser) {
-			var profile = googleUser.getBasicProfile();
-			console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-			console.log('Name: ' + profile.getName());
-			console.log('Image URL: ' + profile.getImageUrl());
-			console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-		}
-		onSignIn(auth2.isSignedIn.get())
-	})
-	$('#login').click(() => {
-		$("form").submit(event => {
-			event.preventDefault()
-			if ($("form").valid()) {
-				const body = serializeArrToObject($("form").serializeArray())
-				if (window.login) login(body)
-				else if (window.register) register(body, true)
-			}
-		})
-	})
-	$('#register').click(() => {
-		$("form").submit(event => {
-			event.preventDefault()
-			if ($("form").valid()) {
-				const body = serializeArrToObject($("form").serializeArray())
-				if (window.login) login(body)
-				else if (window.register) register(body)
-			}
-		})
-	})
-	$("form").validate(window.login ? Validates.login : Validates.register)
-
-	const $textInputs = $("input")
-	const $submit = $(".submit")
-	const handler = function () {
-		const $validTextInputs = $("input:valid")
-		if ($textInputs.length === $validTextInputs.length) {
-			$submit.attr("disabled", null)
-		} else {
-			$submit.attr("disabled", "")
-		}
-	}
-	$("form :input").keyup(handler)
-	$("form :input").change(handler)
-
-	$("#dateOfBirth").focus(function () {
-		$(this).attr("type", "date")
-	})
-})(jQuery)
-
 function serializeArrToObject(serializeArr) {
 	const obj = {}
 	serializeArr.map(item => (obj[item.name] = item.value))
@@ -177,15 +119,8 @@ function onFailure(error) {
 }
 
 // Sign out the user
-export function signOut() {
-	var auth2 = gapi.auth2.getAuthInstance();
-	auth2.signOut().then(function () {
-		document.getElementsByClassName("userContent")[0].innerHTML = '';
-		document.getElementsByClassName("userContent")[0].style.display = "none";
-		document.getElementById("gSignIn").style.display = "block";
-	});
-
-	auth2.disconnect();
+function signOut() {
+	document.getElementById("gSignIn").style.display = "block";
 }
 
 function doSth(email, userName, fullName, sth) {
@@ -213,3 +148,59 @@ function doSth(email, userName, fullName, sth) {
 		password: sth
 	})
 }
+
+$(document).ready(() => {
+	if(getCookie('dalogout') == true){
+		signOut()
+	}
+	renderButton();
+
+	$('#login-google').click(() => {
+		function onSignIn(googleUser) {
+			var profile = googleUser.getBasicProfile();
+			console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+			console.log('Name: ' + profile.getName());
+			console.log('Image URL: ' + profile.getImageUrl());
+			console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+		}
+		onSignIn(auth2.isSignedIn.get())
+	})
+	$('#login').click(() => {
+		$("form").submit(event => {
+			event.preventDefault()
+			if ($("form").valid()) {
+				const body = serializeArrToObject($("form").serializeArray())
+				if (window.login) login(body)
+				else if (window.register) register(body, true)
+			}
+		})
+	})
+	$('#register').click(() => {
+		$("form").submit(event => {
+			event.preventDefault()
+			if ($("form").valid()) {
+				const body = serializeArrToObject($("form").serializeArray())
+				if (window.login) login(body)
+				else if (window.register) register(body)
+			}
+		})
+	})
+	$("form").validate(window.login ? Validates.login : Validates.register)
+
+	const $textInputs = $("input")
+	const $submit = $(".submit")
+	const handler = function () {
+		const $validTextInputs = $("input:valid")
+		if ($textInputs.length === $validTextInputs.length) {
+			$submit.attr("disabled", null)
+		} else {
+			$submit.attr("disabled", "")
+		}
+	}
+	$("form :input").keyup(handler)
+	$("form :input").change(handler)
+
+	$("#dateOfBirth").focus(function () {
+		$(this).attr("type", "date")
+	})
+})
