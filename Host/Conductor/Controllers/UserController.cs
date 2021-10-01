@@ -150,7 +150,7 @@ namespace Conductor.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet("SetInfor")]
+        [HttpPost("SetInfor")]
         public async Task<IActionResult> SetAccountInfor([FromBody]UserInforModel infor)
         {
             int ClientId = _jwt.GetUserFromHttpRequest(User);
