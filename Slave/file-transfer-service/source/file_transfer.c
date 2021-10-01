@@ -16,11 +16,11 @@
 #include <message-form.h>
 
 
-struct _FileTransferSvc
+struct _FileTransferService
 {
-	WebRTChub* webrtcbin;
+	WebRTCbin* webrtcbin;
 
-	WebRTCDataChannelPool* hub;
+	FileTransferHub* hub;
 
 	GMainLoop* loop;
 
@@ -30,7 +30,7 @@ struct _FileTransferSvc
 
 
 static void
-file_transfer_setup_session(FileTransferSvc* self,
+file_transfer_setup_session(FileTransferService* self,
 							gchar* signalling_url,
 							gint session_id,
 							gchar* file, 
@@ -43,9 +43,9 @@ file_transfer_setup_session(FileTransferSvc* self,
 
 
 
-static FileTransferSvc service;
+static FileTransferService service;
 
-FileTransferSvc*
+FileTransferService*
 file_transfer_initialize(gchar* signalling_url,
 						 gint session_id, 
 						 gchar* file, 
@@ -72,13 +72,13 @@ file_transfer_initialize(gchar* signalling_url,
 
 
 void
-file_transfer_connect_signalling_server(FileTransferSvc* self)
+file_transfer_connect_signalling_server(FileTransferService* self)
 {
 	connect_to_websocket_signalling_server_async(self);
 }
 
 void
-file_transfer_setup_pipeline(FileTransferSvc* self)
+file_transfer_setup_pipeline(FileTransferService* self)
 {
 	setup_pipeline(self);
 }				
@@ -103,16 +103,18 @@ file_transfer_setup_pipeline(FileTransferSvc* self)
 
 
 void
-file_transfer_finalize(FileTransferSvc* self, 
+file_transfer_finalize(FileTransferService* self, 
+					  ExitCode code,
 					  GError* error)
 {
-	ExitProcess(0);
+	g_printerr(error->message);
+	ExitProcess(code);
 }
 
 
 
 void
-report_file_transfer_error(FileTransferSvc* self,
+report_file_transfer_error(FileTransferService* self,
 						  ErrorCode code)
 {
 	JsonParser* parser = json_parser_new();
@@ -142,14 +144,14 @@ report_file_transfer_error(FileTransferSvc* self,
 
 
 
-WebRTChub*
-file_transfer_get_pipeline(FileTransferSvc* self)
+WebRTCbin*
+file_transfer_get_webrtcbin(FileTransferService* self)
 {
 	return self->webrtcbin;
 }
 
-WebRTCDataChannelPool*
-file_transfer_get_dc_pool(FileTransferSvc* self)
+FileTransferHub*
+file_transfer_get_transfer_hub(FileTransferService* self)
 {
 	return self->hub;
 }
@@ -157,14 +159,14 @@ file_transfer_get_dc_pool(FileTransferSvc* self)
 
 
 GMainContext*
-file_transfer_get_main_context(FileTransferSvc* self)
+file_transfer_get_main_context(FileTransferService* self)
 {
 	return g_main_loop_get_context(self->loop);
 }
 
 
 FileTransferSignalling*
-file_transfer_get_signalling_hub(FileTransferSvc* self)
+file_transfer_get_signalling_hub(FileTransferService* self)
 {
 	return self->signalling;
 }

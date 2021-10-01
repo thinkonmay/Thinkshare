@@ -17,32 +17,32 @@
 #include <Windows.h>
 
 
+#define STUN_SERVER "stun://stun.thinkmay.net:3478"
 
-
-struct _WebRTChub
+struct _WebRTCbin
 {
     GstElement* pipeline;
 
     GstElement* webrtcbin;
+
+    gchar* turn;
 };
 
-WebRTChub*
-webrtcbin_initialize(FileTransferSvc* core)
-{
-    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);    
+static WebRTCbin webrtc_hub = {0};
 
-    return &hub;
+
+WebRTCbin*
+webrtcbin_initialize(FileTransferService* core)
+{
+    return &webrtc_hub;
 }
 
 static gboolean
-start_file_transfer(FileTransferSvc* core)
+start_file_transfer(FileTransferService* core)
 {
     GstStateChangeReturn ret;
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
-
-    ret = GST_IS_ELEMENT(pipe->pipeline);    
-
-    ret = gst_element_set_state(GST_ELEMENT(pipe->pipeline), GST_STATE_PLAYING);
+    WebRTCbin* bin = file_transfer_get_webrtcbin(core);
+    ret = gst_element_set_state(GST_ELEMENT(bin->pipeline), GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE)
     {
         GError error;
@@ -60,29 +60,26 @@ start_file_transfer(FileTransferSvc* core)
 /// </summary>
 /// <param name="core"></param>
 static void
-connect_signalling_handler(FileTransferSvc* core)
+connect_signalling_handler(FileTransferService* service)
 {
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
-    FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
+    WebRTCbin* bin = file_transfer_get_webrtcbin(service);
+    FileTransferSignalling* hub = file_transfer_get_signalling_hub(service);
 
-    g_main_context_push_thread_default(file_transfer_get_main_context(core));
     /* Add stun server */
-    g_object_set(pipe->webrtcbin, "stun-server", 
-       "stun://stun.thinkmay.net:3478", NULL);
-
-    g_signal_emit_by_name (pipe->webrtcbin, "add-turn-server", 
-        signalling_hub_get_turn_server(hub), NULL);
+    g_object_set(bin->webrtcbin, "stun-server", 
+       STUN_SERVER, NULL);
+    g_signal_emit_by_name (bin->webrtcbin, "add-turn-server", 
+        bin->turn, NULL);
 
 
     /* This is the gstwebrtc entry point where we create the offer and so on. It
      * will be called when the pipeline goes to PLAYING. */
-    g_signal_connect(pipe->webrtcbin, "on-negotiation-needed",
-        G_CALLBACK(on_negotiation_needed), core);
-    g_signal_connect(pipe->webrtcbin, "on-ice-candidate",
-        G_CALLBACK(send_ice_candidate_message), core);
-    g_signal_connect(pipe->webrtcbin, "notify::ice-gathering-state",
-        G_CALLBACK(on_ice_gathering_state_notify), core);
-    g_main_context_pop_thread_default(file_transfer_get_main_context(core));
+    g_signal_connect(bin->webrtcbin, "on-negotiation-needed",
+        G_CALLBACK(on_negotiation_needed), service);
+    g_signal_connect(bin->webrtcbin, "on-ice-candidate",
+        G_CALLBACK(send_ice_candidate_message), service);
+    g_signal_connect(bin->webrtcbin, "notify::ice-gathering-state",
+        G_CALLBACK(on_ice_gathering_state_notify), service);
 }
 
 
@@ -90,19 +87,17 @@ connect_signalling_handler(FileTransferSvc* core)
 
 
 gpointer
-setup_pipeline(FileTransferSvc* core)
+setup_webrtcbin(FileTransferService* core)
 {
-    FileTransferSignalling* signalling = file_transfer_get_signalling_hub(core);
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
-
+    WebRTCbin* bin = file_transfer_get_webrtcbin(core);
     connect_signalling_handler(core);
     
     GError* error = NULL;
-    pipe->pipeline = gst_parse_launch("webrtcbin",&error);
+    bin->pipeline = gst_parse_launch("webrtcbin",&error);
     if(error != NULL)
         return NULL;
 
-    gst_element_change_state(pipe->pipeline, GST_STATE_READY);
+    gst_element_change_state(bin->pipeline, GST_STATE_READY);
 
     connect_data_channel_signals(core);
 
@@ -112,7 +107,7 @@ setup_pipeline(FileTransferSvc* core)
 
 
 void
-webrtcbin_get_turn_connection(WebRTChub* hub, 
+webrtcbin_get_turn_connection(WebRTCbin* hub, 
                               gchar* turn_connection)
 {
     g_signal_emit_by_name (hub->webrtcbin, "add-turn-server", 
@@ -125,13 +120,13 @@ webrtcbin_get_turn_connection(WebRTChub* hub,
 
 
 GstElement*
-pipeline_get_webrtc_bin(WebRTChub* pipe)
+webrtcbin_get_element(WebRTCbin* bin)
 {
-    return pipe->webrtcbin;
+    return bin->webrtcbin;
 }
 
 GstElement*
-pipeline_get_pipline(WebRTChub* pipe)
+webrtcbin_get_pipline(WebRTCbin* bin)
 {
-    return pipe->pipeline;
+    return bin->pipeline;
 }

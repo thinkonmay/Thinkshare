@@ -34,7 +34,7 @@
 void                            send_ice_candidate_message                              (GstElement* webrtc,
                                                                                         guint mlineindex,
                                                                                         gchar* candidate,
-                                                                                        FileTransferSvc* core);
+                                                                                        FileTransferService* core);
 
 /// <summary>
 /// handle on negotiation signal from webrtcbin element, 
@@ -42,7 +42,7 @@ void                            send_ice_candidate_message                      
 /// <param name="element"></param>
 /// <param name="core"></param>
 void                            on_negotiation_needed                                   (GstElement* element,
-                                                                                        FileTransferSvc* core);
+                                                                                        FileTransferService* core);
 
 
 /// <summary>
@@ -61,7 +61,7 @@ void                            on_ice_gathering_state_notify                   
 /// </summary>
 /// <param name="core"></param>
 /// <returns></returns>
-FileTransferSignalling*         signalling_hub_initialize                               (FileTransferSvc* core);
+FileTransferSignalling*         signalling_hub_initialize                               (FileTransferService* core);
 
 
 /// <summary>
@@ -69,14 +69,14 @@ FileTransferSignalling*         signalling_hub_initialize                       
 /// this function should be triggered in initialize process
 /// </summary> 
 /// <param name="core">session core object</param>
-void                            connect_to_websocket_signalling_server_async            (FileTransferSvc* core);
+void                            connect_to_websocket_signalling_server_async            (FileTransferService* core);
 
 /// <summary>
 /// reegister with server by sending session slave id
 /// </summary> 
 /// <param name="core"></param>
 /// <returns></returns>
-gboolean                        register_with_server                                    (FileTransferSvc* core);
+gboolean                        register_with_server                                    (FileTransferService* core);
 
 void                            signalling_hub_setup                                    (FileTransferSignalling* hub,
                                                                                         gchar* url,

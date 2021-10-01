@@ -23,7 +23,7 @@
 /// </summary>
 /// <param name="core"></param>
 /// <returns></returns>
-gpointer			setup_pipeline					    (FileTransferSvc* core);
+gpointer			setup_webrtcbin					    (FileTransferService* core);
 
 
 
@@ -33,14 +33,14 @@ gpointer			setup_pipeline					    (FileTransferSvc* core);
 /// </summary>
 /// <param name="pipeline"></param>
 /// <returns></returns>
-GstElement*			pipeline_get_webrtc_bin			    (WebRTChub* pipeline);
+GstElement*			pipeline_get_webrtc_bin			    (WebRTCbin* pipeline);
 
 /// <summary>
 /// initliaze pipeline,
 /// include assigning memory to pipeline
 /// </summary>
 /// <returns></returns>
-WebRTChub*			webrtcbin_initialize				(FileTransferSvc* core);
+WebRTCbin*			webrtcbin_initialize				(FileTransferService* core);
 
 
 /// <summary>
@@ -48,6 +48,13 @@ WebRTChub*			webrtcbin_initialize				(FileTransferSvc* core);
 /// </summary>
 /// <param name="hub"></param>
 /// <param name="turn_connection"></param>
-void                webrtcbin_get_turn_connection       (WebRTChub* hub, 
+void                webrtcbin_get_turn_connection       (WebRTCbin* hub, 
                                                          gchar* turn_connection);
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="bin"></param>
+/// <returns></returns>
+GstElement*         webrtcbin_get_element               (WebRTCbin* bin);
 #endif 

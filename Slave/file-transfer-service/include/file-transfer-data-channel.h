@@ -12,13 +12,13 @@
 /// <param name="core"></param>
 /// <param name="user_data"></param>
 /// <returns></returns>
-gboolean                connect_data_channel_signals                (FileTransferSvc* core);
+gboolean                connect_data_channel_signals                (FileTransferService* core);
 
 /// <summary>
 /// intialize webrtc hub by assigning memory to webrtchub struct
 /// </summary> 
 /// <returns></returns>
-WebRTCDataChannelPool*	init_datachannel_pool						();
+FileTransferHub*	    init_datachannel_pool						();
 
 
 /// <summary>
@@ -26,7 +26,7 @@ WebRTCDataChannelPool*	init_datachannel_pool						();
 /// </summary>
 /// <param name="channel"></param>
 /// <param name="file"></param>
-void                    webrtc_data_channel_get_file                (WebRTCDataChannelPool* channel,
+void                    webrtc_data_channel_get_file                (FileTransferHub* channel,
                                                                      gchar* file);
 
 #endif

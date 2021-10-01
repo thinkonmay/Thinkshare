@@ -62,7 +62,9 @@ struct _FileTransferSignalling
     /// </summary>
     gboolean disable_ssl;
 
-
+    /// <summary>
+    /// 
+    /// </summary>
     gint SessionSlaveID;
 };
 
@@ -70,10 +72,10 @@ struct _FileTransferSignalling
 void
 on_server_connected(SoupSession* session,
     GAsyncResult* res,
-    FileTransferSvc* core);
+    FileTransferService* core);
 
 FileTransferSignalling*
-signalling_hub_initialize(FileTransferSvc* core)
+signalling_hub_initialize(FileTransferService* core)
 {
     static FileTransferSignalling hub;
     GFile* config = g_file_parse_name(HOST_CONFIG_FILE);
@@ -126,7 +128,7 @@ void
 send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
     guint mlineindex,
     gchar* candidate,
-    FileTransferSvc* core G_GNUC_UNUSED)
+    FileTransferService* core G_GNUC_UNUSED)
 {
     gchar* text;
     JsonObject* ice, * msg;
@@ -151,7 +153,7 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
 
 
 void
-send_sdp_to_peer(FileTransferSvc* core,
+send_sdp_to_peer(FileTransferService* core,
     GstWebRTCSessionDescription* desc)
 {
     gchar* text;
@@ -189,12 +191,12 @@ send_sdp_to_peer(FileTransferSvc* core,
 
 /* Offer created by our pipeline, to be sent to the peer */
 void
-on_offer_created( GstPromise* promise, FileTransferSvc* core)
+on_offer_created( GstPromise* promise, FileTransferService* core)
 {
     GstWebRTCSessionDescription* offer = NULL;
     const GstStructure* reply;
 
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
+    WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
     FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
 
 
@@ -219,9 +221,9 @@ on_offer_created( GstPromise* promise, FileTransferSvc* core)
 
 
 void
-on_negotiation_needed(GstElement* element, FileTransferSvc* core)
+on_negotiation_needed(GstElement* element, FileTransferService* core)
 {
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
+    WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
     FileTransferSignalling* signalling = file_transfer_get_signalling_hub(core);
 
 
@@ -264,7 +266,7 @@ on_ice_gathering_state_notify(GstElement* webrtcbin,
 /// <param name="core"></param>
 /// <returns></returns>
 gboolean
-register_with_server(FileTransferSvc* core)
+register_with_server(FileTransferService* core)
 {
     gchar* hello;
     JsonObject* json_object = json_object_new();
@@ -287,7 +289,7 @@ register_with_server(FileTransferSvc* core)
 /// <param name="G_GNUC_UNUSED"></param>
 void
 on_server_closed(SoupWebsocketConnection* conn G_GNUC_UNUSED,
-    FileTransferSvc* core G_GNUC_UNUSED)
+    FileTransferService* core G_GNUC_UNUSED)
 {
 
 }
@@ -295,12 +297,12 @@ on_server_closed(SoupWebsocketConnection* conn G_GNUC_UNUSED,
 /* Answer created by our pipeline, to be sent to the peer */
 void
 on_answer_created(GstPromise* promise,
-    FileTransferSvc* core)
+    FileTransferService* core)
 {
     GstWebRTCSessionDescription* answer = NULL;
     const GstStructure* reply;
 
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
+    WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
     FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
 
     g_assert_cmphex(gst_promise_wait(promise), == , GST_PROMISE_RESULT_REPLIED);
@@ -324,9 +326,9 @@ on_answer_created(GstPromise* promise,
 
 void
 on_offer_set(GstPromise* promise,
-    FileTransferSvc* core)
+    FileTransferService* core)
 {
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
+    WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
 
     gst_promise_unref(promise);
     promise = gst_promise_new_with_change_func(on_answer_created, 
@@ -337,12 +339,12 @@ on_offer_set(GstPromise* promise,
 }
 
 void
-on_offer_received(FileTransferSvc* core, GstSDPMessage* sdp)
+on_offer_received(FileTransferService* core, GstSDPMessage* sdp)
 {
     GstWebRTCSessionDescription* offer = NULL;
     GstPromise* promise;
 
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
+    WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
 
     offer = gst_webrtc_session_description_new(GST_WEBRTC_SDP_TYPE_OFFER, sdp);
     g_assert_nonnull(offer);
@@ -386,7 +388,7 @@ file_transfer_logger(SoupLogger* logger,
 /// </summary>
 /// <param name="core"></param>
 void
-connect_to_websocket_signalling_server_async(FileTransferSvc* core)
+connect_to_websocket_signalling_server_async(FileTransferService* core)
 {
     SoupLogger* logger;
     SoupMessage* message;
@@ -424,15 +426,15 @@ connect_to_websocket_signalling_server_async(FileTransferSvc* core)
 
 
 static void
-on_registering_message(FileTransferSvc* core)
+on_registering_message(FileTransferService* core)
 {
     //do nothing
 }
 
 static void
-on_ice_exchange(gchar* text,FileTransferSvc* core)
+on_ice_exchange(gchar* text,FileTransferService* core)
 {
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
+    WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
 
     GError* error = NULL;
     Message* object = get_json_object_from_string(text,&error);
@@ -450,10 +452,10 @@ on_ice_exchange(gchar* text,FileTransferSvc* core)
 
 static void
 on_sdp_exchange(gchar* data, 
-                FileTransferSvc* core)
+                FileTransferService* core)
 {
     FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
+    WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
 
     GError* error = NULL;
     Message* object = get_json_object_from_string(data,&error);
@@ -474,7 +476,7 @@ on_sdp_exchange(gchar* data,
     }
     if (!g_strcmp0(sdptype, "request"))
     {
-        WebRTChub* pipe = file_transfer_get_pipeline(core);
+        WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
         webrtcbin_initialize(core);
         file_transfer_setup_pipeline(core);
         return;
@@ -522,9 +524,9 @@ void
 on_server_message(SoupWebsocketConnection* conn,
     SoupWebsocketDataType type,
     GBytes* message,
-    FileTransferSvc* core)
+    FileTransferService* core)
 {
-    WebRTChub* pipe = file_transfer_get_pipeline(core);
+    WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
 
     gchar* text;
 
@@ -562,7 +564,7 @@ on_server_message(SoupWebsocketConnection* conn,
     {
         GError error;
         error.message = "Session has been rejected, this may due to security attack or signalling failure";
-        file_transfer_finalize( core, &error);
+        file_transfer_finalize( core, SESSION_DENIED_EXIT, &error);
     }
 
 
@@ -591,7 +593,7 @@ on_server_message(SoupWebsocketConnection* conn,
 void
 on_server_connected(SoupSession* session,
     GAsyncResult* res,
-    FileTransferSvc* core)
+    FileTransferService* core)
 {
     GError* error = NULL;
     FileTransferSignalling* hub = file_transfer_get_signalling_hub(core);

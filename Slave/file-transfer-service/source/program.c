@@ -40,6 +40,6 @@ main (int argc, char *argv[])
     return -1;
   }
 
-  FileTransferSvc* core = file_transfer_initialize(signalling_url,session_id,file,turn);
+  FileTransferService* core = file_transfer_initialize(signalling_url,session_id,file,turn);
   return 0;
 }
