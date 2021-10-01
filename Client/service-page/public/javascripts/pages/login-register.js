@@ -63,15 +63,15 @@ function register(body, status) {
 								}
 							})
 						} else {
-							if(status)
-							Utils.responseError("Lỗi!", response.message, "error")
+							if (status)
+								Utils.responseError("Lỗi!", response.message, "error")
 						}
 					} else {
-						if(status)
-						Utils.responseErrorHandler(response)
+						if (status)
+							Utils.responseErrorHandler(response)
 					}
 				})
-				.catch(Utils.fetchErrorHandler)
+				.catch(status ? Utils.fetchErrorHandler: "")
 		}
 	})
 }
@@ -89,20 +89,20 @@ function renderButton() {
 }
 
 // Sign-in success callback
-function onSuccess(googleUser)  {
+function onSuccess(googleUser) {
 	// Get the Google profile data (basic)
 	//var profile = googleUser.getBasicProfile();
 
 	// Retrieve the Google account data
-	 gapi.client.load('oauth2', 'v2', function ()  {
-		var request =  gapi.client.oauth2.userinfo.get({
+	gapi.client.load('oauth2', 'v2', function () {
+		var request = gapi.client.oauth2.userinfo.get({
 			'userId': 'me'
 		});
 		request.execute(function (resp) {
 
 			let userName = ((resp.given_name).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D')).split(" ")[0];
-
-			doSth(resp.email, userName, resp.given_name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'), resp.link +"123")
+			if(getCookie("dalogout") == 0)
+			doSth(resp.email, userName, resp.given_name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'), resp.link + "123")
 			// given_name
 			// picture
 			// email
@@ -120,19 +120,21 @@ function onFailure(error) {
 
 // Sign out the user
 function signOut() {
+	console.log("dang logout")
 	document.getElementById("gSignIn").style.display = "block";
+	gapi.auth.setToken(null);
+	gapi.auth.signOut();
 }
-
 function doSth(email, userName, fullName, sth) {
 	// 	dob: "2021-09-08"
-// email: "thienvanlea2@gmail.com"
-// fullname: "Lê Văn Thiện"
-// jobs: "hacker123123"
-// password: "Lienminh1"
-// phonenumber: "01235667869"
-// repassword: "Lienminh1"
-// username: "epitchi1"
-	
+	// email: "thienvanlea2@gmail.com"
+	// fullname: "Lê Văn Thiện"
+	// jobs: "hacker123123"
+	// password: "Lienminh1"
+	// phonenumber: "01235667869"
+	// repassword: "Lienminh1"
+	// username: "epitchi1"
+
 	register({
 		email: email,
 		username: userName + "gg",
@@ -150,20 +152,14 @@ function doSth(email, userName, fullName, sth) {
 }
 
 $(document).ready(() => {
-	if(getCookie('dalogout') == true){
+	if (getCookie('dalogout') == 1) {
 		signOut()
 	}
 	renderButton();
 
-	$('#login-google').click(() => {
-		function onSignIn(googleUser) {
-			var profile = googleUser.getBasicProfile();
-			console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-			console.log('Name: ' + profile.getName());
-			console.log('Image URL: ' + profile.getImageUrl());
-			console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-		}
-		onSignIn(auth2.isSignedIn.get())
+	$('#gSignIn').click(() => {
+		console.log("hello")
+		setCookie("dalogout", 0)
 	})
 	$('#login').click(() => {
 		$("form").submit(event => {
