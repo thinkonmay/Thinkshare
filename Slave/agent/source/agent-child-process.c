@@ -88,7 +88,8 @@ get_available_child_process()
         {
             if(process_pool[i].completed)
             {
-                return &process_pool[i];
+                process_pool[i].completed = FALSE;
+                return &(process_pool[i]);
             }
         }
         // if there is no available process, then wait for 1 second
@@ -202,12 +203,10 @@ create_new_child_process(gchar* process_name,
                         AgentObject* agent)
 {
     ChildProcess* child_process = &process_pool[process_id];
-
     child_process->agent = agent;
     child_process->process_id = process_id;
     child_process->func = func;
     child_process->handler = handler;
-    child_process->completed = FALSE;
 
 
     ChildPipe* hdl = initialize_process_handle(child_process,agent);

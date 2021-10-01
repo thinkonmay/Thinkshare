@@ -9,6 +9,8 @@
 /// 
 #include <agent-file-compressor.h>
 #include <agent-child-process.h>
+#include <agent-file-transfer-service.h>
+
 
 
 #include <glib-2.0/glib.h>
@@ -16,7 +18,6 @@
 #include <child-process-constant.h>
 #include <general-constant.h>
 #include <child-process-resources-assign.h>
-#include <agent-file-transfer-service.h>
 
 struct _FileCompressor
 {
@@ -46,6 +47,14 @@ init_file_compressor_pool()
     }
 }
 
+
+void
+file_compressor_finalize(FileCompressor* compressor)
+{
+    compressor->file_compressor = NULL;
+    compressor->completed = TRUE;
+}
+
 void
 on_file_compress_process_completed(ChildProcess* process)
 {
@@ -64,14 +73,16 @@ on_file_compress_process_completed(ChildProcess* process)
     {
         return;
     }
+
     // signal back to file transfer session
     on_file_compress_completed(compressor->SessionSlaveID);
+    file_compressor_finalize(compressor);
 }
 
 
 
 static void
-shell_process_handle(ChildProcess* proc,
+compressor_process_handle(ChildProcess* proc,
                     DWORD exit_code,
                     AgentObject* agent)
 {
@@ -94,22 +105,22 @@ file_compress_output_handle(GBytes* data,
 }
 
 void
-init_powershell_compressor(FileCompressor* compressor, 
-                           AgentObject* agent)
+start_compressor(FileCompressor* compressor, 
+                AgentObject* agent)
 {
 
-    GString* string = g_string_new("Compress-Archive ");
+    GString* string = g_string_new(" Compress-Archive ");
     g_string_append(string, compressor->input_path);
     g_string_append(string, " -Update -DestinationPath ");
     g_string_append(string, compressor->output_path);
 
 
     create_new_child_process(
-        "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe ", 
+        POWERSHELL_BINARY, 
             get_child_process_id(compressor->file_compressor),
             g_string_free(string,FALSE),
             file_compress_output_handle,
-            shell_process_handle, agent);
+            compressor_process_handle, agent);
 }
 
 FileCompressor*
@@ -119,6 +130,7 @@ get_available_file_commpressor()
     {
         if(compressor_pool[i].completed)
         {
+            compressor_pool[i].completed = FALSE;
             return &(compressor_pool[i].completed);
         }
     }
@@ -131,7 +143,6 @@ FileCompressor*
 init_file_compressor(FileTransferSession* session)
 {
     FileCompressor* compressor = get_available_file_commpressor();
-    compressor->completed = FALSE;
     compressor->input_path = file_transfer_session_get_intput_file(session);
     compressor->SessionSlaveID = file_transfer_session_get_session_id(session);
     compressor->file_compressor = get_available_child_process();

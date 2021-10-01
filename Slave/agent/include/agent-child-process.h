@@ -46,11 +46,6 @@ ChildProcess* 		get_available_child_process					();
 /// <returns></returns>
 ChildProcess* 		get_available_file_transceiver				();
 
-/// <summary>
-/// 
-/// </summary>
-/// <returns></returns>
-ChildProcess* 		get_available_file_commpressor				();
 
 /// <summary>
 /// 

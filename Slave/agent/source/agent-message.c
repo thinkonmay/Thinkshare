@@ -131,7 +131,7 @@ on_agent_message(AgentObject* agent,
 			else if (opcode == SESSION_INITIALIZE){
 				setup_session(agent,data_string); return;}
 			else if (opcode == FILE_TRANSFER_SERVICE){
-				
+				agent_start_file_transfer(data_string);
 			}
 		}
 		else if(from == CORE_MODULE)

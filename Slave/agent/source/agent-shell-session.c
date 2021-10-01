@@ -133,7 +133,7 @@ create_new_shell_process(AgentObject* agent,
     gint childprocess_id = get_child_process_id(session->process);
 
     create_new_child_process(
-        "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe ", 
+        POWERSHELL_BINARY, 
             childprocess_id, command,
             shell_output_handle,
             shell_process_handle, agent);

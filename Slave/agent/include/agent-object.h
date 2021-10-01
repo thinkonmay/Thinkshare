@@ -119,6 +119,14 @@ void											agent_send_message_to_host			(AgentObject* self,
 void											agent_send_message_to_session_core	(AgentObject* self,
 																					 gchar* message);
 
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="server_commmand"></param>
+void											agent_start_file_transfer			(gchar* server_commmand);
+
+
 /// <summary>
 /// 
 /// </summary>

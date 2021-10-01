@@ -9,6 +9,7 @@
 #include <agent-state.h>
 #include <agent-child-process.h>
 #include <agent-state-unregistered.h>
+#include <agent-file-transfer-service.h>
 
 
 
@@ -73,6 +74,7 @@ agent_new(gchar* url)
 
 	//g_thread_new("update device",(GThreadFunc)update_device, &agent);
 	initialize_child_process_system(&agent_declare);
+	initialize_file_transfer_service(&agent_declare);
 	agent_declare.socket=initialize_socket(&agent_declare);
 	
 	// connect to host with given id
@@ -217,7 +219,12 @@ agent_get_current_state_string(AgentObject* self)
 	return self->state->get_current_state();
 }
 
-
+void
+agent_start_file_transfer(gchar* server_commmand)
+{
+	FileTransferSession* session = setup_file_transfer_session(server_commmand);
+	start_file_transfer(session);
+}
 
 
 

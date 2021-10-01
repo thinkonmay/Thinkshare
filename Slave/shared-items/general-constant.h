@@ -4,11 +4,10 @@
 #define RECONNECT_INTERVAL            10000
 #define CURRENT_DIR                   "C:\\ThinkMay"
 /////////////////////////////////////////////////////////////////////////////////////////////////
-#define SESSION_CORE_BINARY           CURRENT_DIR"\\bin\\session-core.exe"
-#define AGENT_BINARY                  CURRENT_DIR"\\bin\\agent.exe"
-
-#define HOST_CONFIG_FILE              CURRENT_DIR"\\config\\host_configuration.json"
-#define SESSION_SLAVE_FILE            CURRENT_DIR"\\config\\session_slave.json"
+#define SESSION_CORE_BINARY           CURRENT_DIR"\\bin\\session-core.exe "
+#define AGENT_BINARY                  CURRENT_DIR"\\bin\\agent.exe "
+#define FILE_TRANSCEIVER_BINARY       CURRENT_DIR"\\bin\\file-transfer.exe "
+#define POWERSHELL_BINARY             "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe "
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -57,6 +56,14 @@
 #define FILE_COMPRESSOR_OUTPUT_7      FILE_COMPRESSOR_OUTPUT"_7.zip"  
 #define FILE_COMPRESSOR_OUTPUT_8      FILE_COMPRESSOR_OUTPUT"_8.zip" 
 ////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////
+#define HOST_CONFIG_FILE              CURRENT_DIR"\\config\\host_configuration.json"
+
+#define SESSION_SLAVE_FILE            CURRENT_DIR"\\config\\session_slave.json" 
+////////////////////////////////////////////////////////////////////////
+
 
 
 
