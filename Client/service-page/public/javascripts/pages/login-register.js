@@ -102,7 +102,6 @@ function onSuccess(googleUser) {
 
 			let userName = ((resp.given_name).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D')).split(" ")[0];
 			if(getCookie("dalogout") == 0)
-			console.log(resp.picture);
 			doSth(resp.email, userName, resp.given_name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'), resp.picture + "123")
 			// given_name
 			// picture
