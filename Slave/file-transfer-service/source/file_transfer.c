@@ -1,6 +1,8 @@
 #include <file-transfer-data-channel.h>
 #include <file-transfer.h>
 #include <file-transfer-type.h>
+#include <file-transfer-signalling.h>
+#include <file-transfer-webrtcbin.h>
 
 #include <exit-code.h>
 #include <error-code.h>
@@ -16,7 +18,7 @@
 
 struct _FileTransferSvc
 {
-	WebRTChub* pipe;
+	WebRTChub* webrtcbin;
 
 	WebRTCDataChannelPool* hub;
 
@@ -27,32 +29,41 @@ struct _FileTransferSvc
 
 
 
-void
-file_transfer_setup_session(FileTransferSvc* svc)
+static void
+file_transfer_setup_session(FileTransferSvc* self,
+							gchar* signalling_url,
+							gint session_id,
+							gchar* file, 
+							gchar* turn_connection)
 {
-	Message* message = get_json_object_from_file();
-	FileTransferSignalling* signalling = file_transfer_get_signalling_hub();
-
+	signalling_hub_setup(self->signalling,signalling_url,session_id);
+	webrtcbin_get_turn_connection(self->webrtcbin,turn_connection);
+	webrtc_data_channel_get_file(self->webrtcbin,file);
 }
 
 
+
+static FileTransferSvc service;
+
 FileTransferSvc*
-file_transfer_initialize()
+file_transfer_initialize(gchar* signalling_url,
+						 gint session_id, 
+						 gchar* file, 
+						 gchar* turn)
 {
-	static FileTransferSvc core;
 	write_to_log_file(SESSION_CORE_GENERAL_LOG,"Session core process started");
 
-	core.hub =				init_datachannel_pool();
-	core.signalling =		signalling_hub_initialize(&core);
-
-	core.loop =				g_main_loop_new(NULL, FALSE);
+	service.hub =				init_datachannel_pool();
+	service.signalling =		signalling_hub_initialize(&service);
+	service.webrtcbin = 				webrtcbin_initialize(&service);
+	service.loop =				g_main_loop_new(NULL, FALSE);
 	 
-	file_transfer_setup_session(&core);
+	file_transfer_setup_session(&service,signalling_url,session_id,file,turn);
 
 
-	file_transfer_connect_signalling_server(&core);
-	g_main_loop_run(core.loop);
-	return &core;	
+	file_transfer_connect_signalling_server(&service);
+	g_main_loop_run(service.loop);
+	return &service;	
 }
 
 
@@ -134,7 +145,7 @@ report_file_transfer_error(FileTransferSvc* self,
 WebRTChub*
 file_transfer_get_pipeline(FileTransferSvc* self)
 {
-	return self->pipe;
+	return self->webrtcbin;
 }
 
 WebRTCDataChannelPool*
@@ -146,9 +157,9 @@ file_transfer_get_dc_pool(FileTransferSvc* self)
 
 
 GMainContext*
-file_transfer_get_main_context(FileTransferSvc* core)
+file_transfer_get_main_context(FileTransferSvc* self)
 {
-	return g_main_loop_get_context(core->loop);
+	return g_main_loop_get_context(self->loop);
 }
 
 

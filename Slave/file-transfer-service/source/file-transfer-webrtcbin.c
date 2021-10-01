@@ -111,6 +111,15 @@ setup_pipeline(FileTransferSvc* core)
 
 
 
+void
+webrtcbin_get_turn_connection(WebRTChub* hub, 
+                              gchar* turn_connection)
+{
+    g_signal_emit_by_name (hub->webrtcbin, "add-turn-server", 
+        turn_connection, NULL);
+}
+
+
 
 
 

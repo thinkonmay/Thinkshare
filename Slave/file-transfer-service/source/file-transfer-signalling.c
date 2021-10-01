@@ -58,11 +58,6 @@ struct _FileTransferSignalling
 	gchar* signalling_server;
 
     /// <summary>
-    /// url of turn server
-    /// </summary>
-	gchar* turn;
-
-    /// <summary>
     /// 
     /// </summary>
     gboolean disable_ssl;
@@ -97,13 +92,11 @@ signalling_hub_initialize(FileTransferSvc* core)
 
 
 void
-signalling_hub_setup(FileTransferSignalling* hub, 
-                     gchar* turn,
+signalling_hub_setup(FileTransferSignalling* hub,
                      gchar* url,
                      gint session_slave_id)
 {
     hub->signalling_server = url;
-    hub->turn = turn;
     hub->SessionSlaveID = session_slave_id;
 }
 
@@ -630,14 +623,5 @@ signalling_close(FileTransferSignalling* hub)
         else
             g_object_unref(hub->connection);
     }
-}
-
-
-
-/*START get-set function*/
-gchar* 
-signalling_hub_get_turn_server(FileTransferSignalling* hub)
-{
-    return hub->turn;
 }
 

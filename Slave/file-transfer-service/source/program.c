@@ -8,11 +8,38 @@
 #define GST_USE_UNSTABLE_API
 #endif
 
+static gboolean stats = FALSE;
+static gchar signalling_url[50] = {0};
+static gchar turn[50] = {0};
+static gint session_id = 0;
+static gchar file[50] = {0};
+
+static GOptionEntry entries[] = {
+  {"sessionid", 0, 0, G_OPTION_ARG_INT, &session_id,
+      "String ID of the peer to connect to", "ID"},
+  {"signalling", 0, 0, G_OPTION_ARG_STRING, &signalling_url,
+      "Signalling server to connect to", "URL"},
+  {"file", 0, 0, G_OPTION_ARG_STRING, &file,
+      "Request that the peer generate the offer and we'll answer", "Path"},
+  {"turn", 0, 0, G_OPTION_ARG_STRING, &turn,
+      "Request that the peer generate the offer and we'll answer", "URL"},
+  {NULL},
+};
 
 int
-main(int argc, char* argv[])
+main (int argc, char *argv[])
 {
-    gst_init(&argc,&argv);
-    FileTransferSvc* core = file_transfer_initialize();
-    return 0;
+  GOptionContext *context;
+  GError *error = NULL;
+
+  context = g_option_context_new ("- gstreamer webrtc sendrecv demo");
+  g_option_context_add_main_entries (context, entries, NULL);
+  g_option_context_add_group (context, gst_init_get_option_group ());
+  if (!g_option_context_parse (context, &argc, &argv, &error)) {
+    g_printerr ("Error initializing: %s\n", error->message);
+    return -1;
+  }
+
+  FileTransferSvc* core = file_transfer_initialize(signalling_url,session_id,file,turn);
+  return 0;
 }

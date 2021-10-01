@@ -61,7 +61,7 @@ void                            on_ice_gathering_state_notify                   
 /// </summary>
 /// <param name="core"></param>
 /// <returns></returns>
-FileTransferSignalling*                  signalling_hub_initialize                               (FileTransferSvc* core);
+FileTransferSignalling*         signalling_hub_initialize                               (FileTransferSvc* core);
 
 
 /// <summary>
@@ -79,7 +79,6 @@ void                            connect_to_websocket_signalling_server_async    
 gboolean                        register_with_server                                    (FileTransferSvc* core);
 
 void                            signalling_hub_setup                                    (FileTransferSignalling* hub,
-                                                                                        gchar* turn, 
                                                                                         gchar* url,
                                                                                         gint session_slave_id);
 

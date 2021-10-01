@@ -1,7 +1,9 @@
+#ifndef __FILE_TRANSFER_DATA_CHANNEL_H__
+#define __FILE_TRANSFER_DATA_CHANNEL_H__
 #include "file-transfer.h"
+#include "file-transfer-type.h"
 
 #include <glib.h>
-#include "file-transfer-type.h"
 #include <gst/webrtc/webrtc_fwd.h>
 
 /// <summary>
@@ -16,9 +18,18 @@ gboolean                connect_data_channel_signals                (FileTransfe
 /// intialize webrtc hub by assigning memory to webrtchub struct
 /// </summary> 
 /// <returns></returns>
-WebRTChub*				webrtchub_initialize						();
+WebRTCDataChannelPool*	init_datachannel_pool						();
 
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="channel"></param>
+/// <param name="file"></param>
+void                    webrtc_data_channel_get_file                (WebRTCDataChannelPool* channel,
+                                                                     gchar* file);
+
+#endif
 
 
 

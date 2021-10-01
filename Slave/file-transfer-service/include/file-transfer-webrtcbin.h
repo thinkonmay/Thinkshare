@@ -7,6 +7,8 @@
 /// 
 /// @copyright Copyright (c) 2021
 /// 
+#ifndef __FILE_TRANSFER_WEBRTCBIN_H__
+#define __FILE_TRANSFER_WEBRTCBIN_H__
 #include "file-transfer-type.h"
 #include <gst/gst.h>
 
@@ -23,6 +25,9 @@
 /// <returns></returns>
 gpointer			setup_pipeline					    (FileTransferSvc* core);
 
+
+
+
 /// <summary>
 /// get webrtcbin element from pipeline
 /// </summary>
@@ -37,3 +42,12 @@ GstElement*			pipeline_get_webrtc_bin			    (WebRTChub* pipeline);
 /// <returns></returns>
 WebRTChub*			webrtcbin_initialize				(FileTransferSvc* core);
 
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="hub"></param>
+/// <param name="turn_connection"></param>
+void                webrtcbin_get_turn_connection       (WebRTChub* hub, 
+                                                         gchar* turn_connection);
+#endif 

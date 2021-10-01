@@ -18,28 +18,28 @@
 /// this function should be called after registered session with signalling server
 /// </summary> 
 /// <param name="self">session core object</param>
-void			file_transfer_setup_pipeline				(FileTransferSvc* self);
+void						file_transfer_setup_pipeline				(FileTransferSvc* self);
 
 /// <summary>
 /// session core setup signalling server, 
 /// in this step, signalling url will be assigned
 /// </summary> 
 /// <param name="self">session core object</param>
-void	  		file_transfer_setup_webrtc_signalling	(FileTransferSvc* self);
+void	  					file_transfer_setup_webrtc_signalling	(FileTransferSvc* self);
 
 /// <summary>
 /// connect to signalling server,
 /// this function should be called after all initilize step is done
 /// </summary> 
 /// <param name="self"></param>
-void			file_transfer_connect_signalling_server	(FileTransferSvc* self);
+void						file_transfer_connect_signalling_server	(FileTransferSvc* self);
 	
 /// <summary>
 /// session core send message to other module
 /// </summary> 
 /// <param name="self"></param>
 /// <param name="message"></param>
-void			file_transfer_send_message				(FileTransferSvc* self,
+void						file_transfer_send_message				(FileTransferSvc* self,
 														 Message* message);
 
 /// <summary>
@@ -47,7 +47,10 @@ void			file_transfer_send_message				(FileTransferSvc* self,
 /// this function should be called in main function
 /// </summary> 
 /// <returns>session core object</returns>
-FileTransferSvc*	file_transfer_initialize					();
+FileTransferSvc*			file_transfer_initialize					(gchar* signalling, 
+																		 gint session_id,
+																		 gchar* file,
+																		 gchar* turn);
 
 /// <summary>
 /// finalize session core object, 
@@ -56,7 +59,7 @@ FileTransferSvc*	file_transfer_initialize					();
 /// <param name="self"></param>
 /// <param name="exit_code">reason of exit</param>
 /// <param name="error">error emmited (if available)</param>
-void			file_transfer_finalize					(FileTransferSvc* self,
+void						file_transfer_finalize					(FileTransferSvc* self,
 														GError* error);
 
 /// <summary>
@@ -64,7 +67,7 @@ void			file_transfer_finalize					(FileTransferSvc* self,
 /// </summary>
 /// <param name="self"></param>
 /// <returns></returns>
-WebRTChub*		file_transfer_get_pipeline				(FileTransferSvc* self);
+WebRTChub*					file_transfer_get_pipeline				(FileTransferSvc* self);
 
 /// <summary>
 /// get WebRTCDataChannelPool from session core object, 
