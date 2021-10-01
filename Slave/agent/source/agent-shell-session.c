@@ -20,6 +20,7 @@
 #include <error-code.h>
 #include <agent-object.h>
 #include <child-process-constant.h>
+#include <child-process-resources-assign.h>
 
 
 
@@ -165,8 +166,8 @@ initialize_shell_session(AgentObject* agent,
     gint process_id = get_child_process_id(process);
 
     ShellSession* session = get_shell_session(process_id);
-    session->script_file = shell_script_map(process_id);
-    session->output_file = shell_output_map(process_id);
+    session->script_file = GET_SHELL_SCRIPT_FILE(process_id);
+    session->output_file = GET_SHELL_OUTPUT_FILE(process_id);
     session->shell_script = json_object_get_string_member(json_data,"Script");
     session->model_id = json_object_get_int_member(json_data,"ModelID");
     session->id = json_object_get_int_member(json_data,"ID");

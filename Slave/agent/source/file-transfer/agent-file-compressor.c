@@ -15,9 +15,17 @@
 
 #include <child-process-constant.h>
 #include <general-constant.h>
+#include <child-process-resources-assign.h>
+#include <agent-file-transfer-service.h>
 
 struct _FileCompressor
 {
+    gint process_id;
+
+    gint SessionSlaveID;
+
+    gboolean completed;
+
     gchar* input_path;
 
     gchar* output_path;
@@ -29,10 +37,35 @@ struct _FileCompressor
 static FileCompressor compressor_pool[MAX_FILE_TRANSFER_INSTANCE] = {0};
 
 void
-init_file_compressor()
+init_file_compressor_pool()
 {
     memset(&compressor_pool,0,sizeof(compressor_pool));
-    
+    for(gint i = 0; i< MAX_FILE_TRANSFER_INSTANCE;i++)
+    {
+        compressor_pool[i].completed = TRUE;
+    }
+}
+
+void
+on_file_compress_process_completed(ChildProcess* process)
+{
+    // get file compressor from pool with process id
+    gint process_id = get_child_process_id(process);
+    FileCompressor* compressor = NULL;
+    for(gint i = 0; i<MAX_FILE_TRANSFER_INSTANCE;i++)
+    {
+        if(compressor_pool[i].process_id == process_id)
+        {
+            compressor = &(compressor_pool[i].process_id);
+            compressor->completed = TRUE;
+        }
+    }
+    if(compressor == NULL)
+    {
+        return;
+    }
+    // signal back to file transfer session
+    on_file_compress_completed(compressor->SessionSlaveID);
 }
 
 
@@ -42,14 +75,12 @@ shell_process_handle(ChildProcess* proc,
                     DWORD exit_code,
                     AgentObject* agent)
 {
-    if(exit_code == STILL_ACTIVE)
-    {
+    if(exit_code == STILL_ACTIVE){
         return;
     }
     else
     {
-        gint id = get_child_process_id(proc);
-        agent_on_file_compress_completed(proc);
+        on_file_compress_process_completed(proc);
         close_child_process(proc);
     }
 }
@@ -63,15 +94,14 @@ file_compress_output_handle(GBytes* data,
 }
 
 void
-create_powershell_compressor(AgentObject* agent)
+init_powershell_compressor(FileCompressor* compressor, 
+                           AgentObject* agent)
 {
 
     GString* string = g_string_new("Compress-Archive ");
     g_string_append(string, compressor->input_path);
     g_string_append(string, " -Update -DestinationPath ");
-    g_string_append(string, 
-        output_zip_map(
-        get_child_process_id(compressor->file_compressor)));
+    g_string_append(string, compressor->output_path);
 
 
     create_new_child_process(
@@ -82,14 +112,31 @@ create_powershell_compressor(AgentObject* agent)
             shell_process_handle, agent);
 }
 
+FileCompressor*
+get_available_file_commpressor()
+{
+    for(gint i = 0; i<MAX_FILE_TRANSFER_INSTANCE;i++)
+    {
+        if(compressor_pool[i].completed)
+        {
+            return &(compressor_pool[i].completed);
+        }
+    }
+    Sleep(1000);
+    return get_available_file_commpressor();
+}
+
 
 FileCompressor*
-init_file_compressor(gchar* input_path, 
-                     gchar* output_path)
+init_file_compressor(FileTransferSession* session)
 {
-    FileCompressor* compressor = malloc(sizeof(FileCompressor));
-    compressor->input_path = input_path;
-    compressor->output_path = output_path;
+    FileCompressor* compressor = get_available_file_commpressor();
+    compressor->completed = FALSE;
+    compressor->input_path = file_transfer_session_get_intput_file(session);
+    compressor->SessionSlaveID = file_transfer_session_get_session_id(session);
     compressor->file_compressor = get_available_child_process();
+    compressor->process_id = get_child_process_id(compressor->file_compressor);
+    compressor->output_path = GET_ZIP_OUTPUT_FILE(get_child_process_id(compressor->file_compressor));
+    file_transfer_session_set_zip_file(session,compressor->output_path);
     return compressor;
 }

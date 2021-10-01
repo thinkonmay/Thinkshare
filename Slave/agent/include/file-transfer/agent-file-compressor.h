@@ -10,5 +10,6 @@
 void            agent_compress_file                 (FileCompressor* compressor);
 
 
+FileCompressor* init_file_compressor                (FileTransferSession* session);
 
 #endif
