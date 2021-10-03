@@ -142,12 +142,12 @@ get_available_file_commpressor()
 FileCompressor*
 init_file_compressor(FileTransferSession* session)
 {
-    FileCompressor* compressor = get_available_file_commpressor();
-    compressor->input_path = file_transfer_session_get_intput_file(session);
-    compressor->SessionSlaveID = file_transfer_session_get_session_id(session);
-    compressor->file_compressor = get_available_child_process();
-    compressor->process_id = get_child_process_id(compressor->file_compressor);
-    compressor->output_path = GET_ZIP_OUTPUT_FILE(get_child_process_id(compressor->file_compressor));
+    FileCompressor* compressor =        get_available_file_commpressor();
+    compressor->input_path =            file_transfer_session_get_input_file(session);
+    compressor->SessionSlaveID =        file_transfer_session_get_session_id(session);
+    compressor->file_compressor =       get_available_child_process();
+    compressor->process_id =            get_child_process_id(compressor->file_compressor);
+    compressor->output_path =           GET_ZIP_OUTPUT_FILE(get_child_process_id(compressor->file_compressor));
     file_transfer_session_set_zip_file(session,compressor->output_path);
     return compressor;
 }

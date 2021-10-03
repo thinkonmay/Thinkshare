@@ -19,7 +19,7 @@ static GOptionEntry entries[] = {
       "String ID of the peer to connect to", "ID"},
   {"signalling", 0, 0, G_OPTION_ARG_STRING, &signalling_url,
       "Signalling server to connect to", "URL"},
-  {"file", 0, 0, G_OPTION_ARG_STRING, &file,
+  {"path", 0, 0, G_OPTION_ARG_STRING, &file,
       "Request that the peer generate the offer and we'll answer", "Path"},
   {"turn", 0, 0, G_OPTION_ARG_STRING, &turn,
       "Request that the peer generate the offer and we'll answer", "URL"},

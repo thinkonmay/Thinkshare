@@ -23,17 +23,9 @@
 /// </summary>
 /// <param name="core"></param>
 /// <returns></returns>
-gpointer			setup_webrtcbin					    (FileTransferService* core);
+void                setup_webrtcbin                     (FileTransferService* core);
 
 
-
-
-/// <summary>
-/// get webrtcbin element from pipeline
-/// </summary>
-/// <param name="pipeline"></param>
-/// <returns></returns>
-GstElement*			pipeline_get_webrtc_bin			    (WebRTCbin* pipeline);
 
 /// <summary>
 /// initliaze pipeline,

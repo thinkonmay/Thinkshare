@@ -78,6 +78,13 @@ void                            connect_to_websocket_signalling_server_async    
 /// <returns></returns>
 gboolean                        register_with_server                                    (FileTransferService* core);
 
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="hub"></param>
+/// <param name="url"></param>
+/// <param name="session_slave_id"></param>
 void                            signalling_hub_setup                                    (FileTransferSignalling* hub,
                                                                                         gchar* url,
                                                                                         gint session_slave_id);

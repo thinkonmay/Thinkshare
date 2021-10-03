@@ -25,6 +25,12 @@ FileTransceiver*        init_file_transceiver               (FileTransferSession
 /// </summary>
 /// <param name="agent"></param>
 void                    init_file_transceiver_pool          ();
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="transceiver"></param>
+void                    file_transceiver_finalize           (FileTransceiver* transceiver);
 #endif
 
 

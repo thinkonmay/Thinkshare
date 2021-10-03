@@ -39,4 +39,12 @@ typedef enum
     CLIPBOARD_SERVICE
 }Opcode;
 
+
+typedef enum
+{
+    FILE_METADATA,
+    FILE_TRANSFER_OK,
+    END_OF_FILE
+}FileTransferOpcode;
+
 #endif

@@ -111,8 +111,8 @@ send_message_to_signalling_server(FileTransferSignalling* signalling,
                                 gchar* content)
 {
     JsonObject* json_object = json_object_new();
+    json_object_set_int_member   (json_object, SUBJECT_ID, signalling->SessionSlaveID);
     json_object_set_string_member(json_object, REQUEST_TYPE, request_type);
-    json_object_set_int_member(json_object,    SUBJECT_ID, signalling->SessionSlaveID);
     json_object_set_string_member(json_object, CONTENT, content);
     json_object_set_string_member(json_object, RESULT, SESSION_ACCEPTED); 
     
@@ -208,7 +208,7 @@ on_offer_created( GstPromise* promise, FileTransferService* core)
     gst_promise_unref(promise);
 
     promise = gst_promise_new();
-    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+    g_signal_emit_by_name(webrtcbin_get_element(pipe),
         "set-local-description", offer, promise);
 
     gst_promise_interrupt(promise);
@@ -230,7 +230,7 @@ on_negotiation_needed(GstElement* element, FileTransferService* core)
     GstPromise* promise =
     gst_promise_new_with_change_func(on_offer_created, core, NULL);
 
-    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+    g_signal_emit_by_name(webrtcbin_get_element(pipe),
         "create-offer", NULL, promise);
 
 }
@@ -313,7 +313,7 @@ on_answer_created(GstPromise* promise,
 
     promise = gst_promise_new();
 
-    g_signal_emit_by_name( pipeline_get_webrtc_bin(pipe),
+    g_signal_emit_by_name( webrtcbin_get_element(pipe),
         "set-local-description", answer, promise);
 
     gst_promise_interrupt(promise);
@@ -332,9 +332,9 @@ on_offer_set(GstPromise* promise,
 
     gst_promise_unref(promise);
     promise = gst_promise_new_with_change_func(on_answer_created, 
-        pipeline_get_webrtc_bin(pipe), core);
+        webrtcbin_get_element(pipe), core);
 
-    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+    g_signal_emit_by_name(webrtcbin_get_element(pipe),
         "create-answer", NULL, promise);
 }
 
@@ -352,9 +352,9 @@ on_offer_received(FileTransferService* core, GstSDPMessage* sdp)
     /* Set remote description on our pipeline */
     {
         promise = gst_promise_new_with_change_func(on_offer_set, 
-            pipeline_get_webrtc_bin(pipe), NULL);
+            webrtcbin_get_element(pipe), NULL);
 
-        g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe), 
+        g_signal_emit_by_name(webrtcbin_get_element(pipe), 
             "set-remote-description", offer,
             promise);
     }
@@ -446,7 +446,7 @@ on_ice_exchange(gchar* text,FileTransferService* core)
     candidate = json_object_get_string_member(child, "candidate");
     sdpmlineindex = json_object_get_int_member(child, "sdpMLineIndex");
     /* Add ice candidate sent by remote peer */
-    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+    g_signal_emit_by_name(webrtcbin_get_element(pipe),
         "add-ice-candidate", sdpmlineindex, candidate);
 }
 
@@ -499,7 +499,7 @@ on_sdp_exchange(gchar* data,
         /* Set remote description on our pipeline */
         {
             GstPromise* promise = gst_promise_new();
-            g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+            g_signal_emit_by_name(webrtcbin_get_element(pipe),
                 "set-remote-description", answer, promise);
             gst_promise_interrupt(promise);
             gst_promise_unref(promise);
@@ -507,7 +507,7 @@ on_sdp_exchange(gchar* data,
     }
     else
     {
-        on_offer_received(pipeline_get_webrtc_bin(pipe),
+        on_offer_received(webrtcbin_get_element(pipe),
             sdp);
     }
 }

@@ -43,6 +43,8 @@ init_file_transceiver_pool()
     memset(&transceiver_pool,0,sizeof(transceiver_pool));
 }
 
+
+
 FileTransceiver*
 get_available_file_transceiver()
 {
@@ -59,7 +61,7 @@ get_available_file_transceiver()
 }
 
 
-static void
+void
 file_transceiver_finalize(FileTransceiver* transceiver)
 {
     transceiver->file_transceiver = NULL;
@@ -122,7 +124,7 @@ start_transceive_compressed_file(FileTransceiver* transceiver,
     g_string_append(string, transceiver->SessionSlaveID);
     g_string_append(string, " --signalling ");
     g_string_append(string, transceiver->signalling_url);
-    g_string_append(string, " --file ");
+    g_string_append(string, " --path ");
     g_string_append(string, transceiver->input_file);
     g_string_append(string, " --turn ");
     g_string_append(string, transceiver->turn_connection);

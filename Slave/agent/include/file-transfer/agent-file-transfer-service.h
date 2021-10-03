@@ -95,4 +95,11 @@ void            file_transfer_session_set_zip_file             (FileTransferSess
 /// <returns></returns>
 gchar*          file_transfer_session_get_zip_file              (FileTransferSession* session);
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="session"></param>
+/// <returns></returns>
+gchar*          file_transfer_session_get_input_file            (FileTransferSession* session);
+
 #endif

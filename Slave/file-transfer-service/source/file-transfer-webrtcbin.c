@@ -86,7 +86,7 @@ connect_signalling_handler(FileTransferService* service)
 
 
 
-gpointer
+void
 setup_webrtcbin(FileTransferService* core)
 {
     WebRTCbin* bin = file_transfer_get_webrtcbin(core);
@@ -110,8 +110,7 @@ void
 webrtcbin_get_turn_connection(WebRTCbin* hub, 
                               gchar* turn_connection)
 {
-    g_signal_emit_by_name (hub->webrtcbin, "add-turn-server", 
-        turn_connection, NULL);
+    hub->turn = turn_connection;
 }
 
 

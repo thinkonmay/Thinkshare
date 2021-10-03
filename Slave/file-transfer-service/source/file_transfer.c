@@ -55,12 +55,10 @@ file_transfer_initialize(gchar* signalling_url,
 
 	service.hub =				init_datachannel_pool();
 	service.signalling =		signalling_hub_initialize(&service);
-	service.webrtcbin = 				webrtcbin_initialize(&service);
+	service.webrtcbin = 		webrtcbin_initialize(&service);
 	service.loop =				g_main_loop_new(NULL, FALSE);
 	 
 	file_transfer_setup_session(&service,signalling_url,session_id,file,turn);
-
-
 	file_transfer_connect_signalling_server(&service);
 	g_main_loop_run(service.loop);
 	return &service;	
@@ -80,7 +78,7 @@ file_transfer_connect_signalling_server(FileTransferService* self)
 void
 file_transfer_setup_pipeline(FileTransferService* self)
 {
-	setup_pipeline(self);
+	setup_webrtcbin(self);
 }				
 
 
