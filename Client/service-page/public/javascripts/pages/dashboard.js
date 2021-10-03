@@ -16,9 +16,9 @@ $(document).ready(async () => {
 	var defaultDeviceCap = {
 		...Setting.AudioCodec("opus"),
 		...Setting.VideoCodec("h264"),
-		...Setting.Mode("very high"),
-		screenWidth: 2560,
-		screenHeight: 1440
+		...Setting.Mode("high"),
+		screenWidth: 1920,
+		screenHeight: 1080
 	}
 
 	noti()

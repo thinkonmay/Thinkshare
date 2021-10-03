@@ -7,12 +7,12 @@ if (MINGW)
     set(CMAKE_PREFIX_PATH "C:\\gstreamer\\1.0\\mingw_x86")
     set(INCLUDE_LIBRARY "C:\\gstreamer\\1.0\\mingw_x86\\lib")
 elseif(MSVC)
-    set(CMAKE_PREFIX_PATH "C:\\gstreamer\\1.0\\msvc_x86")
-    set(INCLUDE_LIBRARY "C:\\gstreamer\\1.0\\msvc_x86\\lib")
+    set(CMAKE_PREFIX_PATH "C:\\gstreamer\\1.0\\msvc_x86_64")
+    set(INCLUDE_LIBRARY "C:\\gstreamer\\1.0\\msvc_x86_64\\lib")
 endif()
 
 
-# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "C:\\ThinkMay\\bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "C:\\ThinkMay\\bin")
 
 foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
