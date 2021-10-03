@@ -53,7 +53,14 @@ typedef struct _AgentState			AgentState;
 /// </summary>
 typedef struct _ShellSession        ShellSession;
 
+/// <summary>
+/// 
+/// </summary>
+typedef struct _RemoteSession       RemoteSession;
 
+/// <summary>
+/// 
+/// </summary>
 typedef struct _FileTransferSession FileTransferSession;
 
 /// <summary>

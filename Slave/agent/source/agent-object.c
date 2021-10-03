@@ -49,7 +49,22 @@ struct _AgentObject
 	/// and has full control of child process
 	/// (include handle stdout, child process state)
 	/// </summary>
-	ChildProcess* child_process[LAST_CHILD_PROCESS];
+	ChildProcess* child_process[MAX_CHILD_PROCESS];
+
+	/// <summary>
+	/// 
+	/// </summary>
+	FileTransferSession* file_transfer_session[MAX_FILE_TRANSFER_INSTANCE];
+
+	/// <summary>
+	/// 
+	/// </summary>
+	ShellSession* shell_session[MAX_POWERSHELL_INSTANCE];
+
+	/// <summary>
+	/// 
+	/// </summary>
+	RemoteSession* remote_session;
 };
 
 
@@ -75,6 +90,7 @@ agent_new(gchar* url)
 	//g_thread_new("update device",(GThreadFunc)update_device, &agent);
 	initialize_child_process_system(&agent_declare);
 	initialize_file_transfer_service(&agent_declare);
+	intialize_remote_session_service(&agent_declare);
 	agent_declare.socket=initialize_socket(&agent_declare);
 	
 	// connect to host with given id
@@ -291,6 +307,14 @@ agent_set_child_process(AgentObject* self,
 	self->child_process[postion] = process;
 }
 
+void
+agent_set_file_transfer_service(AgentObject* self,
+	gint position,
+	FileTransferSession* session)
+{
+	self->file_transfer_session[position] = session;
+}
+
 
 void
 agent_set_main_loop(AgentObject* self,
@@ -305,9 +329,16 @@ agent_get_main_loop(AgentObject* self)
 	return self->loop;
 }
 
-/*START get-set function*/
 
+RemoteSession*
+agent_get_remote_session(AgentObject* self)
+{
+	return self->remote_session;
+}
 
-
-/*START get-set function*/
-
+void
+agent_set_remote_session(AgentObject* self, 
+						 RemoteSession* session)
+{
+	self->remote_session = session;
+}

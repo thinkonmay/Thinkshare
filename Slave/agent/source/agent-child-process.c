@@ -55,16 +55,13 @@ struct _ChildProcess
     gboolean completed;
 };
 
-
-
-
-static ChildProcess process_pool[LAST_CHILD_PROCESS] = {0};
+static ChildProcess process_pool[MAX_CHILD_PROCESS] = {0};
 
 void
 initialize_child_process_system(AgentObject* agent)
 {
     memset(&process_pool,0,sizeof(process_pool));
-    for(gint i = 0; i < LAST_CHILD_PROCESS;i++)
+    for(gint i = 0; i < MAX_CHILD_PROCESS;i++)
     {
         process_pool[i].agent = agent;
         process_pool[i].process_id = i;
@@ -84,7 +81,7 @@ get_available_child_process()
 {
     while(TRUE)
     {
-        for(gint i = 1; i < FILE_COMPRESSOR_SERVICE_1; i++)
+        for(gint i = 1; i < MAX_CHILD_PROCESS; i++)
         {
             if(process_pool[i].completed)
             {
@@ -110,7 +107,7 @@ handle_child_process_io(gpointer data)
     {
         DWORD dwRead, dwWritten;
         CHAR chBuf[BUFSIZE];
-        ZeroMemory(chBuf, BUFSIZE);
+        memset(chBuf,0, BUFSIZE);
         BOOL bSuccess = FALSE;
         if (proc->completed) {return;}
 
@@ -122,7 +119,7 @@ handle_child_process_io(gpointer data)
 
             GBytes* data = g_bytes_new(chBuf, strlen(chBuf));
             proc->func(data, proc->process_id, proc->agent);
-            ZeroMemory(chBuf, BUFSIZE);
+            memset(chBuf,0, BUFSIZE);
             break;
         }
     }

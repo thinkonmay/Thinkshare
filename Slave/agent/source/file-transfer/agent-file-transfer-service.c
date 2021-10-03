@@ -56,6 +56,7 @@ initialize_file_transfer_service(AgentObject* agent)
     for(int i = 0; i<MAX_FILE_TRANSFER_INSTANCE;i++)
     {
         session_pool[i].agent = agent;
+        agent_set_file_transfer_service(agent, i, &(session_pool[i]));
     }
 }
 

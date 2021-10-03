@@ -1,11 +1,7 @@
 #ifndef __CHILD_PROCESS_CONSTANT_H__
 #define __CHILD_PROCESS_CONSTANT_H__
 
-typedef enum _ChildProcessId
-{
-    SESSION_CORE_PROCESS_ID,
-    LAST_CHILD_PROCESS = 9,
-}ChildProcessId;
+
 
 typedef enum _PowerShellProcessId
 {
@@ -45,8 +41,9 @@ typedef enum _FileTransceiverProcessId
 }FileTransceiverProcessId;
 
 
-#define MAX_FILE_TRANSFER_INSTANCE      8
+#define MAX_CHILD_PROCESS               9
 
+#define MAX_FILE_TRANSFER_INSTANCE      8
 
 #define MAX_POWERSHELL_INSTANCE         8
 

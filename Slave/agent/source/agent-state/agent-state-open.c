@@ -61,14 +61,7 @@ open_get_state(void)
 }
 
 
-void
-character_remover(gchar** string, gchar* character)
-{
-    char **split = g_strsplit(*string, character, -1);
-    memset(*string,0,strlen(*string));
-    *string = g_strjoinv("", split);
-    g_strfreev(split);
-}
+
 
 static void
 open_on_shell_process_exit(AgentObject* agent, 

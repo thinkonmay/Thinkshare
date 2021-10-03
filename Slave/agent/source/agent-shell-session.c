@@ -177,11 +177,21 @@ initialize_shell_session(AgentObject* agent,
     create_new_shell_process(agent, session);
 }
 
+static void
+character_remover(gchar** string, gchar* character)
+{
+    char **split = g_strsplit(*string, character, -1);
+    memset(*string,0,strlen(*string));
+    *string = g_strjoinv("", split);
+    g_strfreev(split);
+}
 
 void
 report_shell_session(AgentObject* agent,
                     gint process_id)
 {
+
+
     gchar* script = shell_session_get_script(process_id);
     gchar* output = shell_session_get_output(process_id);
     gint id =       shell_session_get_id(process_id);
