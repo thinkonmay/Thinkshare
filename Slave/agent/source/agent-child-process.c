@@ -79,19 +79,17 @@ initialize_child_process_system(AgentObject* agent)
 ChildProcess* 
 get_available_child_process()
 {
-    while(TRUE)
+    for(gint i = 1; i < MAX_CHILD_PROCESS; i++)
     {
-        for(gint i = 1; i < MAX_CHILD_PROCESS; i++)
+        if(process_pool[i].completed)
         {
-            if(process_pool[i].completed)
-            {
-                process_pool[i].completed = FALSE;
-                return &(process_pool[i]);
-            }
+            process_pool[i].completed = FALSE;
+            return &(process_pool[i]);
         }
-        // if there is no available process, then wait for 1 second
-        Sleep(1000);
     }
+    // if there is no available process, then wait for 1 second
+    Sleep(1000);
+    return get_available_child_process();    
 }
 
 
