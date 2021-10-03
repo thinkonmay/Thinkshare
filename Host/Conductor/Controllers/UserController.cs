@@ -144,5 +144,28 @@ namespace Conductor.Controllers
             }            
             return Ok(ret);
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("SetInfor")]
+        public async Task<IActionResult> SetAccountInfor([FromBody]UserInforModel infor)
+        {
+            int ClientId = _jwt.GetUserFromHttpRequest(User);
+
+            var account = await _userManager.FindByIdAsync(ClientId.ToString());
+
+            var result =  await _userManager.SetUserNameAsync(account, infor.UserName);
+            if(result.Succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(result.Errors.ToList());
+            }
+        }
     }
 }

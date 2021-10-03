@@ -148,9 +148,9 @@ setup_element_factory(SessionCore* core,
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
                     "dxgiscreencapsrc name=screencap ! "SCREEN_CAP
-                    "queue ! videoconvert ! queue ! "
-                    "mfh264enc name=videoencoder ! queue ! rtph264pay name=rtp ! "
-                    "queue ! " RTP_CAPS_VIDEO "H264 ! sendrecv. "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! videoconvert ! queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
+                    "mfh264enc name=videoencoder ! queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! rtph264pay name=rtp ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! " RTP_CAPS_VIDEO "H264 ! sendrecv. "
                     "wasapisrc name=audiocapsrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
                     "opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
@@ -379,8 +379,6 @@ setup_element_property(SessionCore* core)
     if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "ref", 1, NULL);} 
 
     if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "qos", TRUE, NULL);}
-
-    if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "low-latency", TRUE, NULL);}
 
     if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "quality-vs-speed", 50, NULL);}
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 

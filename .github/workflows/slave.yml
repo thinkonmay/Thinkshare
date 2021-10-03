@@ -39,9 +39,9 @@ jobs:
       - name: Add gstreamer to path
         working-directory: Deployment/Dependencies
         run: |
-          mkdir C:/gstreamer/1.0/msvc_x86_64
-          xcopy "msvc_x86_64" "C:\gstreamer\1.0\msvc_x86_64" /s /e
-          echo "C:\gstreamer\1.0\msvc_x86_64\bin" >> $GITHUB_PATH
+          mkdir C:/gstreamer/1.0/msvc_x86
+          xcopy "msvc_x86" "C:\gstreamer\1.0\msvc_x86" /s /e
+          echo "C:\gstreamer\1.0\msvc_x86\bin" >> $GITHUB_PATH
 
       - name: Print env
         run: |

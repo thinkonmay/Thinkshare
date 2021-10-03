@@ -29,7 +29,7 @@ handle_thread(gpointer data)
 
     // intialize and allocate memory buffer 
     gchar buffer[BUFFER_SIZE];
-    ZeroMemory(&buffer, BUFFER_SIZE);
+    memset(&buffer,0,BUFFER_SIZE);
 
     // handle in infinite loop
     while (TRUE)
