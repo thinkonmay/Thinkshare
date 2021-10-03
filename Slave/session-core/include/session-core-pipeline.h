@@ -83,4 +83,5 @@ GstElement*         pipeline_get_video_encoder      (Pipeline* pipe,
                                                      Codec video);
 
 
-void                toggle_pointer                  (gboolean toggle);
+void                toggle_pointer                  (gboolean toggle, 
+                                                     SessionCore* core);
