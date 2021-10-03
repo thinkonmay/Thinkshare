@@ -4,8 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/gstreamer/1.0/msvc_x86/**",
-                "${workspaceFolder}/agent/**"
+                "C:/gstreamer/1.0/msvc_x86/**"
             ],
             "defines": [
                 "_DEBUG",

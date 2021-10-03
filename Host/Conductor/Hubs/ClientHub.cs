@@ -68,7 +68,6 @@ namespace SignalRChat.Hubs
         {
             int UserID = _token.GetUserFromHttpRequest(Context.User);
             Groups.AddToGroupAsync(Context.ConnectionId,UserID.ToString());
-
             return base.OnConnectedAsync();
         }
     }

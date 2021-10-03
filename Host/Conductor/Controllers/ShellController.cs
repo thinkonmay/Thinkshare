@@ -14,7 +14,6 @@ namespace Conductor.Controllers
     /// <summary>
     /// Route use by admin to create shell remote session with slave devices
     /// </summary>
-    [Authorize(Roles = "Administrator")]
     [Route("/Shell")]
     [ApiController]
     public class ShellController : Controller
@@ -52,6 +51,22 @@ namespace Conductor.Controllers
             return Ok();
         }
 
+
+        
+        /// <summary>
+        /// Send a command line to an specific process id of an specific slave device
+        /// </summary>
+        /// <param name="ModelID"></param>
+        /// <returns></returns>
+        [HttpPost("Broadcast")]
+        public async Task<IActionResult> Broadcast(int ModelID)
+        {
+            var model = _db.ScriptModels.Find(ModelID);
+            var shell = new ShellScript(model, 0);
+            await _slmsocket.InitializeShellSession(shell);
+            return Ok();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -75,14 +90,11 @@ namespace Conductor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetModelHistory")]
-        public IActionResult Model(int modelID)
+        public IActionResult Model(int modelID, int SlaveID)
         {
-            List<ShellSession> session;
-            try
-            {
-                session = _db.ScriptModels.Find(modelID).History.ToList();
-            }
-            catch (Exception ex) { return BadRequest(ex.Message); }
+            var session = _db.ShellSession
+                    .Where(o => o.Slave.ID == SlaveID && o.Model.ID == modelID)
+                    .ToList();
             return Ok(session);
         }
 
@@ -94,14 +106,8 @@ namespace Conductor.Controllers
         [HttpGet("GetModel")]
         public IActionResult Model()
         {
-            var ret = new List<ScriptModel>();
             var model = _db.ScriptModels.ToList();
-            foreach ( var item in model)
-            {
-                item.History = null;
-                ret.Add(item);
-            };
-            return Ok(ret);
+            return Ok(model);
         }
     }
 }

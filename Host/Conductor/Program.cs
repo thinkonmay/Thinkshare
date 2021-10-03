@@ -48,10 +48,10 @@ namespace Conductor
                 var systemconfig = services.GetRequiredService<SystemConfig>();
                 var config = services.GetRequiredService<IConfiguration>();
 
-                DataSeeder.SeedScriptModel(db);
-                DataSeeder.SeedRoles(roleManager);
-                DataSeeder.SeedAdminUsers(userManager,systemconfig);
-                DataSeeder.SeedUserRole(userManager);
+                ScriptModelSeeder.SeedScriptModel(db);
+                AccountSeeder.SeedRoles(roleManager);
+                AccountSeeder.SeedAdminUsers(userManager,systemconfig);
+                AccountSeeder.SeedUserRole(userManager);
             }
         }
     }

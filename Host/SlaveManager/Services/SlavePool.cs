@@ -2,6 +2,7 @@
 using SlaveManager.SlaveDevices;
 using SlaveManager.SlaveDevices.SlaveStates;
 using System;
+using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +21,36 @@ namespace SlaveManager.Services
 
         private readonly SystemConfig _config;
 
+        private readonly IConductorSocket _socket;
 
-        public SlavePool(SystemConfig config)
+        public int SamplePeriod {get;set;}
+
+        public SlavePool(SystemConfig config, IConductorSocket socket)
         {
             _config = config;
+            _socket = socket;
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
+            SamplePeriod = 60* 1000;
+            Task.Run(() => SystemHeartBeat());
+        }
+
+        public async Task SystemHeartBeat()
+        {
+            try
+            {
+                var model_list = await _socket.GetDefaultModel();
+                while(true)
+                {
+                    foreach(var i in model_list)
+                    {
+                        BroadcastShellScript(new ShellScript(i,0));
+                    }
+                    Thread.Sleep(SamplePeriod);
+                }
+            }catch(Exception ex)
+            {
+                await SystemHeartBeat();
+            }
         }
 
 
@@ -52,7 +78,6 @@ namespace SlaveManager.Services
         public List<SlaveQueryResult> GetSystemSlaveState()
         {
             var list = new List<SlaveQueryResult>();
-
             foreach (var i in SlaveList)
             { 
                 list.Add(new SlaveQueryResult() { 
@@ -94,6 +119,19 @@ namespace SlaveManager.Services
             return true;
         }
 
+        public bool BroadcastShellScript(ShellScript script)
+        {
+            var slave = GetSystemSlaveState();
+            foreach(var item in slave)
+            {
+                if(item.SlaveServiceState != SlaveServiceState.Disconnected)
+                {
+                    script.SlaveID = item.SlaveID;
+                    InitShellSession(script);
+                }
+            }
+            return true;
+        }
 
 
 

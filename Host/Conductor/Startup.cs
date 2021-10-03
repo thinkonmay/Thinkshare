@@ -14,7 +14,6 @@ using Conductor.Data;
 using Conductor.Interfaces;
 using SharedHost.Models.Auth;
 using SharedHost.Models.User;
-using Conductor.Services;
 using System;
 using System.IO;
 using System.Reflection;
@@ -70,12 +69,19 @@ namespace Conductor
             });
 
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
+                .AddGoogle(options =>
+                {
+                    var gconfig = Configuration.GetSection("Authentication:Google");
+                    options.ClientId = gconfig["ClientId"];
+                    options.ClientSecret = gconfig["ClientSecret"];
+                    options.CallbackPath = "/login-google";
+                }
+                )
                 .AddJwtBearer(options =>
                 {
                     options.Events = new JwtBearerEvents
@@ -154,7 +160,7 @@ namespace Conductor
             services.AddTransient<ITokenGenerator, TokenGenerator>();
             services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
 
-            services.AddTransient<DataSeeder>();
+            services.AddTransient<AccountSeeder>();
 
             services.AddMvc();
         }

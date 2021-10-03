@@ -7,7 +7,6 @@ using Conductor.Services;
 using Conductor.Data;
 using Conductor.Interfaces;
 using Conductor.Models;
-using Conductor.Services;
 using System.Linq;
 using System.Threading.Tasks;
 using Conductor;
@@ -186,7 +185,7 @@ namespace Conductor.Controllers
         /// <summary>
         /// disconnect remote control during session
         /// </summary>
-        /// <param name="sessionClientId"></param>
+        /// <param name="SlaveID"></param>
         /// <returns></returns>
         [HttpPost("Disconnect")]
         public async Task<IActionResult> DisconnectRemoteControl(int SlaveID)

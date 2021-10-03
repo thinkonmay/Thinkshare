@@ -20,6 +20,7 @@
 
 
 
+
 /// <summary>
 /// gstreamer video element enumaration,
 /// the order of element in enum must follow the 
@@ -147,9 +148,9 @@ setup_element_factory(SessionCore* core,
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
                     "dxgiscreencapsrc name=screencap ! "SCREEN_CAP
-                    "queue ! videoconvert ! queue ! "
-                    "mfh264enc name=videoencoder ! queue ! rtph264pay name=rtp ! "
-                    "queue ! " RTP_CAPS_VIDEO "H264 ! sendrecv. "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! videoconvert ! queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
+                    "mfh264enc name=videoencoder ! queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! rtph264pay name=rtp ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! " RTP_CAPS_VIDEO "H264 ! sendrecv. "
                     "wasapisrc name=audiocapsrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
                     "opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
@@ -348,38 +349,41 @@ setup_element_property(SessionCore* core)
     QoE* qoe = session_core_get_qoe(core);
 
 
-
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /*turn off screeen cursor*/
     if (pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE], "cursor", FALSE, NULL); }
 
     /*monitor to display*/
     if (pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE], "monitor", 0, NULL);}
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    /*variable bitrate mode*/
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bframes", 0, NULL);}
+
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "zerolatency", TRUE, NULL);}
+
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "rc-mode", "cbr", NULL);}
-
-    if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "rc-mode", 0, NULL);}
-
-    if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "ref", 1, NULL);} 
 
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", 20000, NULL);}
 
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "qos", TRUE, NULL);}
 
+    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "preset", "low-latency", NULL);}
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "rc-mode", 0, NULL);}
+
+    if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "ref", 1, NULL);} 
+
     if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "qos", TRUE, NULL);}
 
-    /*low latency preset*/
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "preset", "low-latency", NULL);}
-
-    if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "low-latency", TRUE, NULL);}
-
     if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "quality-vs-speed", 50, NULL);}
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+    
 
-    /*set b-frame numbers property*/
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bframes", 0, NULL);}
-
-    /**/
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "zerolatency", TRUE, NULL);}
 
     /*set zero latency aggregate mode*/
     if (pipe->video_element[RTP_H264_PAYLOAD]) { g_object_set(pipe->video_element[RTP_H264_PAYLOAD], "aggregate-mode", 1, NULL);}

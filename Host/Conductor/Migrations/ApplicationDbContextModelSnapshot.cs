@@ -266,14 +266,14 @@ namespace Conductor.Migrations
                     b.Property<int>("ID")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ModelID")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Output")
                         .HasColumnType("text");
 
                     b.Property<string>("Script")
                         .HasColumnType("text");
-
-                    b.Property<int?>("ScriptModelID")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("SlaveID")
                         .HasColumnType("integer");
@@ -285,7 +285,7 @@ namespace Conductor.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("ScriptModelID");
+                    b.HasIndex("ModelID");
 
                     b.HasIndex("SlaveID");
 
@@ -450,20 +450,17 @@ namespace Conductor.Migrations
 
             modelBuilder.Entity("SharedHost.Models.Shell.ShellSession", b =>
                 {
-                    b.HasOne("SharedHost.Models.Shell.ScriptModel", null)
-                        .WithMany("History")
-                        .HasForeignKey("ScriptModelID");
+                    b.HasOne("SharedHost.Models.Shell.ScriptModel", "Model")
+                        .WithMany()
+                        .HasForeignKey("ModelID");
 
                     b.HasOne("SharedHost.Models.Device.Slave", "Slave")
                         .WithMany()
                         .HasForeignKey("SlaveID");
 
-                    b.Navigation("Slave");
-                });
+                    b.Navigation("Model");
 
-            modelBuilder.Entity("SharedHost.Models.Shell.ScriptModel", b =>
-                {
-                    b.Navigation("History");
+                    b.Navigation("Slave");
                 });
 #pragma warning restore 612, 618
         }

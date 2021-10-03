@@ -11,9 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlaveManager", "SlaveManage
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conductor", "Conductor\Conductor.csproj", "{A972CF97-DE50-4CF3-A9AF-23A0815A3E29}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetricCollector", "ShellExtractor\MetricCollector.csproj", "{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedHost\SharedHost.projitems*{00c0924c-717c-42ee-b3d1-3b7970d5ed4b}*SharedItemsImports = 5
+		SharedHost\SharedHost.projitems*{4f9d3da4-1264-42eb-8804-f5b9822e7b0d}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{6e362b62-5b06-4a28-98ae-9fdc94495bb9}*SharedItemsImports = 13
 		SharedHost\SharedHost.projitems*{a972cf97-de50-4cf3-a9af-23a0815a3e29}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{b8a9573e-234b-4387-b7bd-e7c46fa2111c}*SharedItemsImports = 5
@@ -35,6 +38,10 @@ Global
 		{A972CF97-DE50-4CF3-A9AF-23A0815A3E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A972CF97-DE50-4CF3-A9AF-23A0815A3E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A972CF97-DE50-4CF3-A9AF-23A0815A3E29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

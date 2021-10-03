@@ -36,14 +36,22 @@ namespace SlaveManager.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
         /// <returns></returns>
         [HttpPost("Initialize")]
         public IActionResult InitializeShellSession([FromBody] ShellScript script)
         {
             _slavePool.InitShellSession(script);
             return Ok();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("Broadcast")]
+        public IActionResult Broadcast([FromBody] ShellScript script)
+        {
+            return _slavePool.BroadcastShellScript(script) ? Ok() : BadRequest();
         }
     }
 }
