@@ -55,6 +55,14 @@ gint				shell_session_get_id						(gint process_id);
 /// <returns></returns>
 gint				shell_session_get_model						(gint process_id);
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="agent"></param>
+/// <param name="process_id"></param>
+void				report_shell_session						(AgentObject* agent,
+                    											 gint process_id);
+
 #endif
 
 

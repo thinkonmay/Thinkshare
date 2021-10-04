@@ -73,8 +73,6 @@ void											agent_remote_control_reconnect		(AgentObject* self);
 void         									agent_on_shell_process_terminate	(AgentObject* self, 
 																					 gint process_id);
 
-
-
 /// <summary>
 /// agent_finalize, end main loop and all related thread, 
 /// close websocket connection and close agent process
@@ -118,6 +116,14 @@ void											agent_send_message_to_host			(AgentObject* self,
 /// <param name="message"></param>
 void											agent_send_message_to_session_core	(AgentObject* self,
 																					 gchar* message);
+
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="server_commmand"></param>
+void											agent_start_file_transfer			(gchar* server_commmand);
+
 
 /// <summary>
 /// 
@@ -177,6 +183,15 @@ ChildProcess*									agent_get_child_process				(AgentObject* self,
 void											agent_set_child_process				(AgentObject* self,
 																				     gint postion,
 																					 ChildProcess* process);
+
+void											agent_set_file_transfer_service		(AgentObject* self,
+																					 gint position,
+																					 FileTransferSession* session);
+
+RemoteSession*									agent_get_remote_session			(AgentObject* self);
+
+void											agent_set_remote_session			(AgentObject* self, 
+																					 RemoteSession* session);
 
 GMainLoop*										agent_get_main_loop					(AgentObject* self);
 /*END get-set function for agent object*/

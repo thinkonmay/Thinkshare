@@ -64,6 +64,12 @@ gboolean			remote_control_reconnect						(AgentObject* object);
 /// 
 /// </summary>
 /// <param name="agent"></param>
+void				intialize_remote_session_service				(AgentObject* agent);
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="agent"></param>
 /// <param name="data"></param>
 void				setup_session									(AgentObject* agent, 
 																	 gchar* data);

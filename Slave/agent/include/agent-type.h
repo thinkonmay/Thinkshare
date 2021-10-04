@@ -48,8 +48,30 @@ typedef	struct _ChildProcess		ChildProcess;
 /// </summary>
 typedef struct _AgentState			AgentState;
 
-
+/// <summary>
+/// 
+/// </summary>
 typedef struct _ShellSession        ShellSession;
+
+/// <summary>
+/// 
+/// </summary>
+typedef struct _RemoteSession       RemoteSession;
+
+/// <summary>
+/// 
+/// </summary>
+typedef struct _FileTransferSession FileTransferSession;
+
+/// <summary>
+/// 
+/// </summary>
+typedef struct _FileCompressor      FileCompressor;
+
+/// <summary>
+/// 
+/// </summary>
+typedef struct _FileTransceiver     FileTransceiver;
 
 /// <summary>
 /// for better maintainance, 

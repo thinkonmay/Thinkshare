@@ -129,7 +129,9 @@ on_agent_message(AgentObject* agent,
 			else if (opcode == NEW_SHELL_SESSION){
 				initialize_shell_session(agent,data_string); return;}
 			else if (opcode == SESSION_INITIALIZE){
-				setup_session(agent,data_string); return;
+				setup_session(agent,data_string); return;}
+			else if (opcode == FILE_TRANSFER_SERVICE){
+				agent_start_file_transfer(data_string);
 			}
 		}
 		else if(from == CORE_MODULE)
@@ -137,9 +139,7 @@ on_agent_message(AgentObject* agent,
 			Message* json_data = get_json_object_from_string(data_string,&error);
 			if(!error == NULL || json_data == NULL) {return;}
 
-			if(opcode == FILE_TRANSFER_SERVICE){
-
-			}else if(opcode == CLIPBOARD_SERVICE){
+			else if(opcode == CLIPBOARD_SERVICE){
 
 			}else if(opcode == RESET_QOE){
 				agent_reset_qoe(agent,json_data);
