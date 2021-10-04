@@ -79,6 +79,8 @@ mouseButtonMovement(event)
 function 
 mouseWheel(event)
 {             
+    var mousePosition_X = clientToServerX(event.clientX);
+    var mousePosition_Y = clientToServerY(event.clientY);
 
     var INPUT =
     {
