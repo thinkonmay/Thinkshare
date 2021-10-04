@@ -83,8 +83,9 @@ mouseWheel(event)
     var INPUT =
     {
         "Opcode":HidOpcode.MOUSE_WHEEL,
-        "dX":event.deltaX,
-        "dY":event.deltaY
+        "dX":mousePosition_X,
+        "dY":mousePosition_Y,
+        "WheeldY":event.deltaY
     }
 
     SendHID(JSON.stringify(INPUT));
