@@ -388,7 +388,10 @@ setup_element_property(SessionCore* core)
 void
 toggle_pointer(gboolean toggle)
 {
-    if (pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE], "cursor", FALSE, NULL); }
+    if (pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE]) 
+    { 
+        g_object_set(pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE], "cursor", toggle, NULL); 
+    }
 }
 
 
