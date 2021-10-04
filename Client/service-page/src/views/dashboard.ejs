@@ -195,70 +195,99 @@
             <%=sidebar2%>
           </p>
           <div class="color-tiles mx-0 px-4" style="display: flex;justify-content: flex-start;">
-            <!-- <div class="tiles success"></div>
+            <div class="tiles success"></div>
             <div class="tiles warning"></div>
             <div class="tiles danger"></div>
             <div class="tiles info"></div>
             <div class="tiles dark"></div>
-            <div class="tiles default"></div> -->
-            <div class="col-md-3 dropdown-menu-static-demo">
-              <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                  Dropdown
-                </button>
-                <div class="dropdown-menu show" aria-labelledby="dropdownMenuButton1">
-                  <h6 class="dropdown-header">Settings</h6>
-                  <a class="dropdown-item" href="#">Action</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Separated link</a>
-                </div>
+            <div class="tiles default"></div>
+          </div>
+          <div class="color-tiles mx-0 px-4" style="display: flex;justify-content:space-between;margin-bottom: 15rem;">
+            <div class="dropdown">
+              <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="ti-world"></i>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                <h6 class="dropdown-header">Remote control bitrate</h6>
+                <a class="dropdown-item" id="bitrate">ultra low</a>
+                <a class="dropdown-item" id="bitrate">low</a>
+                <a class="dropdown-item" id="bitrate">medium</a>
+                <a class="dropdown-item" id="bitrate">high</a>
+                <a class="dropdown-item" id="bitrate">very vigh</a>
+                <a class="dropdown-item" id="bitrate">ultra hight</a>
+                <!-- <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Separated link</a> -->
               </div>
             </div>
-            <!-- <div class="col-md-3 dropdown-menu-static-demo">
-              <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                  Dropdown
-                </button>
-                <div class="dropdown-menu show" aria-labelledby="dropdownMenuButton1">
-                  <h6 class="dropdown-header">Settings</h6>
-                  <a class="dropdown-item" href="#">Action</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Separated link</a>
-                </div>
+            <div class="dropdown">
+              <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="ti-world"></i>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                <h6 class="dropdown-header">AudioCodec</h6>
+                <a class="dropdown-item" id="audiocodec">opus</a>
+                <a class="dropdown-item" id="audiocodec">mp3</a>
+                <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                <!-- <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Separated link</a> -->
               </div>
-            </div> -->
+            </div>                     
+            <div class="dropdown">
+              <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="ti-world"></i>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                <h6 class="dropdown-header">VideoCodec</h6>
+                <a class="dropdown-item" id="videocodec">vp9</a>
+                <a class="dropdown-item" id="videocodec">h264</a>
+                <a class="dropdown-item" id="videocodec">h265</a>
+              </div>
+            </div>       
           </div>
-          <div class="color-tiles mx-0 px-4" style="display: flex;justify-content: flex-start;">
-            <!-- <div class="tiles success"></div>
-            <div class="tiles warning"></div>
-            <div class="tiles danger"></div>
-            <div class="tiles info"></div>
-            <div class="tiles dark"></div>
-            <div class="tiles default"></div> -->
-            <div class="col-md-3 dropdown-menu-static-demo">
-              <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                  Dropdown
-                </button>
-                <div class="dropdown-menu show" aria-labelledby="dropdownMenuButton1">
-                  <h6 class="dropdown-header">Settings</h6>
-                  <a class="dropdown-item" href="#">Action</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Separated link</a>
-                </div>
+
+          <div class="color-tiles mx-0 px-4" style="display: flex;justify-content:space-between;">
+            <div class="dropdown">
+              <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="ti-world"></i>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                <h6 class="dropdown-header">Remote control bitrate</h6>
+                <a class="dropdown-item" id="bitrate">ultra low</a>
+                <a class="dropdown-item" id="bitrate">low</a>
+                <a class="dropdown-item" id="bitrate">medium</a>
+                <a class="dropdown-item" id="bitrate">high</a>
+                <a class="dropdown-item" id="bitrate">very vigh</a>
+                <a class="dropdown-item" id="bitrate">ultra hight</a>
+                <!-- <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Separated link</a> -->
               </div>
             </div>
-            
+            <div class="dropdown">
+              <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="ti-world"></i>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                <h6 class="dropdown-header">AudioCodec</h6>
+                <a class="dropdown-item" id="audiocodec">opus</a>
+                <a class="dropdown-item" id="audiocodec">mp3</a>
+                <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                <!-- <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Separated link</a> -->
+              </div>
+            </div>                     
+            <div class="dropdown">
+              <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="ti-world"></i>
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                <h6 class="dropdown-header">VideoCodec</h6>
+                <a class="dropdown-item" id="videocodec">vp9</a>
+                <a class="dropdown-item" id="videocodec">h264</a>
+                <a class="dropdown-item" id="videocodec">h265</a>
+              </div>
+            </div>       
           </div>
+
         </div>
       </div>
       <!-- partial -->

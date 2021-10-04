@@ -91,8 +91,6 @@ struct _Pipeline
     GstCaps* audio_caps[AUDIO_ELEMENT_LAST];
 };
 
-
-
 Pipeline*
 pipeline_initialize(SessionCore* core)
 {
@@ -213,13 +211,11 @@ setup_element_factory(SessionCore* core,
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
                     "d3d11desktopdupsrc name=screencap ! "DIRECTX_PAD",framerate=120/1 ! "
                     "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
-                    "d3d11convert ! "DIRECTX_PAD",format=NV12 ! "
+                    "d3d11convert ! "
                     "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
-                    "mfvp9enc name=videoencoder ! video/x-h264,profile=high ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
-                    "rtph265pay name=rtp ! "
+                    "rtpvp9enc name=rtp ! "
                     "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! " 
-                    RTP_CAPS_VIDEO "H265 ! sendrecv. "
+                    RTP_CAPS_VIDEO "VP9 ! sendrecv. "
                     "wasapisrc name=audiocapsrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
                     "opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
@@ -256,7 +252,7 @@ setup_element_factory(SessionCore* core,
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audiocapsrc");
             pipe->video_element[VP8_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
-            pipe->video_element[RTP_VP8_PAYLOAD] = 
+            pipe->video_element[RTP_VP8_PAYLOAD] =
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
             pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
@@ -352,8 +348,6 @@ setup_element_property(SessionCore* core)
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "zerolatency", TRUE, NULL);}
 
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "rc-mode", "cbr", NULL);}
-
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", 20000, NULL);}
 
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "qos", TRUE, NULL);}
 

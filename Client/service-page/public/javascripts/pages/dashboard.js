@@ -8,10 +8,27 @@ API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
+function 
+set_client_device_cap(parameter,value)
+{
+	var cap = JSON.parse(getCookie("cap"));
+
+
+	setCookie("cap", JSON.stringify(cap), 999999)
+	console.log("set default device capability to " + getCookie("cap"));
+	// How to convert to JSON 
+	// var cap = getCookie("cap");
+	// var parse = JSON.parse(cap);
+	// use "parse" like json 
+	// For ex: parse["mode"]
+}
+
+
 $(document).ready(async () => {
 	$('#logout').click(() => {
 		setCookie("dalogout", 1)
 	})
+
 
 	var defaultDeviceCap = {
 		...Setting.AudioCodec("opus"),
@@ -20,6 +37,14 @@ $(document).ready(async () => {
 		screenWidth: 1920,
 		screenHeight: 1080
 	}
+	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
+
+
+	var setting = document.getElementById("")
+	set_client_device_cap("opus","h264","medium",1920,1080);
+
+	var very_low = document.getElementById("very-low-bitrate-option");
+	very_low.onclick = 
 
 	noti()
 	search()
@@ -27,13 +52,7 @@ $(document).ready(async () => {
 	user()
 
 
-	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
-	console.log("set default device capability to " + getCookie("cap"));
-	/// How to convert to JSON 
-	/// var cap = getCookie("cap");
-	//  var parse = JSON.parse(cap);
-	// use "parse" like json 
-	// For ex: parse["mode"]
+
 
 	try {
 		const userinfor = await (await API.getInfor()).json()

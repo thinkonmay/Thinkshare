@@ -41,6 +41,8 @@ mouseButtonDown(event)
     var mousePosition_X = clientToServerX(event.clientX);
     var mousePosition_Y = clientToServerY(event.clientY);
 
+
+
     var INPUT =
     {
         "Opcode":HidOpcode.MOUSE_DOWN,
@@ -61,6 +63,8 @@ mouseButtonMovement(event)
 {
     var mousePosition_X = clientToServerX(event.clientX);
     var mousePosition_Y = clientToServerY(event.clientY);
+
+
 
 
     var INPUT =
@@ -131,6 +135,11 @@ function keyup(event)
         event.code === 'KeyI' && event.ctrlKey && event.shiftKey ||
         event.code === 'F11') {
         event.preventDefault();
+        return;
+    }
+
+    if (event.code === 'KeyP' && event.ctrlKey && event.shiftKey) {
+        event.target.requestPointerLock();
         return;
     }
 
@@ -260,6 +269,8 @@ onFullscreenChange()
     {
         // Enter fullscreen
         //allow capture function key (ctrl, shift, tab)
+
+        app.VideoElement.requestPointerLock();
         requestKeyboardLock();
     }
     reset_keyboard();
@@ -378,7 +389,7 @@ requestKeyboardLock()
     /**
      * control key on window
      */
-    const keys = [
+     const keys = [
         "AltLeft",
         "AltRight",
         "Tab",
@@ -388,9 +399,7 @@ requestKeyboardLock()
         "MetaRight"
     ];
     console.log("requesting keyboard lock");
-
-
-    navigator.keyboard.lock(keys).then(
+    Navigator.keyboard.lock(keys).then(
         () => {
             console.log("keyboard lock success");
         }

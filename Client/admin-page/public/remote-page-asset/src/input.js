@@ -352,7 +352,7 @@ requestKeyboardLock()
     console.log("requesting keyboard lock");
 
 
-    navigator.keyboard.lock(keys).then(
+    Keyboard.lock(keys).then(
         () => {
             console.log("keyboard lock success");
         }
