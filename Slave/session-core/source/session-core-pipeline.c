@@ -28,7 +28,7 @@
 enum
 {
     /*screen capture source*/
-    DXGI_SCREEN_CAPTURE_SOURCE,
+    DIRECTX_SCREEN_CAPTURE_SOURCE,
 
     /*preprocess before encoding*/
     CUDA_UPLOAD,
@@ -91,8 +91,6 @@ struct _Pipeline
     GstCaps* audio_caps[AUDIO_ELEMENT_LAST];
 };
 
-
-
 Pipeline*
 pipeline_initialize(SessionCore* core)
 {
@@ -125,6 +123,8 @@ start_pipeline(SessionCore* core)
     return TRUE;
 }
 
+
+#define DIRECTX_PAD "video/x-raw(memory:D3D11Memory)"
 #define RTP_CAPS_OPUS "application/x-rtp,media=audio,payload=96,encoding-name="
 #define RTP_CAPS_VIDEO "application/x-rtp,media=video,payload=97,encoding-name="
 
@@ -146,13 +146,14 @@ setup_element_factory(SessionCore* core,
             // setup default nvenc encoder (nvidia encoder)
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "d3d11desktopdupsrc name=screencap ! "
+                    "d3d11desktopdupsrc name=screencap ! "DIRECTX_PAD",framerate=120/1 ! "
                     "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
-                    "d3d11convert ! "
-                    "mfh264enc name=videoencoder ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 !"
-                    " rtph264pay name=rtp ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 !" 
+                    "d3d11convert ! "DIRECTX_PAD",format=NV12 ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
+                    "mfh264enc name=videoencoder ! video/x-h264,profile=high ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
+                    "rtph264pay name=rtp ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! " 
                     RTP_CAPS_VIDEO "H264 ! sendrecv. "
                     "wasapisrc name=audiocapsrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
                     "opusenc name=audioencoder ! rtpopuspay ! "
@@ -164,7 +165,7 @@ setup_element_factory(SessionCore* core,
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
             pipe->video_element[RTP_H264_PAYLOAD] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE] = 
+            pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
             pipe->audio_element[OPUS_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
@@ -177,34 +178,26 @@ setup_element_factory(SessionCore* core,
             // setup default nvenc encoder (nvidia encoder)
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "dxgiscreencapsrc name=screencap ! "
-                    " ! queue ! videoconvert ! queue ! "
-                    "mfh265enc name=videoencoder ! rtph265pay name=rtp ! "
-                    "queue ! " RTP_CAPS_VIDEO "H265 ! sendrecv. "
-                    "wasapisrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
+                    "d3d11desktopdupsrc name=screencap ! "DIRECTX_PAD",framerate=120/1 ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
+                    "d3d11convert ! "DIRECTX_PAD",format=NV12 ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
+                    "mfh265enc name=videoencoder ! video/x-h264,profile=high ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
+                    "rtph265pay name=rtp ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! " 
+                    RTP_CAPS_VIDEO "H265 ! sendrecv. "
+                    "wasapisrc name=audiocapsrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
                     "opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
 
-            // if nvenv plugin is not found, switch to mediafoundation plugin (hardware acceleration on intel chip)
-            if(error != NULL)
-            {
-                pipe->pipeline =
-                    gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                        "dxgiscreencapsrc name=screencap ! "
-                        "queue ! videoconvert ! queue ! "
-                        "mfh264enc name=videoencoder ! queue ! rtph264pay name=rtp ! "
-                        "queue ! " RTP_CAPS_VIDEO "H264 ! sendrecv. "
-                        "wasapisrc name=audiocapsrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
-                        "opusenc name=audioencoder ! rtpopuspay ! "
-                        "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
-            }
             pipe->audio_element[WASAPI_SOURCE_SOUND] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audiocapsrc");
             pipe->video_element[H265_MEDIA_FOUNDATION] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
             pipe->video_element[RTP_H265_PAYLOAD] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE] = 
+            pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
             pipe->audio_element[OPUS_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
@@ -216,11 +209,14 @@ setup_element_factory(SessionCore* core,
         {
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "dxgiscreencapsrc name=screencap ! "
-                    " ! queue ! videoconvert ! queue ! "
-                    "vp9enc name=videoencoder ! rtpvp9pay name=rtp ! "
-                    "queue ! " RTP_CAPS_VIDEO "VP9 ! sendrecv. "
-                    "wasapisrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
+                    "d3d11desktopdupsrc name=screencap ! "DIRECTX_PAD",framerate=120/1 ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
+                    "d3d11convert ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
+                    "rtpvp9enc name=rtp ! "
+                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! " 
+                    RTP_CAPS_VIDEO "VP9 ! sendrecv. "
+                    "wasapisrc name=audiocapsrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
                     "opusenc name=audioencoder ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
 
@@ -231,7 +227,7 @@ setup_element_factory(SessionCore* core,
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
             pipe->video_element[RTP_VP9_PAYLOAD] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE] = 
+            pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
             pipe->audio_element[OPUS_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
@@ -256,9 +252,9 @@ setup_element_factory(SessionCore* core,
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audiocapsrc");
             pipe->video_element[VP8_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
-            pipe->video_element[RTP_VP8_PAYLOAD] = 
+            pipe->video_element[RTP_VP8_PAYLOAD] =
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE] = 
+            pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
             pipe->audio_element[OPUS_ENCODER] = 
                 gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
@@ -340,11 +336,9 @@ setup_element_property(SessionCore* core)
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /*turn off screeen cursor*/
-    if (pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE], "cursor", FALSE, NULL); }
+    if (pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE], "cursor", FALSE, NULL); }
 
-    /*monitor to display*/
-    if (pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DXGI_SCREEN_CAPTURE_SOURCE], "monitor", 0, NULL);}
+    if (pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE], "monitor", 0, NULL);}
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
 
@@ -355,8 +349,6 @@ setup_element_property(SessionCore* core)
 
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "rc-mode", "cbr", NULL);}
 
-    if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "bitrate", 20000, NULL);}
-
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "qos", TRUE, NULL);}
 
     if (pipe->video_element[NVIDIA_H264_ENCODER]) { g_object_set(pipe->video_element[NVIDIA_H264_ENCODER], "preset", "low-latency", NULL);}
@@ -366,39 +358,40 @@ setup_element_property(SessionCore* core)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "rc-mode", 0, NULL);}
 
-    if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "ref", 1, NULL);} 
-
-    if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "qos", TRUE, NULL);}
-
-    if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "quality-vs-speed", 50, NULL);}
+    if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "quality-vs-speed", 100, NULL);}
     
     if (pipe->video_element[H264_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H264_MEDIA_FOUNDATION], "low-latency", TRUE, NULL);}
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
     
 
 
-    /*set zero latency aggregate mode*/
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (pipe->video_element[RTP_H264_PAYLOAD]) { g_object_set(pipe->video_element[RTP_H264_PAYLOAD], "aggregate-mode", 1, NULL);}
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (pipe->audio_element[WASAPI_SOURCE_SOUND]) { g_object_set(pipe->audio_element[WASAPI_SOURCE_SOUND], "low-latency", TRUE, NULL);}
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /*
-    * Set the queue max time to 16ms (16000000ns)
-    * If the pipeline is behind by more than 1s, the packets
-    * will be dropped.
-    * This helps buffer out latency in the audio source.
-    */
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-time", 16000000, NULL);}
 
-    /*
-    * Set the other queue sizes to 0 to make it only time-based.
-    */
     if (pipe->audio_element[RTP_RTX_QUEUE]) { g_object_set(pipe->audio_element[RTP_RTX_QUEUE], "max-size-packet", 0, NULL);}
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     g_object_set(pipe->webrtcbin,"latency",0,NULL);
 }
 
+
+void
+toggle_pointer(gboolean toggle, SessionCore* core)
+{
+    Pipeline* pipe = session_core_get_pipeline(core);
+    if (pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE]) 
+    { 
+        g_object_set(pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE], "cursor", toggle, NULL); 
+    }
+}
 
 
 
