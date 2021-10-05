@@ -27,18 +27,29 @@ $(document).ready(async () => {
 	}
 	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
 
-	var bitrate = document.getElementById("bitrate-setting");
-	bitrate.onclick = Setting.Mode(bitrate.innerHTML);
+	var bitrate = document.getElementsByName("bitrate-setting");
+	for(var item = 0; item < bitrate.length; item ++)
+	{
+		bitrate[item].onclick =(event) => Setting.Mode(event.target.innerHTML);
+	}
 
-	var audio_codec = document.getElementById("audiocodec-setting");
-	audio_codec.onclick = Setting.VideoCodec(audio_codec.innerHTML);
+	var audio_codec = document.getElementsByName("audiocodec-setting");
+	for(var item = 0; item < audio_codec.length; item ++)
+	{
+		audio_codec[item].onclick =(event) => Setting.AudioCodec(event.target.innerHTML);
+	}
 
-	var video_codec = document.getElementById("videocodec-setting");
-	video_codec.onclick = Setting.AudioCodec(video_codec.innerHTML);
+	var video_codec = document.getElementsByName("videocodec-setting");
+	for(var item = 0; item < video_codec.length; item ++)
+	{
+		video_codec[item].onclick =(event) => Setting.VideoCodec(event.target.innerHTML);
+	}
 
-	var resolution = document.getElementById("resolution-setting");
-	resolution.onclick = Setting.AudioCodec(resolution.innerHTML);
-
+	var resolution = document.getElementsByName("resolution-setting");
+	for(var item = 0; item < resolution.length; item ++)
+	{
+		resolution[item].onclick =(event) => Setting.mapVideoRes(event.target.innerHTML);
+	}
 
 
 
