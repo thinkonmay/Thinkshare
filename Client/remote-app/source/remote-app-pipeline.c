@@ -28,28 +28,19 @@
 enum
 {
     /*screen capture source*/
-    DIRECTX_SCREEN_CAPTURE_SOURCE,
+    DIRECTX_VIDEO_SINK,
 
-    /*preprocess before encoding*/
-    CUDA_UPLOAD,
-    CUDA_CONVERT,
-    VIDEO_CONVERT,
     /*video encoder*/
 
-    NVIDIA_H264_ENCODER,
-    NVIDIA_H265_ENCODER,
-    H264_MEDIA_FOUNDATION,
-    H265_MEDIA_FOUNDATION,
-
-    VP9_ENCODER,
-    VP8_ENCODER,
+    DIRECTX_H264_DECODER,
+    DIRECTX_H265_DECODER,
+    VP9_DECODER,
 
 
     /*payload packetize*/
     RTP_H264_PAYLOAD,
     RTP_H265_PAYLOAD,
     RTP_VP9_PAYLOAD,
-    RTP_VP8_PAYLOAD,
 
     VIDEO_ELEMENT_LAST
 };
@@ -61,13 +52,12 @@ enum
 enum
 {
     /*audio capture source*/
-    PULSE_SOURCE_SOUND,
-    WASAPI_SOURCE_SOUND,
+    PULSE_SINK,
+    WASAPI_SINK,
 
     /*audio encoder*/
-    OPUS_ENCODER,
-    MP3_ENCODER,
-    AAC_ENCODER,
+    OPUS_DECODER,
+    AAC_DECODER,
 
     /*rtp packetize and queue*/
     RTP_OPUS_PAYLOAD,
@@ -125,173 +115,86 @@ start_pipeline(RemoteApp* core)
 #define RTP_CAPS_VIDEO "application/x-rtp,media=video,payload=97,encoding-name="
 
 static void
-handle_media_stream (GstPad * pad, GstElement * pipe, const char *convert_name,
-    const char *sink_name)
+on_incoming_stream (GstElement * webrtc, GstPad * pad, RemoteApp* core)
 {
-  GstPad *qpad;
-  GstElement *q, *conv, *resample, *sink;
-  GstPadLinkReturn ret;
+    Pipeline* pipeline = remote_app_get_pipeline(core); 
+    QoE* qoe = remote_app_get_qoe(core);
+    GstPad* sinkpad;
 
-
-  q = gst_element_factory_make ("queue", NULL);
-  g_assert_nonnull (q);
-  conv = gst_element_factory_make (convert_name, NULL);
-  g_assert_nonnull (conv);
-  sink = gst_element_factory_make (sink_name, NULL);
-  g_assert_nonnull (sink);
-
-  if (g_strcmp0 (convert_name, "audioconvert") == 0) {
-    /* Might also need to resample, so add it just in case.
-     * Will be a no-op if it's not required. */
-    resample = gst_element_factory_make ("audioresample", NULL);
-    g_assert_nonnull (resample);
-    gst_bin_add_many (GST_BIN (pipe), q, conv, resample, sink, NULL);
-    gst_element_sync_state_with_parent (q);
-    gst_element_sync_state_with_parent (conv);
-    gst_element_sync_state_with_parent (resample);
-    gst_element_sync_state_with_parent (sink);
-    gst_element_link_many (q, conv, resample, sink, NULL);
-  } else {
-    gst_bin_add_many (GST_BIN (pipe), q, conv, sink, NULL);
-    gst_element_sync_state_with_parent (q);
-    gst_element_sync_state_with_parent (conv);
-    gst_element_sync_state_with_parent (sink);
-    gst_element_link_many (q, conv, sink, NULL);
-  }
-
-  qpad = gst_element_get_static_pad (q, "sink");
-
-  ret = gst_pad_link (pad, qpad);
-  g_assert_cmphex (ret, ==, GST_PAD_LINK_OK);
-}
-
-
-static void
-on_incoming_decodebin_stream (GstElement * decodebin, GstPad * pad,
-    GstElement * pipe)
-{
-  GstCaps *caps;
-  const gchar *name;
-
-  if (!gst_pad_has_current_caps (pad)) {
-    g_printerr ("Pad '%s' has no caps, can't do anything, ignoring\n",
-        GST_PAD_NAME (pad));
-    return;
-  }
-
-  caps = gst_pad_get_current_caps (pad);
-  name = gst_structure_get_name (gst_caps_get_structure (caps, 0));
-
-  if (g_str_has_prefix (name, "video")) {
-    handle_media_stream (pad, pipe, "videoconvert", "autovideosink");
-  } else if (g_str_has_prefix (name, "audio")) {
-    handle_media_stream (pad, pipe, "audioconvert", "autoaudiosink");
-  } else {
-    g_printerr ("Unknown pad %s, ignoring", GST_PAD_NAME (pad));
-  }
-}
-
-static void
-on_incoming_stream (GstElement * webrtc, GstPad * pad, GstElement * pipe)
-{
-  GstElement *decodebin;
-  GstPad *sinkpad;
-
-  if (GST_PAD_DIRECTION (pad) != GST_PAD_SRC)
-    return;
-
-  decodebin = gst_element_factory_make ("decodebin", NULL);
-  g_signal_connect (decodebin, "pad-added",
-      G_CALLBACK (on_incoming_decodebin_stream), pipe);
-  gst_bin_add (GST_BIN (pipe), decodebin);
-  gst_element_sync_state_with_parent (decodebin);
-
-  sinkpad = gst_element_get_static_pad (decodebin, "sink");
-  gst_pad_link (pad, sinkpad);
-  gst_object_unref (sinkpad);
-}
-
-static void
-setup_element_factory(RemoteApp* core,
-                      Codec video, 
-                      Codec audio)
-{
-    Pipeline* pipe = remote_app_get_pipeline(core);
-    GError* error = NULL;
+    if (GST_PAD_DIRECTION (pad) != GST_PAD_SRC)
+        return;
     
-    if (video == CODEC_H264)
+    switch(qoe_get_video_codec(qoe))
     {
-        if (audio == OPUS_ENC) 
-        {
-            // setup default nvenc encoder (nvidia encoder)
-            pipe->pipeline =
-                gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "d3d11desktopdupsrc name=screencap ! "DIRECTX_PAD",framerate=50/1 ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
-                    "d3d11convert ! "DIRECTX_PAD",format=NV12 ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
-                    "mfh264enc name=videoencoder ! video/x-h264,profile=high ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
-                    "rtph264pay name=rtp ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! " 
-                    RTP_CAPS_VIDEO "H264 ! sendrecv. "
-                    "wasapisrc name=audiocapsrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
-                    "opusenc name=audioencoder ! rtpopuspay ! "
-                    "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
+    case CODEC_H264: 
+        pipeline->video_element[RTP_H264_PAYLOAD] = gst_element_factory_make("rtph264depay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_H264_PAYLOAD], "sink");
+        pipeline->video_element[DIRECTX_H264_DECODER] = gst_element_factory_make("d3d11h264enc","decoder");
+        pipeline->video_element[DIRECTX_VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
+        break;
+    case CODEC_H265:
+        pipeline->video_element[RTP_H265_PAYLOAD] = gst_element_factory_make("rtph265depay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_H265_PAYLOAD], "sink");
+        pipeline->video_element[DIRECTX_H265_DECODER] = gst_element_factory_make("d3d11h265dec","decoder");
+        pipeline->video_element[DIRECTX_VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
+        break;
+    case CODEC_VP9:
+        pipeline->video_element[RTP_VP9_PAYLOAD] = gst_element_factory_make("rtpvp9depay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_VP9_PAYLOAD], "sink");
+        pipeline->video_element[VP9_DECODER] = gst_element_factory_make("d3d11vp9dec","decoder");
+        pipeline->video_element[DIRECTX_VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
+        break; 
+    default:
+        break;
+    }
 
-            pipe->audio_element[WASAPI_SOURCE_SOUND] = 
-                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audiocapsrc");
-            pipe->video_element[H264_MEDIA_FOUNDATION] = 
-                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
-            pipe->video_element[RTP_H264_PAYLOAD] = 
-                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE] = 
-                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
-            pipe->audio_element[OPUS_ENCODER] = 
-                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
+    switch(qoe_get_audio_codec(qoe))
+    {
+    case OPUS_ENC: 
+        pipeline->video_element[RTP_OPUS_PAYLOAD] = gst_element_factory_make("rtpopusdepay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_OPUS_PAYLOAD], "sink");
+        pipeline->video_element[OPUS_DECODER] = gst_element_factory_make("opusdec","decoder");
+        pipeline->video_element[] = gst_element_factory_make("d3d11videosink","decoder");
+        break;
+    case CODEC_H265:
+        pipeline->video_element[RTP_H265_PAYLOAD] = gst_element_factory_make("rtph265depay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_H265_PAYLOAD], "sink");
+        pipeline->video_element[DIRECTX_H265_DECODER] = gst_element_factory_make("d3d11h265dec","decoder");
+        pipeline->video_element[DIRECTX_VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
+        break;
+    case CODEC_VP9:
+        pipeline->video_element[RTP_VP9_PAYLOAD] = gst_element_factory_make("rtpvp9depay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_VP9_PAYLOAD], "sink");
+        pipeline->video_element[VP9_DECODER] = gst_element_factory_make("d3d11vp9dec","decoder");
+        pipeline->video_element[DIRECTX_VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
+        break; 
+    default:
+        break;
+    }
+    for(gint i = 0;i < AUDIO_ELEMENT_LAST;i++ )
+    {
+        
+        if(pipeline->audio_element[i])
+        {
+            gst_bin_add (GST_BIN (pipeline->pipeline), pipeline->audio_element[i]);
+            gst_element_sync_state_with_parent (pipeline->audio_element[i]);
         }
     }
-    else if (video == CODEC_H265)
-    {
-        if (audio == OPUS_ENC)
-        {
-            // setup default nvenc encoder (nvidia encoder)
-            pipe->pipeline =
-                gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "d3d11desktopdupsrc name=screencap ! "DIRECTX_PAD",framerate=120/1 ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
-                    "d3d11convert ! "DIRECTX_PAD",format=NV12 ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
-                    "mfh265enc name=videoencoder ! video/x-h264,profile=high ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
-                    "rtph265pay name=rtp ! "
-                    "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! " 
-                    RTP_CAPS_VIDEO "H265 ! sendrecv. "
-                    "wasapisrc name=audiocapsrc name=audiocapsrc ! audioconvert ! audioresample ! queue ! "
-                    "opusenc name=audioencoder ! rtpopuspay ! "
-                    "queue ! " RTP_CAPS_OPUS "OPUS ! sendrecv. ", &error);
 
-            pipe->audio_element[WASAPI_SOURCE_SOUND] = 
-                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audiocapsrc");
-            pipe->video_element[H265_MEDIA_FOUNDATION] = 
-                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "videoencoder");
-            pipe->video_element[RTP_H265_PAYLOAD] = 
-                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "rtp");
-            pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE] = 
-                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "screencap");
-            pipe->audio_element[OPUS_ENCODER] = 
-                gst_bin_get_by_name(GST_BIN(pipe->pipeline), "audioencoder");
+    for(gint i = 0;i < VIDEO_ELEMENT_LAST;i++ )
+    {
+        
+        if(pipeline->video_element[i])
+        {
+            gst_bin_add (GST_BIN (pipeline->pipeline), pipeline->video_element[i]);
+            gst_element_sync_state_with_parent (pipeline->video_element[i]);
         }
     }
-    if (!error == NULL) 
-    {
-        remote_app_finalize(core,PIPELINE_ERROR_EXIT,error);
-    }
-    pipe->webrtcbin =
-        gst_bin_get_by_name(GST_BIN(pipe->pipeline), "sendrecv");
 
+
+    gst_pad_link (pad, sinkpad);
+    gst_object_unref (sinkpad);
 }
-
 
 
 
@@ -305,7 +208,6 @@ connect_signalling_handler(RemoteApp* core)
     Pipeline* pipe = remote_app_get_pipeline(core);
     SignallingHub* hub = remote_app_get_signalling_hub(core);
 
-    g_main_context_push_thread_default(remote_app_get_main_context(core));
     /* Add stun server */
     g_object_set(pipe->webrtcbin, "stun-server", 
        "stun://stun.thinkmay.net:3478", NULL);
@@ -323,7 +225,8 @@ connect_signalling_handler(RemoteApp* core)
     g_signal_connect(pipe->webrtcbin, "notify::ice-gathering-state",
         G_CALLBACK(on_ice_gathering_state_notify), core);
     /* Incoming streams will be exposed via this signal */
-    g_signal_connect(pipe->webrtcbin, "pad-added", G_CALLBACK (on_incoming_stream),core);
+    g_signal_connect(pipe->webrtcbin, "pad-added",
+        G_CALLBACK (on_incoming_stream),core);
 }
 
 
@@ -338,20 +241,12 @@ setup_pipeline(RemoteApp* core)
 {
     SignallingHub* signalling = remote_app_get_signalling_hub(core);
     Pipeline* pipe = remote_app_get_pipeline(core);
-    QoE* qoe= remote_app_get_qoe(core);
 
-
-   
-
-    setup_element_factory(core, 
-        qoe_get_video_codec(qoe),
-        qoe_get_audio_codec(qoe));
+    GError* error = NULL;
+    pipe->pipeline = gst_parse_launch("webrtcbin name=webrtc",&error);
+    pipe->webrtcbin =  gst_bin_get_by_name(GST_BIN(pipe->pipeline),"webrtc");
 
     connect_signalling_handler(core);
-    
-    setup_element_property(core);
-
-
 
     gst_element_change_state(pipe->pipeline, GST_STATE_READY);
 
@@ -359,7 +254,6 @@ setup_pipeline(RemoteApp* core)
 
     start_pipeline(core);
 
-    remote_app_set_state(core, REMOTE_CONNECT_STARTED);
     signalling_hub_set_peer_call_state(signalling, PEER_CALL_DONE);
 }
 
@@ -381,33 +275,4 @@ pipeline_get_pipline(Pipeline* pipe)
     return pipe->pipeline;
 }
 
-
-
-GstElement*
-pipeline_get_video_encoder(Pipeline* pipe, Codec video)
-{
-    if (pipe->video_element[H264_MEDIA_FOUNDATION] != NULL) 
-    { return pipe->video_element[H264_MEDIA_FOUNDATION];}
-    if (pipe->video_element[NVIDIA_H264_ENCODER] != NULL) 
-    { return pipe->video_element[NVIDIA_H264_ENCODER];}
-    if (pipe->video_element[H265_MEDIA_FOUNDATION] != NULL) 
-    { return pipe->video_element[H265_MEDIA_FOUNDATION];}
-    if (pipe->video_element[NVIDIA_H265_ENCODER] != NULL) 
-    { return pipe->video_element[NVIDIA_H265_ENCODER];}
-
-    if (pipe->video_element[VP9_ENCODER] != NULL) 
-    { return pipe->video_element[VP9_ENCODER];}
-    if (pipe->video_element[VP8_ENCODER] != NULL) 
-    { return pipe->video_element[VP8_ENCODER];}    
-    return NULL;
-}
-
-GstElement*
-pipeline_get_audio_encoder(Pipeline* pipe, Codec audio)
-{
-    
-    if (audio == OPUS_ENC) { return pipe->audio_element[OPUS_ENCODER];}
-    else if (audio == AAC_ENC) { return pipe->audio_element[AAC_ENCODER];}
-    return NULL;
-}
 

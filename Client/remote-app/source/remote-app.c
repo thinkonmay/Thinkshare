@@ -8,7 +8,7 @@
 
 #include <exit-code.h>
 #include <error-code.h>
-#include <module.h>
+#include <module-code.h>
 #include <opcode.h>
 #include <general-constant.h>
 
@@ -16,7 +16,8 @@
 #include <glib.h>
 #include <logging.h>
 #include <message-form.h>
-#include <module.h>
+#include <module-code.h>
+#include <gst/base/gstbasesink.h>
 
 
 struct _RemoteApp
@@ -75,7 +76,6 @@ remote_app_setup_session(RemoteApp* self)
 
 	signalling_hub_set_signalling_state(self->signalling, SIGNALLING_SERVER_READY);
 	signalling_hub_set_peer_call_state(self->signalling, PEER_CALL_READY);
-	pipeline_set_state(self->pipe, PIPELINE_READY);
 }
 
 
@@ -147,15 +147,7 @@ remote_app_finalize(RemoteApp* self,
 					  ExitCode exit_code, 
 					  GError* error)
 {
-	PipelineState pipeline_state = pipeline_get_state(self->pipe);
-
-	Pipeline* pipe = self->pipe;
-		GstElement* pipeline = pipeline_get_pipline(pipe);
-
-	SignallingHub* signalling = 
-		remote_app_get_signalling_hub(self);
-
-	/*agent will catch session core exit code to restart session*/
+	g_print(error->message);
 	ExitProcess(exit_code);
 }
 

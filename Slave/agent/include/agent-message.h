@@ -3,7 +3,7 @@
 #define __AGENT_MESSAGE_H__
 
 #include <agent-type.h>
-#include <module.h>
+#include <module-code.h>
 #include <opcode.h>
 
 

@@ -3,7 +3,7 @@
 #include <remote-app-type.h>
 #include <remote-app.h>
 
-#include <module.h>
+#include <module-code.h>
 #include <opcode.h>
 
 #include <glib.h>
@@ -15,7 +15,7 @@
 
 #include <stdio.h>
 #include <general-constant.h>
-#include <module.h>
+#include <module-code.h>
 
 
 

@@ -42,7 +42,7 @@ struct _SignallingHub
     /// <summary>
     /// session slave id use to register session with signalling server
     /// </summary>
-    gint SessionSlaveID;
+    gint SessionClientID;
 
     /// <summary>
     /// url of signalling server
@@ -105,7 +105,7 @@ signalling_hub_setup(SignallingHub* hub,
 {
     hub->signalling_server = url;
     hub->turn = turn;
-    hub->SessionSlaveID = session_slave_id;
+    hub->SessionClientID= session_slave_id;
     hub->signalling_state = SIGNALLING_SERVER_READY;
 }
 
@@ -119,7 +119,7 @@ send_message_to_signalling_server(SignallingHub* signalling,
 {
     JsonObject* json_object = json_object_new();
     json_object_set_string_member(json_object, REQUEST_TYPE, request_type);
-    json_object_set_int_member(json_object, SUBJECT_ID, signalling->SessionSlaveID);
+    json_object_set_int_member(json_object, SUBJECT_ID, signalling->SessionClientID);
     json_object_set_string_member(json_object, CONTENT, content);
     json_object_set_string_member(json_object, RESULT, SESSION_ACCEPTED); 
     
@@ -325,15 +325,8 @@ on_server_closed(SoupWebsocketConnection* conn G_GNUC_UNUSED,
     RemoteApp* core G_GNUC_UNUSED)
 {
     SignallingHub* hub = remote_app_get_signalling_hub(core);
-    if (g_strcmp0(hub->peer_call_state, PEER_CALL_DONE))
-    {
-        report_remote_app_error(core, SIGNALLING_ERROR);
-    }
     hub->connection = NULL;
     hub->session = NULL;
-
-    hub->signalling_state = SIGNALLING_SERVER_CLOSED;
-
 }
 
 /* Answer created by our pipeline, to be sent to the peer */
@@ -444,15 +437,6 @@ connect_to_websocket_signalling_server_async(RemoteApp* core)
     gchar* text;
 
 
-    if (g_strcmp0(remote_app_get_state(core),SESSION_INFORMATION_SETTLED))
-    {
-        if (g_strcmp0(hub->signalling_state,SIGNALLING_SERVER_READY))
-        {
-            GError error;
-            error.message = "State conflict";
-            remote_app_finalize( core, CORE_STATE_CONFLICT_EXIT, &error);
-        }
-    }
 
     hub->session =
         soup_session_new_with_options(SOUP_SESSION_SSL_STRICT, !hub->disable_ssl,
@@ -546,7 +530,6 @@ on_sdp_exchange(gchar* data,
 
     if (!json_object_has_member(child, "type"))
     {
-        report_remote_app_error(core, SIGNALLING_ERROR);
         return;
     }
     if (!g_strcmp0(sdptype, "request"))
@@ -601,14 +584,12 @@ on_server_message(SoupWebsocketConnection* conn,
     RemoteApp* core)
 {
     Pipeline* pipe = remote_app_get_pipeline(core);
-
     gchar* text;
 
     switch (type) 
     {
         case SOUP_WEBSOCKET_DATA_BINARY:
         {
-            report_remote_app_error(core, UNKNOWN_MESSAGE);
             return;
         } 
         case SOUP_WEBSOCKET_DATA_TEXT: 
@@ -619,8 +600,6 @@ on_server_message(SoupWebsocketConnection* conn,
             text = g_strndup(data, size);
             break;
         }
-        default:
-            report_remote_app_error(core, UNKNOWN_MESSAGE);
     }
 
 
@@ -633,7 +612,8 @@ on_server_message(SoupWebsocketConnection* conn,
     gchar* Content =        json_object_get_string_member(object, "Content");
     gchar* Result =         json_object_get_string_member(object, "Result");
 
-    if (!g_strcmp0(Result, "SESSION_REJECTED") || !g_strcmp0(Result, "SESSION_TIMEOUT"))
+    if (!g_strcmp0(Result, "SESSION_REJECTED") ||
+        !g_strcmp0(Result, "SESSION_TIMEOUT"))
     {
         GError error;
         error.message = "Session has been rejected, this may due to security attack or signalling failure";
@@ -643,7 +623,7 @@ on_server_message(SoupWebsocketConnection* conn,
     /*this is websocket message with signalling server and has nothing to do with 
     * json message format use to communicate with other module
     */
-    if (!g_strcmp0(RequestType , "SLAVEREQUEST"))
+    if (!g_strcmp0(RequestType , "CLIENTREQUEST"))
     {
         on_registering_message(core);
     }
@@ -654,10 +634,6 @@ on_server_message(SoupWebsocketConnection* conn,
     else if (!g_strcmp0(RequestType, "OFFER_ICE"))
     {
         on_ice_exchange(Content, core);
-    }
-    else
-    {
-        report_remote_app_error(core, UNKNOWN_MESSAGE);
     }
 }
 

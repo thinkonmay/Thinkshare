@@ -5,7 +5,7 @@
 #include <json-glib/json-glib.h>
 
 #include <opcode.h>
-#include <module.h>
+#include <module-code.h>
 
 typedef 				JsonObject				Message;
 
