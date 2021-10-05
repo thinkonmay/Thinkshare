@@ -247,16 +247,7 @@ function setDataForChart(){
 	for (let i = 0; i < sessionInfor.length; i++){
 		datasets[sessionInfor[i].dayofWeek] = sessionInfor[i].sessionTime;
 	}
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-(function ($) {
-
-
-
-	$(function () {
-		
-		var date = new Date();
+	var date = new Date();
 		var day = date.getDay();
 		let countDay = 0;
 		let _lables = [];
@@ -383,5 +374,8 @@ function setDataForChart(){
 			});
 			document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
 		}
-	});
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+(function ($) {
 })(jQuery);
