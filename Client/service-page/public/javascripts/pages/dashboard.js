@@ -8,32 +8,45 @@ API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
+
+
+
+
+
 $(document).ready(async () => {
 	$('#logout').click(() => {
 		setCookie("dalogout", 1)
 	})
 
 	var defaultDeviceCap = {
-		...Setting.AudioCodec("opus"),
-		...Setting.VideoCodec("h264"),
-		...Setting.Mode("high"),
+		mode: 4,	
+		videoCodec: 1,	
+		audioCodec:2,
 		screenWidth: 1920,
 		screenHeight: 1080
 	}
+	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
+
+	var bitrate = document.getElementById("bitrate-setting");
+	bitrate.onclick = Setting.Mode(bitrate.innerHTML);
+
+	var audio_codec = document.getElementById("audiocodec-setting");
+	audio_codec.onclick = Setting.VideoCodec(audio_codec.innerHTML);
+
+	var video_codec = document.getElementById("videocodec-setting");
+	video_codec.onclick = Setting.AudioCodec(video_codec.innerHTML);
+
+	var resolution = document.getElementById("resolution-setting");
+	resolution.onclick = Setting.AudioCodec(resolution.innerHTML);
+
+
+
 
 	noti()
 	search()
 	inbox()
 	user()
 
-
-	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
-	console.log("set default device capability to " + getCookie("cap"));
-	/// How to convert to JSON 
-	/// var cap = getCookie("cap");
-	//  var parse = JSON.parse(cap);
-	// use "parse" like json 
-	// For ex: parse["mode"]
 
 	try {
 		const userinfor = await (await API.getInfor()).json()
@@ -56,7 +69,7 @@ $(document).ready(async () => {
 
 
 
-	var stateSignalR = document.getElementById('state-signalr');
+	// var stateSignalR = document.getElementById('state-signalr');
 	// Connect to hub signalR with access-token Bearer Authorzation
 	const connection = new signalR.HubConnectionBuilder()
 		.withUrl(`https://conductor.thinkmay.net/ClientHub`, {
