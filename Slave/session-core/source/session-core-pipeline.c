@@ -146,7 +146,7 @@ setup_element_factory(SessionCore* core,
             // setup default nvenc encoder (nvidia encoder)
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "d3d11desktopdupsrc name=screencap ! "DIRECTX_PAD",framerate=120/1 ! "
+                    "d3d11desktopdupsrc name=screencap ! "DIRECTX_PAD",framerate=50/1 ! "
                     "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
                     "d3d11convert ! "DIRECTX_PAD",format=NV12 ! "
                     "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
