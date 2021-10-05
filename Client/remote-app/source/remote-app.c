@@ -25,8 +25,6 @@ struct _RemoteApp
 
 	WebRTCHub* hub;
 
-	CoreState state;
-
 	GMainLoop* loop;
 
 	SignallingHub* signalling;
@@ -35,17 +33,6 @@ struct _RemoteApp
 
 };
 
-
-
-typedef struct
-{
-	ExitCode				code;
-	CoreState				core_state;
-	PipelineState			pipeline_state;
-	SignallingServerState	signalling_state;
-	PeerCallState			peer_state;
-	GError*					error;
-}ExitState;
 
 
 /// <summary>
@@ -89,8 +76,6 @@ remote_app_setup_session(RemoteApp* self)
 	signalling_hub_set_signalling_state(self->signalling, SIGNALLING_SERVER_READY);
 	signalling_hub_set_peer_call_state(self->signalling, PEER_CALL_READY);
 	pipeline_set_state(self->pipe, PIPELINE_READY);
-	self->state = SESSION_INFORMATION_SETTLED;
-	
 }
 
 
@@ -105,8 +90,6 @@ remote_app_initialize()
 
 	core.qoe =				qoe_initialize();
 	core.pipe =				pipeline_initialize(&core);
-
-	core.state =			REMOTE_APP_INITIALIZING;
 	core.loop =				g_main_loop_new(NULL, FALSE);
 	 
 	remote_app_setup_session(&core);
@@ -156,19 +139,6 @@ remote_app_send_message(RemoteApp* core, JsonObject* message)
 
 
 
-JsonObject*
-get_json_exit_state(ExitState* state)
-{
-	JsonObject* message = json_object_new();
-	json_object_set_int_member(message, "ExitCode", state->code);
-	json_object_set_string_member(message, "CoreState", state->core_state);
-	json_object_set_string_member(message, "PipelineState", state->pipeline_state);
-	json_object_set_string_member(message, "SignallingState", state->signalling_state);
-	json_object_set_string_member(message, "PeerCallState", state->peer_state);
-	json_object_set_string_member(message, "Message", state->error->message);
-	return message;
-}
-
 
 
 
@@ -185,30 +155,10 @@ remote_app_finalize(RemoteApp* self,
 	SignallingHub* signalling = 
 		remote_app_get_signalling_hub(self);
 
-    //exit current state to report to slave manager
-	ExitState state;
-
-	state.code = exit_code;
-	state.core_state = self->state;
-	state.pipeline_state = pipeline_state;
-	state.error = error;
-
-	state.signalling_state = 
-		signalling_hub_get_signalling_state(self->signalling);
-	state.peer_state = 
-		signalling_hub_get_peer_call_state(self->signalling);
-
-	signalling_close(signalling);
-
-	JsonObject* message = get_json_exit_state(&state);
-	if(!error == NULL)
-	{
-		report_remote_app_error(self,
-			get_string_from_json_object(message));
-	}
 	/*agent will catch session core exit code to restart session*/
 	ExitProcess(exit_code);
 }
+
 
 
 
@@ -234,19 +184,6 @@ QoE*
 remote_app_get_qoe(RemoteApp* self)
 {
 	return self->qoe;
-}
-
-
-CoreState
-remote_app_get_state(RemoteApp* self)
-{
-	return self->state;
-}
-
-void
-remote_app_set_state(RemoteApp* core, CoreState state)
-{
-	core->state = state;
 }
 
 SignallingHub*

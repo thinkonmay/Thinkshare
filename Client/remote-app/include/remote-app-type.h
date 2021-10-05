@@ -116,12 +116,6 @@ typedef					gchar*					                SignallingServerState;
 /// </summary>
 typedef					gchar*					                PeerCallState;
 
-/// <summary>
-/// process bitrate calculation is a function use to calibrate encoder bitrate
-/// correspond to state of network in order to optimize the user's quality of experience 
-/// </summary>
-typedef void            (*ProcessBitrateCalculation)            (RemoteApp* core,
-                                                                QualitySample sample);
 
 
 

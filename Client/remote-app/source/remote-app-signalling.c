@@ -497,6 +497,13 @@ on_registering_message(RemoteApp* core)
     signalling->signalling_state = SIGNALLING_SERVER_REGISTER_DONE;
     signalling->peer_call_state = PEER_CALL_READY;
     /* Call has been setup by the server, now we can start negotiation */
+    JsonObject* object = json_object_new();
+    json_object_set_string_member(object,"type","request");
+
+    JsonObject* message = json_object_new();
+    json_object_set_member(message,"sdp",object);
+    gchar* text= get_string_from_json_object(message);
+    send_message_to_signalling_server(signalling,OFFER_SDP,text);
 }
 
 static void
@@ -582,7 +589,6 @@ on_sdp_exchange(gchar* data,
 
 /// <summary>
 /// callback function for signalling server message
-/// 
 /// </summary>
 /// <param name="conn"></param>
 /// <param name="type"></param>
@@ -633,7 +639,6 @@ on_server_message(SoupWebsocketConnection* conn,
         error.message = "Session has been rejected, this may due to security attack or signalling failure";
         remote_app_finalize( core, CORE_STATE_CONFLICT_EXIT, &error);
     }
-
 
     /*this is websocket message with signalling server and has nothing to do with 
     * json message format use to communicate with other module
