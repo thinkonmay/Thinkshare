@@ -4,15 +4,11 @@ import * as Setting from "../util/setting.js"
 import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 
+let datasets = [];
+let sessionInfor;
 API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
-
-
-
-
-
-
 $(document).ready(async () => {
 	$('#logout').click(() => {
 		setCookie("dalogout", 1)
@@ -40,22 +36,17 @@ $(document).ready(async () => {
 	resolution.onclick = Setting.AudioCodec(resolution.innerHTML);
 
 
-
-
 	noti()
 	search()
 	inbox()
 	user()
 
-
 	try {
 		const userinfor = await (await API.getInfor()).json()
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
-		// const sessionInfor = await (await API.getSession()).json()
-
+		sessionInfor = await (await API.getSession()).json()
 		document.getElementById("WelcomeUsername").innerHTML = userinfor.userName;
-
 
 		for (const slave of sessions) {
 			createSlave(slave, "slavesInUses");
@@ -67,6 +58,8 @@ $(document).ready(async () => {
 		alert(err.message)
 	}
 
+	// set data for chart to anaylize hour used
+	setDataForChart();
 
 
 	// var stateSignalR = document.getElementById('state-signalr');
@@ -105,6 +98,7 @@ $(document).ready(async () => {
 		location.reload();
 	})
 })
+
 
 function createSlave(slave, queue) {
 	append(queue, `
@@ -234,11 +228,23 @@ function user() {
 	});
 }
 
+function setDataForChart(){
+	console.log(sessionInfor)
+	for (let i = 0; i < 7; i++){
+		datasets[i] = 0;
+	}
+	for (let i = 0; i < sessionInfor.length; i++){
+		datasets[sessionInfor[i].dayofWeek] = sessionInfor[i].sessionTime;
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 (function ($) {
 
+
+
 	$(function () {
+		
 		var date = new Date();
 		var day = date.getDay();
 		let countDay = 0;
@@ -272,7 +278,7 @@ function user() {
 				labels: _lables,
 				datasets: [{
 					label: 'This week',
-					data: [50, 60, 200, 130, 90, 240, 69],
+					data: datasets,
 					backgroundColor: saleGradientBg,
 					borderColor: [
 						'#1F3BB3',
@@ -341,7 +347,6 @@ function user() {
 					var text = [];
 					text.push('<div class="chartjs-legend"><ul>');
 					for (var i = 0; i < chart.data.datasets.length; i++) {
-						console.log(chart.data.datasets[i]); // see what's inside the obj.
 						text.push('<li>');
 						text.push('<span style="background-color:' + chart.data.datasets[i].borderColor + '">' + '</span>');
 						text.push(chart.data.datasets[i].label);
