@@ -1,59 +1,83 @@
+import {setCookie,getCookie} from "./cookie.js"
+
+
+
 
 export function Mode(mode) {
+	
+	var cap = JSON.parse(getCookie("cap"));
+	
 	switch (mode) {
 	case "ultra low":
-		return {
-			mode: 1
-		}
+			cap.mode= 1
 	case "low":
-		return {
-			mode: 2
-		}
+			cap.mode= 2
 	case "medium":
-		return {
-			mode: 3
-		}
+			cap.mode= 3
 	case "high":
-		return {
-			mode: 4
-		}	
+			cap.mode= 4
 	case "very high":
-		return {
-			mode: 5
-		}
+			cap.mode= 5
 	case "ultra high":
-		return {
-			mode: 6
-		}
+			cap.mode= 6
 	}
+
+	setCookie("cap", JSON.stringify(cap), 999999)
+	console.log("set default device capability to " + getCookie("cap"));
+
 }
 
 export function VideoCodec(codec) {
+	
+	var cap = JSON.parse(getCookie("cap"));
+	
+		
 	switch (codec) {
 	case "h264":
-		return {
-			videoCodec: 1
-		}
+			cap.videoCodec= 1
 	case "h265":
-		return {
-			videoCodec: 0
-		}
+			cap.videoCodec= 0
 	case "vp9":
-		return {
-			videoCodec: 3
-		}
+			cap.videoCodec= 3
 	}
+	setCookie("cap", JSON.stringify(cap), 999999)
+	console.log("set default device capability to " + getCookie("cap"));
 }
 
 export function AudioCodec(codec) {
+	
+	var cap = JSON.parse(getCookie("cap"));
+
+	
+	
 	switch (codec) {
 	case "opus":
-		return {
-			audioCodec: 4
-		}
+			cap.audioCodec= 4
 	case "aac":
-		return {
-			audioCodec: 5
-		}
+			cap.audioCodec= 5
 	}
+	setCookie("cap", JSON.stringify(cap), 999999)
+	console.log("set default device capability to " + getCookie("cap"));
+}
+
+
+
+export function
+map_video_resolution(resolution)
+{
+	var cap = JSON.parse(getCookie("cap"));
+	switch(resolution)
+	{
+		case "4K":
+			cap.screenHeight=21600;
+			cap.screenWidth=3840;
+		case "2K":
+			cap.screenHeight=2560;
+			cap.screenWidth=1440;
+		case "FullHD":
+			cap.screenHeight=1920;
+			cap.screenWidth=1080;
+	}
+	setCookie("cap", JSON.stringify(cap), 999999)
+	console.log("set default device capability to " + getCookie("cap"));
 }
