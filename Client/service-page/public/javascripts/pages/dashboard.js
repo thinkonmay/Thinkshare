@@ -21,9 +21,9 @@ $(document).ready(async () => {
 	var defaultDeviceCap = {
 		mode: 4,	
 		videoCodec: 1,	
-		audioCodec:2,
-		screenWidth: 1920,
-		screenHeight: 1080
+		audioCodec:4,
+		screenWidth: 2560,
+		screenHeight: 1440
 	}
 	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
 
