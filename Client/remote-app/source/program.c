@@ -42,7 +42,12 @@ main (int argc, char *argv[])
     if (!g_option_context_parse (context, &argc, &argv, &error)) {
         g_printerr ("Error initializing: %s\n", error->message);
         return -1;
+    
     }
+
+    session_id = 2;
+    memcpy(video_codec,"h264",strlen("h264"));
+    memcpy(audio_codec,"opus",strlen("opus"));
 
     if(!session_id || !video_codec || !audio_codec)
     {

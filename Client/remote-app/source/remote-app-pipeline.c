@@ -229,7 +229,7 @@ connect_signalling_handler(RemoteApp* core)
     g_object_set(pipe->webrtcbin, "stun-server", 
        "stun://stun.thinkmay.net:3478", NULL);
 
-    g_signal_emit_by_name (pipe->webrtcbin, "add-turn-server", 
+    g_object_set(pipe->webrtcbin, "turn-server", 
         signalling_hub_get_turn_server(hub), NULL);
 
 
@@ -301,8 +301,13 @@ setup_pipeline(RemoteApp* core)
     Pipeline* pipe = remote_app_get_pipeline(core);
 
     GError* error = NULL;
-    pipe->pipeline = gst_parse_launch("webrtcbin name=webrtc",&error);
-    pipe->webrtcbin =  gst_bin_get_by_name(GST_BIN(pipe->pipeline),"webrtc");
+    pipe->pipeline = gst_parse_launch(
+                    "webrtcbin name=webrtcbin "
+                    "audiotestsrc is-live=true wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc ! rtpopuspay ! "
+                    "queue ! " RTP_CAPS_OPUS "97 ! webrtcbin.",&error);
+    pipe->webrtcbin =  gst_bin_get_by_name(GST_BIN(pipe->pipeline),"webrtcbin");
+
+
 
     connect_signalling_handler(core);
     gst_element_change_state(pipe->pipeline, GST_STATE_READY);

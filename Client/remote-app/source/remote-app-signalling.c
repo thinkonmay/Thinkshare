@@ -141,12 +141,12 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
 
     SignallingHub* hub = remote_app_get_signalling_hub(core);
 
-    if (g_strcmp0(hub->peer_call_state, PEER_CALL_NEGOTIATING))
-    {
-        GError error;
-        error.message = "State conflict";
-        remote_app_finalize(core, CORE_STATE_CONFLICT_EXIT, &error);
-    }
+    // if (g_strcmp0(hub->peer_call_state, PEER_CALL_NEGOTIATING))
+    // {
+    //     GError error;
+    //     error.message = "State conflict";
+    //     remote_app_finalize(core, CORE_STATE_CONFLICT_EXIT, &error);
+    // }
 
     ice = json_object_new();
     json_object_set_string_member(ice, "candidate", candidate);
@@ -310,7 +310,7 @@ register_with_server(RemoteApp* core)
     //gchar* buffer = malloc(10);
     //itoa(hub->SessionSlaveID, buffer, 10);
     hub->signalling_state = SIGNALLING_SERVER_REGISTERING;
-    send_message_to_signalling_server(hub,SLAVE_REQUEST, SESSION_ACCEPTED);
+    send_message_to_signalling_server(hub,CLIENT_REQUEST, SESSION_ACCEPTED);
     return TRUE;
 }
 
@@ -340,7 +340,6 @@ on_answer_created(GstPromise* promise,
     Pipeline* pipe = remote_app_get_pipeline(core);
     SignallingHub* hub = remote_app_get_signalling_hub(core);
 
-    g_assert_cmphex(hub->peer_call_state, == , PEER_CALL_NEGOTIATING);
 
     g_assert_cmphex(gst_promise_wait(promise), == , GST_PROMISE_RESULT_REPLIED);
     reply = gst_promise_get_reply(promise);
@@ -363,15 +362,16 @@ on_answer_created(GstPromise* promise,
 
 void
 on_offer_set(GstPromise* promise,
-    RemoteApp* core)
+            RemoteApp* core)
 {
     Pipeline* pipe = remote_app_get_pipeline(core);
+    GstElement* webrtc = pipeline_get_webrtc_bin(pipe);
 
     gst_promise_unref(promise);
     promise = gst_promise_new_with_change_func(on_answer_created, 
-        pipeline_get_webrtc_bin(pipe), core);
+        core, NULL);
 
-    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+    g_signal_emit_by_name(webrtc,
         "create-answer", NULL, promise);
 }
 
@@ -387,14 +387,13 @@ on_offer_received(RemoteApp* core, GstSDPMessage* sdp)
     g_assert_nonnull(offer);
 
     /* Set remote description on our pipeline */
-    {
-        promise = gst_promise_new_with_change_func(on_offer_set, 
-            pipeline_get_webrtc_bin(pipe), NULL);
+    promise = gst_promise_new_with_change_func(on_offer_set, 
+        core, NULL);
 
-        g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe), 
-            "set-remote-description", offer,
-            promise);
-    }
+    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe), 
+        "set-remote-description", offer,
+        promise);
+
     gst_webrtc_session_description_free(offer);
 }
 
@@ -441,7 +440,6 @@ connect_to_websocket_signalling_server_async(RemoteApp* core)
     hub->session =
         soup_session_new_with_options(SOUP_SESSION_SSL_STRICT, !hub->disable_ssl,
             SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
-            //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
             SOUP_SESSION_HTTPS_ALIASES, https_aliases, NULL);
 
     logger = soup_logger_new(SOUP_LOGGER_LOG_BODY, -1);
@@ -487,9 +485,8 @@ on_registering_message(RemoteApp* core)
     json_object_set_string_member(object,"type","request");
 
     JsonObject* message = json_object_new();
-    json_object_set_member(message,"sdp",object);
+    json_object_set_object_member(message,"sdp",object);
     gchar* text= get_string_from_json_object(message);
-    g_object_unref(message);
 
     send_message_to_signalling_server(signalling,OFFER_SDP,text);
 }
@@ -562,7 +559,7 @@ on_sdp_exchange(gchar* data,
     }
     else
     {
-        on_offer_received(pipeline_get_webrtc_bin(pipe),
+        on_offer_received(core,
             sdp);
     }
 }
@@ -599,13 +596,15 @@ on_server_message(SoupWebsocketConnection* conn,
         }
     }
 
+    g_print(text);
+
 
     GError* error = NULL;
     JsonObject* object = get_json_object_from_string(text,&error);
 	if(!error == NULL || object == NULL) {return;}
 
     gchar* RequestType =    json_object_get_string_member(object, "RequestType");
-    gchar* SubjectId =      json_object_get_int_member(object, "SubjectId");
+    gint SubjectId =      json_object_get_int_member(object, "SubjectId");
     gchar* Content =        json_object_get_string_member(object, "Content");
     gchar* Result =         json_object_get_string_member(object, "Result");
 
