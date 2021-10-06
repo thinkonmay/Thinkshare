@@ -9,6 +9,7 @@ pkg_check_modules(JSON_GLIB REQUIRED json-glib-1.0)
 pkg_check_modules(LIBSOUP REQUIRED libsoup-2.4)
 pkg_check_modules(WEBRTC REQUIRED gstreamer-webrtc-1.0)
 pkg_check_modules(CONTROLLER REQUIRED gstreamer-controller-1.0)
+pkg_check_modules(VIDEO REQUIRED gstreamer-video-1.0)
 
 
 
@@ -35,7 +36,8 @@ PUBLIC
     ${GST_INCLUDE_DIRS}
     ${JSON_GLIB_INCLUDE_DIRS}
     ${WEBRTC_INCLUDE_DIRS}
-    ${CONTROLLER_INCLUDE_DIRS})
+    ${CONTROLLER_INCLUDE_DIRS}
+    ${VIDEO_INCLUDE_DIRS})
 
 
 set_target_properties(remote-app PROPERTIES 
@@ -49,6 +51,7 @@ target_compile_options(remote-app PUBLIC ${GST_CFLAGS})
 target_compile_options(remote-app PUBLIC ${JSON_GLIB_CFLAGS})
 target_compile_options(remote-app PUBLIC ${WEBRTC_CFLAGS})
 target_compile_options(remote-app PUBLIC ${CONTROLLER_CFLAGS})
+target_compile_options(remote-app PUBLIC ${VIDEO_CFLAGS})
 
 target_link_directories(remote-app PUBLIC ${INCLUDE_LIBRARY} )    
 
@@ -75,4 +78,8 @@ target_link_libraries(remote-app PUBLIC
     gstrtp-1.0.lib
     gstcontroller-1.0.lib
     gstwebrtc-1.0.lib
+    gstvideo-1.0.lib
+    gstbase-1.0.lib
+
+
 )

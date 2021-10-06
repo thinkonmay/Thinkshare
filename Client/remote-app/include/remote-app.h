@@ -51,8 +51,11 @@ void			remote_app_send_message				(RemoteApp* self,
 /// this function should be called in main function
 /// </summary> 
 /// <returns>session core object</returns>
-RemoteApp*	remote_app_initialize					();
-
+RemoteApp*		remote_app_initialize				(gint session_id,
+													gchar* signalling_url,
+													gchar* turn,
+													gchar* audio_codec,
+													gchar* video_codec);
 /// <summary>
 /// finalize session core object, 
 /// this function should be called when an error is occour

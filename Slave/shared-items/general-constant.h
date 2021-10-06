@@ -62,6 +62,8 @@
 #define HOST_CONFIG_FILE              CURRENT_DIR"\\config\\host_configuration.json"
 
 #define SESSION_SLAVE_FILE            CURRENT_DIR"\\config\\session_slave.json" 
+
+#define SESSION_CLIENT_FILE           CURRENT_DIR"\\config\\session_client.json"
 ////////////////////////////////////////////////////////////////////////
 
 

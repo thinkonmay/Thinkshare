@@ -14,6 +14,8 @@
 #include <glib-2.0\glib.h>
 #include <gst\webrtc\webrtc.h>
 #include <gst\rtp\gstrtppayloads.h>
+#include <gst\base\gstbasesink.h>
+#include <gst\video\navigation.h>
 
 #include <Windows.h>
 
@@ -28,19 +30,13 @@
 enum
 {
     /*screen capture source*/
-    DIRECTX_VIDEO_SINK,
+    VIDEO_SINK,
 
     /*video encoder*/
-
-    DIRECTX_H264_DECODER,
-    DIRECTX_H265_DECODER,
-    VP9_DECODER,
-
+    VIDEO_DECODER,
 
     /*payload packetize*/
-    RTP_H264_PAYLOAD,
-    RTP_H265_PAYLOAD,
-    RTP_VP9_PAYLOAD,
+    VIDEO_DEPAYLOAD,
 
     VIDEO_ELEMENT_LAST
 };
@@ -55,13 +51,14 @@ enum
     PULSE_SINK,
     WASAPI_SINK,
 
+    AUDIO_CONVERT,
+
     /*audio encoder*/
     OPUS_DECODER,
     AAC_DECODER,
 
     /*rtp packetize and queue*/
-    RTP_OPUS_PAYLOAD,
-    RTP_RTX_QUEUE,
+    AUDIO_DEPAYLOAD,
 
     AUDIO_ELEMENT_LAST
 };
@@ -78,6 +75,12 @@ struct _Pipeline
     GstCaps* video_caps[VIDEO_ELEMENT_LAST];
     GstCaps* audio_caps[AUDIO_ELEMENT_LAST];
 };
+
+
+void
+setup_video_sink_navigator(RemoteApp* core);
+
+
 
 Pipeline*
 pipeline_initialize(RemoteApp* core)
@@ -127,22 +130,22 @@ on_incoming_stream (GstElement * webrtc, GstPad * pad, RemoteApp* core)
     switch(qoe_get_video_codec(qoe))
     {
     case CODEC_H264: 
-        pipeline->video_element[RTP_H264_PAYLOAD] = gst_element_factory_make("rtph264depay","depay");
-        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_H264_PAYLOAD], "sink");
-        pipeline->video_element[DIRECTX_H264_DECODER] = gst_element_factory_make("d3d11h264enc","decoder");
-        pipeline->video_element[DIRECTX_VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
+        pipeline->video_element[VIDEO_DEPAYLOAD] = gst_element_factory_make("rtph264depay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->video_element[VIDEO_DEPAYLOAD], "sink");
+        pipeline->video_element[VIDEO_DECODER] = gst_element_factory_make("d3d11h264enc","decoder");
+        pipeline->video_element[VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
         break;
     case CODEC_H265:
-        pipeline->video_element[RTP_H265_PAYLOAD] = gst_element_factory_make("rtph265depay","depay");
-        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_H265_PAYLOAD], "sink");
-        pipeline->video_element[DIRECTX_H265_DECODER] = gst_element_factory_make("d3d11h265dec","decoder");
-        pipeline->video_element[DIRECTX_VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
+        pipeline->video_element[VIDEO_DEPAYLOAD] = gst_element_factory_make("rtph265depay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->video_element[VIDEO_DEPAYLOAD], "sink");
+        pipeline->video_element[VIDEO_DECODER] = gst_element_factory_make("d3d11h265enc","decoder");
+        pipeline->video_element[VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
         break;
     case CODEC_VP9:
-        pipeline->video_element[RTP_VP9_PAYLOAD] = gst_element_factory_make("rtpvp9depay","depay");
-        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_VP9_PAYLOAD], "sink");
-        pipeline->video_element[VP9_DECODER] = gst_element_factory_make("d3d11vp9dec","decoder");
-        pipeline->video_element[DIRECTX_VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
+        pipeline->video_element[VIDEO_DEPAYLOAD] = gst_element_factory_make("rtpvp9depay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->video_element[VIDEO_DEPAYLOAD], "sink");
+        pipeline->video_element[VIDEO_DECODER] = gst_element_factory_make("d3d11vp9dec","decoder");
+        pipeline->video_element[VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
         break; 
     default:
         break;
@@ -151,22 +154,25 @@ on_incoming_stream (GstElement * webrtc, GstPad * pad, RemoteApp* core)
     switch(qoe_get_audio_codec(qoe))
     {
     case OPUS_ENC: 
-        pipeline->video_element[RTP_OPUS_PAYLOAD] = gst_element_factory_make("rtpopusdepay","depay");
-        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_OPUS_PAYLOAD], "sink");
-        pipeline->video_element[OPUS_DECODER] = gst_element_factory_make("opusdec","decoder");
-        pipeline->video_element[] = gst_element_factory_make("d3d11videosink","decoder");
+        pipeline->audio_element[AUDIO_DEPAYLOAD] = gst_element_factory_make("rtpopusdepay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->audio_element[AUDIO_DEPAYLOAD], "sink");
+        pipeline->audio_element[AUDIO_CONVERT] = gst_element_factory_make("audioconvert","convert");
+        pipeline->audio_element[OPUS_DECODER] = gst_element_factory_make("opusdec","decoder");
+        pipeline->audio_element[WASAPI_SINK] = gst_element_factory_make("autovideosink","audiosink");
         break;
     case CODEC_H265:
-        pipeline->video_element[RTP_H265_PAYLOAD] = gst_element_factory_make("rtph265depay","depay");
-        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_H265_PAYLOAD], "sink");
-        pipeline->video_element[DIRECTX_H265_DECODER] = gst_element_factory_make("d3d11h265dec","decoder");
-        pipeline->video_element[DIRECTX_VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
+        pipeline->audio_element[AUDIO_DEPAYLOAD] = gst_element_factory_make("rtpopusdepay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->audio_element[AUDIO_DEPAYLOAD], "sink");
+        pipeline->audio_element[AUDIO_CONVERT] = gst_element_factory_make("audioconvert","convert");
+        pipeline->audio_element[OPUS_DECODER] = gst_element_factory_make("opusdec","decoder");
+        pipeline->audio_element[WASAPI_SINK] = gst_element_factory_make("autovideosink","audiosink");
         break;
     case CODEC_VP9:
-        pipeline->video_element[RTP_VP9_PAYLOAD] = gst_element_factory_make("rtpvp9depay","depay");
-        sinkpad = gst_element_get_static_pad (pipeline->audio_element[RTP_VP9_PAYLOAD], "sink");
-        pipeline->video_element[VP9_DECODER] = gst_element_factory_make("d3d11vp9dec","decoder");
-        pipeline->video_element[DIRECTX_VIDEO_SINK] = gst_element_factory_make("d3d11videosink","videosink");
+        pipeline->audio_element[AUDIO_DEPAYLOAD] = gst_element_factory_make("rtpopusdepay","depay");
+        sinkpad = gst_element_get_static_pad (pipeline->audio_element[AUDIO_DEPAYLOAD], "sink");
+        pipeline->audio_element[AUDIO_CONVERT] = gst_element_factory_make("audioconvert","convert");
+        pipeline->audio_element[OPUS_DECODER] = gst_element_factory_make("opusdec","decoder");
+        pipeline->audio_element[WASAPI_SINK] = gst_element_factory_make("autovideosink","audiosink");
         break; 
     default:
         break;
@@ -190,8 +196,19 @@ on_incoming_stream (GstElement * webrtc, GstPad * pad, RemoteApp* core)
             gst_element_sync_state_with_parent (pipeline->video_element[i]);
         }
     }
+    gst_element_link_many(
+        pipeline->video_element[VIDEO_DEPAYLOAD],
+        pipeline->video_element[VIDEO_DECODER],
+        pipeline->video_element[VIDEO_SINK],NULL);
+    
+    
+    gst_element_link_many(
+        pipeline->audio_element[AUDIO_DEPAYLOAD],
+        pipeline->audio_element[OPUS_DECODER],
+        pipeline->audio_element[AUDIO_CONVERT],
+        pipeline->audio_element[WASAPI_SINK],NULL);
 
-
+    setup_video_sink_navigator(core);
     gst_pad_link (pad, sinkpad);
     gst_object_unref (sinkpad);
 }
@@ -230,7 +247,48 @@ connect_signalling_handler(RemoteApp* core)
 }
 
 
+EventHandler default_handler;
 
+gboolean      
+handle_navigator(GstBaseSink *sink, GstEvent *event)
+{
+    // overwrite default handler by adding more step to the handler
+    default_handler(sink,event);
+
+    switch (gst_navigation_event_get_type(event))
+    {
+    case GST_NAVIGATION_EVENT_INVALID: 
+        return; 
+    case GST_NAVIGATION_EVENT_KEY_PRESS: 
+        return; 
+    case GST_NAVIGATION_EVENT_KEY_RELEASE: 
+        return;
+    case GST_NAVIGATION_EVENT_MOUSE_MOVE: 
+        return; 
+    case GST_NAVIGATION_EVENT_MOUSE_SCROLL: 
+        return; 
+    case GST_NAVIGATION_EVENT_MOUSE_BUTTON_PRESS: 
+        return; 
+    case GST_NAVIGATION_EVENT_MOUSE_BUTTON_RELEASE: 
+        return; 
+    default:
+        break;
+    }
+
+}
+
+
+static void
+setup_video_sink_navigator(RemoteApp* core)
+{
+    Pipeline* pipeline = remote_app_get_pipeline(core);
+    GstBaseSink* basesink = (GstBaseSink*) pipeline->video_element[VIDEO_SINK];
+
+
+    GstBaseSinkClass* klass = GST_BASE_SINK_GET_CLASS(basesink);
+    default_handler = klass->event;
+    klass->event = handle_navigator;
+}
 
 
 
@@ -247,12 +305,10 @@ setup_pipeline(RemoteApp* core)
     pipe->webrtcbin =  gst_bin_get_by_name(GST_BIN(pipe->pipeline),"webrtc");
 
     connect_signalling_handler(core);
-
     gst_element_change_state(pipe->pipeline, GST_STATE_READY);
-
     connect_data_channel_signals(core);
-
     start_pipeline(core);
+
 
     signalling_hub_set_peer_call_state(signalling, PEER_CALL_DONE);
 }

@@ -27,14 +27,6 @@
 
 struct _QoE
 {
-	/*non volatile value, 
-	*determine in session initialize time*/
-	gint screen_height;
-	gint screen_width;
-
-	/*quality control mode*/
-	QoEMode mode;
-
 	/*codec audio*/
 	Codec codec_audio;
 	Codec codec_video;
@@ -53,20 +45,12 @@ qoe_initialize()
 
 void
 qoe_setup(QoE* qoe,
-		  gint screen_width,
-		  gint screen_height,
 		  Codec audio_codec,
-		  Codec video_codec,
-		  QoEMode qoe_mode)
+		  Codec video_codec)
 {
-
-	qoe->screen_width = screen_width;
-	qoe->screen_height = screen_height;
 
 	qoe->codec_audio = audio_codec;
 	qoe->codec_video = video_codec;
-
-	qoe->mode = qoe_mode;
 }
 
 

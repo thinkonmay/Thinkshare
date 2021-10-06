@@ -101,11 +101,11 @@ void
 signalling_hub_setup(SignallingHub* hub, 
                      gchar* turn,
                      gchar* url,
-                     gint session_slave_id)
+                     gint session_client_id)
 {
     hub->signalling_server = url;
     hub->turn = turn;
-    hub->SessionClientID= session_slave_id;
+    hub->SessionClientID= session_client_id;
     hub->signalling_state = SIGNALLING_SERVER_READY;
 }
 
@@ -481,12 +481,16 @@ on_registering_message(RemoteApp* core)
     signalling->signalling_state = SIGNALLING_SERVER_REGISTER_DONE;
     signalling->peer_call_state = PEER_CALL_READY;
     /* Call has been setup by the server, now we can start negotiation */
+
+    // send sdp request to slave
     JsonObject* object = json_object_new();
     json_object_set_string_member(object,"type","request");
 
     JsonObject* message = json_object_new();
     json_object_set_member(message,"sdp",object);
     gchar* text= get_string_from_json_object(message);
+    g_object_unref(message);
+
     send_message_to_signalling_server(signalling,OFFER_SDP,text);
 }
 
@@ -530,13 +534,6 @@ on_sdp_exchange(gchar* data,
 
     if (!json_object_has_member(child, "type"))
     {
-        return;
-    }
-    if (!g_strcmp0(sdptype, "request"))
-    {
-        Pipeline* pipe = remote_app_get_pipeline(core);
-        pipeline_initialize(core);
-        remote_app_setup_pipeline(core);
         return;
     }
 

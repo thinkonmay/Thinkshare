@@ -41,37 +41,31 @@ struct _RemoteApp
 /// </summary>
 /// <param name="self"></param>
 static void
-remote_app_setup_session(RemoteApp* self)
+remote_app_setup_session(RemoteApp* self, 
+						gint session_id, 
+						gchar* signalling_url,
+						gchar* turn, 
+						gchar* audio_codec, 
+						gchar* video_codec)
 {
-	JsonNode* root;
-	JsonObject* object;
-	JsonParser* parser = json_parser_new();
+	Codec audio = 0,video = 0;
 
 	GError* error = NULL;
-	json_parser_load_from_file(parser, SESSION_SLAVE_FILE, &error);
-	if (error != NULL)
-	{
-		remote_app_finalize(self, CORRUPTED_CONFIG_FILE_EXIT, error);
-		return;
-	}
+	if(!g_strcmp0(audio_codec,"aac"))	
+		audio = AAC_ENC;
+	else if(!g_strcmp0(audio_codec,"opus"))
+		audio = OPUS_ENC;
 
 
-	root = json_parser_get_root(parser);
-	object = json_node_get_object(root);
-
-	signalling_hub_setup(self->signalling,
-		json_object_get_string_member(object, "TurnConnection"),
-		json_object_get_string_member(object, "SignallingUrl"),
-		json_object_get_int_member(object, "SessionSlaveID"));
-
-	JsonObject* qoe = json_object_get_object_member(object, "QoE");
-
-	qoe_setup(self->qoe,
-		json_object_get_int_member(qoe, "ScreenWidth"),
-		json_object_get_int_member(qoe, "ScreenHeight"),
-		json_object_get_int_member(qoe, "AudioCodec"),
-		json_object_get_int_member(qoe, "VideoCodec"),
-		json_object_get_int_member(qoe, "QoEMode"));
+	if(!g_strcmp0(video_codec,"h264"))
+		video = CODEC_H264;
+	if(!g_strcmp0(video_codec,"h265"))
+		video = CODEC_H265;
+	if(!g_strcmp0(video_codec,"vp9"))
+		video = CODEC_VP9;
+	
+	signalling_hub_setup(self->signalling,turn,signalling_url,session_id);
+	qoe_setup(self->qoe,audio,video);
 
 
 	signalling_hub_set_signalling_state(self->signalling, SIGNALLING_SERVER_READY);
@@ -83,7 +77,11 @@ static RemoteApp core = {0};
 
 
 RemoteApp*
-remote_app_initialize()
+remote_app_initialize(gint session_id,
+					  gchar* signalling_url,
+					  gchar* turn,
+					  gchar* audio_codec,
+					  gchar* video_codec)
 {
 	core.hub =				webrtchub_initialize();
 	core.signalling =		signalling_hub_initialize(&core);
@@ -92,8 +90,15 @@ remote_app_initialize()
 	core.pipe =				pipeline_initialize(&core);
 	core.loop =				g_main_loop_new(NULL, FALSE);
 	 
-	remote_app_setup_session(&core);
+	remote_app_setup_session(&core, 
+							session_id, 
+							signalling_url, 
+							turn, 
+							audio_codec, 
+							video_codec);
 
+
+	remote_app_setup_pipeline(&core);
 
 	remote_app_connect_signalling_server(&core);
 	g_main_loop_run(core.loop);
@@ -123,13 +128,6 @@ remote_app_send_message(RemoteApp* core, JsonObject* message)
 {
 	send_message(core, message);
 }
-
-
-
-
-
-
-
 
 
 
