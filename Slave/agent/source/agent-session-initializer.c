@@ -88,6 +88,8 @@ gboolean
 session_initialize(AgentObject* agent)
 {
     RemoteSession* session = agent_get_remote_session(agent);
+    session->process = get_available_child_process();
+    session->process_id = get_child_process_id(session->process);
 
     create_new_child_process(SESSION_CORE_BINARY,
         session->process_id, " ", 
@@ -126,8 +128,6 @@ setup_session(AgentObject* agent,
         agent_report_error(agent,ERROR_FILE_OPERATION);					
     }
 
-    session->process = get_available_child_process();
-    session->process_id = get_child_process_id(session->process);
     agent_session_initialize(agent);
     return;
 }
