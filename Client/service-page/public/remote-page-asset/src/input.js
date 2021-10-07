@@ -139,7 +139,7 @@ function keyup(event)
     }
 
     if (event.code === 'KeyP' && event.ctrlKey && event.shiftKey) {
-        event.target.requestPointerLock();
+        // event.target.requestPointerLock();
         return;
     }
 
@@ -270,8 +270,8 @@ onFullscreenChange()
         // Enter fullscreen
         //allow capture function key (ctrl, shift, tab)
 
-        app.VideoElement.requestPointerLock();
-        requestKeyboardLock();
+        // app.VideoElement.requestPointerLock();
+        // requestKeyboardLock();
     }
     reset_keyboard();
 }
@@ -312,7 +312,7 @@ AttachEvent()
     /**
      * mouse lock event
      */
-    app.EventListeners.push(addListener(document, 'pointerlockchange', pointerLock, null));
+    // app.EventListeners.push(addListener(document, 'pointerlockchange', pointerLock, null));
     
     /**
      * keyboard event
@@ -341,42 +341,42 @@ AttachEvent()
 /**
  * Sends WebRTC app command to toggle display of the remote mouse pointer.
  */
-function pointerLock() {
-    if (document.pointerLockElement) {
-        var INPUT =
-        {
-            "Opcode":HidOpcode.POINTER_LOCK,
-            "Value":true
-        }
-        SendHID(JSON.stringify(INPUT));
-    } else {        
-        var INPUT =
-        {
-            "Opcode":HidOpcode.POINTER_LOCK,
-            "Value":false
-        }
-        SendHID(JSON.stringify(INPUT));
-    }
-}
+// function pointerLock() {
+//     if (document.pointerLockElement) {
+//         var INPUT =
+//         {
+//             "Opcode":HidOpcode.POINTER_LOCK,
+//             "Value":true
+//         }
+//         SendHID(JSON.stringify(INPUT));
+//     } else {        
+//         var INPUT =
+//         {
+//             "Opcode":HidOpcode.POINTER_LOCK,
+//             "Value":false
+//         }
+//         SendHID(JSON.stringify(INPUT));
+//     }
+// }
 
 /**
  * Sends WebRTC app command to hide the remote pointer when exiting pointer lock.
  */
-function exitPointerLock() {
-    document.exitPointerLock();
-    var INPUT =
-    {
-        "Opcode":HidOpcode.POINTER_LOCK,
-        "Value":false
-    }
-    SendHID(JSON.stringify(INPUT));
-}
+// function exitPointerLock() {
+//     document.exitPointerLock();
+//     var INPUT =
+//     {
+//         "Opcode":HidOpcode.POINTER_LOCK,
+//         "Value":false
+//     }
+//     SendHID(JSON.stringify(INPUT));
+// }
 
 function 
 DetachEvent() 
 {
     removeListeners(app.EventListeners);
-    exitPointerLock();
+    // exitPointerLock();
     reset_keyboard();
 }
 
