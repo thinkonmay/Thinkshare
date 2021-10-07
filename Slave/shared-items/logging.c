@@ -23,7 +23,7 @@ time_stamp(GFileOutputStream* stream,
 
     gchar* timebuffer = get_string_from_json_object(json_output);
     g_printerr(timebuffer);
-    g_output_stream_write(stream, timebuffer, strlen(timebuffer),NULL,NULL);
+    //g_output_stream_write(stream, timebuffer, strlen(timebuffer),NULL,NULL);
 }
 
 

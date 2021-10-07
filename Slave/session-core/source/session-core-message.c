@@ -4,7 +4,7 @@
 #include <session-core.h>
 #include <session-core-ipc.h>
 
-#include <module.h>
+#include <module-code.h>
 #include <opcode.h>
 
 #include <glib.h>

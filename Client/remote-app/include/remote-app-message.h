@@ -1,5 +1,5 @@
-#include <session-core-type.h>
-#include <session-core.h>
+#include <remote-app-type.h>
+#include <remote-app.h>
 
 #include <module-code.h>
 #include <opcode.h>
@@ -13,7 +13,7 @@
 /// <param name="self"></param>
 /// <param name="message"></param>
 /// <returns></returns>
-void				send_message			(SessionCore* self,
+void				send_message			(RemoteApp* self,
 											 Message* message);
 	
 /// <summary>
@@ -21,6 +21,6 @@ void				send_message			(SessionCore* self,
 /// </summary>
 /// <param name="core"></param>
 /// <param name="data"></param>
-void				session_core_on_message(SessionCore* core,
+void				remote_app_on_message(RemoteApp* core,
 											gchar* data);
 

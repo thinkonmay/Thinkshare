@@ -73,7 +73,6 @@ onServerMessage(event)
     {
         app.setStatus("Registered with server.");
         app.setDebug("[signalling] " + message_json.Result)
-
         app.setStatus("Requesting for video stream.");
         var data = 
         {
