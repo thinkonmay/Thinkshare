@@ -178,7 +178,7 @@ setup_element_factory(SessionCore* core,
             // setup default nvenc encoder (nvidia encoder)
             pipe->pipeline =
                 gst_parse_launch("webrtcbin bundle-policy=max-bundle name=sendrecv "
-                    "d3d11desktopdupsrc name=screencap ! "DIRECTX_PAD",framerate=120/1 ! "
+                    "d3d11desktopdupsrc name=screencap ! "DIRECTX_PAD",framerate=60/1 ! "
                     "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
                     "d3d11convert ! "DIRECTX_PAD",format=NV12 ! "
                     "queue max-size-time=0 max-size-bytes=0 max-size-buffers=3 ! "
@@ -440,7 +440,7 @@ setup_element_property(SessionCore* core)
 
     if (pipe->video_element[H265_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H265_MEDIA_FOUNDATION], "quality-vs-speed", 100, NULL); }
 
-    if (pipe->video_element[H265_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H265_MEDIA_FOUNDATION], "bitrate", 50000, NULL); }
+    if (pipe->video_element[H265_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H265_MEDIA_FOUNDATION], "bitrate", 5000, NULL); }
 
     if (pipe->video_element[H265_MEDIA_FOUNDATION]) { g_object_set(pipe->video_element[H265_MEDIA_FOUNDATION], "low-latency", TRUE, NULL); }
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
@@ -506,7 +506,7 @@ setup_pipeline(SessionCore* core)
 
     gst_element_change_state(pipe->pipeline, GST_STATE_READY);
 
-    connect_data_channel_signals(core);
+    // connect_data_channel_signals(core);
     pipe->state = PIPELINE_SETUP_DONE;
 
     start_pipeline(core);

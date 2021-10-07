@@ -540,11 +540,11 @@ on_sdp_exchange(gchar* data,
     JsonObject* child = json_object_get_object_member(object, "sdp");
     gchar* sdptype = json_object_get_string_member(child, "type");
 
-    if (!json_object_has_member(child, "type"))
-    {
-        report_session_core_error(core, SIGNALLING_ERROR);
-        return;
-    }
+    //if (!json_object_has_member(child, "type"))
+    //{
+    //    report_session_core_error(core, SIGNALLING_ERROR);
+    //    return;
+    //}
     if (!g_strcmp0(sdptype, "request"))
     {
         Pipeline* pipe = session_core_get_pipeline(core);

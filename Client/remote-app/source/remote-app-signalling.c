@@ -596,7 +596,6 @@ on_server_message(SoupWebsocketConnection* conn,
         }
     }
 
-    g_print(text);
 
 
     GError* error = NULL;
@@ -654,7 +653,7 @@ on_server_connected(SoupSession* session,
     g_signal_connect(hub->connection, "closed", G_CALLBACK(on_server_closed), core);
     g_signal_connect(hub->connection, "message", G_CALLBACK(on_server_message), core);
 
-    // register to server after connect to signalling servẻ  
+    // register to server after connect to signalling server
     register_with_server(core);
     return;
 }
