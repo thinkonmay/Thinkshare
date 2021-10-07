@@ -128,6 +128,7 @@ namespace Conductor.Controllers
 
             //get session in recent 7 days
             var sessions = _db.RemoteSessions.Where( o => o.ClientId == ClientId &&
+                                                     o.EndTime.HasValue &&
                                                      o.StartTime.Value.AddDays(7) >  DateTime.Now);
 
             var ret = new List<GetSessionResponse>();

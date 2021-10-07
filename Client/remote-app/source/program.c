@@ -46,7 +46,7 @@ main (int argc, char *argv[])
     }
 
     session_id = 2;
-    memcpy(video_codec,"h264",strlen("h264"));
+    memcpy(video_codec,"h265",strlen("h265"));
     memcpy(audio_codec,"opus",strlen("opus"));
 
     if(!session_id || !video_codec || !audio_codec)
