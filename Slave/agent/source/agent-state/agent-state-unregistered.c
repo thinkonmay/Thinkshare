@@ -27,7 +27,8 @@ static void
 unregistered_send_message_to_host(AgentObject* agent, char* message)
 {
     GError* error = NULL;
-    Message* object = get_json_object_from_string(message,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(message,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
     gint i= json_object_get_int_member(object, "Opcode");
 
@@ -38,6 +39,7 @@ unregistered_send_message_to_host(AgentObject* agent, char* message)
     }
     
     write_to_log_file(AGENT_GENERAL_LOG,"Unknown message send to host while not configured");
+    g_object_unref(parser);
     return;
 }
 

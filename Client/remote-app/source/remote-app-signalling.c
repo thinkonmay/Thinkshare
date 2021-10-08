@@ -565,6 +565,7 @@ on_sdp_exchange(gchar* data,
     {
         on_offer_received(core,sdp);
     }
+
     g_object_unref(parser);
 }
 

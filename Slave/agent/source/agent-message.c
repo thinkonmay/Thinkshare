@@ -101,7 +101,8 @@ on_agent_message(AgentObject* agent,
 				 gchar* data)
 {
 	GError* error = NULL;
-	Message* object = 		get_json_object_from_string(data,&error);
+	JsonParser* parser =	json_parser_new();
+	Message* object = 		get_json_object_from_string(data,&error,parser);
 	if(!error == NULL || object == NULL || ! json_object_has_member(object,"Opcode")) {return;}
 
 	gint	from = 			json_object_get_int_member(object, "From");
@@ -136,7 +137,8 @@ on_agent_message(AgentObject* agent,
 		}
 		else if(from == CORE_MODULE)
 		{		
-			Message* json_data = get_json_object_from_string(data_string,&error);
+			JsonParser* in = json_parser_new();
+			Message* json_data = get_json_object_from_string(data_string,&error,in);
 			if(!error == NULL || json_data == NULL) {return;}
 
 			else if(opcode == CLIPBOARD_SERVICE){
@@ -144,13 +146,15 @@ on_agent_message(AgentObject* agent,
 			}else if(opcode == RESET_QOE){
 				agent_reset_qoe(agent,json_data);
 			}
-			
+			g_object_unref(in);			
 		}
 	}
 	else
 	{
 		agent_send_message(agent, object);
 	}
+	g_object_unref(parser);
+	g_free(data);
 }
 
 

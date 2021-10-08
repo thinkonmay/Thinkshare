@@ -121,10 +121,11 @@ send_message_to_signalling_server(SignallingHub* signalling,
     json_object_set_string_member(json_object, REQUEST_TYPE, request_type);
     json_object_set_int_member(json_object, SUBJECT_ID, signalling->SessionSlaveID);
     json_object_set_string_member(json_object, CONTENT, content);
-    json_object_set_string_member(json_object, RESULT, SESSION_ACCEPTED); 
+    json_object_set_string_member(json_object, RESULT, SESSION_ACCEPTED);
+
     
     gchar* buffer = get_string_from_json_object(json_object);
-
+    json_object_unref(json_object);
     // write_to_log_file(SESSION_CORE_NETWORK_LOG, buffer);
     soup_websocket_connection_send_text(signalling->connection,buffer);
     g_free(buffer);
@@ -537,7 +538,7 @@ on_sdp_exchange(gchar* data,
 
     gint ret;
     GstSDPMessage* sdp;
-    const gchar* text;
+    gchar* text;
     GstWebRTCSessionDescription* answer;
 
     JsonObject* child = json_object_get_object_member(object, "sdp");
@@ -583,6 +584,7 @@ on_sdp_exchange(gchar* data,
     {
         on_offer_received(core,sdp);
     }
+    json_object_unref(object);
     g_object_unref(parser);
 }
 

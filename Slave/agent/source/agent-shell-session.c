@@ -159,7 +159,8 @@ initialize_shell_session(AgentObject* agent,
 {
 
     GError* error = NULL;
-    Message* json_data = get_json_object_from_string(data_string,&error);
+    JsonParser* parser = json_parser_new();
+    Message* json_data = get_json_object_from_string(data_string,&error,parser);
     if(!error == NULL) {return;}
 
     ChildProcess* process = get_available_child_process();

@@ -115,7 +115,8 @@ setup_session(AgentObject* agent,
     RemoteSession* session = agent_get_remote_session(agent);
 
     GError* error = NULL;
-    Message* json_data = get_json_object_from_string(data_string,&error);
+    JsonParser* parser = json_parser_new();
+    Message* json_data = get_json_object_from_string(data_string, &error, parser);
     if(!error == NULL || json_data == NULL) {return;}
 
     GFile* file = g_file_parse_name(SESSION_SLAVE_FILE);
@@ -129,5 +130,6 @@ setup_session(AgentObject* agent,
     }
 
     agent_session_initialize(agent);
+    g_object_unref(parser);
     return;
 }

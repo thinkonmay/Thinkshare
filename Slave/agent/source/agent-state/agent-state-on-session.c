@@ -65,7 +65,8 @@ on_session_send_message_to_host(AgentObject* agent,
     }
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(message,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(message,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
     json_object_set_int_member(object,
@@ -73,6 +74,7 @@ on_session_send_message_to_host(AgentObject* agent,
 
     send_message_to_host(agent,
         get_string_from_json_object(object));
+    g_object_unref(parser);
 }
 
 static void

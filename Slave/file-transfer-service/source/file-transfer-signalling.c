@@ -437,7 +437,8 @@ on_ice_exchange(gchar* text,FileTransferService* core)
     WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(text,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(text,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
     const gchar* candidate;
@@ -448,6 +449,7 @@ on_ice_exchange(gchar* text,FileTransferService* core)
     /* Add ice candidate sent by remote peer */
     g_signal_emit_by_name(webrtcbin_get_element(pipe),
         "add-ice-candidate", sdpmlineindex, candidate);
+    g_object_unref(parser);
 }
 
 static void
@@ -458,7 +460,8 @@ on_sdp_exchange(gchar* data,
     WebRTCbin* pipe = file_transfer_get_webrtcbin(core);
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(data,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(data,&error,parser);
 	if(!error == NULL || object == NULL) {file_transfer_finalize(core,UNKNOWN_PACKAGE_FROM_CLIENT,error);}
 
     gint ret;
@@ -510,6 +513,7 @@ on_sdp_exchange(gchar* data,
         on_offer_received(webrtcbin_get_element(pipe),
             sdp);
     }
+    g_object_unref(parser);
 }
 
 /// <summary>
@@ -552,7 +556,8 @@ on_server_message(SoupWebsocketConnection* conn,
 
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(text,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(text,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
     gchar* RequestType =    json_object_get_string_member(object, "RequestType");
@@ -587,6 +592,7 @@ on_server_message(SoupWebsocketConnection* conn,
     {
         report_file_transfer_error(core, UNKNOWN_MESSAGE);
     }
+    g_object_unref(parser);
 }
 
 

@@ -141,7 +141,8 @@ FileTransferSession*
 setup_file_transfer_session(gchar* server_command)
 {
     GError* error = NULL;
-    Message* message = get_json_object_from_string(server_command,&error);
+    JsonParser* parser = json_parser_new();
+    Message* message = get_json_object_from_string(server_command,&error,parser);
     if(error != NULL){
         return NULL;
     }
@@ -151,6 +152,8 @@ setup_file_transfer_session(gchar* server_command)
     session->input_file =           json_object_get_string_member(message, SIGNALLING_URL);
     session->turn_connection =      json_object_get_string_member(message, TURN_STRING);
     session->input_file =           json_object_get_string_member(message, INPUT_FILE);    
+    json_object_unref(message);
+    g_object_unref(parser);
     return session;
 }
 
