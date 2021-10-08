@@ -14,6 +14,7 @@
 #include <glib-2.0/glib.h>
 #include <remote-app-type.h>
 #include <libsoup/soup.h>
+#include <json-glib/json-glib.h>
 
 #include <gst/webrtc/webrtc.h>
 #include <gst/rtp/gstrtppayloads.h>
@@ -126,6 +127,7 @@ send_message_to_signalling_server(SignallingHub* signalling,
     gchar* buffer = get_string_from_json_object(json_object);
 
     soup_websocket_connection_send_text(signalling->connection,buffer);
+    g_free(buffer);
 }
 
 
@@ -141,12 +143,12 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
 
     SignallingHub* hub = remote_app_get_signalling_hub(core);
 
-    // if (g_strcmp0(hub->peer_call_state, PEER_CALL_NEGOTIATING))
-    // {
-    //     GError error;
-    //     error.message = "State conflict";
-    //     remote_app_finalize(core, CORE_STATE_CONFLICT_EXIT, &error);
-    // }
+    //if (g_strcmp0(hub->peer_call_state, PEER_CALL_NEGOTIATING))
+    //{
+    //    GError error;
+    //    error.message = "State conflict";
+    //    remote_app_finalize(core, CORE_STATE_CONFLICT_EXIT, &error);
+    //}
 
     ice = json_object_new();
     json_object_set_string_member(ice, "candidate", candidate);
@@ -236,7 +238,6 @@ on_offer_created( GstPromise* promise, RemoteApp* core)
         "set-local-description", offer, promise);
 
     gst_promise_interrupt(promise);
-    gst_promise_unref(promise);
 
     /* Send offer to peer */
     send_sdp_to_peer(core,offer);
@@ -353,7 +354,6 @@ on_answer_created(GstPromise* promise,
         "set-local-description", answer, promise);
 
     gst_promise_interrupt(promise);
-    gst_promise_unref(promise);
 
     /* Send answer to peer */
     send_sdp_to_peer(core,answer);
@@ -407,6 +407,7 @@ remote_app_logger(SoupLogger* logger,
             const char         *data,
             gpointer            user_data)
 {
+
 }
 
 
@@ -497,7 +498,8 @@ on_ice_exchange(gchar* text,RemoteApp* core)
     Pipeline* pipe = remote_app_get_pipeline(core);
 
     GError* error = NULL;
-    JsonObject* object = get_json_object_from_string(text,&error);
+    JsonParser* parser = json_parser_new();
+    JsonObject* object = get_json_object_from_string(text,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
     const gchar* candidate;
@@ -508,6 +510,7 @@ on_ice_exchange(gchar* text,RemoteApp* core)
     /* Add ice candidate sent by remote peer */
     g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
         "add-ice-candidate", sdpmlineindex, candidate);
+    g_object_unref(parser);
 }
 
 static void
@@ -518,7 +521,8 @@ on_sdp_exchange(gchar* data,
     Pipeline* pipe = remote_app_get_pipeline(core);
 
     GError* error = NULL;
-    JsonObject* object = get_json_object_from_string(data,&error);
+    JsonParser* parser = json_parser_new();
+    JsonObject* object = get_json_object_from_string(data,&error,parser);
 	if(!error == NULL || object == NULL) {remote_app_finalize(core,UNKNOWN_PACKAGE_FROM_CLIENT,error);}
 
     gint ret;
@@ -559,9 +563,9 @@ on_sdp_exchange(gchar* data,
     }
     else
     {
-        on_offer_received(core,
-            sdp);
+        on_offer_received(core,sdp);
     }
+    g_object_unref(parser);
 }
 
 /// <summary>
@@ -599,13 +603,15 @@ on_server_message(SoupWebsocketConnection* conn,
 
 
     GError* error = NULL;
-    JsonObject* object = get_json_object_from_string(text,&error);
+    JsonParser* parser = json_parser_new();
+    JsonObject* object = get_json_object_from_string(text,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
     gchar* RequestType =    json_object_get_string_member(object, "RequestType");
-    gint SubjectId =      json_object_get_int_member(object, "SubjectId");
+    gint SubjectId =        json_object_get_int_member(object, "SubjectId");
     gchar* Content =        json_object_get_string_member(object, "Content");
     gchar* Result =         json_object_get_string_member(object, "Result");
+    g_free(text);
 
     if (!g_strcmp0(Result, "SESSION_REJECTED") ||
         !g_strcmp0(Result, "SESSION_TIMEOUT"))
@@ -630,6 +636,7 @@ on_server_message(SoupWebsocketConnection* conn,
     {
         on_ice_exchange(Content, core);
     }
+    g_object_unref(parser);
 }
 
 

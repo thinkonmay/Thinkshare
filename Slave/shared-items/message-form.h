@@ -37,8 +37,9 @@ gchar*              get_string_from_json_object (JsonObject* object);
 /// <param name="string">string to convert to json</param>
 /// <param name="error">error pointer to receive any error might occour, should be compare to null after call this function</param>
 /// <returns></returns>
-Message*            get_json_object_from_string (gchar* string,
-                                                 GError** error);
+Message*            get_json_object_from_string(gchar* string,
+                                                GError** error,
+                                                JsonParser* parser);
 
 /// <summary>
 /// create empty messsage to send to host (message with " " data)

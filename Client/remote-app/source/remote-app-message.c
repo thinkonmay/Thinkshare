@@ -10,6 +10,7 @@
 #include <glib-object.h>
 #include <gst/webrtc/webrtc.h>
 #include <gst/webrtc/webrtc_fwd.h>
+#include <json-glib/json-glib.h>
 
 
 
@@ -39,13 +40,15 @@ remote_app_on_message(RemoteApp* core,
 
 
     GError* error = NULL;
-    JsonObject* object = get_json_object_from_string(data,&error);
+	JsonParser* parser = json_parser_new();
+    JsonObject* object = get_json_object_from_string(data,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
 	gint		from =		json_object_get_int_member(object, "From");
 	gint 	to =			json_object_get_int_member(object, "To");
 	Opcode     opcode =		json_object_get_int_member(object, "Opcode");
 	gchar* data_string =	json_object_get_string_member(object, "Data");
+	g_object_unref(parser);
 }
 
 

@@ -125,8 +125,9 @@ send_message_to_signalling_server(SignallingHub* signalling,
     
     gchar* buffer = get_string_from_json_object(json_object);
 
-    write_to_log_file(SESSION_CORE_NETWORK_LOG, buffer);
+    // write_to_log_file(SESSION_CORE_NETWORK_LOG, buffer);
     soup_websocket_connection_send_text(signalling->connection,buffer);
+    g_free(buffer);
 }
 
 
@@ -155,7 +156,6 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
     msg = json_object_new();
     json_object_set_object_member(msg, "ice", ice);
     text = get_string_from_json_object(msg);
-    json_object_unref(msg);
 
 
 
@@ -197,6 +197,7 @@ send_sdp_to_peer(SessionCore* core,
     }
 
     json_object_set_string_member(sdp, "sdp", text);
+    g_free(text);
 
     msg = json_object_new();
     json_object_set_object_member(msg, "sdp", sdp);
@@ -416,7 +417,6 @@ session_core_logger(SoupLogger* logger,
             const char         *data,
             gpointer            user_data)
 {
-    write_to_log_file(SESSION_CORE_NETWORK_LOG,data);
 }
 
 
@@ -508,7 +508,8 @@ on_ice_exchange(gchar* text,SessionCore* core)
     Pipeline* pipe = session_core_get_pipeline(core);
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(text,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(text,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
     const gchar* candidate;
@@ -519,6 +520,7 @@ on_ice_exchange(gchar* text,SessionCore* core)
     /* Add ice candidate sent by remote peer */
     g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
         "add-ice-candidate", sdpmlineindex, candidate);
+    g_object_unref(parser);
 }
 
 static void
@@ -529,7 +531,8 @@ on_sdp_exchange(gchar* data,
     Pipeline* pipe = session_core_get_pipeline(core);
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(data,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(data,&error,parser);
 	if(!error == NULL || object == NULL) {session_core_finalize(core,UNKNOWN_PACKAGE_FROM_CLIENT,error);}
 
     gint ret;
@@ -540,11 +543,11 @@ on_sdp_exchange(gchar* data,
     JsonObject* child = json_object_get_object_member(object, "sdp");
     gchar* sdptype = json_object_get_string_member(child, "type");
 
-    //if (!json_object_has_member(child, "type"))
-    //{
-    //    report_session_core_error(core, SIGNALLING_ERROR);
-    //    return;
-    //}
+    if (!json_object_has_member(child, "type"))
+    {
+        report_session_core_error(core, SIGNALLING_ERROR);
+        return;
+    }
     if (!g_strcmp0(sdptype, "request"))
     {
         Pipeline* pipe = session_core_get_pipeline(core);
@@ -580,6 +583,7 @@ on_sdp_exchange(gchar* data,
     {
         on_offer_received(core,sdp);
     }
+    g_object_unref(parser);
 }
 
 /// <summary>
@@ -613,7 +617,6 @@ on_server_message(SoupWebsocketConnection* conn,
             const char* data = g_bytes_get_data(message, &size);
             /* Convert to NULL-terminated string */
             text = g_strndup(data, size);
-            write_to_log_file(SESSION_CORE_GENERAL_LOG,text);
             break;
         }
         default:
@@ -622,13 +625,15 @@ on_server_message(SoupWebsocketConnection* conn,
 
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(text,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(text,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
     gchar* RequestType =    json_object_get_string_member(object, "RequestType");
     gint SubjectId =      json_object_get_int_member(object, "SubjectId");
     gchar* Content =        json_object_get_string_member(object, "Content");
     gchar* Result =         json_object_get_string_member(object, "Result");
+
 
     if (!g_strcmp0(Result, "SESSION_REJECTED") || !g_strcmp0(Result, "SESSION_TIMEOUT"))
     {
@@ -657,6 +662,8 @@ on_server_message(SoupWebsocketConnection* conn,
     {
         report_session_core_error(core, UNKNOWN_MESSAGE);
     }
+    g_object_unref(parser);
+    g_free(text);
 }
 
 

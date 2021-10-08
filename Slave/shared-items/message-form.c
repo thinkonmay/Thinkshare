@@ -2,6 +2,7 @@
 
 
 
+
 Message*
 message_init(Module from,
 			Module to,
@@ -55,17 +56,15 @@ get_string_from_json_object(JsonObject* object)
 }
 
 
+
 Message*
 get_json_object_from_string(gchar* string, 
-                            GError** error)
+                            GError** error,
+                            JsonParser* parser)
 {
     JsonNode* root;
-	JsonObject* json_data;
-
-	JsonParser* parser = json_parser_new();
 	json_parser_load_from_data(parser, string, -1, error);
-	root = json_parser_get_root(parser);  
-    
+	root = json_parser_get_root(parser);
     return json_node_get_object(root);
 }
 
@@ -75,9 +74,9 @@ get_json_object_from_file(gchar* file_name,
                           GError** error)
 {
     JsonNode* root;
-	JsonParser* parser = json_parser_new();
+    JsonParser* parser = json_parser_new();
 	json_parser_load_from_file(parser, file_name, error);
-	root = json_parser_get_root(parser); 
+	root = json_parser_get_root(parser);
     
     return json_node_get_object(root);
 }
