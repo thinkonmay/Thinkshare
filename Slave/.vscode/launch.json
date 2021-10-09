@@ -4,7 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         {
             "name": "(Windows) Attach",
             "type": "cppvsdbg",
@@ -12,10 +11,10 @@
             "processId": "${command:pickProcess}"
         },
         {
-            "name": "(Windows) Launch agent",
+            "name": "Launch agent",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "C:/ThinkMay/bin/agent.exe",
+            "program": "C:/ThinkmayServer/ThinkMay/bin/agent.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
@@ -23,10 +22,10 @@
             "console": "externalTerminal"
         },        
         {
-            "name": "(Windows) Launch session core",
+            "name": "Launch session core",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "C:/ThinkMay/bin/session-core.exe",
+            "program": "C:/ThinkmayServer/ThinkMay/bin/session-core.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

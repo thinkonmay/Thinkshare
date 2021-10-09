@@ -95,6 +95,10 @@ typedef struct			_WebRTCHub				                WebRTCHub;
 /// </summary>
 typedef struct 			_SignallingHub			                SignallingHub;
 
+/// <summary>
+/// 
+/// </summary>
+typedef struct			_HidInput								HidInput;
 
 
 /// <summary>
@@ -116,7 +120,6 @@ typedef					gchar*					                SignallingServerState;
 /// peer call state in form of string
 /// </summary>
 typedef					gchar*					                PeerCallState;
-
 
 
 typedef gboolean     	(*EventHandler)        					(GstBaseSink *sink,

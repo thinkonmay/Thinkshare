@@ -19,6 +19,9 @@
     <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Client\remote-app\source\remote-app-data-channel.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Client\remote-app\source\remote-app-input.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Client\remote-app\source\remote-app-message.c">
       <Filter>Source Files</Filter>
     </ClCompile>

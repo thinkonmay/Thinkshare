@@ -42,7 +42,6 @@ main (int argc, char *argv[])
     if (!g_option_context_parse (context, &argc, &argv, &error)) {
         g_printerr ("Error initializing: %s\n", error->message);
         return -1;
-    
     }
 
     session_id = 2;
@@ -58,6 +57,10 @@ main (int argc, char *argv[])
 
 
 
-    remote_app_initialize(session_id, signalling_url, turn, audio_codec, video_codec);
+    remote_app_initialize(session_id,
+                    signalling_url, 
+                    turn, 
+                    audio_codec, 
+                    video_codec);
     return 0;
 }

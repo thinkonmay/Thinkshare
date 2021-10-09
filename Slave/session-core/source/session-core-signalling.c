@@ -602,7 +602,6 @@ on_server_message(SoupWebsocketConnection* conn,
     SessionCore* core)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
-
     gchar* text;
 
     switch (type) 
@@ -634,7 +633,7 @@ on_server_message(SoupWebsocketConnection* conn,
     gint SubjectId =      json_object_get_int_member(object, "SubjectId");
     gchar* Content =        json_object_get_string_member(object, "Content");
     gchar* Result =         json_object_get_string_member(object, "Result");
-
+    g_print(Content);
 
     if (!g_strcmp0(Result, "SESSION_REJECTED") || !g_strcmp0(Result, "SESSION_TIMEOUT"))
     {

@@ -4,6 +4,7 @@
 #include <remote-app-signalling.h>
 #include <remote-app-remote-config.h>
 #include <remote-app-pipeline.h>
+#include <remote-app-input.h>
 
 #include <general-constant.h>
 #include <logging.h>
@@ -15,7 +16,6 @@
 #include <gst\webrtc\webrtc.h>
 #include <gst\rtp\gstrtppayloads.h>
 #include <gst\base\gstbasesink.h>
-#include <gst\video\navigation.h>
 
 #include <Windows.h>
 
@@ -31,6 +31,7 @@ enum
     /*screen capture source*/
     VIDEO_SINK,
 
+    VIDEO_CONVERT,
     /*video encoder*/
     VIDEO_DECODER,
 
@@ -65,6 +66,8 @@ enum
 
 struct _Pipeline
 {
+    RemoteApp* core;
+
     GstElement* pipeline;
     GstElement* webrtcbin;
 
@@ -79,18 +82,15 @@ struct _Pipeline
 void
 setup_video_sink_navigator(RemoteApp* core);
 
+static Pipeline pipeline_singleton = {0};
 
 
 Pipeline*
 pipeline_initialize(RemoteApp* core)
 {
-    SignallingHub* hub = remote_app_get_signalling_hub(core);
-
-    static Pipeline pipeline;
-    ZeroMemory(&pipeline,sizeof(pipeline));
-   
-
-    return &pipeline;
+    memset(&pipeline_singleton,0,sizeof(pipeline_singleton));
+    pipeline_singleton.core = core;
+    return &pipeline_singleton;
 }
 
 static gboolean
@@ -154,8 +154,9 @@ handle_media_stream (GstPad * pad,
     gst_element_sync_state_with_parent (conv);
     gst_element_sync_state_with_parent (sink);
     gst_element_link_many (q, conv, sink, NULL);
+    pipeline->video_element[VIDEO_SINK] = sink;
+    pipeline->video_element[VIDEO_CONVERT] = conv;
   }
-  pipeline->video_element[VIDEO_SINK] = sink;
   setup_video_sink_navigator(core);
   
   qpad = gst_element_get_static_pad (q, "sink");
@@ -268,37 +269,22 @@ connect_signalling_handler(RemoteApp* core)
 }
 
 
-EventHandler default_handler;
 
-gboolean      
-handle_navigator(GstBaseSink *sink, GstEvent *event)
+
+
+static gboolean
+handle_event(GstPad* pad, 
+            GstObject* parent, 
+            GstEvent* event)
 {
-    // overwrite default handler by adding more step to the handler
-    default_handler(sink,event);
-
-    // gint eventcode = gst_navigation_event_get_type(event);
-    // if(eventcode == GST_NAVIGATION_COMMAND_INVALID)
-    //     return;
-    // if(eventcode)
-    // {
-    //     switch (eventcode)
-    //     {
-    //     case GST_NAVIGATION_EVENT_KEY_PRESS: 
-    //         return; 
-    //     case GST_NAVIGATION_EVENT_KEY_RELEASE: 
-    //         return;
-    //     case GST_NAVIGATION_EVENT_MOUSE_MOVE: 
-    //         return; 
-    //     case GST_NAVIGATION_EVENT_MOUSE_SCROLL: 
-    //         return; 
-    //     case GST_NAVIGATION_EVENT_MOUSE_BUTTON_PRESS: 
-    //         return; 
-    //     case GST_NAVIGATION_EVENT_MOUSE_BUTTON_RELEASE: 
-    //         return; 
-    //     default:
-    //         break;
-    //     }
-    // }
+  switch (GST_EVENT_TYPE (event)) {
+    case GST_EVENT_NAVIGATION:
+      handle_navigator(event,pipeline_singleton.core);
+      break;
+    default:
+      gst_pad_event_default(pad, parent,event);
+      break;
+  }
 }
 
 
@@ -306,12 +292,8 @@ static void
 setup_video_sink_navigator(RemoteApp* core)
 {
     Pipeline* pipeline = remote_app_get_pipeline(core);
-    GstBaseSink* basesink = GST_BASE_SINK_CAST(pipeline->video_element[VIDEO_SINK]);
-
-
-    GstBaseSinkClass* klass = GST_BASE_SINK_GET_CLASS(basesink);
-    default_handler = klass->event;
-    klass->event = handle_navigator;
+    GstPad* pad = gst_element_get_static_pad(pipeline->video_element[VIDEO_CONVERT],"src");
+    gst_pad_set_event_function_full(pad,handle_event,core,NULL);
 }
 
  
@@ -328,7 +310,7 @@ setup_pipeline(RemoteApp* core)
 
     GError* error = NULL;
     pipe->pipeline = gst_parse_launch(
-                    "webrtcbin name=webrtcbin "
+                    "webrtcbin name=webrtcbin  bundle-policy=max-bundle "
                     "audiotestsrc is-live=true wave=red-noise ! audioconvert ! audioresample ! queue ! opusenc ! rtpopuspay ! "
                     "queue ! " RTP_CAPS_OPUS "97 ! webrtcbin.",&error);
     pipe->webrtcbin =  gst_bin_get_by_name(GST_BIN(pipe->pipeline),"webrtcbin");
@@ -336,11 +318,10 @@ setup_pipeline(RemoteApp* core)
 
     
 
-    connect_signalling_handler(core);
     gst_element_change_state(pipe->pipeline, GST_STATE_READY);
-    // connect_data_channel_signals(core);
+    connect_signalling_handler(core);
+    connect_data_channel_signals(core);
     start_pipeline(core);
-
 
     signalling_hub_set_peer_call_state(signalling, PEER_CALL_DONE);
 }

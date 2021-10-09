@@ -505,12 +505,9 @@ setup_pipeline(SessionCore* core)
 
 
     gst_element_change_state(pipe->pipeline, GST_STATE_READY);
-
-    // connect_data_channel_signals(core);
     pipe->state = PIPELINE_SETUP_DONE;
-
+    connect_data_channel_signals(core);
     start_pipeline(core);
-
     session_core_set_state(core, REMOTE_CONNECT_STARTED);
     signalling_hub_set_peer_call_state(signalling, PEER_CALL_DONE);
 }

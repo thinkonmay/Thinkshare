@@ -602,8 +602,9 @@ on_server_message(SoupWebsocketConnection* conn,
     gint SubjectId =        json_object_get_int_member(object, "SubjectId");
     gchar* Content =        json_object_get_string_member(object, "Content");
     gchar* Result =         json_object_get_string_member(object, "Result");
-    g_free(text);
+    g_print(Content);
 
+    
     if (!g_strcmp0(Result, "SESSION_REJECTED") ||
         !g_strcmp0(Result, "SESSION_TIMEOUT"))
     {
@@ -627,6 +628,7 @@ on_server_message(SoupWebsocketConnection* conn,
     {
         on_ice_exchange(Content, core);
     }
+    g_free(text);
     g_object_unref(parser);
 }
 
