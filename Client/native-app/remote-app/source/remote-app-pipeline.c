@@ -156,8 +156,8 @@ handle_media_stream (GstPad * pad,
     gst_element_link_many (q, conv, sink, NULL);
     pipeline->video_element[VIDEO_SINK] = sink;
     pipeline->video_element[VIDEO_CONVERT] = conv;
+    setup_video_sink_navigator(core);
   }
-  setup_video_sink_navigator(core);
   
   qpad = gst_element_get_static_pad (q, "sink");
 
@@ -288,7 +288,7 @@ handle_event(GstPad* pad,
 }
 
 
-static void
+void
 setup_video_sink_navigator(RemoteApp* core)
 {
     Pipeline* pipeline = remote_app_get_pipeline(core);

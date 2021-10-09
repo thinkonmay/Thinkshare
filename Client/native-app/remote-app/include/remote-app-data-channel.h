@@ -20,6 +20,20 @@ gboolean                connect_data_channel_signals                (RemoteApp* 
 WebRTCHub*				webrtchub_initialize						();
 
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="message"></param>
+/// <param name="core"></param>
+void                    control_data_channel_send                   (gchar* message,
+                                                                     RemoteApp* core);
 
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="message"></param>
+/// <param name="core"></param>
+void                    hid_data_channel_send                       (gchar* message,
+                                                                     RemoteApp* core);
 

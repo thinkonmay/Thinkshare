@@ -1,9 +1,12 @@
 #include <remote-app-input.h>
 #include <gst/gst.h>
 #include <remote-app-type.h>
-#include <gst\video\navigation.h>
-#include <human-interface-opcode.h>
+#include <remote-app-data-channel.h>
 
+
+#include <gst\video\navigation.h>
+
+#include <human-interface-opcode.h>
 #include <message-form.h>
 
 
@@ -33,8 +36,7 @@ send_mouse_move_signal(HidInput* input,
     json_object_set_int_member(object,"Opcode",(gint)input->opcode);
     json_object_set_int_member(object,"dX",(gint)input->x_pos);
     json_object_set_int_member(object,"dY",(gint)input->y_pos);
-    g_print(get_string_from_json_object(object));
-    g_print("\n");
+    hid_data_channel_send(get_string_from_json_object(object),core);
 }
 
 static void
@@ -46,8 +48,7 @@ send_mouse_button_signal(HidInput* input,
     json_object_set_int_member(object,"button",input->button_code);
     json_object_set_int_member(object,"dX",(gint)input->x_pos);
     json_object_set_int_member(object,"dY",(gint)input->y_pos);
-    g_print(get_string_from_json_object(object));
-    g_print("\n");
+    hid_data_channel_send(get_string_from_json_object(object),core);
 }
 
 
@@ -58,8 +59,7 @@ send_key_event(HidInput* input,
     JsonObject* object = json_object_new();
     json_object_set_int_member(object,"Opcode",(gint)input->opcode);
     json_object_set_string_member(object,"wVk",input->keyboard_code);
-    g_print(get_string_from_json_object(object));
-    g_print("\n");
+    hid_data_channel_send(get_string_from_json_object(object),core);
 }
 
 static void

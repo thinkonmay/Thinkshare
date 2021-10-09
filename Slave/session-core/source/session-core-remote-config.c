@@ -178,3 +178,15 @@ qoe_get_video_codec(QoE* qoe)
 {
 	return qoe->codec_video;
 }
+
+gint 
+qoe_get_screen_width(QoE* qoe)
+{
+	return qoe->screen_width;
+}
+
+gint 
+qoe_get_screen_height(QoE* qoe)
+{
+	return qoe->screen_height;
+}

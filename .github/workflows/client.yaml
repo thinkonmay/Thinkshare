@@ -4,11 +4,11 @@ on:
   push:
     branches: [ master ]
     paths: 
-    - 'Client/**'
+    - 'Client/website/**'
   pull_request:
     branches: [ master ]
     paths: 
-    - 'Client/**'
+    - 'Client/website/**'
 
 
 #setup environment variable
@@ -34,21 +34,21 @@ jobs:
     - name: ServicePage 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
-        context: Client/service-page 
+        context: Client/website/service-page 
         push: true
         tags: ${{ env.SERVICE_PAGE_IMAGE }}
 
     - name: LandingPage 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
-        context: Client/landing-page
+        context: Client/website/landing-page
         push: true
         tags: ${{ env.LANDING_PAGE_IMAGE }}
         
     - name: AdminPage 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
-        context: Client/admin-page
+        context: Client/website/admin-page
         push: true
         tags: ${{ env.ADMIN_PAGE_IMAGE }}
 
