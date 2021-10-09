@@ -20,6 +20,12 @@ gchar*              shell_script_map                (gint process_id);
 /// <summary>
 /// 
 /// </summary>
+/// <returns></returns>
+gchar*              get_base_dir                    ();
+
+/// <summary>
+/// 
+/// </summary>
 /// <param name="process_id"></param>
 /// <returns></returns>
 gchar*              output_zip_map                  (gint process_id);

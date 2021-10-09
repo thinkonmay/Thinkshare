@@ -1,8 +1,13 @@
 #ifndef __GENERAL_CONSTANT_H__
 #define __GENERAL_CONSTANT_H__
 
+#include "child-process-resources-assign.h"
 #define RECONNECT_INTERVAL            10000
-#define CURRENT_DIR                   "C:\\ThinkMay"
+
+
+
+
+#define CURRENT_DIR                   "C:\\ThinkmayServer\\ThinkMay"
 /////////////////////////////////////////////////////////////////////////////////////////////////
 #define SESSION_CORE_BINARY           CURRENT_DIR"\\bin\\session-core.exe "
 #define AGENT_BINARY                  CURRENT_DIR"\\bin\\agent.exe "

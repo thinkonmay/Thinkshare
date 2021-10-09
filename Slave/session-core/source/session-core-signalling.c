@@ -584,7 +584,6 @@ on_sdp_exchange(gchar* data,
     {
         on_offer_received(core,sdp);
     }
-    json_object_unref(object);
     g_object_unref(parser);
 }
 

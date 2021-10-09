@@ -70,6 +70,7 @@ struct _SignallingHub
     PeerCallState peer_call_state;
 };
 
+static SignallingHub hub_init;
 
 void
 on_server_connected(SoupSession* session,
@@ -79,21 +80,10 @@ on_server_connected(SoupSession* session,
 SignallingHub*
 signalling_hub_initialize(RemoteApp* core)
 {
-    static SignallingHub hub;
-    GFile* config = g_file_parse_name(HOST_CONFIG_FILE);
-    GBytes* byte_config = g_file_load_bytes(config, NULL, NULL, NULL);
-
-
-    JsonParser* parser_config = json_parser_new();
-    json_parser_load_from_data(parser_config, g_bytes_get_data(byte_config, NULL), -1, NULL);
-    JsonNode* root_config = json_parser_get_root(parser_config);
-    JsonObject* object_config = json_node_get_object(root_config);
-
-    hub.peer_call_state = PEER_CALL_NOT_READY;
-    hub.signalling_state = SIGNALLING_SERVER_NOT_READY;
-
-    hub.disable_ssl = json_object_get_boolean_member(object_config,DISABLE_SSL);
-    return &hub;
+    hub_init.peer_call_state = PEER_CALL_NOT_READY;
+    hub_init.signalling_state = SIGNALLING_SERVER_NOT_READY;
+    hub_init.disable_ssl = FALSE;
+    return &hub_init;
 }
 
 

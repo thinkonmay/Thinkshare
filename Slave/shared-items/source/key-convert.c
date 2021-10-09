@@ -1,6 +1,6 @@
 #include <Windows.h>
 #include <glib.h>
-#include "key-convert.h"
+#include <key-convert.h>
 
 WORD
 convert_javascript_key_to_window_key(gchar* keycode)

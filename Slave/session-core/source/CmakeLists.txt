@@ -16,7 +16,7 @@ pkg_check_modules(CONTROLLER REQUIRED gstreamer-controller-1.0)
 file(GLOB SOURCE_LIST 
 ${CMAKE_SOURCE_DIR}/session-core/source/*.c
 ${CMAKE_SOURCE_DIR}/session-core/adaptive-bitrate-algorithm/*.c
-${CMAKE_SOURCE_DIR}/shared-items/*.c)
+${CMAKE_SOURCE_DIR}/shared-items/source/*.c)
 
 add_executable(session-core ${SOURCE_LIST})
 
@@ -28,7 +28,7 @@ PUBLIC
     ${CMAKE_SOURCE_DIR}/session-core/include
     ${CMAKE_SOURCE_DIR}/session-core/adaptive-bitrate-algorithm
 
-    ${CMAKE_SOURCE_DIR}/shared-items
+    ${CMAKE_SOURCE_DIR}/shared-items/include
     ${LIBSOUP_INCLUDE_DIRS}
     ${GLIB_INCLUDE_DIRS} 
     ${GIO_INCLUDE_DIRS} 

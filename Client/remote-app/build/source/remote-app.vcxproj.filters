@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Slave\shared-items\child-process-resources-assign.c">
+    <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Slave\shared-items\source\child-process-resources-assign.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Slave\shared-items\key-convert.c">
+    <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Slave\shared-items\source\key-convert.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Slave\shared-items\logging.c">
+    <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Slave\shared-items\source\logging.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Slave\shared-items\message-form.c">
+    <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Slave\shared-items\source\message-form.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\huyho\Desktop\personal-cloud-computing\Client\remote-app\source\program.c">

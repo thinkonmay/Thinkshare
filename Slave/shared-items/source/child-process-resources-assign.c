@@ -4,6 +4,13 @@
 
 
 gchar*
+get_base_dir()
+{
+    return getenv("THINKMAY_DIR");
+}
+
+
+gchar*
 shell_script_map(gint process_id)
 {
     switch(process_id)
