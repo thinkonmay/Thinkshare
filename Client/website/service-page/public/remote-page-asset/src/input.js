@@ -231,7 +231,7 @@ clientToServerX(clientX)
     /**
      * by window standard, position of mouse will be send from 0 to 65535
      */
-    return Math.round((serverX / app.Screen.StreamWidth)*65535.0);
+    return Math.round(serverX);
 }
 
 /**
@@ -255,7 +255,7 @@ clientToServerY(clientY)
     /**
      * by window standard, position of mouse will be send from 0 to 65535
      */
-    return  Math.round((serverY / app.Screen.StreamHeight)*65535);
+    return  Math.round(serverY);
 }
 
 

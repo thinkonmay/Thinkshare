@@ -183,6 +183,19 @@ getConnectionStats()
 }
 
 
+
+
+function
+ondatachannel(event)
+{
+    if(event.channel.label === "HID"){
+        app.HidDC = event.channel;
+    }else if(event.channel.label === "Control"){
+        onControlDataChannel(event);
+    }
+}
+
+
 /**
  * Initiate connection to signalling server. 
  * invoke after request sdp signal has been replied
@@ -193,10 +206,7 @@ WebrtcConnect(msg)
     console.log('Creating RTCPeerConnection');
 
     app.Webrtc = new RTCPeerConnection(app.RTPconfig);
-
-    app.HidDC = app.Webrtc.createDataChannel('HID', null);
-    app.HidDC.onopen = HidDCConnected;
-    app.Webrtc.ondatachannel = onControlDataChannel;    
+    app.Webrtc.ondatachannel = ondatachannel;    
 
     app.Webrtc.ontrack = onRemoteTrack;
 
