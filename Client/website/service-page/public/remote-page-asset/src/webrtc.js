@@ -190,6 +190,7 @@ ondatachannel(event)
 {
     if(event.channel.label === "HID"){
         app.HidDC = event.channel;
+        app.HidDC.onopen = HidDCConnected;
     }else if(event.channel.label === "Control"){
         onControlDataChannel(event);
     }

@@ -228,9 +228,6 @@ clientToServerX(clientX)
     if (serverX > app.Mouse.frameW) serverX = app.Mouse.frameW;
     if (serverX < 0) serverX = 0;
 
-    /**
-     * by window standard, position of mouse will be send from 0 to 65535
-     */
     return Math.round(serverX);
 }
 
@@ -252,9 +249,6 @@ clientToServerY(clientY)
     if (serverY > app.Mouse.frameH) serverY = app.Mouse.frameH;
     if (serverY < 0) serverY = 0;
 
-    /**
-     * by window standard, position of mouse will be send from 0 to 65535
-     */
     return  Math.round(serverY);
 }
 
