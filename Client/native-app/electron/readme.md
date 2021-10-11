@@ -1,5 +1,5 @@
 # INSTALL
-***Required [electron](https://www.electronjs.org/) v15.1.0**
+***Required [nodejs](https://nodejs.org/en/) v16.9.0+**
 ```
 npm install
 ```
