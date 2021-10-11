@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlaveManager", "SlaveManage
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conductor", "Conductor\Conductor.csproj", "{A972CF97-DE50-4CF3-A9AF-23A0815A3E29}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetricCollector", "ShellExtractor\MetricCollector.csproj", "{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetricCollector", "MetricCollector\MetricCollector.csproj", "{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

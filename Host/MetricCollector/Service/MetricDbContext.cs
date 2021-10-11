@@ -23,20 +23,20 @@ namespace MetricCollector.Service
 
         public async Task AddCPUMetric(CPUDataModel model)
         {
-            var cpuTime = new LineProtocolPoint(
-                "working_set",
-                new Dictionary<string, object>
-                {
-                    { "value", process.WorkingSet64 },
-                },
-                new Dictionary<string, string>
-                {
-                    { "host", Environment.GetEnvironmentVariable("COMPUTERNAME") }
-                },
-                DateTime.UtcNow);
+            // var cpuTime = new LineProtocolPoint(
+            //     "working_set",
+            //     new Dictionary<string, object>
+            //     {
+            //         { "value", process.WorkingSet64 },
+            //     },
+            //     new Dictionary<string, string>
+            //     {
+            //         { "host", Environment.GetEnvironmentVariable("COMPUTERNAME") }
+            //     },
+            //     DateTime.UtcNow);
 
-            var payload = new LineProtocolPayload();
-            payload.Add(cpuTime);
+            // var payload = new LineProtocolPayload();
+            // payload.Add(cpuTime);
         }
     }
 }

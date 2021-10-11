@@ -16,19 +16,29 @@ namespace SharedHost.Models.Device
             OS = slave.OS;
             ID = slave.ID;
         }
-
         public string? CPU { get; set; }
         public string? GPU { get; set; }
         public int? RAMcapacity { get; set; }
         public string? OS { get; set; }
         public int ID { get; set; }
-
         public int? SessionClientID { get; set; }
         public string? serviceState { get; set; }
     }
 
+    public enum DeviceType
+    {
+        WEBAPP,
+        WINDOW_APP,
+        LINUX_APP,
+        MAC_OS_APP,
+        ANDROID_APP,
+        IOS_APP
+    }
+
     public class DeviceCap
     {
+        public DeviceType device {get;set;}
+
         public Codec audioCodec { get; set; }
 
         public Codec videoCodec { get; set; }
@@ -38,5 +48,6 @@ namespace SharedHost.Models.Device
         public int screenWidth { get; set; }
 
         public int screenHeight { get; set; }
+
     }
 }

@@ -12,14 +12,14 @@ namespace MetricCollector.Controllers
     [ApiController]
     [Route("/Metric")]
     [Produces("application/json")]
-    public class MetricController : ControllerBase
+    public class ReportMetricController : ControllerBase
     {
 
         private readonly ILogger<MetricController> _logger;
 
         private readonly IScriptGetter _getter;
 
-        public MetricController(ILogger<MetricController> logger, IScriptGetter getter)
+        public ReportMetricController(ILogger<MetricController> logger, IScriptGetter getter)
         {
             _getter = getter;
             _logger = logger;
