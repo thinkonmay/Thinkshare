@@ -5,18 +5,22 @@
     "version": "0.2.0",
     "configurations": 
     [
-    {
-        "name": "Launch Chrome",
-        "request": "launch",
-        "type": "pwa-chrome",
-        "url": "http://localhost:8080",
-        "webRoot": "${workspaceFolder}"
-    },
+        {
+            "name": "Remote App",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "C:/ThinkmayClient/Thinkmay/bin/remote-app.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "console": "externalTerminal"
+        },
         {
             "name": "Session Core",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "C:/ThinkMay/bin/session-core.exe",
+            "program": "C:/ThinkmayServer/ThinkMay/bin/session-core.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
@@ -27,7 +31,7 @@
             "name": "Agent",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "C:/ThinkMay/bin/agent.exe",
+            "program": "C:/ThinkmayClient/ThinkMay/bin/agent.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
@@ -38,26 +42,6 @@
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
-        },
-        {
-            "name": ".NET Core Launch (web)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}\\Host\\SlaveManager\\bin\\Debug\\net5.0\\SlaveManager.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
-            }
         },
         {
             "type": "pwa-chrome",

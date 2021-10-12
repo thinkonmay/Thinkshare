@@ -1,0 +1,78 @@
+.overlay {
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.devicebutton {
+  width: 50%;  
+  transform: translate(50%,0);
+}
+
+.overlay:hover {
+  opacity: 1;
+  transform: translateY(-8px);
+}
+
+.btn {
+  min-width: 100%;
+  font-size: 0.88vw;
+  margin-top: 10px;
+}
+
+.colbut {
+  min-width: 50%;
+  text-align: center;
+}
+
+.slave {
+  min-width: 350px;
+  max-width: 350px;
+  word-wrap: break-word;
+}
+
+.space {
+  min-width: 10px;
+  max-width: 10px;
+}
+
+.moreinf {
+  min-width: 100px;
+  max-width: 100px;
+}
+
+.control-sidebar {
+  position: absolute;
+  right: 0px !important;
+  display: block !important;
+  min-height: calc(100vh - calc(3.5rem + 1px) - calc(3.5rem + 1px));
+  width: 300px;
+  background-color: #f4f6f9;
+  overflow: hidden;
+}
+
+.content-wrapper {
+  margin-right: 300px;
+  overflow-y: scroll;
+  max-height: calc(100vh - calc(3.5rem + 1px) - calc(3.5rem + 1px));
+  min-height: calc(100vh - calc(3.5rem + 1px) - calc(3.5rem + 1px)) !important;
+  overflow: hidden;
+}
+
+.blank {
+  min-height: calc(calc(100vh - calc(3.5rem + 1px) - calc(3.5rem + 1px)) / 2 - 16px);
+  max-height: calc(calc(100vh - calc(3.5rem + 1px) - calc(3.5rem + 1px)) / 2 - 16px);
+  border-radius: 20px;
+  border-color: black;
+  margin: 8px;
+  border-style: solid;
+  background-color: white;
+  padding: 10px;
+  color: black;
+  overflow-y: scroll;
+  overflow: hidden;
+}
+
+.line {
+  margin-top: 5px;
+  margin-bottom: 20px;
+}

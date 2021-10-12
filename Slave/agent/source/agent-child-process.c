@@ -55,21 +55,46 @@ struct _ChildProcess
     gboolean completed;
 };
 
-
-
-
+static ChildProcess process_pool[MAX_CHILD_PROCESS] = {0};
 
 void
 initialize_child_process_system(AgentObject* agent)
 {
-    static ChildProcess  process_array[LAST_CHILD_PROCESS];
-    ZeroMemory(&process_array,sizeof(process_array));
-
-    for(gint i = 0; i < LAST_CHILD_PROCESS;i++)
+    memset(&process_pool,0,sizeof(process_pool));
+    for(gint i = 0; i < MAX_CHILD_PROCESS;i++)
     {
-        agent_set_child_process(agent,i,&(process_array[i]));
+        process_pool[i].agent = agent;
+        process_pool[i].process_id = i;
+        process_pool[i].completed = TRUE;
+
+        agent_set_child_process(agent,i,&(process_pool[i]));
     }
 }
+
+
+
+
+
+
+ChildProcess* 
+get_available_child_process()
+{
+    for(gint i = 1; i < MAX_CHILD_PROCESS; i++)
+    {
+        if(process_pool[i].completed)
+        {
+            process_pool[i].completed = FALSE;
+            return &(process_pool[i]);
+        }
+    }
+    // if there is no available process, then wait for 1 second
+    Sleep(1000);
+    return get_available_child_process();    
+}
+
+
+
+
 
 
 gpointer 
@@ -80,19 +105,19 @@ handle_child_process_io(gpointer data)
     {
         DWORD dwRead, dwWritten;
         CHAR chBuf[BUFSIZE];
-        ZeroMemory(chBuf, BUFSIZE);
+        memset(chBuf,0, BUFSIZE);
         BOOL bSuccess = FALSE;
         if (proc->completed) {return;}
 
         for (;;)
         {
             Sleep(10);
-            bSuccess = ReadFile(proc->standard_out, chBuf, BUFSIZE, &dwRead, NULL);
+            bSuccess = ReadFileEx(proc->standard_out, chBuf, BUFSIZE, &dwRead, NULL);
             if (!bSuccess || dwRead == 0) { break; }
 
             GBytes* data = g_bytes_new(chBuf, strlen(chBuf));
             proc->func(data, proc->process_id, proc->agent);
-            ZeroMemory(chBuf, BUFSIZE);
+            memset(chBuf,0, BUFSIZE);
             break;
         }
     }
@@ -152,7 +177,7 @@ send_message_to_child_process(ChildProcess* self,
         buffer, size, &written, NULL);
 
     WriteFile(self->standard_in,
-        "\n", 2, &written, NULL);
+        "\n", 1, &written, NULL);
 }
 
 
@@ -162,8 +187,6 @@ close_child_process(ChildProcess* proc)
     write_to_log_file(AGENT_GENERAL_LOG,"Child process closed");
     TerminateProcess(proc->process, FORCE_EXIT);
     proc->completed = TRUE;
-
-    ZeroMemory(&proc->standard_out,sizeof(HANDLE));
 }
 
 ChildProcess*
@@ -174,14 +197,11 @@ create_new_child_process(gchar* process_name,
                         ChildStateHandle handler,
                         AgentObject* agent)
 {
-    ChildProcess* child_process = agent_get_child_process(agent,process_id);
-    ZeroMemory(child_process,sizeof(ChildProcess));
-
+    ChildProcess* child_process = &process_pool[process_id];
     child_process->agent = agent;
     child_process->process_id = process_id;
     child_process->func = func;
     child_process->handler = handler;
-    child_process->completed = FALSE;
 
 
     ChildPipe* hdl = initialize_process_handle(child_process,agent);
@@ -202,14 +222,15 @@ create_new_child_process(gchar* process_name,
     startup_infor.dwFlags |= STARTF_USESTDHANDLES;
     startup_infor.hStdInput = hdl->standard_in;
     startup_infor.hStdOutput = hdl->standard_out;
-    startup_infor.hStdError = hdl->standard_out;
+    // startup_infor.hStdError = hdl->standard_out;
 
-    strcat(process_name, parsed_command);
+    GString* string_process = g_string_new(process_name);
+    g_string_append(string_process,parsed_command);
     
-    LPSTR path = g_win32_locale_filename_from_utf8(process_name);
+    LPSTR process = g_win32_locale_filename_from_utf8(g_string_free(string_process,FALSE));
     /*START process, all standard input and output are controlled by agent*/
     gboolean output = CreateProcess(NULL,
-        path,
+        process,
         NULL,
         NULL,
         TRUE,
@@ -220,7 +241,7 @@ create_new_child_process(gchar* process_name,
 
     if(!output)
     {
-        GetLastError();
+        DWORD error = GetLastError();
         agent_report_error(agent,ERROR_PROCESS_OPERATION);
         write_to_log_file(AGENT_GENERAL_LOG,ERROR_PROCESS_OPERATION);
         return NULL;        
@@ -233,7 +254,7 @@ create_new_child_process(gchar* process_name,
 
     return child_process;
 }
-
+ 
 
 gboolean 				
 get_current_child_process_state(AgentObject* agent,

@@ -31,7 +31,7 @@ struct _Socket
 };
 
 
-
+static Socket socket_declare = {0};
 
 
 void 
@@ -256,13 +256,9 @@ agent_logger(SoupLogger* logger,
 Socket*
 initialize_socket(AgentObject* agent)
 {
-
     const gchar* https_aliases[] = { "wss", NULL };
-    static Socket socket;
-    ZeroMemory(&socket,sizeof(Socket));
-
+    
     JsonParser* parser = json_parser_new();
-
     GError* error = NULL;
 
     json_parser_load_from_file(parser,HOST_CONFIG_FILE,&error);
@@ -279,21 +275,21 @@ initialize_socket(AgentObject* agent)
 
     gboolean disable_ssl = !json_object_get_boolean_member(obj,DISABLE_SSL);
 
-    socket.session =
+    socket_declare.session =
         soup_session_new_with_options(
             SOUP_SESSION_SSL_STRICT, disable_ssl,
             SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
             //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
             SOUP_SESSION_HTTPS_ALIASES, https_aliases, NULL);
 
-    socket.logger = soup_logger_new(SOUP_LOGGER_LOG_BODY, -1);
-    soup_session_add_feature(socket.session, SOUP_SESSION_FEATURE(socket.logger));
-    g_object_unref(socket.logger);
+    socket_declare.logger = soup_logger_new(SOUP_LOGGER_LOG_BODY, -1);
+    soup_session_add_feature(socket_declare.session, SOUP_SESSION_FEATURE(socket_declare.logger));
+    g_object_unref(socket_declare.logger);
 
-    soup_logger_set_printer(socket.logger,agent_logger,NULL,NULL);
+    soup_logger_set_printer(socket_declare.logger,agent_logger,NULL,NULL);
 
-    socket.message = soup_message_new(SOUP_METHOD_GET,
+    socket_declare.message = soup_message_new(SOUP_METHOD_GET,
         json_object_get_string_member(obj,HOST_URL));
 
-    return &socket;
+    return &socket_declare;
 }

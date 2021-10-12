@@ -4,7 +4,8 @@
 #include <session-core.h>
 #include <session-core-ipc.h>
 
-#include <module.h>
+#include <session-core-remote-config.h>
+#include <module-code.h>
 #include <opcode.h>
 
 #include <glib.h>
@@ -41,7 +42,8 @@ session_core_on_message(SessionCore* core,
 	write_to_log_file(SESSION_CORE_NETWORK_LOG,data);
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(data,&error);
+	JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(data,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
 	Module     from =		json_object_get_int_member(object, "From");
@@ -55,7 +57,8 @@ session_core_on_message(SessionCore* core,
 		{
 			if(opcode == QOE_REPORT)
 			{
-			    Message* json_data = get_json_object_from_string(data_string,&error);
+				JsonParser* parser_qoe = json_parser_new();
+			    Message* json_data = get_json_object_from_string(data_string,&error,parser_qoe);
 				if(!error == NULL || object == NULL) {return;}
 				
 				qoe_update_quality(core, 
@@ -67,6 +70,7 @@ session_core_on_message(SessionCore* core,
 					json_object_get_int_member(json_data, "VideoBitrate"),
 					json_object_get_int_member(json_data, "TotalBandwidth"),
 					json_object_get_int_member(json_data, "PacketsLost"));
+				g_object_unref(parser_qoe);
 			}
 		}
 		else if (from == AGENT_MODULE)
@@ -86,6 +90,8 @@ session_core_on_message(SessionCore* core,
 	{
 		session_core_send_message(core, object);
 	}
+
+	g_object_unref(parser);
 }
 
 

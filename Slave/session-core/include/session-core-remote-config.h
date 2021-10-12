@@ -76,3 +76,25 @@ Codec			qoe_get_audio_codec					(QoE* qoe);
 /// <param name="qoe"></param>
 /// <returns></returns>
 Codec			qoe_get_video_codec					(QoE* qoe);
+
+
+
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="qoe"></param>
+/// <returns></returns>
+gint			qoe_get_screen_height				(QoE* qoe);
+
+
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="qoe"></param>
+/// <returns></returns>
+gint			qoe_get_screen_width				(QoE* qoe);
+
+
+

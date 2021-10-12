@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Conductor.Interfaces;
 using SharedHost.Models.Auth;
-using Conductor.Models.User;
+using SharedHost.Models.User;
 using Conductor.Services;
 using System;
 using System.Collections.Generic;
@@ -45,15 +45,54 @@ namespace Conductor.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
                 if (result.Succeeded)
                 {
-                    UserAccount user = await _userManager.FindByEmailAsync(model.Email);
+                    UserAccount user = await _userManager.FindByNameAsync(model.UserName);
                     string token = await _tokenGenerator.GenerateJwt(user);
-                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now.AddHours(1));
+                    return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
+                }
+                else
+                {
+                    return AuthResponse.GenerateFailure(model.UserName, "Wrong username or password", -2);
                 }
             }
-            return AuthResponse.GenerateFailure(model.Email, "Login failed", -1);
+
+            return AuthResponse.GenerateFailure(model.UserName, "Invalid login model", -1);
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("AdminLogin")]
+        public async Task<AuthResponse> AdminLogin([FromBody] LoginModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false);
+                if (result.Succeeded)
+                {
+                    UserAccount user = await _userManager.FindByNameAsync(model.UserName);
+                    var role = await _userManager.GetRolesAsync(user);
+
+                    // check admin role
+                    if(role.Contains("Administrator"))
+                    {
+                        string token = await _tokenGenerator.GenerateJwt(user);
+                        return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
+                    }
+                    else
+                    {
+                        return AuthResponse.GenerateFailure(model.UserName, "You are not admin", -1);
+                    }
+                }
+                else
+                {
+                    return AuthResponse.GenerateFailure(model.UserName, "Wrong username or password", -2);
+                }
+            }
+
+            return AuthResponse.GenerateFailure(model.UserName, "Invalid login model", -1);
         }
 
         /// <summary>
@@ -70,23 +109,44 @@ namespace Conductor.Controllers
             {
                 var user = new UserAccount()
                 {
-                    UserName = model.Email,
+                    UserName = model.UserName,
                     Email = model.Email,
                     FullName = model.FullName,
-                    DateOfBirth = model.DateOfBirth
+                    DateOfBirth = model.DateOfBirth,
+                    PhoneNumber = model.PhoneNumber,
+                    Jobs = model.Jobs
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     UserAccount u = await _userManager.FindByEmailAsync(model.Email);
-                    await _userManager.AddToRoleAsync(u, DataSeeder.USER);
+                    await _userManager.AddToRoleAsync(u, AccountSeeder.USER);
                     string token = await _tokenGenerator.GenerateJwt(u);
-                    return AuthResponse.GenerateSuccessful(model.Email, token, DateTime.Now);
+                    return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now);
+                }
+                else
+                {
+                    string dupElem = string.Empty;
+
+                    if (await _userManager.FindByNameAsync(model.UserName) != null)
+                    {
+                        dupElem += "username";
+                    }
+                    if (await _userManager.FindByEmailAsync(model.Email) != null)
+                    {
+                        dupElem += ", email address";
+                    }
+                    if (_userManager.Users.FirstOrDefault(p => p.PhoneNumber == model.PhoneNumber) != null)
+                    {
+                        dupElem += ", phone number";
+                    }
+
+                    return AuthResponse.GenerateFailure(model.Email, $"Duplicate {dupElem}", -2);
                 }
             }
 
-            return AuthResponse.GenerateFailure(model.Email, "Register failed", -1);
+            return AuthResponse.GenerateFailure(model.Email, "Invalid Register model", -1);
         }
 
         /// <summary>

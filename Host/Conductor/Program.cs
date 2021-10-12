@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Conductor.Models.User;
+using SharedHost.Models.User;
 using Conductor.Services;
-using System.Threading.Tasks;
 using Conductor.Data;
+using SharedHost.Models.Auth;
 using SharedHost;
-using System.IO;
+using Serilog;
+using Serilog.Formatting.Elasticsearch;
 
 namespace Conductor
 {
@@ -23,6 +24,13 @@ namespace Conductor
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseSerilog((ctx, config) =>{
+                    config
+                        .MinimumLevel.Information()
+                        .Enrich.FromLogContext();
+
+                    config.WriteTo.Console();
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
@@ -40,9 +48,10 @@ namespace Conductor
                 var systemconfig = services.GetRequiredService<SystemConfig>();
                 var config = services.GetRequiredService<IConfiguration>();
 
-                DataSeeder.SeedRoles(roleManager);
-                DataSeeder.SeedAdminUsers(userManager,systemconfig);
-                DataSeeder.SeedUserRole(userManager);
+                ScriptModelSeeder.SeedScriptModel(db);
+                AccountSeeder.SeedRoles(roleManager);
+                AccountSeeder.SeedAdminUsers(userManager,systemconfig);
+                AccountSeeder.SeedUserRole(userManager);
             }
         }
     }

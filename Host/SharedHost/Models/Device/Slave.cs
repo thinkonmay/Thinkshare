@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SharedHost.Models.Error;
 using SharedHost.Models.Session;
 
@@ -44,20 +44,5 @@ namespace SharedHost.Models.Device
         public string? GPU { get; set; }
         public int? RAMcapacity { get; set; }
         public string? OS { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual ICollection<ShellSession> CommandLogs { get; set; }
-
-        /// <summary>
-        /// (nullable) if slave is in a session, 
-        /// </summary>
-        public virtual ICollection<RemoteSession> servingSession { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual ICollection<GeneralError> GeneralErrors { get; set; }
     }
 }

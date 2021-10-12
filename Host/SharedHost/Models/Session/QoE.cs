@@ -1,4 +1,9 @@
-﻿using SharedHost.Models.Device;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using SharedHost.Models.Device;
+using SharedHost.Models.User;
+using SharedHost.Models.Device;
 
 namespace SharedHost.Models.Session
 {
@@ -14,6 +19,10 @@ namespace SharedHost.Models.Session
             AudioCodec = cap.audioCodec;
             QoEMode = cap.mode;
         }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID {get;set;}
+
         public int ScreenWidth { get; set; }
 
         public int ScreenHeight { get; set; }
@@ -29,7 +38,9 @@ namespace SharedHost.Models.Session
     {
         CODEC_H265,
         CODEC_H264,
+        CODEC_VP8,
         CODEC_VP9,
+
         OPUS_ENC,
         AAC_ENC
     }

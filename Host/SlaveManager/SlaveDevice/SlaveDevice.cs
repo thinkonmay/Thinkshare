@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using SharedHost.Models.Shell;
+using Newtonsoft.Json;
 using SharedHost.Models;
 using SlaveManager.Interfaces;
 using System.Net.WebSockets;
@@ -31,9 +32,8 @@ namespace SlaveManager.SlaveDevices
 
 
 
-        public async Task KeepReceiving()
+        public async Task KeepReceiving(int SlaveID)
         {
-            int SlaveID = 0;
             WebSocketReceiveResult message;
             try
             {
@@ -46,7 +46,6 @@ namespace SlaveManager.SlaveDevices
                         {
                             var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
                             var messageForm = JsonConvert.DeserializeObject<MessageWithID>(receivedMessage);
-                            SlaveID = messageForm.SlaveID;
 
                             if (messageForm.To == (int)Module.HOST_MODULE)
                             {
@@ -70,19 +69,12 @@ namespace SlaveManager.SlaveDevices
                 {
                     switch (messageForm.Opcode)
                     {
-                        case (int)Opcode.COMMAND_LINE_FORWARD:
-                        {
-                            var cmd = JsonConvert.DeserializeObject<ReceiveCommand>(messageForm.Data);
-                            cmd.SlaveID = messageForm.SlaveID;
-                            await _conductor.LogSlaveCommandLine(cmd);
-                            break;
-                        }
                         case (int)Opcode.ERROR_REPORT:
                         {
                             var error = JsonConvert.DeserializeObject<ReportedError>(messageForm.Data);
                             error.SlaveID = messageForm.SlaveID;
                             error.Module = (int)Module.AGENT_MODULE;
-                            await _conductor.ReportError(error);
+                            System.Console.WriteLine(JsonConvert.SerializeObject(error));
                             break;
                         }
                         case (int)Opcode.SESSION_CORE_EXIT:
@@ -90,10 +82,11 @@ namespace SlaveManager.SlaveDevices
                             await State.OnSessionCoreExit(this, messageForm.SlaveID);
                             break;
                         }
-                        case (int)Opcode.END_COMMAND_LINE_SESSION:
+                        case (int)Opcode.END_SHELL_SESSION:
                         {
-                            var session = JsonConvert.DeserializeObject<ForwardCommand>(messageForm.Data);
-                            await _conductor.ReportShellSessionTerminated(session);
+                            var output = JsonConvert.DeserializeObject<ShellOutput>(messageForm.Data);
+                            output.SlaveID = messageForm.SlaveID;
+                            await EndShellSession(output);
                             break;
                         }
 
@@ -108,7 +101,7 @@ namespace SlaveManager.SlaveDevices
                             var errabs = JsonConvert.DeserializeObject<ReportedError>(messageForm.Data);
                             errabs.SlaveID = messageForm.SlaveID;
                             errabs.Module = (int)Module.CORE_MODULE;
-                            await _conductor.ReportError(errabs);
+                            System.Console.WriteLine(JsonConvert.SerializeObject(errabs));
                             break;
                         }
                     }
@@ -198,20 +191,14 @@ namespace SlaveManager.SlaveDevices
 
 
 
-        public async Task InitializeCommandLineSession(int order)
+        public async Task InitializeShellSession(ShellScript script)
         {
-            await State.InitializeCommandlineSession(this, order);
+            await State.InitializeShellSession(this, script);
         }
 
-
-        public async Task TerminateCommandLineSession(int order)
+        public async Task EndShellSession(ShellOutput output)
         {
-            await State.TerminateCommandlineSession(this, order);
-        }
-
-        public async Task SendCommand(ForwardCommand command)
-        {
-            await State.SendCommand(this, command);
+            await _conductor.LogShellOutput(output);
         }
 
 

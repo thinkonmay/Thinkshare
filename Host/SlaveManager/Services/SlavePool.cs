@@ -2,11 +2,13 @@
 using SlaveManager.SlaveDevices;
 using SlaveManager.SlaveDevices.SlaveStates;
 using System;
+using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using SlaveManager.Interfaces;
 using SharedHost.Models.Session;
+using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
 using SharedHost;
@@ -19,11 +21,36 @@ namespace SlaveManager.Services
 
         private readonly SystemConfig _config;
 
+        private readonly IConductorSocket _socket;
 
-        public SlavePool(SystemConfig config)
+        public int SamplePeriod {get;set;}
+
+        public SlavePool(SystemConfig config, IConductorSocket socket)
         {
             _config = config;
+            _socket = socket;
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
+            SamplePeriod = 60* 1000;
+            Task.Run(() => SystemHeartBeat());
+        }
+
+        public async Task SystemHeartBeat()
+        {
+            try
+            {
+                var model_list = await _socket.GetDefaultModel();
+                while(true)
+                {
+                    foreach(var i in model_list)
+                    {
+                        BroadcastShellScript(new ShellScript(i,0));
+                    }
+                    Thread.Sleep(SamplePeriod);
+                }
+            }catch(Exception ex)
+            {
+                await SystemHeartBeat();
+            }
         }
 
 
@@ -51,7 +78,6 @@ namespace SlaveManager.Services
         public List<SlaveQueryResult> GetSystemSlaveState()
         {
             var list = new List<SlaveQueryResult>();
-
             foreach (var i in SlaveList)
             { 
                 list.Add(new SlaveQueryResult() { 
@@ -79,54 +105,33 @@ namespace SlaveManager.Services
 
 
 
-
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        public bool InitializeCommand(int SlaveID, int ProcessID)
-        {
-            SlaveDevice slave;
-            if (!SearchForSlaveID(SlaveID)) { return false; }
-            if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
-
-            Task.Run(() => slave.InitializeCommandLineSession(ProcessID));
-            return true;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        public bool TerminateCommand(int SlaveID, int ProcessID)
-        {
-            SlaveDevice slave;
-            if (!SearchForSlaveID(SlaveID)) { return false; }
-            if (!SlaveList.TryGetValue(SlaveID, out slave)) { return false; }
-
-            Task.Run(() => slave.TerminateCommandLineSession(ProcessID));
-            return true;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="command"></param>
         /// <returns></returns>
-        public bool SendCommand(ForwardCommand command)
+        public bool InitShellSession(ShellScript script)
         {
             SlaveDevice slave;
-            if (!SearchForSlaveID(command.SlaveID)) { return false; }
-            if (!SlaveList.TryGetValue(command.SlaveID, out slave)) { return false; }
+            if (!SearchForSlaveID(script.SlaveID)) { return false; }
+            if (!SlaveList.TryGetValue(script.SlaveID, out slave)) { return false; }
 
-            Task.Run(()=>slave.SendCommand(command));
+            Task.Run(() => slave.InitializeShellSession(script));
             return true;
         }
 
-
-
+        public bool BroadcastShellScript(ShellScript script)
+        {
+            var slave = GetSystemSlaveState();
+            foreach(var item in slave)
+            {
+                if(item.SlaveServiceState != SlaveServiceState.Disconnected)
+                {
+                    script.SlaveID = item.SlaveID;
+                    InitShellSession(script);
+                }
+            }
+            return true;
+        }
 
 
 

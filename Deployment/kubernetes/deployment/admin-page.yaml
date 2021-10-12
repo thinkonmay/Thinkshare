@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-page
+  labels:
+    app: admin-page
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80    
+  selector:
+   app: admin-page
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-page
+spec:
+  selector:
+    matchLabels:
+      app: admin-page
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: admin-page
+    spec:
+      containers:
+      - name: admin-page
+        image: pigeatgarlic/admin-page:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80

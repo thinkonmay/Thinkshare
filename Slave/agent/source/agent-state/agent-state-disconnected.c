@@ -42,8 +42,8 @@ disconnected_send_message_to_host(AgentObject* agent,
                                   char* message)
 {
     GError* error = NULL;
-
-    Message* object = get_json_object_from_string(message,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(message,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
     gint i = json_object_get_int_member(object, "Opcode");
 

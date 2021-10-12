@@ -28,27 +28,6 @@ namespace SlaveManager.Controllers
                                   ISlavePool slavePool)
         {
             _slavePool = slavePool;
-            SeedDevices(config);
-        }
-
-        void SeedDevices(SystemConfig systemConfig)
-        {
-
-            var conductor = new RestClient(systemConfig.Conductor + "/System");
-            var request = new RestRequest("SeedDevices")
-                .AddJsonBody(systemConfig.AdminLogin);
-
-            var response = conductor.Post(request);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                var seededSession = JsonConvert.DeserializeObject<List<int>>(response.Content);
-                foreach (var i in seededSession)
-                {
-                    _slavePool.AddSlaveId(i);
-                }
-            }
-            
         }
 
         /// <summary>

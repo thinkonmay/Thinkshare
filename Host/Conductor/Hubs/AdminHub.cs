@@ -2,38 +2,24 @@
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using SharedHost.Models;
-using Conductor.Administration;
+using Conductor.Services;
 using Conductor.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
+using SharedHost.Models.User;
+using SharedHost.Models.Shell;
 
 namespace SignalRChat.Hubs
 {
     public interface IAdminHub
     {
-        /// <summary>
-        /// like this name
-        /// </summary>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        Task ReportAgentError(GeneralError error);
-
-        Task ReportSessionCoreError(GeneralError error);
-
         Task ReportSlaveRegistered(SlaveDeviceInformation information);
 
-        Task ReportSessionStart(int SlaveID,int ClientID);
-
-        Task LogSlaveCommandLine(int SlaveID, int ProcessID, string Command);
-
-        Task ReportSessionTermination(int SlaveID, int ClietnID);
+        Task LogShellOutput(ShellOutput output);
     }
 
     [Authorize]
-    public class AdminHub : Hub<IAdminHub>
-    {
-        
-    }
+    public class AdminHub : Hub<IAdminHub> {   }
 }

@@ -3,63 +3,111 @@ using Conductor.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedHost.Models.Device;
+using SharedHost.Models.Shell;
+using Conductor.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Conductor.Controllers
 {
     /// <summary>
     /// Route use by admin to create shell remote session with slave devices
     /// </summary>
-    [Authorize(Roles = "Administrator")]
     [Route("/Shell")]
     [ApiController]
     public class ShellController : Controller
     {
         private readonly ISlaveManagerSocket _slmsocket;
 
-        public ShellController(ISlaveManagerSocket slmSocket)
+        private readonly ApplicationDbContext _db;
+
+        public ShellController(ISlaveManagerSocket slmSocket, ApplicationDbContext db)
         {
             _slmsocket = slmSocket;
+            _db = db;
         }
 
 
-
-        /// <summary>
-        /// initialize shell session
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        /// <returns></returns>
-        [HttpPost("Initialize")]
-        public IActionResult InitializeCommandlineSession(int SlaveID, int ProcessID)
-        {
-            _slmsocket.InitializeCommandLineSession(SlaveID, ProcessID);
-            return Ok();
-        }
-
-        /// <summary>
-        /// Terminate shell session
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        /// <returns></returns>
-        [HttpPost("Terminate")]
-        public IActionResult TerminateCommandlineSession(int SlaveID, int ProcessID)
-        {
-            _slmsocket.TerminateCommandLineSession(SlaveID, ProcessID);
-            return Ok();
-        }
 
 
         /// <summary>
         /// Send a command line to an specific process id of an specific slave device
         /// </summary>
-        /// <param name="command"></param>
+        /// <param name="ModelID"></param>
+        /// <param name="SlaveID"></param>
         /// <returns></returns>
-        [HttpPost("ForwardCommand")]
-        public async Task<IActionResult> CommandLine([FromBody] ForwardCommand command)
+        [HttpPost("Execute")]
+        public async Task<IActionResult> Shell(int ModelID, int SlaveID)
         {
-            await _slmsocket.SendCommand(command);
+            if((await _slmsocket.GetSlaveState(SlaveID)).SlaveServiceState == SlaveServiceState.Disconnected)
+            {
+                return BadRequest("Device not available");
+            }
+
+            var model = _db.ScriptModels.Find(ModelID);
+            var shell = new ShellScript(model, SlaveID);
+            await _slmsocket.InitializeShellSession(shell);
             return Ok();
+        }
+
+
+        
+        /// <summary>
+        /// Send a command line to an specific process id of an specific slave device
+        /// </summary>
+        /// <param name="ModelID"></param>
+        /// <returns></returns>
+        [HttpPost("Broadcast")]
+        public async Task<IActionResult> Broadcast(int ModelID)
+        {
+            var model = _db.ScriptModels.Find(ModelID);
+            var shell = new ShellScript(model, 0);
+            await _slmsocket.InitializeShellSession(shell);
+            return Ok();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("AddModel")]
+        public async Task<IActionResult> Model([FromBody] ScriptModel model)
+        {
+            try
+            {
+                _db.ScriptModels.Add(model);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetModelHistory")]
+        public IActionResult Model(int modelID, int SlaveID)
+        {
+            var session = _db.ShellSession
+                    .Where(o => o.Slave.ID == SlaveID && o.Model.ID == modelID)
+                    .ToList();
+            return Ok(session);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetModel")]
+        public IActionResult Model()
+        {
+            var model = _db.ScriptModels.ToList();
+            return Ok(model);
         }
     }
 }

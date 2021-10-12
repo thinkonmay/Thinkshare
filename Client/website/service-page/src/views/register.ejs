@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<% include login-register-partials/head %>
+	<title>ThinkMay | Register</title>
+	<script type="text/javascript">
+		window.login = false
+	</script>
+	<style>
+		.error {
+			color: red;
+		}
+	</style>
+</head>
+<body>
+	
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-pic js-tilt" data-tilt>
+					<img src="images/remote_img.jpg" alt="IMG">
+				</div>
+
+				<form class="login100-form validate-form">
+					<span class="login100-form-title">
+						Member Register
+					</span>
+					<label class="error" for="email"></label>
+					<div class="wrap-input100 validate-input">
+						<input class="input100" type="email" name="email" placeholder="Email">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-envelope" aria-hidden="true"></i>
+						</span>
+					</div>
+					<label class="error" for="username"></label>
+					<div class="wrap-input100 validate-input">
+						<input class="input100" type="text" name="username" placeholder="Username">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-user" aria-hidden="true"></i>
+						</span>
+					</div>
+					
+					<label class="error" for="fullname"></label>
+					<div class="wrap-input100 validate-input">
+						<input class="input100" type="text" name="fullname" placeholder="Fullname">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-address-card" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<label class="error" for="dob"></label>
+					<div class="wrap-input100 validate-input">
+						<input id="dob" class="input100" type="date" name="dob">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-birthday-cake" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<label class="error" for="jobs"></label>
+					<div class="wrap-input100 validate-input">
+						<input class="input100" type="text" name="jobs" placeholder="Job">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-building" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<label class="error" for="phoneNumber"></label>
+					<div class="wrap-input100 validate-input">
+						<input class="input100" type="number" name="phonenumber" placeholder="Phone Number">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-phone-square" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<label class="error" for="password"></label>
+					<div class="wrap-input100 validate-input">
+						<input id="password" class="input100" type="password" name="password" placeholder="Password">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+					
+					<label class="error" for="repassword"></label>
+					<div class="wrap-input100 validate-input">
+						<input class="input100" type="password" name="repassword" placeholder="Retype password">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+
+
+					
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn submit" id="register">
+							Register
+						</button>
+					</div>
+
+					<!-- <div class="text-center p-t-12">
+						<span class="txt1">
+							Forgot
+						</span>
+						<a class="txt2" href="#">
+							Username / Password?
+						</a>	
+					</div> -->
+
+					<div class="text-center p-t-136">
+						<a href="/login" class="txt2">
+							I have an Account
+							<i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<% include login-register-partials/dep %>
+	<!-- <script >
+		$('.js-tilt').tilt({
+			scale: 1.1
+		}) -->
+	<!-- </script>	 -->
+	<script type="module" src="javascripts/pages/login-register.js"></script>
+</body>
+
+</html>

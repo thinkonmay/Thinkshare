@@ -3,9 +3,14 @@ using System;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
+using System.Collections.Generic;
+using SharedHost.Models.Shell;
 using RestSharp;
 using System.Net;
 using SharedHost;
+using Newtonsoft.Json;
+using System.Linq;
+using System.Threading;
 
 namespace SlaveManager.Services
 {
@@ -13,20 +18,20 @@ namespace SlaveManager.Services
 
     public class ConductorSocket : IConductorSocket
     {
-        private readonly RestClient _error;
-
         private readonly RestClient _session;
 
         private readonly RestClient _device;
 
         private readonly RestClient _shell;
 
+        private readonly RestClient _scriptmodel;
+
         public ConductorSocket(SystemConfig config)
         {
-            _error =    new RestClient(config.Conductor + "/Error");
             _session =  new RestClient(config.Conductor + "/ReportSession");
             _device =   new RestClient(config.Conductor + "/ReportDevices");
             _shell =    new RestClient(config.Conductor + "/ReportShell");
+            _scriptmodel = new RestClient(config.Conductor + "/Shell");
         }
 
 
@@ -46,8 +51,9 @@ namespace SlaveManager.Services
             /*generate rest post to signalling server*/
             var request = new RestRequest("Registered")
                 .AddJsonBody(information);
-
             request.Method = Method.POST;
+
+            
             var reply = await _device.ExecuteAsync(request);
             if (reply.StatusCode == HttpStatusCode.OK)
             {
@@ -68,7 +74,6 @@ namespace SlaveManager.Services
             request.Method = Method.POST;
 
 
-
             var reply = await _device.ExecuteAsync(request);
             if (reply.StatusCode != HttpStatusCode.OK)
             {
@@ -78,7 +83,7 @@ namespace SlaveManager.Services
                     ErrorMessage = "Unable to process request",
                     SlaveID = SlaveID
                 };
-                await ReportError(error);
+                System.Console.WriteLine(JsonConvert.SerializeObject(error));
             }
         }
 
@@ -92,29 +97,7 @@ namespace SlaveManager.Services
 
 
 
-
-
-        public async Task ReportShellSessionTerminated(ForwardCommand command)
-        {
-            var request = new RestRequest("Terminated")
-                    .AddQueryParameter("SlaveID", command.SlaveID.ToString())
-                    .AddQueryParameter("ProcessID", command.ProcessID.ToString());
-            request.Method = Method.POST;
-
-            var reply = await _shell.ExecuteAsync(request);
-            if (reply.StatusCode != HttpStatusCode.OK)
-            {
-                var error = new ReportedError()
-                {
-                    Module = (int)Module.HOST_MODULE,
-                    ErrorMessage = "Unable to process request",
-                    SlaveID = command.SlaveID
-                };
-                await ReportError(error);
-            }
-        }
-
-        public async Task LogSlaveCommandLine(ReceiveCommand result)
+        public async Task LogShellOutput(ShellOutput result)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Output")
@@ -130,7 +113,7 @@ namespace SlaveManager.Services
                     ErrorMessage = "Unable to process request",
                     SlaveID = result.SlaveID
                 };
-                await ReportError(error);
+                System.Console.WriteLine(JsonConvert.SerializeObject(error));
             }
         }
 
@@ -139,30 +122,36 @@ namespace SlaveManager.Services
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /// <summary>
-        /// Report all slave error to admin
-        /// </summary>
-        public async Task ReportError(ReportedError err)
+        public async Task<List<ScriptModel>> GetDefaultModel()
         {
-            /*generate rest post to signalling server*/
-            var request = new RestRequest("Report")
-                .AddJsonBody(err);
-            request.Method = Method.POST;
-            await _error.ExecuteAsync(request);
+            var request = new RestRequest("GetModel");
+            request.Method = Method.GET;
+
+            var result = await _scriptmodel.ExecuteAsync(request);
+            if(result.StatusCode == HttpStatusCode.OK)
+            {
+                var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
+                return allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
+            }
+            else
+            {
+                // Repeat get default model if the request fail
+                var error = new ReportedError()
+                {
+                    Module = (int)Module.HOST_MODULE,
+                    ErrorMessage = "Unable to process request",
+                    SlaveID = 0
+                };
+                System.Console.WriteLine(JsonConvert.SerializeObject(error));
+                Thread.Sleep(10000);
+                return await GetDefaultModel();
+            }
         }
+
+
+
+
+
 
         /// <summary>
         /// Report session state change to user 
@@ -182,7 +171,7 @@ namespace SlaveManager.Services
                     ErrorMessage = "Unable to process request",
                     SlaveID = SlaveID
                 };
-                await ReportError(error);
+                System.Console.WriteLine(JsonConvert.SerializeObject(error));
             }
         }
     }

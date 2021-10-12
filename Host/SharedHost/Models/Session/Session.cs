@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using SharedHost.Models.Device;
+using SharedHost.Models.User;
 
 namespace SharedHost.Models.Session
 {
@@ -11,35 +13,40 @@ namespace SharedHost.Models.Session
     { 
         public RemoteSession() { }
 
-        public RemoteSession(ClientRequest req,
-                             QoE qoe, 
+        public RemoteSession(QoE qoe, 
                              SessionPair pair, 
-                             SystemConfig config,
-                             int clientID)
+                             SystemConfig config)
         {
-            ClientID = clientID;
-            SlaveID = req.SlaveId;
-
             SessionSlaveID = pair.SessionSlaveID;
             SessionClientID = pair.SessionClientID;
 
             QoE = qoe;
-            ClientOffer = false;
-            SignallingUrl = config.SignallingWs; ;
-            StunServer = config.StunServer;
-            // StartTime = DateTime.Now;
+            SignallingUrl = config.SignallingWs;
         }
 
-
         /// <summary>
-        /// 
+        /// preserved for database insert,
+        ///  should only be used by admin service to
+        /// insert database
         /// </summary>
-        public int ClientID { get; set; }
+        /// <value></value>
+        [Required]
+        public int ClientId {get;set;}
 
+        [ForeignKey("ClientId")]
+        public virtual UserAccount Client { get; set; }
+        
         /// <summary>
-        /// 
+        /// preserved for database insert,
+        ///  should only be used by admin service to
+        /// insert database
         /// </summary>
-        public int SlaveID { get; set; }
+        /// <value></value>
+        [Required]
+        public int SlaveID {get;set;}
+
+        [ForeignKey("SlaveID")]
+        public virtual Slave Slave { get; set; }
 
         /// <summary>
         /// 

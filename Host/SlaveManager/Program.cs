@@ -1,14 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using RestSharp;
-using SharedHost;
-using SlaveManager.Interfaces;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
+using Serilog;
+using Serilog.Formatting.Elasticsearch;
 
 namespace SlaveManager
 {
@@ -22,6 +15,13 @@ namespace SlaveManager
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseSerilog((ctx, config) => {
+                    config
+                        .MinimumLevel.Information()
+                        .Enrich.FromLogContext();
+
+                    config.WriteTo.Console();
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

@@ -1,27 +1,29 @@
 using Conductor.Models;
-
+using SharedHost.Models.Device;
+using SharedHost;
 
 namespace SharedHost.Models.Session
 {
     public class SlaveSession : SessionBase
     {
         public SlaveSession(){}
-        public SlaveSession(RemoteSession session,string stun)
+        public SlaveSession(RemoteSession session,SystemConfig config)
         {
             SessionSlaveID = session.SessionSlaveID;
 
             SignallingUrl = session.SignallingUrl;
-
-            StunServer = stun;
-
+            
             QoE = session.QoE;
 
-            ClientOffer = session.ClientOffer;
+            SlaveID = session.Slave.ID;
 
-            SlaveID = session.SlaveID;
+            TurnConnection =  config.TurnConnection;
         }
 
         public int SlaveID { get; set; }
+        
         public int SessionSlaveID { get; set; }
+
+        public string TurnConnection {get;set;}
     }
 }

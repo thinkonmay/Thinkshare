@@ -1,7 +1,14 @@
 name: CLIENT
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ master ]
+    paths: 
+    - 'Client/website/**'
+  pull_request:
+    branches: [ master ]
+    paths: 
+    - 'Client/website/**'
 
 
 #setup environment variable
@@ -9,6 +16,7 @@ env:
   REGISTRY: ghcr.io
   SERVICE_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/service-page:latest
   LANDING_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/landing-page:latest
+  ADMIN_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/admin-page:latest
 
 jobs:
   client:
@@ -26,16 +34,25 @@ jobs:
     - name: ServicePage 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
-        context: Client/service-page 
+        context: Client/website/service-page 
         push: true
         tags: ${{ env.SERVICE_PAGE_IMAGE }}
 
     - name: LandingPage 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
-        context: Client/landing-page
+        context: Client/website/landing-page
         push: true
         tags: ${{ env.LANDING_PAGE_IMAGE }}
+        
+    - name: AdminPage 
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Client/website/admin-page
+        push: true
+        tags: ${{ env.ADMIN_PAGE_IMAGE }}
+
+      
 
   deployment:
     runs-on: ubuntu-latest
@@ -48,16 +65,10 @@ jobs:
         host: ${{ secrets.HOST_IP }}
         password: ${{ secrets.HOST_PASSWORD }}
         script: |
-          cd /personal-cloud-computing
-          git checkout master
-          git pull https://${{ secrets.OAUTH_TOKEN }}@github.com/pigeatgarlic/personal-cloud-computing.git master
-          docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-          cd Deployment/kubernetes
-          kubectl apply -f deployment/service-page.yaml
-          kubectl apply -f deployment/landing-page.yaml
-
+          cd /personal-cloud-computing/Deployment/kubernetes
           kubectl rollout restart deploy service-page 
           kubectl rollout restart deploy landing-page 
+          kubectl rollout restart deploy admin-page
 
 
 

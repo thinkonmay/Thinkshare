@@ -60,10 +60,31 @@ QoE*
 qoe_initialize()
 {
 	static QoE qoe;
-	ZeroMemory(&qoe,sizeof(QoE));
+	memset(&qoe, 0, sizeof(QoE));
 	return &qoe;
 }
 
+
+void
+display_setting_get_and_set(gint* screen_width,
+							gint* screen_height)
+{
+	// resize window to fit user's window
+	DEVMODE devmode;
+    devmode.dmPelsWidth = *screen_width;
+    devmode.dmPelsHeight = *screen_height;
+    devmode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
+    devmode.dmSize = sizeof(DEVMODE);
+
+    long result = ChangeDisplaySettings(&devmode, 0);
+
+	gint x = GetSystemMetrics(SM_CXSCREEN);
+	gint y = GetSystemMetrics(SM_CYSCREEN);
+
+
+	memcpy(screen_height,&y,sizeof(gint));
+	memcpy(screen_width,&x,sizeof(gint));
+}
 
 
 void
@@ -74,15 +95,7 @@ qoe_setup(QoE* qoe,
 		  Codec video_codec,
 		  QoEMode qoe_mode)
 {
-	// resize window to fit user's window
-	DEVMODE devmode;
-    devmode.dmPelsWidth = screen_width;
-    devmode.dmPelsHeight = screen_height;
-    devmode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
-    devmode.dmSize = sizeof(DEVMODE);
-
-    long result = ChangeDisplaySettings(&devmode, 0);
-
+	display_setting_get_and_set(&screen_width,&screen_height);
 
 	qoe->screen_width = screen_width;
 	qoe->screen_height = screen_height;
@@ -115,18 +128,19 @@ qoe_setup(QoE* qoe,
 		qoe->algorithm = ultra_hight_const;
 		break;
 	case SEGMENTED_ADAPTIVE_BITRATE:
-		/* code */
+		qoe->algorithm = medium_const;
 		break;
 	case NON_OVER_SAMPLING_ADAPTIVE_BITRATE:
-		/* code */
+		qoe->algorithm = medium_const;
 		break;
 	case OVER_SAMPLING_ADAPTIVE_BITRATE:
-		/* code */
+		qoe->algorithm = medium_const;
 		break;
 	case PREDICTIVE_ADAPTIVE_BITRATE:
-		/* code */
+		qoe->algorithm = medium_const;
 		break;	
 	default:
+		qoe->algorithm = medium_const;
 		break;
 	}
 }
@@ -176,4 +190,16 @@ Codec
 qoe_get_video_codec(QoE* qoe)
 {
 	return qoe->codec_video;
+}
+
+gint 
+qoe_get_screen_width(QoE* qoe)
+{
+	return qoe->screen_width;
+}
+
+gint 
+qoe_get_screen_height(QoE* qoe)
+{
+	return qoe->screen_height;
 }

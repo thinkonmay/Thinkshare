@@ -53,14 +53,9 @@ struct _SignallingHub
 	gboolean disable_ssl;
 
     /// <summary>
-    /// decide who offer the sdp. set to true if client offer the sdp
+    /// url of turn server
     /// </summary>
-	gboolean client_offer;
-
-    /// <summary>
-    /// url of stun server
-    /// </summary>
-	gchar* stun_server;
+	gchar* turn;
 
     /// <summary>
     /// state of signalling connection,
@@ -104,14 +99,12 @@ signalling_hub_initialize(SessionCore* core)
 
 void
 signalling_hub_setup(SignallingHub* hub, 
+                     gchar* turn,
                      gchar* url,
-                     gboolean client_offer,
-                     gchar* stun_server,
                      gint session_slave_id)
 {
     hub->signalling_server = url;
-    hub->client_offer = client_offer;
-    hub->stun_server = stun_server;
+    hub->turn = turn;
     hub->SessionSlaveID = session_slave_id;
     hub->signalling_state = SIGNALLING_SERVER_READY;
 }
@@ -128,12 +121,14 @@ send_message_to_signalling_server(SignallingHub* signalling,
     json_object_set_string_member(json_object, REQUEST_TYPE, request_type);
     json_object_set_int_member(json_object, SUBJECT_ID, signalling->SessionSlaveID);
     json_object_set_string_member(json_object, CONTENT, content);
-    json_object_set_string_member(json_object, RESULT, SESSION_ACCEPTED); 
+    json_object_set_string_member(json_object, RESULT, SESSION_ACCEPTED);
+
     
     gchar* buffer = get_string_from_json_object(json_object);
-
-    write_to_log_file(SESSION_CORE_NETWORK_LOG, buffer);
+    json_object_unref(json_object);
+    // write_to_log_file(SESSION_CORE_NETWORK_LOG, buffer);
     soup_websocket_connection_send_text(signalling->connection,buffer);
+    g_free(buffer);
 }
 
 
@@ -162,7 +157,6 @@ send_ice_candidate_message(GstElement* webrtc G_GNUC_UNUSED,
     msg = json_object_new();
     json_object_set_object_member(msg, "ice", ice);
     text = get_string_from_json_object(msg);
-    json_object_unref(msg);
 
 
 
@@ -204,6 +198,7 @@ send_sdp_to_peer(SessionCore* core,
     }
 
     json_object_set_string_member(sdp, "sdp", text);
+    g_free(text);
 
     msg = json_object_new();
     json_object_set_object_member(msg, "sdp", sdp);
@@ -259,30 +254,13 @@ on_negotiation_needed(GstElement* element, SessionCore* core)
     SignallingHub* signalling = session_core_get_signalling_hub(core);
 
 
-    
+    GstPromise* promise =
+    gst_promise_new_with_change_func(on_offer_created, core, NULL);
 
-    if (signalling->client_offer)
-    {
-        /*send sdp request to client*/
-        JsonObject* request = json_object_new();
-        json_object_set_string_member(request,"type","request");
+    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+        "create-offer", NULL, promise);
 
-        JsonObject* sdp = json_object_new();
-        json_object_set_string_member(sdp,"sdp",request);
-
-        send_message_to_signalling_server(signalling,
-            OFFER_SDP,get_string_from_json_object(sdp));        
-    }
-    else 
-    {
-        GstPromise* promise =
-        gst_promise_new_with_change_func(on_offer_created, core, NULL);
-
-        g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
-            "create-offer", NULL, promise);
-
-        signalling->peer_call_state = PEER_CALL_NEGOTIATING;
-    }
+    signalling->peer_call_state = PEER_CALL_NEGOTIATING;
 }
 
 
@@ -374,7 +352,6 @@ on_answer_created(GstPromise* promise,
     Pipeline* pipe = session_core_get_pipeline(core);
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
-    g_assert_cmphex(hub->peer_call_state, == , PEER_CALL_NEGOTIATING);
 
     g_assert_cmphex(gst_promise_wait(promise), == , GST_PROMISE_RESULT_REPLIED);
     reply = gst_promise_get_reply(promise);
@@ -400,12 +377,13 @@ on_offer_set(GstPromise* promise,
     SessionCore* core)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
+    GstElement* webrtc = pipeline_get_webrtc_bin(pipe);
 
     gst_promise_unref(promise);
     promise = gst_promise_new_with_change_func(on_answer_created, 
-        pipeline_get_webrtc_bin(pipe), core);
+        core, NULL);
 
-    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
+    g_signal_emit_by_name(webrtc,
         "create-answer", NULL, promise);
 }
 
@@ -421,14 +399,12 @@ on_offer_received(SessionCore* core, GstSDPMessage* sdp)
     g_assert_nonnull(offer);
 
     /* Set remote description on our pipeline */
-    {
-        promise = gst_promise_new_with_change_func(on_offer_set, 
-            pipeline_get_webrtc_bin(pipe), NULL);
+    promise = gst_promise_new_with_change_func(on_offer_set, 
+        core, NULL);
 
-        g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe), 
-            "set-remote-description", offer,
-            promise);
-    }
+    g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe), 
+        "set-remote-description", offer,
+        promise);
     gst_webrtc_session_description_free(offer);
 }
 
@@ -442,7 +418,6 @@ session_core_logger(SoupLogger* logger,
             const char         *data,
             gpointer            user_data)
 {
-    write_to_log_file(SESSION_CORE_NETWORK_LOG,data);
 }
 
 
@@ -534,7 +509,8 @@ on_ice_exchange(gchar* text,SessionCore* core)
     Pipeline* pipe = session_core_get_pipeline(core);
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(text,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(text,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
     const gchar* candidate;
@@ -545,6 +521,7 @@ on_ice_exchange(gchar* text,SessionCore* core)
     /* Add ice candidate sent by remote peer */
     g_signal_emit_by_name(pipeline_get_webrtc_bin(pipe),
         "add-ice-candidate", sdpmlineindex, candidate);
+    g_object_unref(parser);
 }
 
 static void
@@ -555,12 +532,13 @@ on_sdp_exchange(gchar* data,
     Pipeline* pipe = session_core_get_pipeline(core);
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(data,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(data,&error,parser);
 	if(!error == NULL || object == NULL) {session_core_finalize(core,UNKNOWN_PACKAGE_FROM_CLIENT,error);}
 
     gint ret;
     GstSDPMessage* sdp;
-    const gchar* text;
+    gchar* text;
     GstWebRTCSessionDescription* answer;
 
     JsonObject* child = json_object_get_object_member(object, "sdp");
@@ -604,9 +582,9 @@ on_sdp_exchange(gchar* data,
     }
     else
     {
-        on_offer_received(pipeline_get_webrtc_bin(pipe),
-            sdp);
+        on_offer_received(core,sdp);
     }
+    g_object_unref(parser);
 }
 
 /// <summary>
@@ -624,7 +602,6 @@ on_server_message(SoupWebsocketConnection* conn,
     SessionCore* core)
 {
     Pipeline* pipe = session_core_get_pipeline(core);
-
     gchar* text;
 
     switch (type) 
@@ -640,8 +617,6 @@ on_server_message(SoupWebsocketConnection* conn,
             const char* data = g_bytes_get_data(message, &size);
             /* Convert to NULL-terminated string */
             text = g_strndup(data, size);
-            strcat(text, "\n");
-            write_to_log_file(SESSION_CORE_GENERAL_LOG,text);
             break;
         }
         default:
@@ -650,13 +625,15 @@ on_server_message(SoupWebsocketConnection* conn,
 
 
     GError* error = NULL;
-    Message* object = get_json_object_from_string(text,&error);
+    JsonParser* parser = json_parser_new();
+    Message* object = get_json_object_from_string(text,&error,parser);
 	if(!error == NULL || object == NULL) {return;}
 
     gchar* RequestType =    json_object_get_string_member(object, "RequestType");
-    gchar* SubjectId =      json_object_get_int_member(object, "SubjectId");
+    gint SubjectId =      json_object_get_int_member(object, "SubjectId");
     gchar* Content =        json_object_get_string_member(object, "Content");
     gchar* Result =         json_object_get_string_member(object, "Result");
+    g_print(Content);
 
     if (!g_strcmp0(Result, "SESSION_REJECTED") || !g_strcmp0(Result, "SESSION_TIMEOUT"))
     {
@@ -685,6 +662,8 @@ on_server_message(SoupWebsocketConnection* conn,
     {
         report_session_core_error(core, UNKNOWN_MESSAGE);
     }
+    g_object_unref(parser);
+    g_free(text);
 }
 
 
@@ -731,9 +710,9 @@ signalling_close(SignallingHub* hub)
 
 /*START get-set function*/
 gchar* 
-signalling_hub_get_stun_server(SignallingHub* hub)
+signalling_hub_get_turn_server(SignallingHub* hub)
 {
-    return hub->stun_server;
+    return hub->turn;
 }
 
 

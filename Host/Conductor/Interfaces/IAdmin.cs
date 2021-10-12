@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Conductor.Models;
 using SharedHost.Models;
-using SharedHost.Models.Command;
+using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
 using SharedHost.Models.Error;
 using SharedHost.Models.Session;
@@ -15,7 +15,6 @@ namespace Conductor.Interfaces
     /// /// </summary>
     public interface IAdmin
     {
-        Task<SlaveDeviceInformation> GetDeviceInfor(int SlaveID);
         /// <summary>
         /// Report new slave registration to the system
         /// </summary>
@@ -30,28 +29,14 @@ namespace Conductor.Interfaces
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
-        Task ReportSlaveDisconnected(int SlaveID);
+        Task EndAllRemoteSession(int SlaveID);
 
 
         /// <summary>
         /// Store slave command line return from agent into database and report to admin via signalR
         /// </summary>
         /// <returns></returns>
-        Task ReportShellSessionTerminated(int SlaveID,int ProcessID);
-
-
-        /// <summary>
-        /// Store slave command line return from agent into database and report to admin via signalR
-        /// </summary>
-        /// <returns></returns>
-        Task LogSlaveCommandLine(ReceiveCommand command);
-
-        /// <summary>
-        /// receive error from agent device and save it to database
-        /// </summary>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        Task ReportError(ReportedError error);
+        Task LogShellOutput(ShellOutput output);
 
         /// <summary>
         /// Report new session start, invoke from sesssions controller
@@ -68,14 +53,39 @@ namespace Conductor.Interfaces
         Task ReportSessionTermination(RemoteSession session);
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SlaveID"></param>
+        /// <returns></returns>
         Task ReportRemoteControlDisconnected(int SlaveID);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
         Task ReportRemoteControlDisconnectedFromSignalling(SessionPair session);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
         Task ReportRemoteControlDisconnected(RemoteSession session);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SlaveID"></param>
+        /// <returns></returns>
         Task ReportRemoteControlReconnect(int SlaveID);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="session"></param>
+        /// <returns></returns>
         Task ReportRemoteControlReconnect(RemoteSession session);
     }
 }

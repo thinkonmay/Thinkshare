@@ -3,6 +3,7 @@ using SharedHost.Models.Session;
 using SlaveManager.SlaveDevices;
 using System;
 using System.Collections.Generic;
+using SharedHost.Models.Shell;
 
 namespace SlaveManager.Interfaces
 {
@@ -70,22 +71,11 @@ namespace SlaveManager.Interfaces
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        bool InitializeCommand(int SlaveID, int ProcessID);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="ProcessID"></param>
-        bool TerminateCommand(int SlaveID,int ProcessID);
-
-        /// <summary>
-        /// send command to a specific process id at an specific slavedevice
-        /// </summary>
+        /// <param name="script"></param>
         /// <returns></returns>
-        bool SendCommand(ForwardCommand command);
+        bool InitShellSession(ShellScript script);
+
+        bool BroadcastShellScript(ShellScript script);
 
 
 

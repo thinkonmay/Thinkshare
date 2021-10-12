@@ -35,14 +35,22 @@ ChildProcess*		create_new_child_process					(gchar* binary_name,
 																 AgentObject* agent);
 
 /// <summary>
-/// function used to handle stdout from child process
+/// 
 /// </summary>
-/// <param name="buffer"></param>
+/// <returns></returns>
+ChildProcess* 		get_available_child_process					();
+
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
+ChildProcess* 		get_available_file_transceiver				();
+
+
+/// <summary>
+/// 
+/// </summary>
 /// <param name="agent"></param>
-void				command_line_output_handle					(gchar* buffer,
-																 AgentObject* agent);
-
-
 void				initialize_child_process_system				(AgentObject* agent);
 
 
@@ -57,6 +65,10 @@ gboolean			get_current_child_process_state				(AgentObject* agent,
 																 gint order);
 
 
-
+/// <summary>
+/// 
+/// </summary>
+/// <param name="process"></param>
+/// <returns></returns>
 gint 				get_child_process_id						(ChildProcess* process);
 #endif

@@ -9,12 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Conductor.Administration;
+using Conductor.Services;
 using Conductor.Data;
 using Conductor.Interfaces;
 using SharedHost.Models.Auth;
-using Conductor.Models.User;
-using Conductor.Services;
+using SharedHost.Models.User;
 using System;
 using System.IO;
 using System.Reflection;
@@ -45,7 +44,8 @@ namespace Conductor
 
             //for postgresql
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection"))
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
+                ServiceLifetime.Transient
             );
             
             // for sql server
@@ -69,14 +69,37 @@ namespace Conductor
             });
 
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
+                .AddGoogle(options =>
+                {
+                    var gconfig = Configuration.GetSection("Authentication:Google");
+                    options.ClientId = gconfig["ClientId"];
+                    options.ClientSecret = gconfig["ClientSecret"];
+                    options.CallbackPath = "/login-google";
+                }
+                )
                 .AddJwtBearer(options =>
                 {
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/ClientHub")) || (path.StartsWithSegments("/AdminHub")))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
@@ -137,7 +160,7 @@ namespace Conductor
             services.AddTransient<ITokenGenerator, TokenGenerator>();
             services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
 
-            services.AddTransient<DataSeeder>();
+            services.AddTransient<AccountSeeder>();
 
             services.AddMvc();
         }
@@ -176,7 +199,6 @@ namespace Conductor
                     
                 endpoints.MapHub<AdminHub>("/AdminHub");
                 endpoints.MapHub<ClientHub>("/ClientHub");
-                endpoints.MapHub<ChatHub>("/ChatHub");
             });
 
             app.UseSwagger();
