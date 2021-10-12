@@ -1,7 +1,9 @@
 const remoteBtn = document.getElementById('remoteBtn');
 
 remoteBtn.onclick = e => {
-    run_script("dir", null, null);
+    run_script("c: && cd ThinkmayClient/ThinkMay/bin && start remote-app.exe", null, null);
+    run_script("c: && cd ThinkMayServer/ThinkMay/bin && start session-core.exe", null, null);
+
 }
 
 // Uses node.js process manager
