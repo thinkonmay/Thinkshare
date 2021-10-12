@@ -3,7 +3,7 @@ project(remote-app C)
 
 set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/build-ninja/ninja)
 
-set(THINKMAY_DIR $ENV{THINKMAY_CLIENT})
+set(THINKMAY_DIR $ENV{THINKMAY_DIR})
 
 if (MINGW)
     set(CMAKE_PREFIX_PATH ${THINKMAY_DIR}/gstreamer/mingw_x86)

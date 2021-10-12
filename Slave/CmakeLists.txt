@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.20.0)
 project(Slave C)
 
-set(CMAKE_MAKE_PROGRAM ${CMAKE_SOURCE_DIR}/build-ninja/ninja)
 
 set(THINKMAY_DIR $ENV{THINKMAY_DIR})
 

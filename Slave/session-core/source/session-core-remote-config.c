@@ -65,6 +65,27 @@ qoe_initialize()
 }
 
 
+void
+display_setting_get_and_set(gint* screen_width,
+							gint* screen_height)
+{
+	// resize window to fit user's window
+	DEVMODE devmode;
+    devmode.dmPelsWidth = *screen_width;
+    devmode.dmPelsHeight = *screen_height;
+    devmode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
+    devmode.dmSize = sizeof(DEVMODE);
+
+    long result = ChangeDisplaySettings(&devmode, 0);
+
+	gint x = GetSystemMetrics(SM_CXSCREEN);
+	gint y = GetSystemMetrics(SM_CYSCREEN);
+
+
+	memcpy(screen_height,&y,sizeof(gint));
+	memcpy(screen_width,&x,sizeof(gint));
+}
+
 
 void
 qoe_setup(QoE* qoe,
@@ -74,15 +95,7 @@ qoe_setup(QoE* qoe,
 		  Codec video_codec,
 		  QoEMode qoe_mode)
 {
-	// resize window to fit user's window
-	DEVMODE devmode;
-    devmode.dmPelsWidth = screen_width;
-    devmode.dmPelsHeight = screen_height;
-    devmode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
-    devmode.dmSize = sizeof(DEVMODE);
-
-    long result = ChangeDisplaySettings(&devmode, 0);
-
+	display_setting_get_and_set(&screen_width,&screen_height);
 
 	qoe->screen_width = screen_width;
 	qoe->screen_height = screen_height;
