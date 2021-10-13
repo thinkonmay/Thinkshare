@@ -5,9 +5,9 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: manual
+  storageClassName: fast
   capacity:
-    storage: 11Gi
+    storage: 30Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
@@ -20,9 +20,9 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: manual
+  storageClassName: fast
   capacity:
-    storage: 1Gi
+    storage: 30Gi
   accessModes:
     - ReadWriteOnce
   hostPath:

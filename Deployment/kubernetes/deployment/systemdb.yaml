@@ -34,12 +34,12 @@ spec:
         image: postgres:latest
         imagePullPolicy: Always
         resources:
-          requests:
-            memory: "128Mi"
-            cpu: "200m"
           limits:
-            memory: "1Gi"
-            cpu: "300m"
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 700m
+            memory: 700Mi 
         ports:
         - containerPort: 5432
         envFrom:
