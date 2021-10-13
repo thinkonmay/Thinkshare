@@ -5,16 +5,10 @@
 #include <logging.h>
 #include <general-constant.h>
 
-#include <sysinfoapi.h>
-#include <Windows.h>
-#include <stdio.h>
-#include <tchar.h>
 #include <json-glib/json-glib.h>
-
 #define DIV 1048576
 #define ID  0
 
-#include <intrin.h>
 
 
 

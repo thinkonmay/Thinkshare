@@ -8,6 +8,7 @@
 #include <json-glib-1.0/json-glib/json-glib.h>
 #include <agent-object.h>
 
+#include <Windows.h>
 
 
 

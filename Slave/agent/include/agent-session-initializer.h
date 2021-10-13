@@ -6,6 +6,7 @@
 #include <agent-object.h>
 #include <agent-type.h>
 
+#include <Windows.h>
 
 
 /// <summary>

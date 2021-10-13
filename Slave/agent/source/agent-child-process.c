@@ -212,11 +212,11 @@ create_new_child_process(gchar* process_name,
     }
 
     PROCESS_INFORMATION pi;
-    memset(&pi,0, sizeof(pi));
+    ZeroMemory(&pi, sizeof(pi));
 
     /*setup startup infor(included standard input and output)*/
     STARTUPINFO startup_infor;
-    memset(&startup_infor,0, sizeof(startup_infor));
+    ZeroMemory(&startup_infor, sizeof(startup_infor));
     startup_infor.cb = sizeof(STARTUPINFO);
     startup_infor.dwFlags |= STARTF_USESTDHANDLES;
     startup_infor.hStdInput = hdl->standard_in;

@@ -3,6 +3,7 @@
 #include "agent-type.h"
 #include "glib.h"
 
+#include <Windows.h>
 /// <summary>
 /// send message to child process
 /// </summary>
