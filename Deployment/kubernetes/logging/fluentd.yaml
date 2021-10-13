@@ -80,10 +80,11 @@ spec:
             value: /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
         resources:
           limits:
-            memory: 100Mi
+            cpu: 300m
+            memory: 300Mi
           requests:
-            cpu: 50m
-            memory: 50Mi
+            cpu: 200m
+            memory: 200Mi
         volumeMounts:
         - name: varlog
           mountPath: /var/log

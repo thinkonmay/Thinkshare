@@ -1,24 +1,25 @@
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: logging-volume-claim
   namespace: kube-logging
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteOnce
+  storageClassName: fast
   resources:
     requests:
-      storage: 1Gi
+      storage: 30Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: systemdb-volume-claim
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteOnce
+  storageClassName: fast
   resources:
     requests:
-      storage: 10Gi
+      storage: 30Gi

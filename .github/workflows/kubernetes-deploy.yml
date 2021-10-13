@@ -19,18 +19,19 @@ jobs:
             git pull https://${{ secrets.OAUTH_TOKEN }}@github.com/pigeatgarlic/personal-cloud-computing.git master
             docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
             cd personal-cloud-computing/Deployment/kubernetes
-            kubectl apply -f /deployment/systemdb.yaml
-            kubectl apply -f /configmap/dbmanagerconfig.yaml
-            kubectl apply -f /configmap/dbconfig.yaml
-            kubectl apply -f /ingress/cert-manager/issuer.yaml
-            kubectl apply -f /ingress/ingress.yaml
-            kubectl apply -f /volume/volume.yaml
-            kubectl apply -f /deployment/conductor.yaml
-            kubectl apply -f /deployment/coturn.yaml
-            kubectl apply -f /deployment/resources.yaml
-            kubectl apply -f /deployment/signalling.yaml
-            kubectl apply -f /deployment/slavemanager.yaml
-            kubectl apply -f deployment/document.yaml
+            kubectl apply -f ./deployment/systemdb.yaml
+            kubectl apply -f ./configmap/dbmanagerconfig.yaml
+            kubectl apply -f ./configmap/dbconfig.yaml
+            kubectl apply -f ./ingress/cert-manager/issuer.yaml
+            kubectl apply -f ./ingress/ingress.yaml
+            kubectl apply -f ./volume/volume.yaml
+            kubectl apply -f ./volume/volume-claim.yaml
+            kubectl apply -f ./deployment/conductor.yaml
+            kubectl apply -f ./deployment/coturn.yaml
+            kubectl apply -f ./deployment/resources.yaml
+            kubectl apply -f ./deployment/signalling.yaml
+            kubectl apply -f ./deployment/slavemanager.yaml
+            kubectl apply -f ./deployment/document.yaml
 
             kubectl rollout restart deploy document 
             kubectl rollout restart deploy conductor 
