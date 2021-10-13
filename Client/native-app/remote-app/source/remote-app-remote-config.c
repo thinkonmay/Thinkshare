@@ -21,8 +21,8 @@
 
 
 #include <stdio.h>
-#include <windows.h>
-#include <winuser.h>
+
+
 
 
 struct _QoE

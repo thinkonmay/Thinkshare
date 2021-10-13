@@ -1,8 +1,7 @@
-#include <Windows.h>
 #include <glib.h>
 #include <key-convert.h>
 
-WORD
+unsigned short
 convert_javascript_key_to_window_key(gchar* keycode)
 {
         if(!g_strcmp0(keycode,"Backspace"))                 {return     0x08;}

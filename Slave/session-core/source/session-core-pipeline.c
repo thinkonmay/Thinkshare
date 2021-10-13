@@ -15,7 +15,6 @@
 #include <gst\webrtc\webrtc.h>
 #include <gst\rtp\gstrtppayloads.h>
 
-#include <Windows.h>
 
 
 
@@ -97,7 +96,7 @@ pipeline_initialize(SessionCore* core)
     SignallingHub* hub = session_core_get_signalling_hub(core);
 
     static Pipeline pipeline;
-    ZeroMemory(&pipeline,sizeof(pipeline));
+    memset(&pipeline,0,sizeof(pipeline));
     
 
     pipeline.state = PIPELINE_NOT_READY;

@@ -64,7 +64,7 @@ socket_close(Socket* socket)
             g_object_unref(socket->ws);
         }
     }
-    ZeroMemory(socket->ws,sizeof(SoupWebsocketConnection));
+    memset(socket->ws,0,sizeof(SoupWebsocketConnection));
 }
 
 /// <summary>

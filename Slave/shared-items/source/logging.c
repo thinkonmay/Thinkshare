@@ -3,7 +3,6 @@
 #include <gio/gio.h>
 #include <string.h>
 
-#include <Windows.h>
 #include <message-form.h>
 
 

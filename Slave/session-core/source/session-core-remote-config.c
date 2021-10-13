@@ -21,7 +21,9 @@
 
 
 #include <stdio.h>
+#ifdef G_OS_WIN32
 #include <windows.h>
+#endif
 #include <winuser.h>
 
 #include <ultra-low-const.h>

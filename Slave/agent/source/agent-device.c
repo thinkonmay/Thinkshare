@@ -53,7 +53,7 @@ DeviceInformation*
 get_device_information() 
 {
 	DeviceInformation* device_info = malloc(sizeof(DeviceInformation));
-	ZeroMemory(device_info, sizeof(DeviceInformation));
+	memset(device_info,0, sizeof(DeviceInformation));
 
 	int CPUInfo[4] = { -1 };
 	unsigned nExIds, i = 0;
@@ -96,7 +96,7 @@ get_device_information()
 #ifdef WIN32
 
 	gchar OS[100] ;
-	ZeroMemory(&OS, sizeof(OS));
+	memset(&OS,0, sizeof(OS));
 	DWORD minor_version = (HIBYTE(LOWORD(GetVersion())));
 	DWORD major_version = (LOBYTE(LOWORD(GetVersion())));
 

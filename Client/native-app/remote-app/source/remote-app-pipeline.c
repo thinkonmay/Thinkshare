@@ -17,7 +17,6 @@
 #include <gst\rtp\gstrtppayloads.h>
 #include <gst\base\gstbasesink.h>
 
-#include <Windows.h>
 
 #define GST_DEBUG_DUMP_DOT_DIR CURRENT_DIR
 
