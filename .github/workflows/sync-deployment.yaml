@@ -1,7 +1,7 @@
 name: SYNC
 
 on:
- workflow-dispatch: 
+  workflow_dispatch: 
 
 
 
