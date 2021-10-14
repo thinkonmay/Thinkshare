@@ -9,7 +9,7 @@ on:
     branches: [ master ]
     paths: 
     - 'Client/website/**'
-
+  workflow_dispatch:
 
 #setup environment variable
 env:
