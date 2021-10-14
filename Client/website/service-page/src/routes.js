@@ -2,6 +2,7 @@ module.exports = {
 	//  ╦ ╦╔═╗╔╗ ╔═╗╔═╗╔═╗╔═╗╔═╗
 	//  ║║║║╣ ╠╩╗╠═╝╠═╣║ ╦║╣ ╚═╗
 	//  ╚╩╝╚═╝╚═╝╩  ╩ ╩╚═╝╚═╝╚═╝
+	"GET /": {action: "view-login"},
 	"GET /login": {action: "view-login"},
 	"GET /login-admin": {action: "view-login-admin"},
 	"GET /register": {action: "view-register"},

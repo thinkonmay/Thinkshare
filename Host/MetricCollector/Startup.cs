@@ -83,6 +83,8 @@ namespace MetricCollector
             }
 
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()

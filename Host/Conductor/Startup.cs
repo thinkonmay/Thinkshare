@@ -177,6 +177,8 @@ namespace Conductor
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Conductor v1"));
             }
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
            // global cors policy
             app.UseCors(x => x
                 .AllowAnyMethod()
