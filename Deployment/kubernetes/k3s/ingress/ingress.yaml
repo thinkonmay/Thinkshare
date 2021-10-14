@@ -1,0 +1,108 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "34.129.17.135"
+    kubernetes.io/ingress.class: "gce"
+spec:
+  tls:
+  - hosts:
+    - thinkmay.net
+    - signalling.thinkmay.net
+    - slavemanager.thinkmay.net
+    - database.thinkmay.net
+    - admin.thinkmay.net
+    - conductor.thinkmay.net
+    - document.thinkmay.net
+    - service.thinkmay.net
+  rules:
+  - host: conductor.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+
+  #
+  - host: signalling.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: signalling
+            port:
+              number: 80
+
+
+  - host: slavemanager.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: slavemanager
+            port:
+              number: 80
+
+  - host: document.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: document
+            port:
+              number: 80
+
+  - host: thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: landing-page
+            port:
+              number: 80
+
+  - host: service.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: service-page
+            port:
+              number: 80
+
+  - host: admin.thinkmay.net
+    http:
+      paths:
+      - path: /login
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: admin-page
+            port:
+              number: 80
+
+  - host: database.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: dbmanager
+            port:
+              number: 80
