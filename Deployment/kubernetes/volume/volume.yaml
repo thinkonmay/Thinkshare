@@ -11,7 +11,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/data"
+    path: "/var/lib/data"
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -26,4 +26,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/logging"
+    path: "/var/lib/logging"

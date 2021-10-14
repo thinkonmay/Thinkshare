@@ -1,9 +1,43 @@
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
+apiVersion: cert-manager.io/v1
+kind: Issuer
 metadata:
-  name: google-cloud-cert 
+  name: letsencrypt
 spec:
-  domains:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: huyhoangdo0205@gmail.com
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt
+    # Enable the HTTP-01 challenge provider
+    solvers:
+    - http01:
+        ingress:
+          class:  traefik
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect
+  namespace: default
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect@kubernetescrd
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/issuer: "letsencrypt"
+spec:
+  tls:
+  - hosts:
     - thinkmay.net
     - signalling.thinkmay.net
     - slavemanager.thinkmay.net
@@ -12,15 +46,7 @@ spec:
     - conductor.thinkmay.net
     - document.thinkmay.net
     - service.thinkmay.net
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ingress
-  annotations:
-    kubernetes.io/ingress.class: "gce"
-    networking.gke.io/managed-certificates: google-cloud-cert 
-spec:
+    secretName: secret-tls
   rules:
   - host: conductor.thinkmay.net
     http:
