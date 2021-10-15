@@ -82,8 +82,10 @@ namespace Signalling.Services
                         }
                     }
                 } while (ws.State == WebSocketState.Open);
-            } catch (Exception)
-            { }
+            } catch (Exception ex)
+            {
+                Serilog.Log.Information("Connection closed due to {reason}.",ex.Message);
+            }
             Queue.DevieGoesOffline(subjectID);
         }
 
@@ -223,7 +225,10 @@ namespace Signalling.Services
             try
             {
                 await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-            } catch (Exception) {  }
+            } catch (Exception ex) 
+            {  
+                Serilog.Log.Information("Connection closed due to {reason}.",ex.Message);
+            }
             return;
         }
     }

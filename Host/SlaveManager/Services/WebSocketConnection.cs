@@ -120,8 +120,9 @@ namespace SlaveManager.Services
                         }
                     }
                 } while (ws.State == WebSocketState.Open);
-            } catch (Exception)
+            } catch (Exception ex)
             {
+                Serilog.Log.Information("Connection closed due to {reason}.",ex.Message);
                 return;
             }
             await HandleSlaveCreation(ws, SlaveID);
