@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<% include login-register-partials/head %>
+		<title>ThinkMay | Log in</title>
+		<script type="text/javascript">
+			window.login = true
+		</script>
+</head>
+
+<body>
+
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-pic js-tilt" data-tilt>
+					<img src="images/remote_img.jpg" alt="IMG">
+				</div>
+
+				<form class="login100-form validate-form">
+					<span class="login100-form-title">
+						Member Login
+					</span>
+					<label class="error" for="userName"></label>
+					<div class="wrap-input100 validate-input" data-validate="Your user name">
+						<input class="input100" type="username" name="username" placeholder="UserName">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-envelope" aria-hidden="true"></i>
+						</span>
+					</div>
+					<label class="error" for="password"></label>
+					<div class="wrap-input100 validate-input"
+						data-validate="Minimum character is 6 and maximum character is 50">
+						<input class="input100" type="password" name="password" placeholder="Password">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn" id="login">
+							Login
+						</button>
+					</div>
+					<!-- Display Google sign-in button -->
+					<div class="container-login100-form-btn">
+						<div id="gSignIn"></div>
+					</div	>
+					
+					<!-- <div class="text-center p-t-12">
+						<span class="txt1">
+							Forgot
+						</span>
+						<a class="txt2" href="#">
+							Username / Password?
+						</a>	
+					</div> -->
+
+					<div class="text-center p-t-136">
+						<a href="/register" class="txt2">
+							Create your Account
+							<i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<% include login-register-partials/dep %>
+		<!-- <script >
+		$('.js-tilt').tilt({
+			scale: 1.1
+		}) -->
+		<!-- </script>	 -->
+		<script type="module" src="javascripts/pages/login-register.js"></script>
+</body>
+
+</html>
