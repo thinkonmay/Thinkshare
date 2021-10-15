@@ -1,14 +1,7 @@
 name: SYNC
 
 on:
-  push:
-    branches: [ master ]
-    paths: 
-    - 'Deployment/**'
-  pull_request:
-    branches: [ master ]
-    paths: 
-    - 'Deployment/**'
+  workflow_dispatch: 
 
 
 

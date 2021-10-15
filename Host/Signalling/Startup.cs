@@ -47,7 +47,6 @@ namespace Signalling
                     builder => builder.AllowAnyOrigin());
             });
 
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -87,7 +86,8 @@ namespace Signalling
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
             }
 
-
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
