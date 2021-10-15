@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.20.0)
 project(Slave C)
 
 
-add_compile_options (-fdiagnostics-color=always)
-add_compile_options (warning_level=1)
+# add_compile_options (-fdiagnostics-color=always)
+# add_compile_options (warning_level=1)
 
 if (MINGW)
     set(CMAKE_PREFIX_PATH ${THINKMAY_DIR}/gstreamer/mingw_x86)
@@ -26,8 +26,8 @@ endif()
 
 set(SHARED_ITEMS ${CMAKE_SOURCE_DIR}/shared-items/include)
 
-# add_subdirectory(shared-items)
-# add_subdirectory(session-core)
-# add_subdirectory(agent)
-# add_subdirectory(file-transfer-service)
+add_subdirectory(shared-items)
+add_subdirectory(session-core)
+add_subdirectory(agent)
+add_subdirectory(file-transfer-service)
 add_subdirectory(remote-app)

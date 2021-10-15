@@ -16,6 +16,7 @@ pkg_check_modules(VIDEO REQUIRED gstreamer-video-1.0)
 
 file(GLOB SOURCE_LIST 
 ${CMAKE_SOURCE_DIR}/remote-app/source/*.c
+${CMAKE_SOURCE_DIR}/shared-items/source/*.c
 )
 
 
