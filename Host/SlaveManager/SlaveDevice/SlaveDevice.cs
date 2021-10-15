@@ -14,7 +14,6 @@ using SharedHost.Models.Session;
 using SharedHost.Models.Error;
 using SlaveManager.Services;
 using SharedHost;
-
 namespace SlaveManager.SlaveDevices
 {
     public class SlaveDevice : ISlaveDevice
@@ -54,8 +53,10 @@ namespace SlaveManager.SlaveDevices
                         }
                     }
                 } while (ws.State == WebSocketState.Open);
-            } catch (Exception)
-            { }
+            } catch (Exception ex)
+            {
+                Serilog.Log.Information("Slave device disconnected due to {reason}.", ex.Message);                
+            }
             await _conductor.ReportSlaveDisconnected(SlaveID);
             State = new DeviceDisconnected();
         }
@@ -106,8 +107,10 @@ namespace SlaveManager.SlaveDevices
                         }
                     }
                 }
-            }catch(Exception)
-            { }
+            }catch(Exception ex)
+            {
+                Serilog.Log.Information("Failed to execute message: {reason}.",ex.Message);
+            }
         }
 
 
