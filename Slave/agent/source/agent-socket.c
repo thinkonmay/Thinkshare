@@ -74,6 +74,30 @@ socket_close(Socket* socket)
 /// <param name="websocket connection"></param>
 /// <param name=""></param>
 void
+on_server_error(SoupWebsocketConnection* conn,
+    GError* error,
+    AgentObject* agent)
+{
+    gchar* text = error->message;
+    write_to_log_file(AGENT_NETWORK_LOG,text);
+    /*close websocket connection*/
+    Socket* socket = agent_get_socket(agent);
+    socket_close(socket);
+    
+    AgentState* disconnected = transition_to_disconnected_state();
+    agent_set_state(agent, disconnected);
+
+    /*then attemp to reconnect*/
+	agent_connect_to_host(agent);
+}
+
+/// <summary>
+/// handle close signal from host, 
+/// terminate websocket connection then try to reconnect
+/// </summary>
+/// <param name="websocket connection"></param>
+/// <param name=""></param>
+void
 on_server_closed(SoupWebsocketConnection* conn,
     AgentObject* agent)
 {
@@ -121,6 +145,7 @@ on_server_connected(SoupSession* session,
 
     g_main_context_push_thread_default(g_main_loop_get_context(agent_get_main_loop(agent)));
     /*connect websocket connection signal with signal handler*/
+    g_signal_connect(socket->ws, "error", G_CALLBACK(on_server_error), agent);
     g_signal_connect(socket->ws, "closed", G_CALLBACK(on_server_closed), agent);
     g_signal_connect(socket->ws, "message", G_CALLBACK(on_server_message), agent);
     g_main_context_pop_thread_default(g_main_loop_get_context(agent_get_main_loop(agent)));
@@ -277,7 +302,7 @@ initialize_socket(AgentObject* agent)
 
     socket_declare.session =
         soup_session_new_with_options(
-            SOUP_SESSION_SSL_STRICT, disable_ssl,
+            SOUP_SESSION_SSL_STRICT, FALSE,
             SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
             //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
             SOUP_SESSION_HTTPS_ALIASES, https_aliases, NULL);

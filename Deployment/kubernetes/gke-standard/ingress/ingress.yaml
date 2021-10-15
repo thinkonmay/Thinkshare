@@ -6,7 +6,6 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: "thinkmay-ip"
     kubernetes.io/ingress.class: "gce"
     networking.gke.io/managed-certificates: managed-cert
-    ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - host: conductor.thinkmay.net

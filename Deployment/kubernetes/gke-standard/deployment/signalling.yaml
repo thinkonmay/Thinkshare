@@ -4,6 +4,8 @@ metadata:
   name: signalling
   labels:
     app: signalling
+  annotations:
+    cloud.google.com/backend-config: '{"ports": {"80":"no-timeout"}}'
 spec:
   type: ClusterIP
   ports:
