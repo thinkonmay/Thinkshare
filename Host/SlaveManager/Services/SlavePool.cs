@@ -31,7 +31,7 @@ namespace SlaveManager.Services
             _socket = socket;
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
             SamplePeriod = 60* 1000;
-            // Task.Run(() => SystemHeartBeat());
+            Task.Run(() => SystemHeartBeat());
         }
 
         public async Task SystemHeartBeat()
