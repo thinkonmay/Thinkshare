@@ -1,5 +1,4 @@
-#include <Windows.h>
 #include <glib.h>
 
-WORD
+unsigned short
 convert_javascript_key_to_window_key(gchar* keycode);

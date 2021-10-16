@@ -9,10 +9,10 @@
 #include <qoe.h>
 #include <exit-code.h>
 
-#include <gst\gst.h>
-#include <glib-2.0\glib.h>
-#include <gst\webrtc\webrtc.h>
-#include <gst\rtp\gstrtppayloads.h>
+#include <gst/gst.h>
+#include <glib-2.0/glib.h>
+#include <gst/webrtc\webrtc.h>
+#include <gst/rtp\gstrtppayloads.h>
 
 #include <Windows.h>
 

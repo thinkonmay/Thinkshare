@@ -14,8 +14,8 @@
 #include <opcode.h>
 #include <qoe.h>
 
-#include <gst\gst.h>
-#include <glib-2.0\glib.h>
+#include <gst/gst.h>
+#include <glib-2.0/glib.h>
 #include <gst/controller/gstinterpolationcontrolsource.h>
 #include <gst/controller/gstdirectcontrolbinding.h>
 

@@ -7,9 +7,8 @@
 /// 
 /// 
 /// @copyright Copyright (c) 2021
-#include <json-glib-1.0/json-glib/json-glib.h>
+#include <json-glib/json-glib.h>
 #include <glib-2.0/glib.h>
-#include <gst\base\gstbasesink.h>
 
 /*session core state*/ 
 #define REMOTE_APP_INITIALIZING					"Session core initializing"
@@ -122,7 +121,5 @@ typedef					gchar*					                SignallingServerState;
 typedef					gchar*					                PeerCallState;
 
 
-typedef gboolean     	(*EventHandler)        					(GstBaseSink *sink,
-																 GstEvent *event);
 
 

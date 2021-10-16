@@ -55,26 +55,19 @@ target_compile_options(session-core PUBLIC ${CONTROLLER_CFLAGS})
 target_link_directories(session-core PUBLIC ${INCLUDE_LIBRARY} )    
 
 target_link_libraries(session-core PUBLIC 
-    kernel32.lib
-    user32.lib
-    gdi32.lib
-    winspool.lib
-    shell32.lib
-    ole32.lib
-    oleaut32.lib
-    uuid.lib
-    comdlg32.lib
-    advapi32.lib
-    intl.lib
-    gio-2.0.lib
-    glib-2.0.lib
-    gobject-2.0.lib
-    gmodule-2.0.lib
-    gstreamer-1.0.lib
-    json-glib-1.0.lib
-    soup-2.4.lib
-    gstsdp-1.0.lib
-    gstrtp-1.0.lib
-    gstcontroller-1.0.lib
-    gstwebrtc-1.0.lib
+    ${LIBSOUP_LIBRARIES}
+    ${GLIB_LIBRARIES} 
+    ${GIO_LIBRARIES} 
+    ${GOBJECT_LIBRARIES}
+    ${SDP_LIBRARIES}
+    ${GST_LIBRARIES}
+    ${JSON_GLIB_LIBRARIES}
+    ${WEBRTC_LIBRARIES}
+    ${CONTROLLER_LIBRARIES}
+    ${VIDEO_LIBRARIES}
 )
+
+
+
+
+

@@ -142,7 +142,7 @@ remote_app_send_message(RemoteApp* core, JsonObject* message)
 
 void
 remote_app_finalize(RemoteApp* self, 
-					  ExitCode exit_code, 
+					  gint exit_code, 
 					  GError* error)
 {
 	g_print(error->message);

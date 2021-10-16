@@ -4,7 +4,7 @@
 #include <remote-app-data-channel.h>
 
 
-#include <gst\video\navigation.h>
+#include <gst/video/navigation.h>
 
 #include <human-interface-opcode.h>
 #include <message-form.h>
@@ -112,10 +112,10 @@ handle_navigator(GstEvent *event,
             gst_navigation_event_parse_mouse_move_event(event,&(navigation->x_pos),&(navigation->y_pos));
             navigation->opcode = MOUSE_MOVE;
             break; 
-        case GST_NAVIGATION_EVENT_MOUSE_SCROLL: 
-            gst_navigation_event_parse_mouse_scroll_event(event,&(navigation->x_pos),&(navigation->y_pos),&(navigation->delta_x),&(navigation->delta_y));
-            navigation->opcode = MOUSE_WHEEL;
-            break; 
+        // case GST_NAVIGATION_EVENT_MOUSE_SCROLL: 
+        //     gst_navigation_event_parse_mouse_scroll_event(event,&(navigation->x_pos),&(navigation->y_pos),&(navigation->delta_x),&(navigation->delta_y));
+        //     navigation->opcode = MOUSE_WHEEL;
+        //     break; 
         case GST_NAVIGATION_EVENT_MOUSE_BUTTON_PRESS: 
             gst_navigation_event_parse_mouse_button_event(event,&(navigation->button_code),&(navigation->x_pos),&(navigation->y_pos));
             navigation->opcode = MOUSE_DOWN;

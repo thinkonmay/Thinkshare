@@ -11,11 +11,10 @@
 #include <qoe.h>
 #include <exit-code.h>
 
-#include <gst\gst.h>
-#include <glib-2.0\glib.h>
-#include <gst\webrtc\webrtc.h>
-#include <gst\rtp\gstrtppayloads.h>
-#include <gst\base\gstbasesink.h>
+#include <gst/gst.h>
+#include <glib-2.0/glib.h>
+#include <gst/webrtc/webrtc.h>
+#include <gst/base/gstbasesink.h>
 
 
 #define GST_DEBUG_DUMP_DOT_DIR CURRENT_DIR

@@ -25,7 +25,6 @@ add_executable(file-transfer ${SOURCE_LIST})
 target_include_directories(file-transfer 
 PUBLIC
     ${CMAKE_SOURCE_DIR}/file-transfer-service/include
-
     ${CMAKE_SOURCE_DIR}/shared-items/include
     ${LIBSOUP_INCLUDE_DIRS}
     ${GLIB_INCLUDE_DIRS} 
@@ -53,26 +52,19 @@ target_compile_options(file-transfer PUBLIC ${CONTROLLER_CFLAGS})
 target_link_directories(file-transfer PUBLIC ${INCLUDE_LIBRARY} )    
 
 target_link_libraries(file-transfer PUBLIC 
-    kernel32.lib
-    user32.lib
-    gdi32.lib
-    winspool.lib
-    shell32.lib
-    ole32.lib
-    oleaut32.lib
-    uuid.lib
-    comdlg32.lib
-    advapi32.lib
-    intl.lib
-    gio-2.0.lib
-    glib-2.0.lib
-    gobject-2.0.lib
-    gmodule-2.0.lib
-    gstreamer-1.0.lib
-    json-glib-1.0.lib
-    soup-2.4.lib
-    gstsdp-1.0.lib
-    gstrtp-1.0.lib
-    gstcontroller-1.0.lib
-    gstwebrtc-1.0.lib
+    ${LIBSOUP_LIBRARIES}
+    ${GLIB_LIBRARIES} 
+    ${GIO_LIBRARIES} 
+    ${GOBJECT_LIBRARIES}
+    ${SDP_LIBRARIES}
+    ${GST_LIBRARIES}
+    ${JSON_GLIB_LIBRARIES}
+    ${WEBRTC_LIBRARIES}
+    ${CONTROLLER_LIBRARIES}
+    ${VIDEO_LIBRARIES}
 )
+
+
+
+
+

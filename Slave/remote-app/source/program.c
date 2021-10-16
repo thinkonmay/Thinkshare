@@ -1,8 +1,8 @@
 #include <remote-app.h>
 #include <remote-app-type.h>
 
-#include <gst\gst.h>
-#include <glib-2.0\glib.h>
+#include <gst/gst.h>
+#include <glib-2.0/glib.h>
 
 #ifndef GST_USE_UNSTABLE_API
 #define GST_USE_UNSTABLE_API
@@ -50,7 +50,6 @@ main (int argc, char *argv[])
 
     if(!session_id || !video_codec || !audio_codec)
     {
-        g_printerr(argv);
         g_printerr("missing argument");
         return -1;
     }
