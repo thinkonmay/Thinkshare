@@ -1,7 +1,5 @@
-
+const child_process = require('child_process');
 const coookies_expire = 100 * 1000
-
-
 
 const sessionInitialize = async (SlaveID) => {
     initializeSession(parseInt(SlaveID)).then(async response => {
@@ -10,7 +8,7 @@ const sessionInitialize = async (SlaveID) => {
         var cookie = JSON.stringify(json);
 
         Cookies.setCookie("sessionClient",cookie,coookies_expire)
-        getRemotePage()
+        child_process.spawn()
     }else{
 
     }})
