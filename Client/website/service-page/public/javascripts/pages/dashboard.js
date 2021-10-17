@@ -1,8 +1,8 @@
-import * as API from "https://service.thinkmay.net/javascripts/util/api.js"
-import * as RemotePage from "https://service.thinkmay.net/javascripts/util/remote-page-cookies.js"
-import * as Setting from "https://service.thinkmay.net/javascripts/util/setting.js"
-import { getCookie, setCookie } from "https://service.thinkmay.net/javascripts/util/cookie.js"
-import * as Utils from "https://service.thinkmay.net/javascripts/util/utils.js"
+import * as API from "../util/api.js"
+import * as RemotePage from "../util/remote-page-cookies.js"
+import * as Setting from "../util/setting.js"
+import { getCookie, setCookie } from "../util/cookie.js"
+import * as Utils from "../util/utils.js"
 
 let datasets = [];
 let sessionInfor;
