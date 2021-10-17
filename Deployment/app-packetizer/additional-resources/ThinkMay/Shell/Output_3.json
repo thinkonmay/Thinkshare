@@ -1,0 +1,1306 @@
+﻿[
+    {
+        "Name":  "Idle",
+        "WorkingSet":  0.0078125
+    },
+    {
+        "Name":  "System",
+        "WorkingSet":  0.01171875
+    },
+    {
+        "Name":  "smss",
+        "WorkingSet":  0.4140625
+    },
+    {
+        "Name":  "fontdrvhost",
+        "WorkingSet":  0.83203125
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  0.91796875
+    },
+    {
+        "Name":  "WinStore.App",
+        "WorkingSet":  1.08203125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  1.1328125
+    },
+    {
+        "Name":  "GoogleCrashHandler64",
+        "WorkingSet":  1.22265625
+    },
+    {
+        "Name":  "wininit",
+        "WorkingSet":  1.5859375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.6484375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.7421875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.7578125
+    },
+    {
+        "Name":  "MpCopyAccelerator",
+        "WorkingSet":  1.8046875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.9296875
+    },
+    {
+        "Name":  "esif_uf",
+        "WorkingSet":  1.9609375
+    },
+    {
+        "Name":  "RtkAudioService64",
+        "WorkingSet":  1.984375
+    },
+    {
+        "Name":  "sqlwriter",
+        "WorkingSet":  2.01171875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.05078125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.0625
+    },
+    {
+        "Name":  "GoogleCrashHandler",
+        "WorkingSet":  2.06640625
+    },
+    {
+        "Name":  "jhi_service",
+        "WorkingSet":  2.078125
+    },
+    {
+        "Name":  "LSB",
+        "WorkingSet":  2.13671875
+    },
+    {
+        "Name":  "WTabletServiceISD",
+        "WorkingSet":  2.20703125
+    },
+    {
+        "Name":  "ibtsiva",
+        "WorkingSet":  2.23828125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.296875
+    },
+    {
+        "Name":  "msedgewebview2",
+        "WorkingSet":  2.47265625
+    },
+    {
+        "Name":  "Cortana",
+        "WorkingSet":  2.5546875
+    },
+    {
+        "Name":  "WacomHost",
+        "WorkingSet":  2.57421875
+    },
+    {
+        "Name":  "AggregatorHost",
+        "WorkingSet":  2.59765625
+    },
+    {
+        "Name":  "opera_crashreporter",
+        "WorkingSet":  2.59765625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.6015625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.60546875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.6328125
+    },
+    {
+        "Name":  "ISD_TabletUser",
+        "WorkingSet":  2.69921875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.70703125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.765625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  2.80078125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.84375
+    },
+    {
+        "Name":  "RAVCpl64",
+        "WorkingSet":  2.87109375
+    },
+    {
+        "Name":  "igfxext",
+        "WorkingSet":  2.8828125
+    },
+    {
+        "Name":  "csrss",
+        "WorkingSet":  2.90625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.109375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.12109375
+    },
+    {
+        "Name":  "RAVBg64",
+        "WorkingSet":  3.3203125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.45703125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.58984375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  3.7578125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.77734375
+    },
+    {
+        "Name":  "gxxsvc",
+        "WorkingSet":  3.78515625
+    },
+    {
+        "Name":  "IpOverUsbSvc",
+        "WorkingSet":  3.80078125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.8203125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.8515625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.9765625
+    },
+    {
+        "Name":  "SecurityHealthSystray",
+        "WorkingSet":  4.01953125
+    },
+    {
+        "Name":  "LMS",
+        "WorkingSet":  4.1484375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.328125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.3515625
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.375
+    },
+    {
+        "Name":  "csrss",
+        "WorkingSet":  4.37890625
+    },
+    {
+        "Name":  "UserOOBEBroker",
+        "WorkingSet":  4.45703125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.49609375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.5234375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.546875
+    },
+    {
+        "Name":  "rundll32",
+        "WorkingSet":  4.55078125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.58203125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.73046875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.7734375
+    },
+    {
+        "Name":  "spoolsv",
+        "WorkingSet":  4.77734375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.78125
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.82421875
+    },
+    {
+        "Name":  "utorrentie",
+        "WorkingSet":  4.828125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.85546875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.87109375
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  4.95703125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.07421875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.1875
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  5.21875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.22265625
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  5.2265625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.31640625
+    },
+    {
+        "Name":  "PowerMgr",
+        "WorkingSet":  5.37109375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.46484375
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  5.50390625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.53515625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.58203125
+    },
+    {
+        "Name":  "fontdrvhost",
+        "WorkingSet":  5.62109375
+    },
+    {
+        "Name":  "com.docker.service",
+        "WorkingSet":  5.69921875
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  5.70703125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.828125
+    },
+    {
+        "Name":  "msedgewebview2",
+        "WorkingSet":  5.84375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.90625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.91015625
+    },
+    {
+        "Name":  "NisSrv",
+        "WorkingSet":  5.98828125
+    },
+    {
+        "Name":  "Video.UI",
+        "WorkingSet":  6.0703125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  6.0859375
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  6.28125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  6.40625
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  6.453125
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  6.47265625
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  6.5078125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  6.5078125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  6.53515625
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  6.546875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  6.69921875
+    },
+    {
+        "Name":  "SgrmBroker",
+        "WorkingSet":  6.7109375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  6.73046875
+    },
+    {
+        "Name":  "TeamViewer_Service",
+        "WorkingSet":  6.734375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  6.76953125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  6.79296875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  6.80859375
+    },
+    {
+        "Name":  "winlogon",
+        "WorkingSet":  6.81640625
+    },
+    {
+        "Name":  "services",
+        "WorkingSet":  6.82421875
+    },
+    {
+        "Name":  "helper",
+        "WorkingSet":  6.91015625
+    },
+    {
+        "Name":  "ISD_Tablet",
+        "WorkingSet":  7.015625
+    },
+    {
+        "Name":  "OneApp.IGCC.WinService",
+        "WorkingSet":  7.1328125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  7.25390625
+    },
+    {
+        "Name":  "ssh",
+        "WorkingSet":  7.28125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  7.28125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  7.4921875
+    },
+    {
+        "Name":  "dllhost",
+        "WorkingSet":  7.64453125
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  7.734375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  7.80078125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  7.94921875
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  8.0078125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  8.19921875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  8.3046875
+    },
+    {
+        "Name":  "SecurityHealthService",
+        "WorkingSet":  8.32421875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  8.40625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  8.40625
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  8.4375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  8.56640625
+    },
+    {
+        "Name":  "dasHost",
+        "WorkingSet":  8.5859375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  8.640625
+    },
+    {
+        "Name":  "NVDisplay.Container",
+        "WorkingSet":  8.6484375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  8.796875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  8.9296875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  9.07421875
+    },
+    {
+        "Name":  "SearchFilterHost",
+        "WorkingSet":  9.10546875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  9.22265625
+    },
+    {
+        "Name":  "PicoPJPopup",
+        "WorkingSet":  9.23828125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  9.296875
+    },
+    {
+        "Name":  "WUDFHost",
+        "WorkingSet":  9.3203125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  9.58203125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  9.62890625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  9.84375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  9.8828125
+    },
+    {
+        "Name":  "SearchFilterHost",
+        "WorkingSet":  9.8984375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  9.95703125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  9.9765625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  10.015625
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  10.09765625
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  10.1328125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  10.15625
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  10.15625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  10.171875
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  10.2265625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  10.24609375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  10.765625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  10.78125
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  10.921875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  10.92578125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  11.05078125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  11.09765625
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  11.31640625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  11.37890625
+    },
+    {
+        "Name":  "dllhost",
+        "WorkingSet":  11.4140625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  11.51953125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  11.68359375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  11.9921875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  12.02734375
+    },
+    {
+        "Name":  "DolbyDAX2API",
+        "WorkingSet":  12.1484375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  12.33984375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  12.34765625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  12.40234375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  12.44140625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  12.6484375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  12.75390625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  12.88671875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  12.94921875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  13.015625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  13.08984375
+    },
+    {
+        "Name":  "audiodg",
+        "WorkingSet":  13.171875
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  13.40625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  13.4453125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  13.56640625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  13.5703125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  13.625
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  13.85546875
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  14.0859375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  14.17578125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  14.27734375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  14.375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  14.80078125
+    },
+    {
+        "Name":  "UniKeyNT",
+        "WorkingSet":  14.8125
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  14.9140625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  14.9453125
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  14.953125
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  14.9609375
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  15.0078125
+    },
+    {
+        "Name":  "lsass",
+        "WorkingSet":  15.09375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  15.28515625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  15.31640625
+    },
+    {
+        "Name":  "GitHubDesktop",
+        "WorkingSet":  15.3984375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  15.45703125
+    },
+    {
+        "Name":  "taskhostw",
+        "WorkingSet":  15.85546875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  15.8671875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  15.8984375
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  16.1328125
+    },
+    {
+        "Name":  "uTorrent",
+        "WorkingSet":  16.359375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  16.52734375
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  16.61328125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  16.94140625
+    },
+    {
+        "Name":  "SearchProtocolHost",
+        "WorkingSet":  17.24609375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  17.359375
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  17.75390625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  17.7734375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  17.84765625
+    },
+    {
+        "Name":  "cpptools",
+        "WorkingSet":  17.96484375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  18.07421875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  18.15625
+    },
+    {
+        "Name":  "agent",
+        "WorkingSet":  18.21484375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  18.55859375
+    },
+    {
+        "Name":  "msedgewebview2",
+        "WorkingSet":  18.88671875
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  19.1875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  19.78125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  19.9375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  20.26953125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  20.3046875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  20.36328125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  20.8203125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  20.9375
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  21
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  21.07421875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  21.078125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  21.16015625
+    },
+    {
+        "Name":  "Widgets",
+        "WorkingSet":  21.19140625
+    },
+    {
+        "Name":  "YourPhone",
+        "WorkingSet":  21.37109375
+    },
+    {
+        "Name":  "LockApp",
+        "WorkingSet":  21.73046875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  21.75390625
+    },
+    {
+        "Name":  "sihost",
+        "WorkingSet":  21.80859375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  22.23828125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  22.2890625
+    },
+    {
+        "Name":  "utorrentie",
+        "WorkingSet":  23.10546875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  23.3515625
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  23.77734375
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  23.78515625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  23.984375
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  24.12109375
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  24.21484375
+    },
+    {
+        "Name":  "msiexec",
+        "WorkingSet":  24.29296875
+    },
+    {
+        "Name":  "NVDisplay.Container",
+        "WorkingSet":  26.7578125
+    },
+    {
+        "Name":  "slack",
+        "WorkingSet":  27.69921875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  28.15234375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  29.16015625
+    },
+    {
+        "Name":  "TextInputHost",
+        "WorkingSet":  29.39453125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  29.80078125
+    },
+    {
+        "Name":  "ApplicationFrameHost",
+        "WorkingSet":  29.91796875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  30.6171875
+    },
+    {
+        "Name":  "GitHubDesktop",
+        "WorkingSet":  31.328125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  31.55859375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  32.51171875
+    },
+    {
+        "Name":  "ctfmon",
+        "WorkingSet":  32.78515625
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  35.578125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  35.92578125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  36.1953125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  37.6015625
+    },
+    {
+        "Name":  "vsls-agent",
+        "WorkingSet":  37.96484375
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  38.37109375
+    },
+    {
+        "Name":  "slack",
+        "WorkingSet":  39.640625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  41.1640625
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  44.43359375
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  44.7734375
+    },
+    {
+        "Name":  "Microsoft.Photos",
+        "WorkingSet":  45.109375
+    },
+    {
+        "Name":  "msedgewebview2",
+        "WorkingSet":  46.3203125
+    },
+    {
+        "Name":  "GitHubDesktop",
+        "WorkingSet":  47.2109375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  47.44921875
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  48.41015625
+    },
+    {
+        "Name":  "SearchIndexer",
+        "WorkingSet":  50.43359375
+    },
+    {
+        "Name":  "explorer",
+        "WorkingSet":  53.6953125
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  54.8125
+    },
+    {
+        "Name":  "ShellExperienceHost",
+        "WorkingSet":  54.87890625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  59.42578125
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  59.76171875
+    },
+    {
+        "Name":  "StartMenuExperienceHost",
+        "WorkingSet":  61.2578125
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  61.65234375
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  62.8046875
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  63.19921875
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  64.19140625
+    },
+    {
+        "Name":  "opera",
+        "WorkingSet":  64.34765625
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  64.75
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  65.16796875
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  65.31640625
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  65.390625
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  66.81640625
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  67.140625
+    },
+    {
+        "Name":  "msedgewebview2",
+        "WorkingSet":  67.5546875
+    },
+    {
+        "Name":  "msedgewebview2",
+        "WorkingSet":  67.70703125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  68.0078125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  72.41796875
+    },
+    {
+        "Name":  "GitHubDesktop",
+        "WorkingSet":  73.61328125
+    },
+    {
+        "Name":  "SearchHost",
+        "WorkingSet":  79.4453125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  85.15625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  85.32421875
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  88.69921875
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  91.2265625
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  94.73828125
+    },
+    {
+        "Name":  "Registry",
+        "WorkingSet":  98.26953125
+    },
+    {
+        "Name":  "slack",
+        "WorkingSet":  98.39453125
+    },
+    {
+        "Name":  "slack",
+        "WorkingSet":  101.95703125
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  102.8359375
+    },
+    {
+        "Name":  "dwm",
+        "WorkingSet":  107.2734375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  112.7109375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  114.5546875
+    },
+    {
+        "Name":  "advinst",
+        "WorkingSet":  120.52734375
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  123.69921875
+    },
+    {
+        "Name":  "MsMpEngCP",
+        "WorkingSet":  126.8125
+    },
+    {
+        "Name":  "slack",
+        "WorkingSet":  149.58203125
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  194.2421875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  194.71484375
+    },
+    {
+        "Name":  "MsMpEng",
+        "WorkingSet":  207.875
+    },
+    {
+        "Name":  "OmniSharp",
+        "WorkingSet":  221.296875
+    },
+    {
+        "Name":  "explorer",
+        "WorkingSet":  239.203125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  284.421875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  288.62890625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  308.390625
+    },
+    {
+        "Name":  "Memory Compression",
+        "WorkingSet":  1201.3125
+    }
+]

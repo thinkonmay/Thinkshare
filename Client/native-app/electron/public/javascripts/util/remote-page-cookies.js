@@ -1,6 +1,10 @@
 const child_process = require('child_process');
 const coookies_expire = 100 * 1000
 
+const getRemotePage() {
+    child_process.spawn();
+}
+
 const sessionInitialize = async (SlaveID) => {
     initializeSession(parseInt(SlaveID)).then(async response => {
     if(response.status == 200){
@@ -25,8 +29,4 @@ const sessionReconnect = async (SlaveID) => {
         }else{
             
         }})
-}
-
-const getRemotePage = () => {
-    window.open(Initialize, "__blank")
 }

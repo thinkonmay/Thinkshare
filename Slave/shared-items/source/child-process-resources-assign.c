@@ -3,11 +3,6 @@
 #include <general-constant.h>
 
 
-gchar*
-get_base_dir()
-{
-    return getenv("THINKMAY_DIR");
-}
 
 
 gchar*
