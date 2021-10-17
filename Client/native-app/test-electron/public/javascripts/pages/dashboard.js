@@ -26,22 +26,25 @@ $(document).ready(async () => {
 			createSlave(slave, "availableSlaves");
 		}
 	} catch (err) {
-		window.location.replace(API.Error)
+		console.log(err)
 	}
 
-	const queryCommand = await (await API.queryCommand(611212710)).json();
-	for(const i in queryCommand)
-	{
-		var output = remove_linebreaks(queryCommand[i].output);
-		var script = remove_linebreaks(queryCommand[i].script);
-		console.log(script);
-		console.log(output);
-		try{
-		var json = JSON.parse(output);
-		console.log(output);
-		} catch (err){}
+	try {
+		const queryCommand = await (await queryCommand(611212710)).json();
+		for(const i in queryCommand)
+		{
+			var output = remove_linebreaks(queryCommand[i].output);
+			var script = remove_linebreaks(queryCommand[i].script);
+			console.log(script);
+			console.log(output);
+			try{
+			var json = JSON.parse(output);
+			console.log(output);
+			} catch (err){}
+		}
+	} catch (err){
+		console.log(err);
 	}
-
 
 	
 
@@ -79,7 +82,7 @@ $(document).ready(async () => {
 			createSlave(device, "availableSlaves")
 		})
 	}).catch(function (err) {
-		location.reload();
+		console.log(err);
 	})
 
 
