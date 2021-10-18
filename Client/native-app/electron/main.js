@@ -3,7 +3,7 @@ const child_process = require('child_process');
 function createWindow() {
   const mainWindow = new BrowserWindow({
     show: false,
-    icon: 'assets/logo_thinkmay.png',
+    icon: 'assets/logo.ico',
   });
   mainWindow.maximize();
   mainWindow.show();
