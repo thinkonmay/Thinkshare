@@ -1,4 +1,4 @@
-export function getCookie(cname) {
+function getCookie(cname) {
 	let name = cname + "="
 	let decodedCookie = decodeURIComponent(document.cookie)
 	let ca = decodedCookie.split(";")
@@ -14,7 +14,7 @@ export function getCookie(cname) {
 	return ""
 }
 
-export function setCookie(name, value, milis) {
+function setCookie(name, value, milis) {
 	var expires = ""
 	if (milis) {
 		var date = new Date(Date.now() + milis)

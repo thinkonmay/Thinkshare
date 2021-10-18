@@ -6,6 +6,8 @@
 #include <json-glib/json-glib.h>
 #include <Windows.h>
 
+#define TERMINATED_PATH     22
+
 /// <summary>
 /// Socket is a object use to manage connection with host, 
 /// included send and receive,

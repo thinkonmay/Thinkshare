@@ -1,35 +1,34 @@
-import { getCookie } from "./cookie.js"
+
 
 const host = "https://conductor.thinkmay.net"
 
 // local api
-export const Dashboard = "/dashboard"
-export const Initialize = "/initialize"
-export const Reconnect = "/reconnect"
+const Dashboard = "/dashboard"
+const Initialize = "/initialize"
+const Reconnect = "/reconnect"
+
+const Error = "/500"
 
 // thinkmay api
-export const Login = `${host}/Account/Login`
-export const LoginAdmin = `${host}/Account/Login-admin`
-export const Register = `${host}/Account/Register`
-export const GetInfor = `${host}/Account/GetInfor`
+const Login = `${host}/Account/Login`
 
-export const FetchSlave = `${host}/User/FetchSlave`
-export const FetchSession = `${host}/User/FetchSession`
-export const GetSession = `${host}/User/GetSession`
+const FetchSlave = `${host}/User/FetchSlave`
+const FetchSession = `${host}/User/FetchSession`
 
-export const RejectDevice = `${host}/Device/Reject/`
-export const DisconnectDevice = `${host}/Device/Disconnect`
+const AddDevice = `${host}/Device/Add`
+const RejectDevice = `${host}/Device/Reject/`
+const DisconnectDevice = `${host}/Device/Disconnect`
 
-export const TerminateSession = `${host}/Session/Terminate`
-export const DisconnectSession = `${host}/Session/Disconnect`
-export const ReconnectSession = `${host}/Session/Reconnect`
-export const InitializeSession = `${host}/Session/Initialize`
+const TerminateSession = `${host}/Session/Terminate`
+const DisconnectSession = `${host}/Session/Disconnect`
+const ReconnectSession = `${host}/Session/Reconnect`
+const InitializeSession = `${host}/Session/Initialize`
 
+const QueryDevice = `${host}/Query/Device`
+const QuerySession = `${host}/Query/Session`
+const QueryCommand = `${host}/Query/Command`
 
-
-export const QuerySession = `${host}/Query/Session`
-
-export const genHeaders = () => {
+const genHeaders = () => {
 	const token = getCookie("token")
 	return Object.assign(
 		{
@@ -38,12 +37,12 @@ export const genHeaders = () => {
 		token
 			? {
 				Authorization: `Bearer ${token}`
-			}
+			  }
 			: {}
 	)
 }
 
-export const login = body => {
+const login = body => {
 	return fetch(Login, {
 		method: "POST",
 		headers: genHeaders(),
@@ -54,156 +53,105 @@ export const login = body => {
 	})
 }
 
-export const register = body => {
-	return fetch(Register, {
-		method: "POST",
-		headers: genHeaders(),
-		body: JSON.stringify({
-			userName: body.username,
-			password: body.password,
-			email: body.email,
-			fullName: body.fullname,
-			dateOfBirth: body.dob,
-			jobs: body.jobs,
-			phoneNumber: body.phonenumber
-		})
-	})
-}
 
-export const getInfor = () => {
-	return fetch(GetInfor, {
-		method: "GET",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
 
-export const fetchSlave = () => {
+const fetchSlave = () => {
 	return fetch(FetchSlave, {
 		method: "GET",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
 }
 
-export const fetchSession = () => {
+const fetchSession = () => {
 	return fetch(FetchSession, {
 		method: "GET",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
 }
 
-export const getSession = () => {
-	return fetch(GetSession, {
+
+
+
+
+
+
+const queryDevice = () => {
+	return fetch(QueryDevice, {
 		method: "GET",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
 }
 
-
-
-export const querySession = SlaveID => {
+const querySession = SlaveID => {
 	return fetch(QuerySession + "?SlaveID=" + SlaveID, {
 		method: "GET",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
 }
 
-export const rejectDevice = SlaveID => {
+const queryCommand = SlaveID => {
+	return fetch(QueryCommand + "?SlaveID=" + SlaveID, {
+		method: "GET",
+		headers: genHeaders()
+	})
+}
+
+
+
+
+
+
+const addDevice = () => {
+	return fetch(AddDevice, {
+		method: "GET",
+		headers: genHeaders()
+	})
+}
+
+const rejectDevice = SlaveID => {
 	return fetch(RejectDevice + "?SlaveID=" + SlaveID, {
 		method: "DELETE",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
 }
 
-export const disconnectDevice = SlaveID => {
+const disconnectDevice = SlaveID => {
 	return fetch(DisconnectDevice + "?SlaveID=" + SlaveID, {
 		method: "DELETE",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
 }
 
-export const terminateSession = SlaveID => {
+
+
+
+
+
+
+
+const terminateSession = SlaveID => {
 	return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
 		method: "DELETE",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
 }
 
-export const disconnectSession = SlaveID => {
+const disconnectSession = SlaveID => {
 	return fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
 		method: "POST",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
 }
 
-export const reconnectSession = (SlaveID) => {
+const reconnectSession = (SlaveID) => {
 	return fetch(ReconnectSession + "?SlaveID=" + SlaveID, {
 		method: "POST",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
 }
 
 
-export const initializeSession = (SlaveID) => {
+const initializeSession = (SlaveID) => {
 	var cap = getCookie("cap");
 
 	var body = {
@@ -212,14 +160,8 @@ export const initializeSession = (SlaveID) => {
 	}
 	return fetch(InitializeSession, {
 		method: "POST",
-		headers: genHeaders(),
+		headers: genHeaders(), 
 		body: JSON.stringify(body)
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
 }
 

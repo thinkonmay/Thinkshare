@@ -1,12 +1,12 @@
 // alert message from https://sweetalert2.github.io/#icons
 
-export const newSwal = Swal.mixin({
+const newSwal = Swal.mixin({
 	heightAuto: false,
 	allowOutsideClick: false,
 	allowEscapeKey: false
 })
 
-export function responseError(title, msg, icon) {
+function responseError(title, msg, icon) {
 	newSwal.fire({
 		title: title,
 		text: msg,
@@ -14,7 +14,7 @@ export function responseError(title, msg, icon) {
 	})
 }
 
-export function responseErrorHandler(response) {
+function responseErrorHandler(response) {
 	const keys = Object.keys(response.errors)
 	const errors = keys.map(key => response.errors[key])
 	const msg = keys.map((key, index) => `${key}: ${errors[index]}`).join(", ")
@@ -25,7 +25,7 @@ export function responseErrorHandler(response) {
 	})
 }
 
-export function fetchErrorHandler(error) {
+function fetchErrorHandler(error) {
 	newSwal.fire({
 		title: "Lỗi!",
 		text: error.message,

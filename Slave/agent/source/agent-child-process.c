@@ -225,8 +225,7 @@ create_new_child_process(gchar* process_name,
 
     GString* string_process = g_string_new(process_name);
     g_string_append(string_process,parsed_command);
-    
-    LPSTR process = g_win32_locale_filename_from_utf8(g_string_free(string_process,FALSE));
+    gchar* process = g_string_free(string_process,FALSE); 
     /*START process, all standard input and output are controlled by agent*/
     gboolean output = CreateProcess(NULL,
         process,

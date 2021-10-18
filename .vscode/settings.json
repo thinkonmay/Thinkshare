@@ -5,6 +5,8 @@
         "gst.h": "c",
         "ultra-high-const.h": "c",
         "agent-shell-session.h": "c",
-        "agent-type.h": "c"
+        "agent-type.h": "c",
+        "unistd.h": "c",
+        "agent-object.h": "c"
     }
 }

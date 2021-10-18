@@ -3,6 +3,7 @@
 
 #include <gst/gst.h>
 #include <glib-2.0/glib.h>
+#include <general-constant.h>
 
 #ifndef GST_USE_UNSTABLE_API
 #define GST_USE_UNSTABLE_API
@@ -30,9 +31,14 @@ static GOptionEntry entries[] = {
   {NULL},
 };
 
+
+
 int
-main (int argc, char *argv[])
+main(int argc, char* argv[])
 {
+    thinkmay_init(argv[0],19);
+
+
     GOptionContext *context;
     GError *error = NULL;
 

@@ -1,11 +1,17 @@
 #include <glib.h>
 #include <agent-object.h>
-#include <stdio.h>
-#define WIN32_LEAN_AND_MEAN  
-#include <Windows.h>
+#include <general-constant.h>
 
-int 
-main(void)
+
+
+
+
+
+int
+main(int argc, char* argv[])
 {
+    thinkmay_init(argv[0],14);
+
+
     agent_new();
 }

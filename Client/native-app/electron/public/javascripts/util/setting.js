@@ -1,97 +1,59 @@
-import {setCookie,getCookie} from "./cookie.js"
 
-
-
-
-export function Mode(mode) {
-	
-	var cap = JSON.parse(getCookie("cap"));
-	
+function Mode(mode) {
 	switch (mode) {
 	case "ultra low":
-			cap.mode= 1;
-			break;
+		return {
+			mode: 1
+		}
 	case "low":
-			cap.mode= 2;
-			break;
+		return {
+			mode: 2
+		}
 	case "medium":
-			cap.mode= 3;
-			break;
+		return {
+			mode: 3
+		}
 	case "high":
-			cap.mode= 4;
-			break;
+		return {
+			mode: 4
+		}	
 	case "very high":
-			cap.mode= 5;
-			break;
+		return {
+			mode: 5
+		}
 	case "ultra high":
-			cap.mode= 6;
-			break;
+		return {
+			mode: 6
+		}
 	}
-
-	setCookie("cap", JSON.stringify(cap), 999999)
-	console.log("set default device capability to " + getCookie("cap"));
-
 }
 
-export function VideoCodec(codec) {
-	
-	var cap = JSON.parse(getCookie("cap"));
-	
-		
+function VideoCodec(codec) {
 	switch (codec) {
 	case "h264":
-			cap.videoCodec= 1;
-			break;
+		return {
+			videoCodec: 1
+		}
 	case "h265":
-			cap.videoCodec= 0;
-			break;
+		return {
+			videoCodec: 0
+		}
 	case "vp9":
-			cap.videoCodec= 3;
-			break;
+		return {
+			videoCodec: 3
+		}
 	}
-	setCookie("cap", JSON.stringify(cap), 999999)
-	console.log("set default device capability to " + getCookie("cap"));
 }
 
-export function AudioCodec(codec) {
-	
-	var cap = JSON.parse(getCookie("cap"));
-
-	
-	
+function AudioCodec(codec) {
 	switch (codec) {
 	case "opus":
-			cap.audioCodec= 4;
-			break;
+		return {
+			audioCodec: 4
+		}
 	case "aac":
-			cap.audioCodec= 5;
-			break;
+		return {
+			audioCodec: 5
+		}
 	}
-	setCookie("cap", JSON.stringify(cap), 999999)
-	console.log("set default device capability to " + getCookie("cap"));
-}
-
-
-
-export function
-mapVideoRes(resolution)
-{
-	var cap = JSON.parse(getCookie("cap"));
-	switch(resolution)
-	{
-		case "4K":
-			cap.screenHeight=2160;
-			cap.screenWidth=3840;
-			break;
-		case "2K":
-			cap.screenHeight=1440;
-			cap.screenWidth=2560;
-			break;
-		case "FullHD":
-			cap.screenHeight=1080;
-			cap.screenWidth=1920;
-			break;
-	}
-	setCookie("cap", JSON.stringify(cap), 999999)
-	console.log("set default device capability to " + getCookie("cap"));
 }

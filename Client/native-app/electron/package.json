@@ -1,22 +1,27 @@
 {
   "name": "thinkmay",
-  "productName": "thinkmay",
   "version": "1.0.0",
-  "description": "My Electron application description",
-  "main": "src/main.js",
+  "description": "desktop app for pcc without expressjs",
+  "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "make": "electron-forge make"
   },
-  "keywords": [],
-  "author": {
-    "name": "epitchi",
-    "email": "thienvanlea1@gmail.com"
+  "author": "thinkmay",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.61",
+    "@electron-forge/maker-deb": "^6.0.0-beta.61",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.61",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.61",
+    "@electron-forge/maker-zip": "^6.0.0-beta.61",
+    "electron": "^15.2.0"
   },
-  "license": "MIT",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0"
+  },
   "config": {
     "forge": {
       "packagerConfig": {},
@@ -24,7 +29,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "native_app"
+            "name": "thinkmay"
           }
         },
         {
@@ -43,32 +48,5 @@
         }
       ]
     }
-  },
-  "dependencies": {
-    "child_process": "^1.0.2",
-    "electron-squirrel-startup": "^1.0.0",
-    "@microsoft/signalr": "^5.0.10",
-    "body-parser": "^1.18.3",
-    "cookie-parser": "~1.4.4",
-    "cors": "^2.8.5",
-    "debug": "~2.6.9",
-    "dotenv": "^10.0.0",
-    "ejs": "~2.6.1",
-    "express": "~4.16.1",
-    "gapi": "^0.0.3",
-    "glob": "^7.2.0",
-    "http-errors": "~1.6.3",
-    "morgan": "~1.9.1",
-    "node-fetch": "^2.6.1"
-  },
-  "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.61",
-    "@electron-forge/maker-deb": "^6.0.0-beta.61",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.61",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.61",
-    "@electron-forge/maker-zip": "^6.0.0-beta.61",
-    "electron": "15.1.2",
-    "eslint": "^7.32.0",
-    "nodemon": "^2.0.12"
   }
 }

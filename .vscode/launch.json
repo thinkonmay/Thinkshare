@@ -5,17 +5,25 @@
     "version": "0.2.0",
     "configurations": 
     [
+
+
+
         {
-            "name": "(Windows) Attach",
+            "name": "File Transfer",
             "type": "cppvsdbg",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
+            "request": "launch",
+            "program": "${workspaceFolder}/Deployment/app-packetizer/additional-resources/ThinkMay/bin/file-transfer.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "console": "externalTerminal"
         },
         {
             "name": "Remote App",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "C:/ThinkmayClient/Thinkmay/bin/remote-app.exe",
+            "program": "${workspaceFolder}/Deployment/app-packetizer/additional-resources/ThinkMay/bin/remote-app.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
@@ -26,7 +34,7 @@
             "name": "Session Core",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "C:/ThinkmayServer/ThinkMay/bin/session-core.exe",
+            "program": "${workspaceFolder}/Deployment/app-packetizer/additional-resources/ThinkMay/bin/session-core.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
@@ -37,7 +45,7 @@
             "name": "Agent",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "C:/ThinkmayServer/ThinkMay/bin/agent.exe",
+            "program": "${workspaceFolder}/Deployment/app-packetizer/additional-resources/ThinkMay/bin/agent.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
