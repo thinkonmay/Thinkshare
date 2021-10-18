@@ -1,7 +1,8 @@
 {
   "name": "thinkmay",
+  "productName": "ThinkMay",
   "version": "1.0.0",
-  "description": "desktop app for pcc without expressjs",
+  "description": "ThinkMay is a startup born with an ultimate goal - changing how technology serve human and shape our knowledge about the world",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -9,6 +10,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
+  "keywords": [],"capabilities": {},
   "author": "thinkmay",
   "license": "ISC",
   "devDependencies": {
