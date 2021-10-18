@@ -4,10 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/include/gstreamer-1.0/**",
-                "/usr/include/json-glib-1.0/**",
-                "/usr/include/glib-2.0/**",
-                "/usr/include/**"
+                "C:/ThinkmayServer/gstreamer/msvc_x86_64/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -18,7 +15,7 @@
             "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30037/bin/Hostx64/x64/cl.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64"
+            "intelliSenseMode": "windows-msvc-x64"
         }
     ],
     "version": 4

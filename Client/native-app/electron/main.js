@@ -6,7 +6,6 @@ function createWindow () {
     height: 600
   })
 
-  win.loadFile('Dashboard.html')
 }
 
 

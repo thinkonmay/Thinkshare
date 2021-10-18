@@ -1,0 +1,21 @@
+name: SYNC
+
+on:
+  workflow_dispatch: 
+
+
+
+jobs:     
+  sync-server:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy on kubernetes
+      uses: appleboy/ssh-action@master
+      with:
+        username:  ${{ secrets.HOST_USERNAME }}
+        host: ${{ secrets.HOST_IP }}
+        password: ${{ secrets.HOST_PASSWORD }}
+        script: |
+          cd /personal-cloud-computing
+          git checkout master
+          git pull https://${{ secrets.OAUTH_TOKEN }}@github.com/pigeatgarlic/personal-cloud-computing.git master
