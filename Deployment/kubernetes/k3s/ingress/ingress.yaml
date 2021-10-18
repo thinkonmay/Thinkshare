@@ -1,10 +1,40 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt
+spec:
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: huyhoangdo0205@gmail.com
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: letsencrypt
+    # Enable the HTTP-01 challenge provider
+    solvers:
+    - http01:
+        ingress:
+          class:  traefik
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect
+  namespace: default
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: "34.129.17.135"
-    kubernetes.io/ingress.class: "gce"
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect@kubernetescrd
+    kubernetes.io/ingress.class: "traefik"
+    cert-manager.io/issuer: "letsencrypt"
 spec:
   tls:
   - hosts:
@@ -14,14 +44,14 @@ spec:
     - database.thinkmay.net
     - admin.thinkmay.net
     - conductor.thinkmay.net
-    - document.thinkmay.net
     - service.thinkmay.net
+    secretName: secret-tls
   rules:
   - host: conductor.thinkmay.net
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: conductor
@@ -33,7 +63,7 @@ spec:
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: signalling
@@ -45,29 +75,18 @@ spec:
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: slavemanager
             port:
               number: 80
-
-  - host: document.thinkmay.net
-    http:
-      paths:
-      - path: /
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: document
-            port:
-              number: 80
-
+              
   - host: thinkmay.net
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: landing-page
@@ -78,7 +97,7 @@ spec:
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: service-page
@@ -89,7 +108,7 @@ spec:
     http:
       paths:
       - path: /login
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: admin-page
@@ -100,7 +119,7 @@ spec:
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
           service:
             name: dbmanager
