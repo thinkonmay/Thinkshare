@@ -1,11 +1,12 @@
 const { app, BrowserWindow } = require('electron')
-const child_process = require('child_process');
+
 function createWindow () {
   const win = new BrowserWindow({
-    width: 1000,
-    height: 800
+    width: 800,
+    height: 600
   })
 
+  win.loadFile('Dashboard.html')
   win.loadFile('Dashboard.html')
 }
 
@@ -20,4 +21,10 @@ app.on('window-all-closed', function () {
 })
 
 
+app.whenReady().then(() => {
+  createWindow()
 
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+})
