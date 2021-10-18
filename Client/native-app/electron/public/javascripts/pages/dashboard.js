@@ -11,6 +11,8 @@ $(document).ready(async () => {
 	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
 	console.log("set default device capability to " + getCookie("cap"));
 
+	user();
+
 	try {
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
@@ -234,4 +236,11 @@ function serialize(obj, prefix) {
 		}
 	}
 	return str.join("&")
+}
+
+function user() {
+	document.getElementById('userButton').addEventListener('click', function () {
+		console.log("????")
+		alert("tính lăng lày chưa phát triển, làm ơn đừng pấm")
+	});
 }
