@@ -392,3 +392,5 @@ Deployment/app-packetizer/additional-resources/ThinkMay/Shell/Script_5.ps1
 Deployment/app-packetizer/additional-resources/ThinkMay/Shell/Script_6.ps1
 Deployment/app-packetizer/additional-resources/ThinkMay/Shell/Script_7.ps1
 Deployment/app-packetizer/additional-resources/ThinkMay/Shell/Script_8.ps1
+*.msi
+*.cab
