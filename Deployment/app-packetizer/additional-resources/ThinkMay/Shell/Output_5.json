@@ -1,4 +1,14 @@
-﻿{
-"GPUMem": 1255.34,
-"GPUEngine": 30.41
-}
+﻿[
+    {
+        "FreeSpace":  47,
+        "Size":  238,
+        "DeviceType":  null,
+        "DeviceID":  "C:"
+    },
+    {
+        "FreeSpace":  168,
+        "Size":  466,
+        "DeviceType":  null,
+        "DeviceID":  "E:"
+    }
+]

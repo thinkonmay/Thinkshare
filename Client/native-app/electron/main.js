@@ -6,7 +6,7 @@ function createWindow () {
     height: 800
   })
 
-  win.loadFile('Dashboard.html')
+  win.loadURL('https://service.thinkmay.net')
 }
 
 
