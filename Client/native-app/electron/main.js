@@ -1,14 +1,14 @@
 const { app, BrowserWindow } = require('electron')
 const child_process = require('child_process');
-function createWindow () {
-  const win = new BrowserWindow({
-    width: 1000,
-    height: 800
-  })
-
-  win.loadURL('https://service.thinkmay.net')
+function createWindow() {
+  const mainWindow = new BrowserWindow({
+    show: false,
+    icon: 'assets/logo_thinkmay.png',
+  });
+  mainWindow.maximize();
+  mainWindow.show();
+  mainWindow.loadURL("https://service.thinkmay.net/")
 }
-
 
 app.whenReady().then(() => {
   createWindow()

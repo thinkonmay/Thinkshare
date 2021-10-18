@@ -15,42 +15,43 @@ $(document).ready(async () => {
 	})
 
 	var defaultDeviceCap = {
-		mode: 4,	
-		videoCodec: 1,	
-		audioCodec:4,
+		mode: 4,
+		videoCodec: 1,
+		audioCodec: 4,
 		screenWidth: 2560,
 		screenHeight: 1440
 	}
 	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
 
 	var bitrate = document.getElementsByName("bitrate-setting");
-	for(var item = 0; item < bitrate.length; item ++)
-	{
-		bitrate[item].onclick =(event) => Setting.Mode(event.target.innerHTML);
+	for (var item = 0; item < bitrate.length; item++) {
+		bitrate[item].onclick = (event) => Setting.Mode(event.target.innerHTML);
 	}
 
 	var audio_codec = document.getElementsByName("audiocodec-setting");
-	for(var item = 0; item < audio_codec.length; item ++)
-	{
-		audio_codec[item].onclick =(event) => Setting.AudioCodec(event.target.innerHTML);
+	for (var item = 0; item < audio_codec.length; item++) {
+		audio_codec[item].onclick = (event) => Setting.AudioCodec(event.target.innerHTML);
 	}
 
 	var video_codec = document.getElementsByName("videocodec-setting");
-	for(var item = 0; item < video_codec.length; item ++)
-	{
-		video_codec[item].onclick =(event) => Setting.VideoCodec(event.target.innerHTML);
+	for (var item = 0; item < video_codec.length; item++) {
+		video_codec[item].onclick = (event) => Setting.VideoCodec(event.target.innerHTML);
 	}
 
 	var resolution = document.getElementsByName("resolution-setting");
-	for(var item = 0; item < resolution.length; item ++)
-	{
-		resolution[item].onclick =(event) => Setting.mapVideoRes(event.target.innerHTML);
+	for (var item = 0; item < resolution.length; item++) {
+		resolution[item].onclick = (event) => Setting.mapVideoRes(event.target.innerHTML);
 	}
 
 	noti()
 	search()
 	inbox()
 	user()
+	if (isElectron()) {
+		// For Electron App
+	} else {
+		// For Web
+	}
 
 	try {
 		const userinfor = await (await API.getInfor()).json()
@@ -108,6 +109,11 @@ $(document).ready(async () => {
 	}).catch(function (err) {
 		location.reload();
 	})
+
+	connection.onclose(error => {
+		console.assert(connection.state === signalR.HubConnectionState.Disconnected);
+		location.reload();
+	});
 })
 
 
@@ -239,141 +245,160 @@ function user() {
 	});
 }
 
-function setDataForChart(){
+function isElectron() {
+	// Renderer process
+	if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
+		return true;
+	}
+
+	// Main process
+	if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
+		return true;
+	}
+
+	// Detect the user agent when the `nodeIntegration` option is set to true
+	if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
+		return true;
+	}
+
+	return false;
+}
+
+function setDataForChart() {
 	console.log(sessionInfor)
-	for (let i = 0; i < 7; i++){
+	for (let i = 0; i < 7; i++) {
 		datasets[i] = 0;
 	}
-	for (let i = 0; i < sessionInfor.length; i++){
+	for (let i = 0; i < sessionInfor.length; i++) {
 		datasets[sessionInfor[i].dayofWeek] = sessionInfor[i].sessionTime;
 	}
 	var date = new Date();
-		var day = date.getDay();
-		let countDay = 0;
-		let _lables = [];
-		while (countDay <= 6) {
-			switch (day) {
-				case 0: _lables.unshift("SUN"); break;
-				case 1: _lables.unshift("MON"); break;
-				case 2: _lables.unshift("TUE"); break;
-				case 3: _lables.unshift("WED"); break;
-				case 4: _lables.unshift("THU"); break;
-				case 5: _lables.unshift("FRI"); break;
-				case 6: _lables.unshift("SAT"); break;
-			}
-			day--;
-			if (day < 0) {
-				day = 6;
-			}
-			countDay++;
+	var day = date.getDay();
+	let countDay = 0;
+	let _lables = [];
+	while (countDay <= 6) {
+		switch (day) {
+			case 0: _lables.unshift("SUN"); break;
+			case 1: _lables.unshift("MON"); break;
+			case 2: _lables.unshift("TUE"); break;
+			case 3: _lables.unshift("WED"); break;
+			case 4: _lables.unshift("THU"); break;
+			case 5: _lables.unshift("FRI"); break;
+			case 6: _lables.unshift("SAT"); break;
 		}
-		if ($("#performaneLine").length) {
-			var graphGradient = document.getElementById("performaneLine").getContext('2d');
-			var graphGradient2 = document.getElementById("performaneLine").getContext('2d');
-			var saleGradientBg = graphGradient.createLinearGradient(5, 0, 5, 100);
-			saleGradientBg.addColorStop(0, 'rgba(26, 115, 232, 0.18)');
-			saleGradientBg.addColorStop(1, 'rgba(26, 115, 232, 0.02)');
-			var saleGradientBg2 = graphGradient2.createLinearGradient(100, 0, 50, 150);
-			saleGradientBg2.addColorStop(0, 'rgba(0, 208, 255, 0.19)');
-			saleGradientBg2.addColorStop(1, 'rgba(0, 208, 255, 0.03)');
-			var salesTopData = {
-				labels: _lables,
-				datasets: [{
-					label: 'This week',
-					data: datasets,
-					backgroundColor: saleGradientBg,
-					borderColor: [
-						'#1F3BB3',
-					],
-					borderWidth: 1.5,
-					fill: true, // 3: no fill
-					pointBorderWidth: 1,
-					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-					pointBackgroundColor: ['#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)'],
-					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-				},
-					//  {
-					// 	label: 'Last week',
-					// 	data: [30, 150, 190, 250, 120, 150, 130],
-					// 	backgroundColor: saleGradientBg2,
-					// 	borderColor: [
-					// 		'#52CDFF',
-					// 	],
-					// 	borderWidth: 1.5,
-					// 	fill: true, // 3: no fill
-					// 	pointBorderWidth: 1,
-					// 	pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-					// 	pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-					// 	pointBackgroundColor: ['#52CDFF)', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF)', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF)', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF)'],
-					// 	pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-					// }
-				]
-			};
+		day--;
+		if (day < 0) {
+			day = 6;
+		}
+		countDay++;
+	}
+	if ($("#performaneLine").length) {
+		var graphGradient = document.getElementById("performaneLine").getContext('2d');
+		var graphGradient2 = document.getElementById("performaneLine").getContext('2d');
+		var saleGradientBg = graphGradient.createLinearGradient(5, 0, 5, 100);
+		saleGradientBg.addColorStop(0, 'rgba(26, 115, 232, 0.18)');
+		saleGradientBg.addColorStop(1, 'rgba(26, 115, 232, 0.02)');
+		var saleGradientBg2 = graphGradient2.createLinearGradient(100, 0, 50, 150);
+		saleGradientBg2.addColorStop(0, 'rgba(0, 208, 255, 0.19)');
+		saleGradientBg2.addColorStop(1, 'rgba(0, 208, 255, 0.03)');
+		var salesTopData = {
+			labels: _lables,
+			datasets: [{
+				label: 'This week',
+				data: datasets,
+				backgroundColor: saleGradientBg,
+				borderColor: [
+					'#1F3BB3',
+				],
+				borderWidth: 1.5,
+				fill: true, // 3: no fill
+				pointBorderWidth: 1,
+				pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+				pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+				pointBackgroundColor: ['#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)'],
+				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
+			},
+				//  {
+				// 	label: 'Last week',
+				// 	data: [30, 150, 190, 250, 120, 150, 130],
+				// 	backgroundColor: saleGradientBg2,
+				// 	borderColor: [
+				// 		'#52CDFF',
+				// 	],
+				// 	borderWidth: 1.5,
+				// 	fill: true, // 3: no fill
+				// 	pointBorderWidth: 1,
+				// 	pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+				// 	pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+				// 	pointBackgroundColor: ['#52CDFF)', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF)', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF)', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF)'],
+				// 	pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
+				// }
+			]
+		};
 
-			var salesTopOptions = {
-				responsive: true,
-				maintainAspectRatio: false,
-				scales: {
-					yAxes: [{
-						gridLines: {
-							display: true,
-							drawBorder: false,
-							color: "#F0F0F0",
-							zeroLineColor: '#F0F0F0',
-						},
-						ticks: {
-							beginAtZero: false,
-							autoSkip: true,
-							maxTicksLimit: 4,
-							fontSize: 10,
-							color: "#6B778C"
-						}
-					}],
-					xAxes: [{
-						gridLines: {
-							display: false,
-							drawBorder: false,
-						},
-						ticks: {
-							beginAtZero: false,
-							autoSkip: true,
-							maxTicksLimit: 7,
-							fontSize: 10,
-							color: "#6B778C"
-						}
-					}],
-				},
-				legend: false,
-				legendCallback: function (chart) {
-					var text = [];
-					text.push('<div class="chartjs-legend"><ul>');
-					for (var i = 0; i < chart.data.datasets.length; i++) {
-						text.push('<li>');
-						text.push('<span style="background-color:' + chart.data.datasets[i].borderColor + '">' + '</span>');
-						text.push(chart.data.datasets[i].label);
-						text.push('</li>');
+		var salesTopOptions = {
+			responsive: true,
+			maintainAspectRatio: false,
+			scales: {
+				yAxes: [{
+					gridLines: {
+						display: true,
+						drawBorder: false,
+						color: "#F0F0F0",
+						zeroLineColor: '#F0F0F0',
+					},
+					ticks: {
+						beginAtZero: false,
+						autoSkip: true,
+						maxTicksLimit: 4,
+						fontSize: 10,
+						color: "#6B778C"
 					}
-					text.push('</ul></div>');
-					return text.join("");
-				},
-
-				elements: {
-					line: {
-						tension: 0.4,
+				}],
+				xAxes: [{
+					gridLines: {
+						display: false,
+						drawBorder: false,
+					},
+					ticks: {
+						beginAtZero: false,
+						autoSkip: true,
+						maxTicksLimit: 7,
+						fontSize: 10,
+						color: "#6B778C"
 					}
-				},
-				tooltips: {
-					backgroundColor: 'rgba(31, 59, 179, 1)',
+				}],
+			},
+			legend: false,
+			legendCallback: function (chart) {
+				var text = [];
+				text.push('<div class="chartjs-legend"><ul>');
+				for (var i = 0; i < chart.data.datasets.length; i++) {
+					text.push('<li>');
+					text.push('<span style="background-color:' + chart.data.datasets[i].borderColor + '">' + '</span>');
+					text.push(chart.data.datasets[i].label);
+					text.push('</li>');
 				}
+				text.push('</ul></div>');
+				return text.join("");
+			},
+
+			elements: {
+				line: {
+					tension: 0.4,
+				}
+			},
+			tooltips: {
+				backgroundColor: 'rgba(31, 59, 179, 1)',
 			}
-			var salesTop = new Chart(graphGradient, {
-				type: 'line',
-				data: salesTopData,
-				options: salesTopOptions
-			});
-			document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
 		}
+		var salesTop = new Chart(graphGradient, {
+			type: 'line',
+			data: salesTopData,
+			options: salesTopOptions
+		});
+		document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
