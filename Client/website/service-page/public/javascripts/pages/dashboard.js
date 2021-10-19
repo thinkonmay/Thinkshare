@@ -3,6 +3,7 @@ import * as RemotePage from "../util/remote-page-cookies.js"
 import * as Setting from "../util/setting.js"
 import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
+import * as CheckDevice from "../util/checkdevice.js"
 
 let datasets = [];
 let sessionInfor;
@@ -47,10 +48,16 @@ $(document).ready(async () => {
 	search()
 	inbox()
 	user()
-	if (isElectron()) {
-		// For Electron App
+	if (CheckDevice.isElectron()) {
+		console.log("ae t electron")
 	} else {
-		// For Web
+		console.log("website gay!")
+	}
+
+	if(CheckDevice.isWindows()){
+		console.log("ae t windows")
+	} else if(CheckDevice.isMacintosh()){
+		console.log("ae t macos")
 	}
 
 	try {
@@ -243,25 +250,6 @@ function user() {
 	document.getElementById('userButton').addEventListener('click', function () {
 		Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
 	});
-}
-
-function isElectron() {
-	// Renderer process
-	if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
-		return true;
-	}
-
-	// Main process
-	if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
-		return true;
-	}
-
-	// Detect the user agent when the `nodeIntegration` option is set to true
-	if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
-		return true;
-	}
-
-	return false;
 }
 
 function setDataForChart() {
