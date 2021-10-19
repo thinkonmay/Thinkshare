@@ -49,15 +49,15 @@ $(document).ready(async () => {
 	inbox()
 	user()
 	if (CheckDevice.isElectron()) {
-		console.log("ae t electron")
+		// desktop app
 	} else {
-		console.log("website gay!")
+		// website
 	}
 
 	if(CheckDevice.isWindows()){
-		console.log("ae t windows")
+		// Windows
 	} else if(CheckDevice.isMacintosh()){
-		console.log("ae t macos")
+		// Macintosh (MacOS)
 	}
 
 	try {

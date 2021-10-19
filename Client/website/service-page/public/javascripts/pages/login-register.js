@@ -11,7 +11,6 @@ function serializeArrToObject(serializeArr) {
 }
 
 function login(body) {
-	console.log(body);
 	Utils.newSwal.fire({
 		title: "Đang đăng nhập",
 		text: "Vui lòng chờ . . .",
@@ -36,7 +35,6 @@ function login(body) {
 
 function register(body, status) {
 
-	console.log(body);
 	Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
 
 	Utils.newSwal.fire({
@@ -120,7 +118,6 @@ function onFailure(error) {
 
 // Sign out the user
 function signOut() {
-	console.log("dang logout")
 	document.getElementById("gSignIn").style.display = "block";
 	gapi.auth.setToken(null);
 	gapi.auth.signOut();
@@ -158,7 +155,6 @@ $(document).ready(() => {
 	renderButton();
 
 	$('#gSignIn').click(() => {
-		console.log("hello")
 		setCookie("dalogout", 0)
 	})
 	$('#login').click(() => {
