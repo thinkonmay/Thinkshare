@@ -1,11 +1,11 @@
 ﻿[
     {
         "InstanceName":  "idle",
-        "CPUpercentage":  85.81
+        "CPUpercentage":  92.96
     },
     {
         "InstanceName":  "system",
-        "CPUpercentage":  0
+        "CPUpercentage":  0.26
     },
     {
         "InstanceName":  "registry",
@@ -61,7 +61,7 @@
     },
     {
         "InstanceName":  "dwm",
-        "CPUpercentage":  1.55
+        "CPUpercentage":  0.26
     },
     {
         "InstanceName":  "svchost",
@@ -313,7 +313,7 @@
     },
     {
         "InstanceName":  "msmpeng",
-        "CPUpercentage":  1.03
+        "CPUpercentage":  0
     },
     {
         "InstanceName":  "sqlwriter",
@@ -405,7 +405,7 @@
     },
     {
         "InstanceName":  "svchost",
-        "CPUpercentage":  0.26
+        "CPUpercentage":  0
     },
     {
         "InstanceName":  "dllhost",
@@ -413,7 +413,7 @@
     },
     {
         "InstanceName":  "searchindexer",
-        "CPUpercentage":  0.26
+        "CPUpercentage":  0
     },
     {
         "InstanceName":  "yourphone",
@@ -509,14 +509,6 @@
     },
     {
         "InstanceName":  "applicationframehost",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "winstore.app",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "runtimebroker",
         "CPUpercentage":  0
     },
     {
@@ -633,7 +625,7 @@
     },
     {
         "InstanceName":  "slack",
-        "CPUpercentage":  0.26
+        "CPUpercentage":  0
     },
     {
         "InstanceName":  "slack",
@@ -677,10 +669,6 @@
     },
     {
         "InstanceName":  "svchost",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msmpengcp",
         "CPUpercentage":  0
     },
     {
@@ -741,7 +729,7 @@
     },
     {
         "InstanceName":  "powershell",
-        "CPUpercentage":  1.03
+        "CPUpercentage":  0.77
     },
     {
         "InstanceName":  "code",
@@ -768,42 +756,6 @@
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "systemsettings",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "svchost",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0.26
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
         "InstanceName":  "conhost",
         "CPUpercentage":  0
     },
@@ -816,36 +768,8 @@
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0.26
-    },
-    {
         "InstanceName":  "code",
-        "CPUpercentage":  2.07
+        "CPUpercentage":  0
     },
     {
         "InstanceName":  "code",
@@ -853,162 +777,6 @@
     },
     {
         "InstanceName":  "code",
-        "CPUpercentage":  0.26
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "svchost",
         "CPUpercentage":  0
     },
     {
@@ -1037,38 +805,170 @@
     },
     {
         "InstanceName":  "svchost",
-        "CPUpercentage":  0.26
-    },
-    {
-        "InstanceName":  "msedge",
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0.26
+        "InstanceName":  "explorer",
+        "CPUpercentage":  5.65
     },
     {
-        "InstanceName":  "msedge",
+        "InstanceName":  "shellexperiencehost",
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "msedge",
+        "InstanceName":  "searchhost",
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "msedge",
+        "InstanceName":  "startmenuexperiencehost",
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "msedge",
+        "InstanceName":  "textinputhost",
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "msedge",
+        "InstanceName":  "runtimebroker",
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "msedge",
+        "InstanceName":  "runtimebroker",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "systemsettingsbroker",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "msmpengcp",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "taskhostw",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "conhost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "cmd",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "ssh",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "conhost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "cmd",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "ssh",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "conhost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "cmd",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "ssh",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "conhost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "cmd",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "ssh",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "conhost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "cmd",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "ssh",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "code",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "code",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "conhost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "cmd",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "ssh",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "conhost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "powershell",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "dllhost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "garena",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "systemsettings",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "gxxcef",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "gxxcef",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "conhost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "powershell",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "conhost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "powershell",
         "CPUpercentage":  0
     },
     {
@@ -1108,15 +1008,7 @@
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "conhost",
+        "InstanceName":  "wmiprvse",
         "CPUpercentage":  0
     },
     {
@@ -1124,11 +1016,23 @@
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "ssh",
+        "InstanceName":  "node",
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "msedge",
+        "InstanceName":  "cmd",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "node",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "cmd",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "conhost",
         "CPUpercentage":  0
     },
     {
@@ -1136,71 +1040,11 @@
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "conhost",
+        "InstanceName":  "svchost",
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "cmd",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "ssh",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "code",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "code",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "conhost",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "cmd",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "ssh",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "explorer",
-        "CPUpercentage":  1.81
-    },
-    {
-        "InstanceName":  "shellexperiencehost",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "searchhost",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "startmenuexperiencehost",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "textinputhost",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "runtimebroker",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "runtimebroker",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "msedge",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "cpptools-srv",
+        "InstanceName":  "msiexec",
         "CPUpercentage":  0
     },
     {
@@ -1208,11 +1052,15 @@
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "wmiprvse",
+        "InstanceName":  "cpptools-srv",
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "systemsettingsbroker",
+        "InstanceName":  "smartscreen",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "msedge",
         "CPUpercentage":  0
     },
     {
@@ -1221,62 +1069,46 @@
     },
     {
         "InstanceName":  "msedge",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "msedge",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "msedge",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "msedge",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "msedge",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "msedge",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "svchost",
+        "CPUpercentage":  0
+    },
+    {
+        "InstanceName":  "svchost",
         "CPUpercentage":  0.26
     },
     {
         "InstanceName":  "msedge",
-        "CPUpercentage":  0.26
-    },
-    {
-        "InstanceName":  "msedge",
         "CPUpercentage":  0
     },
     {
-        "InstanceName":  "msedge",
+        "InstanceName":  "svchost",
         "CPUpercentage":  0
     },
     {
         "InstanceName":  "searchprotocolhost",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "cmd",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "node",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "cmd",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "node",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "node",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "electron",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "electron",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "electron",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "electron",
-        "CPUpercentage":  0
-    },
-    {
-        "InstanceName":  "dllhost",
         "CPUpercentage":  0
     },
     {
@@ -1289,6 +1121,6 @@
     },
     {
         "InstanceName":  "_total",
-        "CPUpercentage":  97.95
+        "CPUpercentage":  100.15
     }
 ]

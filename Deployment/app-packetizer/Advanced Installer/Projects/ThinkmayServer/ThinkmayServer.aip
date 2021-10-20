@@ -15,12 +15,16 @@
     <ROW Property="UpgradeCode" Value="{806C0493-5DCB-40B8-AF39-017AC94022DD}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="x64_Release:Windows 9x/ME" ValueLocId="-"/>
     <ROW Property="WindowsType9XDisplay" MultiBuildValue="x64_Release:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT" MultiBuildValue="x64_Release:Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86/Windows 10 x86" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT40" MultiBuildValue="x64_Release:Windows NT 4.0" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT40Display" MultiBuildValue="x64_Release:Windows NT 4.0" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT50" MultiBuildValue="x64_Release:Windows 2000" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT50Display" MultiBuildValue="x64_Release:Windows 2000" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT5X" MultiBuildValue="x64_Release:Windows XP/2003" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT5XDisplay" MultiBuildValue="x64_Release:Windows XP/2003" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT64" MultiBuildValue="x64_Release:Windows Vista x64, Windows Server 2008 x64, Windows 7 x64, Windows Server 2008 R2 x64, Windows 8 x64, Windows Server 2012 x64, Windows 8.1 x64, Windows Server 2012 R2 x64" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT64Display" MultiBuildValue="x64_Release:Windows Vista x64, Windows Server 2008 x64, Windows 7 x64, Windows Server 2008 R2 x64, Windows 8 x64, Windows Server 2012 x64, Windows 8.1 x64, Windows Server 2012 R2 x64" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNTDisplay" MultiBuildValue="x64_Release:32-bit Windows versions" ValueLocId="-"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
@@ -36,29 +40,24 @@
     <ROW Component="APPDIR" ComponentId="{6FC2F270-A62B-430B-A1E9-A34BAF05C8EE}" Directory_="APPDIR" Attributes="0"/>
     <ROW Component="Output_1.json" ComponentId="{FEC3F5BF-378A-4147-888A-7C0126FA16C6}" Directory_="Shell_Dir" Attributes="0" KeyPath="Output_1.json" Type="0"/>
     <ROW Component="ProductInformation" ComponentId="{B600F11C-0514-4B41-9CED-96BFE9C58AEE}" Directory_="APPDIR" Attributes="260" KeyPath="Version"/>
+    <ROW Component="Temp" ComponentId="{20BED998-817B-4CD3-94AC-CEAB63A42E1E}" Directory_="Temp_Dir" Attributes="0"/>
     <ROW Component="agent.exe" ComponentId="{A8765D2E-0376-440A-AE13-E2C6167A7DC4}" Directory_="bin_Dir" Attributes="256" KeyPath="agent.exe"/>
-    <ROW Component="agent_command_line_log.txt" ComponentId="{87E3518A-1803-48EE-8709-A5C7BF2BC815}" Directory_="agent_log_Dir" Attributes="0" KeyPath="agent_command_line_log.txt" Type="0"/>
+    <ROW Component="agent_log" ComponentId="{04CC02FE-CB0D-4AF4-9290-44A13E2F6294}" Directory_="agent_log_Dir" Attributes="0"/>
     <ROW Component="filetransfer.exe" ComponentId="{81F14DC0-4F4B-4C87-985F-8E3A0B361D23}" Directory_="bin_Dir" Attributes="256" KeyPath="filetransfer.exe"/>
     <ROW Component="host_configuration.json" ComponentId="{AAF3F8FB-A090-4461-AB70-0BFCD8F9970C}" Directory_="config_Dir" Attributes="0" KeyPath="host_configuration.json" Type="0"/>
     <ROW Component="session_core_general_log.txt" ComponentId="{C5DDF1E3-DD02-4157-A688-242C3AEE832D}" Directory_="session_core_log_Dir" Attributes="0" KeyPath="session_core_general_log.txt" Type="0"/>
     <ROW Component="sessioncore.exe" ComponentId="{789D2891-3E08-44E6-BD18-66F09B9B8717}" Directory_="bin_Dir" Attributes="256" KeyPath="sessioncore.exe"/>
     <ROW Component="shareditems.lib" ComponentId="{0113BF6E-E1EF-4BD2-AD8A-EA6BC5362E35}" Directory_="bin_Dir" Attributes="0" KeyPath="shareditems.lib" Type="0"/>
-    <ROW Component="zip" ComponentId="{C6CF8103-37BE-49E6-8235-3BAB8E01806B}" Directory_="Temp_Dir" Attributes="0" KeyPath="zip" Type="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="agent.exe" Component_="agent.exe" FileName="agent.exe" Attributes="0" SourcePath="..\..\..\bin\agent.exe" SelfReg="false" DigSign="true"/>
-    <ROW File="filetransfer.exe" Component_="filetransfer.exe" FileName="FILE-T~1.EXE|file-transfer.exe" Attributes="0" SourcePath="..\..\..\bin\file-transfer.exe" SelfReg="false" DigSign="true"/>
-    <ROW File="sessioncore.exe" Component_="sessioncore.exe" FileName="SESSIO~1.EXE|session-core.exe" Attributes="0" SourcePath="..\..\..\bin\session-core.exe" SelfReg="false" DigSign="true"/>
-    <ROW File="shareditems.lib" Component_="shareditems.lib" FileName="SHARED~1.LIB|shared-items.lib" Attributes="0" SourcePath="..\..\..\bin\shared-items.lib" SelfReg="false"/>
-    <ROW File="agent_command_line_log.txt" Component_="agent_command_line_log.txt" FileName="AGENT_~1.TXT|agent_command_line_log.txt" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\agent_log\agent_command_line_log.txt" SelfReg="false"/>
-    <ROW File="agent_general_log.txt" Component_="agent_command_line_log.txt" FileName="AGENT_~2.TXT|agent_general_log.txt" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\agent_log\agent_general_log.txt" SelfReg="false"/>
-    <ROW File="agent_message_log.txt" Component_="agent_command_line_log.txt" FileName="AGENT_~3.TXT|agent_message_log.txt" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\agent_log\agent_message_log.txt" SelfReg="false"/>
-    <ROW File="agent_network_log.txt" Component_="agent_command_line_log.txt" FileName="AGENT_~4.TXT|agent_network_log.txt" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\agent_log\agent_network_log.txt" SelfReg="false"/>
-    <ROW File="agnet_command_line_log.txt" Component_="agent_command_line_log.txt" FileName="AGNET_~1.TXT|agnet_command_line_log.txt" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\agent_log\agnet_command_line_log.txt" SelfReg="false"/>
+    <ROW File="agent.exe" Component_="agent.exe" FileName="agent.exe" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\agent.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="filetransfer.exe" Component_="filetransfer.exe" FileName="FILE-T~1.EXE|file-transfer.exe" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\file-transfer.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="sessioncore.exe" Component_="sessioncore.exe" FileName="SESSIO~1.EXE|session-core.exe" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\session-core.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="shareditems.lib" Component_="shareditems.lib" FileName="SHARED~1.LIB|shared-items.lib" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\shared-items.lib" SelfReg="false"/>
     <ROW File="host_configuration.json" Component_="host_configuration.json" FileName="HOST_C~1.JSO|host_configuration.json" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\config\host_configuration.json" SelfReg="false"/>
     <ROW File="session_slave.json" Component_="host_configuration.json" FileName="SESSIO~1.JSO|session_slave.json" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\config\session_slave.json" SelfReg="false"/>
     <ROW File="session_core_general_log.txt" Component_="session_core_general_log.txt" FileName="SESSIO~1.TXT|session_core_general_log.txt" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\session_core_log\session_core_general_log.txt" SelfReg="false"/>
@@ -81,7 +80,6 @@
     <ROW File="Script_6.ps1" Component_="Output_1.json" FileName="Script_6.ps1" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\Shell\Script_6.ps1" SelfReg="false"/>
     <ROW File="Script_7.ps1" Component_="Output_1.json" FileName="Script_7.ps1" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\Shell\Script_7.ps1" SelfReg="false"/>
     <ROW File="Script_8.ps1" Component_="Output_1.json" FileName="Script_8.ps1" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\Shell\Script_8.ps1" SelfReg="false"/>
-    <ROW File="zip" Component_="zip" FileName="1.zip" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\Temp\1.zip" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
@@ -136,6 +134,8 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
+    <ROW Directory_="Temp_Dir" Component_="Temp" ManualDelete="false"/>
+    <ROW Directory_="agent_log_Dir" Component_="agent_log" ManualDelete="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
@@ -158,11 +158,11 @@
     <ROW Feature_="MainFeature" Component_="filetransfer.exe"/>
     <ROW Feature_="MainFeature" Component_="sessioncore.exe"/>
     <ROW Feature_="MainFeature" Component_="shareditems.lib"/>
-    <ROW Feature_="MainFeature" Component_="agent_command_line_log.txt"/>
     <ROW Feature_="MainFeature" Component_="host_configuration.json"/>
     <ROW Feature_="MainFeature" Component_="session_core_general_log.txt"/>
     <ROW Feature_="MainFeature" Component_="Output_1.json"/>
-    <ROW Feature_="MainFeature" Component_="zip"/>
+    <ROW Feature_="MainFeature" Component_="Temp"/>
+    <ROW Feature_="MainFeature" Component_="agent_log"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
@@ -179,6 +179,8 @@
     <ROW Action="AI_EnableDebugLog" Sequence="51"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
+    <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 600) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 600) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 601) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 601) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 602) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 602) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 603) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 603) OR (MsiNTProductType = 1)) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT64Display]." DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="x64_Release"/>
+    <ROW Condition="( Version9X OR VersionNT64 )" Description="[ProductName] cannot be installed on [WindowsTypeNTDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT" IsPredefined="true" Builds="x64_Release"/>
     <ROW Condition="((VersionNT &lt;&gt; 501) AND (VersionNT &lt;&gt; 502))" Description="[ProductName] cannot be installed on [WindowsTypeNT5XDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT5X" IsPredefined="true" Builds="x64_Release"/>
     <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on [WindowsTypeNT40Display]." DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="x64_Release"/>
     <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] cannot be installed on [WindowsTypeNT50Display]." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="x64_Release"/>

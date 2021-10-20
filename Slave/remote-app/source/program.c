@@ -14,6 +14,7 @@ static gchar turn[100] = "turn://thinkmaycoturn:thinkmaycoturn_password@turn:stu
 static gint session_id = 0;
 static gchar video_codec[50] = {0};
 static gchar audio_codec[50] = {0}; 
+static gchar connection_string[200] = {0};
 
 
 
@@ -28,6 +29,8 @@ static GOptionEntry entries[] = {
       "audio codec use for decode bin", "codec"},
   {"videocodec", 0, 0, G_OPTION_ARG_STRING, &video_codec,
       "video codec use for decode bin", "codec"},
+  {"connection", 0, 0, G_OPTION_ARG_STRING, &connection_string,
+      "connection ", "codec"},
   {NULL},
 };
 
@@ -37,7 +40,7 @@ int
 main(int argc, char* argv[])
 {
     thinkmay_init(argv[0],19);
-
+    g_print(argv[1]);
 
     GOptionContext *context;
     GError *error = NULL;
