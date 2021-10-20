@@ -6,8 +6,8 @@ import { initializeSession } from "./api.js"
 
 const coookies_expire = 100 * 1000
 
-const electron = true;
-const webapp = false;
+const electron = false;
+const webapp = true;
 
 export const sessionInitialize = async (SlaveID) => {
     initializeSession(parseInt(SlaveID)).then(async response => {
