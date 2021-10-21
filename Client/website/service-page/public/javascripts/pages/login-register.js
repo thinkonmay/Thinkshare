@@ -66,9 +66,32 @@ function register(body, status) {
 							Utils.responseErrorHandler(response)
 					}
 				})
-				.catch(status ? Utils.fetchErrorHandler: "")
+				.catch(status ? Utils.fetchErrorHandler : "")
 		}
 	})
+}
+
+function externalLogin(body, status) {
+	Utils.newSwal.fire({
+		title: "Đang đăng nhập",
+		text: "Vui lòng chờ . . .",
+		didOpen: () => {
+			Swal.showLoading()
+			API.externalLogin(body)
+				.then(async data => {
+					const response = await data.json()
+					if (data.status == 200) {
+						if (response.errorCode == 0) {
+							setCookie("token", response.token, MINUTES59)
+							window.location.replace(API.Dashboard)
+						} else {
+							Utils.responseError("Lỗi!", "Gmail của bạn đã tồn tại", "error")
+						}
+					} else Utils.responseErrorHandler(response)
+				})
+				.catch(Utils.fetchErrorHandler)
+		}
+	});
 }
 
 function renderButton() {
@@ -95,9 +118,13 @@ function onSuccess(googleUser) {
 		});
 		request.execute(function (resp) {
 
-			let userName = ((resp.given_name).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D')).split(" ")[0];
-			if(getCookie("dalogout") == 0)
-			doSth(resp.email, userName, resp.given_name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D'), resp.picture + "123")
+			if (getCookie("dalogout") == 0) {
+				console.log(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token)
+				console.log(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token)
+				// request to server to get jwt 
+				externalLogin();
+			}
+			// resp. (elements below)
 			// given_name
 			// picture
 			// email
@@ -110,40 +137,9 @@ function onSuccess(googleUser) {
 
 // Sign-in failure callback
 function onFailure(error) {
-	alert("Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại! ")
+	Utils.responseError("Lỗi!", "Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại! ", "error")
 }
 
-// Sign out the user
-function signOut() {
-	document.getElementById("gSignIn").style.display = "block";
-	gapi.auth.setToken(null);
-	gapi.auth.signOut();
-}
-function doSth(email, userName, fullName, sth) {
-	// 	dob: "2021-09-08"
-	// email: "thienvanlea2@gmail.com"
-	// fullname: "Lê Văn Thiện"
-	// jobs: "hacker123123"
-	// password: "Lienminh1"
-	// phonenumber: "01235667869"
-	// repassword: "Lienminh1"
-	// username: "epitchi1"
-
-	register({
-		email: email,
-		username: userName + "gg",
-		fullname: fullName + (Math.floor((Math.random() * 9999) + 1000)).toString(),
-		dob: "2021-09-08",
-		jobs: "None",
-		phonenumber: (Math.floor((Math.random() * 849999999) + 841111111)).toString(),
-		password: sth,
-		repassword: sth,
-	})
-	login({
-		username: userName + "gg",
-		password: sth
-	})
-}
 
 $(document).ready(() => {
 	if (getCookie('dalogout') == 1) {
