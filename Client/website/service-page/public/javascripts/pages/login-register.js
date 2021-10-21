@@ -94,61 +94,13 @@ function externalLogin(body, status) {
 	});
 }
 
-function renderButton() {
-	gapi.signin2.render('gSignIn', {
-		'scope': 'profile email',
-		'width': 240,
-		'height': 50,
-		'longtitle': true,
-		'theme': 'dark',
-		'onsuccess': onSuccess,
-		'onfailure': onFailure
-	});
-}
-
-// Sign-in success callback
-function onSuccess(googleUser) {
-	// Get the Google profile data (basic)
-	//var profile = googleUser.getBasicProfile();
-
-	// Retrieve the Google account data
-	gapi.client.load('oauth2', 'v2', function () {
-		var request = gapi.client.oauth2.userinfo.get({
-			'userId': 'me'
-		});
-		request.execute(function (resp) {
-
-			if (getCookie("dalogout") == 0) {
-				console.log(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().id_token)
-				console.log(gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token)
-				// request to server to get jwt 
-				externalLogin();
-			}
-			// resp. (elements below)
-			// given_name
-			// picture
-			// email
-			// gender
-			// locale
-			// link
-		});
-	});
-}
-
-// Sign-in failure callback
-function onFailure(error) {
-	Utils.responseError("Lỗi!", "Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại! ", "error")
-}
-
-
 $(document).ready(() => {
 	if (getCookie('dalogout') == 1) {
 		signOut()
 	}
-	renderButton();
-
-	$('#gSignIn').click(() => {
+	$('#login-google').click(() => {
 		setCookie("dalogout", 0)
+		// redirect to external login
 	})
 	$('#login').click(() => {
 		$("form").submit(event => {
