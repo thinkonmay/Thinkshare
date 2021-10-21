@@ -189,18 +189,18 @@ namespace Conductor.Controllers
 
 
         [AllowAnonymous]
-        public async Task<AuthResponse>  ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult>  ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
             {
-                return AuthResponse.GenerateFailure("unknown","External login errror", -1);
+                return Redirect("https://service.thinkmay.net/login");
             }
 
             // Get the login information about the user from the external login provider
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                return AuthResponse.GenerateFailure("unknown","External login errror", -1);
+                return  Redirect("https://service.thinkmay.net/login");
             }
 
             // If the user already has a login (i.e if there is a record in AspNetUserLogins
@@ -217,7 +217,7 @@ namespace Conductor.Controllers
                 await _userManager.AddLoginAsync(account, info);
                  
                 string token = await _tokenGenerator.GenerateJwt(account);
-                return AuthResponse.GenerateSuccessful(account.UserName, token, DateTime.Now.AddHours(1));
+                return  Redirect($"https://service.thinkmay.net/Dashboard?token={token}");
             }
             // If there is no record in AspNetUserLogins table, the user may not have
             // a local account
@@ -247,11 +247,11 @@ namespace Conductor.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
                     string token = await _tokenGenerator.GenerateJwt(user);
-                    return AuthResponse.GenerateSuccessful(user.UserName, token, DateTime.Now.AddHours(1));
+                    return Redirect($"https://service.thinkmay.net/Dashboard?token={token}");
                 }
 
                 // If we cannot find the user email we cannot continue
-                return AuthResponse.GenerateFailure(email,$"Email claim not received from: {info.LoginProvider}",-2);
+                return Redirect("https://service.thinkmay.net/login");
             }
         }
     }
