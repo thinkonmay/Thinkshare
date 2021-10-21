@@ -34,9 +34,6 @@ function login(body) {
 }
 
 function register(body, status) {
-
-	Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
-
 	Utils.newSwal.fire({
 		title: "Đang đăng kí",
 		text: "Vui lòng chờ . . .",

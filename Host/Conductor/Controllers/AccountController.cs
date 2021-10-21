@@ -8,8 +8,10 @@ using SharedHost.Models.Auth;
 using SharedHost.Models.User;
 using Conductor.Services;
 using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Conductor.Controllers
@@ -49,6 +51,7 @@ namespace Conductor.Controllers
                 if (result.Succeeded)
                 {
                     UserAccount user = await _userManager.FindByNameAsync(model.UserName);
+                    
                     string token = await _tokenGenerator.GenerateJwt(user);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
                 }
@@ -57,7 +60,6 @@ namespace Conductor.Controllers
                     return AuthResponse.GenerateFailure(model.UserName, "Wrong username or password", -2);
                 }
             }
-
             return AuthResponse.GenerateFailure(model.UserName, "Invalid login model", -1);
         }
 
@@ -105,6 +107,7 @@ namespace Conductor.Controllers
         [Route("Register")]
         public async Task<AuthResponse> Register([FromBody] RegisterModel model)
         {
+
             if (ModelState.IsValid)
             {
                 var user = new UserAccount()
@@ -127,22 +130,12 @@ namespace Conductor.Controllers
                 }
                 else
                 {
-                    string dupElem = string.Empty;
-
-                    if (await _userManager.FindByNameAsync(model.UserName) != null)
+                    List<String> error_list = new List<String>();
+                    foreach(var i in result.Errors)
                     {
-                        dupElem += "username";
-                    }
-                    if (await _userManager.FindByEmailAsync(model.Email) != null)
-                    {
-                        dupElem += ", email address";
-                    }
-                    if (_userManager.Users.FirstOrDefault(p => p.PhoneNumber == model.PhoneNumber) != null)
-                    {
-                        dupElem += ", phone number";
-                    }
-
-                    return AuthResponse.GenerateFailure(model.Email, $"Duplicate {dupElem}", -2);
+                        error_list.Add(i.Description);
+                    } 
+                    return AuthResponse.GenerateFailure(model.Email,JsonConvert.SerializeObject(error_list), -2);
                 }
             }
 
@@ -177,6 +170,89 @@ namespace Conductor.Controllers
             int UserID = _tokenGenerator.GetUserFromHttpRequest(User);
             var account = await _userManager.FindByIdAsync(UserID.ToString());
             return Ok(account);
+        }
+
+
+
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult ExternalLogin(string provider)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account",
+                                    new { ReturnUrl = "https://conductor.thinkmay.net/"});
+
+            var properties =  _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+            return new ChallengeResult(provider, properties);
+        }
+
+
+
+        [AllowAnonymous]
+        public async Task<AuthResponse>  ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                return AuthResponse.GenerateFailure("unknown","External login errror", -1);
+            }
+
+            // Get the login information about the user from the external login provider
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return AuthResponse.GenerateFailure("unknown","External login errror", -1);
+            }
+
+            // If the user already has a login (i.e if there is a record in AspNetUserLogins
+            // table) then sign-in the user with this external login provider
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider,
+                info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+
+            if (signInResult.Succeeded)
+            {
+                string email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                UserAccount account = await _userManager.FindByEmailAsync(email);
+
+                await _signInManager.SignInAsync(account, isPersistent: false);
+                await _userManager.AddLoginAsync(account, info);
+                 
+                string token = await _tokenGenerator.GenerateJwt(account);
+                return AuthResponse.GenerateSuccessful(account.UserName, token, DateTime.Now.AddHours(1));
+            }
+            // If there is no record in AspNetUserLogins table, the user may not have
+            // a local account
+            else
+            {
+                // Get the email claim value
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
+                if (email != null)
+                {
+                    // Create a new user without password if we do not have a user already
+                    var user = await _userManager.FindByEmailAsync(email);
+
+                    if (user == null)
+                    {
+                        user = new UserAccount 
+                        {
+                            UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
+                            Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        };
+
+                        await _userManager.CreateAsync(user);
+                    }
+
+                    // Add a login (i.e insert a row for the user in AspNetUserLogins table)
+                    await _userManager.AddLoginAsync(user, info);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    string token = await _tokenGenerator.GenerateJwt(user);
+                    return AuthResponse.GenerateSuccessful(user.UserName, token, DateTime.Now.AddHours(1));
+                }
+
+                // If we cannot find the user email we cannot continue
+                return AuthResponse.GenerateFailure(email,$"Email claim not received from: {info.LoginProvider}",-2);
+            }
         }
     }
 }
