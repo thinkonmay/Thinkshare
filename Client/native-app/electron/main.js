@@ -43,3 +43,19 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.  
 
+
+const path = require('path');
+
+const ProtocolRegistry = require('protocol-registry');
+
+console.log('Registering...');
+// Registers the Protocol
+ProtocolRegistry.register({
+    protocol: 'thinkmay', // sets protocol for your command , testproto://**
+    command: `remote-app.exe --connection $_URL_`, // $_URL_ will the replaces by the url used to initiate it
+    override: true, // Use this with caution as it will destroy all previous Registrations on this protocol
+    terminal: true, // Use this to run your command inside a terminal
+    script: false
+}).then(async () => {
+    console.log('Successfully registered');
+});

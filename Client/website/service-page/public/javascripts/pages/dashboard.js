@@ -5,6 +5,8 @@ import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
 
+
+
 let datasets = [];
 let sessionInfor;
 API.getInfor().then(async data => {

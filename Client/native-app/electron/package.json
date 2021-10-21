@@ -10,7 +10,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
-  "keywords": [],"capabilities": {},
+  "keywords": [],
+  "capabilities": {},
   "author": "thinkmay",
   "license": "ISC",
   "devDependencies": {
@@ -22,7 +23,8 @@
     "electron": "^15.2.0"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "protocol-registry": "^1.3.10"
   },
   "config": {
     "forge": {
