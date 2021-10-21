@@ -200,7 +200,7 @@ namespace Conductor.Controllers
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                return  Redirect("https://service.thinkmay.net/login");
+                return Redirect("https://service.thinkmay.net/login");
             }
 
             // If the user already has a login (i.e if there is a record in AspNetUserLogins
@@ -235,9 +235,27 @@ namespace Conductor.Controllers
                     {
                         user = new UserAccount 
                         {
-                            UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
+                            UserName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
                             Email = info.Principal.FindFirstValue(ClaimTypes.Email)
                         };
+
+                        if(info.Principal.FindFirstValue(ClaimTypes.MobilePhone) != null)
+                        {
+                            user.PhoneNumber = info.Principal.FindFirstValue(ClaimTypes.MobilePhone);
+                        }
+                        if(info.Principal.FindFirstValue(ClaimTypes.DateOfBirth) != null)
+                        {
+                        }
+                        if(info.Principal.FindFirstValue(ClaimTypes.Gender) != null)
+                        {
+                            user.Gender = info.Principal.FindFirstValue(ClaimTypes.Gender); 
+                        }
+                        if(info.Principal.FindFirstValue(ClaimTypes.Surname) != null)
+                        {
+                            user.FullName = 
+                                $"{info.Principal.FindFirstValue(ClaimTypes.GivenName)} "+ 
+                                $"{info.Principal.FindFirstValue(ClaimTypes.GivenName)}";
+                        }
 
                         await _userManager.CreateAsync(user);
                     }
