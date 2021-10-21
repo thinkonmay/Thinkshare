@@ -254,7 +254,7 @@ namespace Conductor.Controllers
                         {
                             user.FullName = 
                                 $"{info.Principal.FindFirstValue(ClaimTypes.GivenName)} "+ 
-                                $"{info.Principal.FindFirstValue(ClaimTypes.GivenName)}";
+                                $"{info.Principal.FindFirstValue(ClaimTypes.Surname)}";
                         }
 
                         await _userManager.CreateAsync(user);
