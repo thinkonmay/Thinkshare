@@ -63,32 +63,34 @@ var app = new Vue({
                  * relation between frame size and actual window size
                  * (used to determine relation between client mouse and its position on slave screen)
                  */
-                "mouseMultiX": 0,
-                "mouseMultiY": 0,
+                mouseMultiX: 0,
+                mouseMultiY: 0,
 
                 /**
                  * 
                  */
-                "mouseOffsetX": 0,
-                "mouseOffsetY": 0,
+                mouseOffsetX: 0,
+                mouseOffsetY: 0,
 
                 /**
                 *
                 */
-                "centerOffsetX": 0,
-                "centerOffsetY": 0,
+                centerOffsetX: 0,
+                centerOffsetY: 0,
 
                 /*
                 *
                 */
-                "scrollX": 0,
-                "scrollY": 0,
+                scrollX: 0,
+                scrollY: 0,
 
                 /*
                 *
                 */
-                "frameW":0,
-                "frameH":0,
+                frameW:0,
+                frameH:0,
+
+                relativeMouse:false,
             },
 
             /*

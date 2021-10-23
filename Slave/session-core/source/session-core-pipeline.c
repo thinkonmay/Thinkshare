@@ -410,7 +410,7 @@ setup_element_property(SessionCore* core)
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // if (pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE], "show-cursor", TRUE, NULL);}
+    if (pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE]) { g_object_set(pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE], "show-cursor", TRUE, NULL);}
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -472,7 +472,7 @@ toggle_pointer(gboolean toggle, SessionCore* core)
     Pipeline* pipe = session_core_get_pipeline(core);
     if (pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE]) 
     { 
-        g_object_set(pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE], "cursor", toggle, NULL); 
+        g_object_set(pipe->video_element[DIRECTX_SCREEN_CAPTURE_SOURCE], "show-cursor", toggle, NULL); 
     }
 }
 
