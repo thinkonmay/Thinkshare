@@ -1,5 +1,4 @@
 const { app, BrowserWindow } = require('electron');
-const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -44,7 +43,6 @@ app.on('activate', () => {
 // code. You can also put them in separate files and import them here.  
 
 
-const path = require('path');
 
 const ProtocolRegistry = require('protocol-registry');
 
@@ -52,7 +50,7 @@ console.log('Registering...');
 // Registers the Protocol
 ProtocolRegistry.register({
     protocol: 'thinkmay', // sets protocol for your command , testproto://**
-    command: `remote-app.exe --connection $_URL_`, // $_URL_ will the replaces by the url used to initiate it
+    command: `powershell ./remote-app.exe $_URL_`, // $_URL_ will the replaces by the url used to initiate it
     override: true, // Use this with caution as it will destroy all previous Registrations on this protocol
     terminal: true, // Use this to run your command inside a terminal
     script: false
