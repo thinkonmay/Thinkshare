@@ -7,6 +7,8 @@
         "agent-shell-session.h": "c",
         "agent-type.h": "c",
         "unistd.h": "c",
-        "agent-object.h": "c"
+        "agent-object.h": "c",
+        "string": "c",
+        "cstdlib": "c"
     }
 }

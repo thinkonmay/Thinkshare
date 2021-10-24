@@ -516,7 +516,6 @@ setup_pipeline(SessionCore* core)
 
 
 
-
 GstElement*
 pipeline_get_webrtc_bin(Pipeline* pipe)
 {

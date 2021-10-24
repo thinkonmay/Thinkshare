@@ -11,12 +11,13 @@
 
 static gchar signalling_url[50] = "wss://signalling.thinkmay.net/Session";
 static gchar turn[100] = "turn://thinkmaycoturn:thinkmaycoturn_password@turn:stun.thinkmay.net:3478";
-static gint session_id = 0;
+static gint  session_id = 0;
 static gchar video_codec[50] = {0};
 static gchar audio_codec[50] = {0}; 
 static gchar connection_string[200] = {0};
 
 
+#define GST_DEBUG               4
 
 static GOptionEntry entries[] = {
   {"sessionid", 0, 0, G_OPTION_ARG_INT, &session_id,
@@ -35,12 +36,51 @@ static GOptionEntry entries[] = {
 };
 
 
+char**
+split(char *string, 
+      const char delimiter) 
+{
+    int length = 0, count = 0, i = 0, j = 0;
+    while(*(string++)) {
+        if (*string == delimiter) count++;
+        length++;
+    }
+    string -= (length + 1); // string was incremented one more than length
+    char **array = (char **)malloc(sizeof(char *) * (length + 1));
+    char ** base = array;
+    for(i = 0; i < (count + 1); i++) {
+        j = 0;
+        while(string[j] != delimiter) j++;
+        j++;
+        *array = (char *)malloc(sizeof(char) * j);
+        memcpy(*array, string, (j-1));
+        (*array)[j-1] = '\0';
+        string += j;
+        array++;
+    }
+    *array = '\0';
+    return base;  
+}
+
+void
+string_split_free(gchar** base)
+{
+    gint i = 0;
+    while(base[i]) {
+        free(base[i]);
+        i++;
+    }
+    free(base);
+    base = NULL;
+}
+
 
 int
 main(int argc, char* argv[])
 {
     thinkmay_init(argv[0],19);
-    g_print(argv[1]);
+
+
 
     GOptionContext *context;
     GError *error = NULL;
@@ -53,15 +93,47 @@ main(int argc, char* argv[])
         return -1;
     }
 
-    session_id = 2;
-    memcpy(video_codec,"h265",strlen("h265"));
-    memcpy(audio_codec,"opus",strlen("opus"));
-
-    if(!session_id || !video_codec || !audio_codec)
+    if(argc == 2)
     {
-        g_printerr("missing argument");
-        return -1;
+        gchar** array = split(argv[1],'/');
+
+        if(g_strcmp0(array[0],"thinkmay:"))
+        {
+            g_print("%s :",array[0]);
+            g_printerr("wrong uri, remote app exiting");
+            return;
+        }
+
+
+        gchar** array_param = split(array[2],'.');
+        do
+        {
+            if(*(array_param))
+            {
+                gchar** parameter = split(*(array_param),'=');
+                if(!g_strcmp0(*(parameter ),"sessionid"))
+                {
+                    gint id = strtol(*(parameter +1),NULL,10);
+                    session_id = id;
+                }
+                else if(!g_strcmp0(*(parameter ),"signalling"))
+                {
+                    memcpy(signalling_url,*(parameter +1),strlen(*(parameter +1)));
+                }
+                else if(!g_strcmp0(*(parameter ),"turn"))
+                {
+                    memcpy(turn,*(parameter +1),strlen(*(parameter +1)));
+                }
+                else if(!g_strcmp0(*(parameter ),"videocodec"))
+                {
+                    memcpy(video_codec,*(parameter +1),strlen(*(parameter +1)));
+                }
+            }
+        }
+        while(*(array_param++));
     }
+
+    g_print("Starting connnection with session client id %d, videocodec %s , signalling server url %s\n",session_id,video_codec,signalling_url);
 
 
 

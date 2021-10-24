@@ -180,31 +180,6 @@ contextMenu(event)
 
 function keyup(event) 
 {  
-    // disable problematic browser shortcuts
-    if (event.code === 'F5' && event.ctrlKey ||
-        event.code === 'KeyI' && event.ctrlKey && event.shiftKey ||
-        event.code === 'F11') {
-        event.preventDefault();
-        return;
-    }
-
-
-
-    // capture menu hotkey
-    if (event.code === 'KeyF' && event.ctrlKey && event.shiftKey) 
-    {
-        if (document.fullscreenElement === null) 
-        {
-            app.enterFullscreen();
-            event.preventDefault();
-        }
-        return;
-    }
-    /*
-    * END hotkey design
-    */
-
-
     var Keyboard =
     {
         "Opcode":HidOpcode.KEYUP,
@@ -213,33 +188,47 @@ function keyup(event)
 
     SendHID(JSON.stringify(Keyboard));
 
-}
-
-
-function 
-keydown(event) 
-{
-    if (event.code === 'KeyP' && event.ctrlKey && event.shiftKey) {
-        app.VideoElement.requestPointerLock();
-        event.preventDefault();
-        return;
-    }
-    if (event.code === 'KeyO' && event.ctrlKey && event.shiftKey) {
-        document.exitPointerLock();
-        event.preventDefault();
-        return;
-    }
-
     // disable problematic browser shortcuts
     if (event.code === 'F5' && event.ctrlKey ||
+        event.code === 'Tab' ||
         event.code === 'KeyI' && event.ctrlKey && event.shiftKey ||
+        event.code === 'KeyW' && event.ctrlKey ||
         event.code === 'F11') {
         event.preventDefault();
         return;
     }
 
 
-    
+    if (event.code === 'KeyP' && event.ctrlKey && event.shiftKey) {
+        if(!document.pointerLockElement)
+        {
+            app.VideoElement.requestPointerLock();
+            event.preventDefault();
+            return;
+        }
+        else
+        {
+            document.exitPointerLock();
+            event.preventDefault();
+            return;
+        }
+    }
+
+    // capture menu hotkey
+    if (event.code === 'KeyF' && event.ctrlKey && event.shiftKey) {
+        if (document.fullscreenElement === null) 
+        {
+            app.enterFullscreen();
+            event.preventDefault();
+            return;
+        }
+    }
+}
+
+
+function 
+keydown(event) 
+{
     var Keyboard =
     {
         "Opcode":HidOpcode.KEYDOWN,
@@ -247,6 +236,16 @@ keydown(event)
     }
 
     SendHID(JSON.stringify(Keyboard));
+
+    // disable problematic browser shortcuts
+    if (event.code === 'F5' && event.ctrlKey ||
+        event.code === 'Tab' ||
+        event.code === 'KeyI' && event.ctrlKey && event.shiftKey ||
+        event.code === 'KeyW' && event.ctrlKey ||
+        event.code === 'F11') {
+        event.preventDefault();
+        return;
+    }
 }
 
 

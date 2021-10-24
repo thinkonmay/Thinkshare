@@ -2,6 +2,9 @@ import {setCookie,getCookie} from "./cookie.js"
 
 
 
+export function Platform(platform) {
+	setCookie("platform", platform, 999999)
+}
 
 export function Mode(mode) {
 	
@@ -27,10 +30,8 @@ export function Mode(mode) {
 			cap.mode= 6;
 			break;
 	}
-
 	setCookie("cap", JSON.stringify(cap), 999999)
 	console.log("set default device capability to " + getCookie("cap"));
-
 }
 
 export function VideoCodec(codec) {

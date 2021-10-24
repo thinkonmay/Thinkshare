@@ -1,1 +1,1 @@
-{"SlaveID":310564073,"SessionSlaveID":1245863439,"TurnConnection":"turn://thinkmaycoturn:thinkmaycoturn_password@turn:stun.thinkmay.net:3478","SignallingUrl":"wss://signalling.thinkmay.net/Session","QoE":{"ID":0,"ScreenWidth":2560,"ScreenHeight":1440,"AudioCodec":4,"VideoCodec":1,"QoEMode":4}}
+{"SlaveID":310564073,"SessionSlaveID":12,"TurnConnection":"turn://thinkmaycoturn:thinkmaycoturn_password@turn:stun.thinkmay.net:3478","SignallingUrl":"wss://signalling.thinkmay.net/Session","QoE":{"ID":0,"ScreenWidth":2560,"ScreenHeight":1440,"AudioCodec":4,"VideoCodec":0,"QoEMode":4}}
