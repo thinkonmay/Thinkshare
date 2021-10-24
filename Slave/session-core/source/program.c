@@ -7,7 +7,7 @@
 
 #define GST_USE_UNSTABLE_API
 
-
+#define GST_DEBUG       4
 
 int
 main(int argc, char* argv[])

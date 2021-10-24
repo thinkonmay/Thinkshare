@@ -24,7 +24,9 @@ $(document).ready(async () => {
 		screenWidth: 2560,
 		screenHeight: 1440
 	}
+
 	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
+	setCookie("platform", "chrome", 999999)
 
 	var bitrate = document.getElementsByName("bitrate-setting");
 	for (var item = 0; item < bitrate.length; item++) {
@@ -44,6 +46,11 @@ $(document).ready(async () => {
 	var resolution = document.getElementsByName("resolution-setting");
 	for (var item = 0; item < resolution.length; item++) {
 		resolution[item].onclick = (event) => Setting.mapVideoRes(event.target.innerHTML);
+	}
+
+	var platform = document.getElementsByName("platform-setting");
+	for (var item = 0; item < platform.length; item++) {
+		platform[item].onclick = (event) => Setting.Platform(event.target.innerHTML);
 	}
 
 	noti()
@@ -80,7 +87,7 @@ $(document).ready(async () => {
 			createSlave(slave, "availableSlaves");
 		}
 	} catch (err) {
-		alert(err.message)
+		location.reload();
 	}
 
 	// set data for chart to anaylize hour used
