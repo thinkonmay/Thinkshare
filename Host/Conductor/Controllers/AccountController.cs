@@ -176,6 +176,7 @@ namespace Conductor.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [Route("ExternalLogin")]
         public IActionResult ExternalLogin(string provider)
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account",
