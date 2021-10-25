@@ -268,7 +268,7 @@ namespace Conductor.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
                     string token = await _tokenGenerator.GenerateJwt(user);
-                    return Redirect($"https://service.thinkmay.net/Dashboard?token={token}");
+                    return Redirect($"https://service.thinkmay.net/dashboard?token={token}");
                 }
 
                 // If we cannot find the user email we cannot continue
