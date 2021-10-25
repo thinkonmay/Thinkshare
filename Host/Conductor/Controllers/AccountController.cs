@@ -176,16 +176,16 @@ namespace Conductor.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        [Route("ExternalLogin")]
-        public IActionResult ExternalLogin(string provider)
+        public IActionResult ExternalLogin(string provider, string returnUrl)
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account",
-                                    new { ReturnUrl = "https://conductor.thinkmay.net/"});
+                                    new { ReturnUrl = returnUrl });
 
-            var properties =  _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            var properties =
+                _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 
             return new ChallengeResult(provider, properties);
-        }
+        }   
 
 
 
