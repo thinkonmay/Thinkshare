@@ -18,7 +18,6 @@ namespace Conductor.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<UserAccount> _userManager;
@@ -42,7 +41,7 @@ namespace Conductor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        [Route("Login")]
+        [Route("Account/Login")]
         public async Task<AuthResponse> Login([FromBody] LoginModel model)
         {
             if (ModelState.IsValid)
@@ -104,7 +103,7 @@ namespace Conductor.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        [Route("Register")]
+        [Route("Account/Register")]
         public async Task<AuthResponse> Register([FromBody] RegisterModel model)
         {
 
@@ -149,7 +148,7 @@ namespace Conductor.Controllers
         /// <param name="Role"></param>
         /// <returns></returns>
         [Authorize(Roles = "Administrator")]
-        [HttpPost("GrantRole")]
+        [HttpPost("Account/GrantRole")]
         public async Task<IActionResult> GrantRole(int UserID, string Role)
         {
             var account = await _userManager.FindByIdAsync(UserID.ToString());
@@ -164,7 +163,7 @@ namespace Conductor.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("GetInfor")]
+        [HttpGet("Account/GetInfor")]
         public async Task<IActionResult> GetInfor()
         {
             int UserID = _tokenGenerator.GetUserFromHttpRequest(User);
@@ -177,10 +176,10 @@ namespace Conductor.Controllers
         [AllowAnonymous]
         [HttpPost]
         [HttpGet]
-        [Route("ExternalLogin")]
+        [Route("Account/ExternalLogin")]
         public IActionResult ExternalLogin()
         {            
-            string redirectUrl = Url.Action("ExternalLoginCallback", "Account");
+            string redirectUrl = Url.Action("signin-google");
             var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
             return new ChallengeResult("Google", properties);
         }   
@@ -190,7 +189,7 @@ namespace Conductor.Controllers
         [AllowAnonymous]
         [HttpPost]
         [HttpGet]
-        [Route("ExternalLoginCallback")]
+        [Route("signin-google")]
         public async Task<IActionResult>  ExternalLoginCallback()
         {
             ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
