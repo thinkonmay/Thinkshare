@@ -71,36 +71,17 @@ function register(body, status) {
 	})
 }
 
-function externalLogin(body, status) {
-	Utils.newSwal.fire({
-		title: "Đang đăng nhập",
-		text: "Vui lòng chờ . . .",
-		didOpen: () => {
-			Swal.showLoading()
-			API.externalLogin(body)
-				.then(async data => {
-					const response = await data.json()
-					if (data.status == 200) {
-						if (response.errorCode == 0) {
-							console.log(response);
-							// setCookie("token", response.token, MINUTES59)
-							// window.location.replace(API.Dashboard)
-						} else {
-							Utils.responseError("Lỗi!", "Gmail của bạn đã tồn tại", "error")
-						}
-					} else Utils.responseErrorHandler(response)	
-				})
-				.catch(Utils.fetchErrorHandler)
-		}
-	});
+function externalLogin() {
+	window.open(API.ExternalLogin);
 }
+
 
 $(document).ready(() => {
 	if (getCookie('dalogout') == 1) {
 		// signOut()
 	}
 	$('#login-google').click(() => {
-		externalLogin("Google")
+		externalLogin()
 		setCookie("dalogout", 0)
 		// redirect to external login
 	})

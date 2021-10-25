@@ -79,7 +79,7 @@ namespace Conductor
                     var gconfig = Configuration.GetSection("Authentication:Google");
                     options.ClientId = gconfig["ClientId"];
                     options.ClientSecret = gconfig["ClientSecret"];
-                    options.CallbackPath = "/login-google";
+                    options.SignInScheme = IdentityConstants.ExternalScheme;
                 }
                 )
                 .AddJwtBearer(options =>

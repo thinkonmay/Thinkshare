@@ -71,10 +71,9 @@ export const register = body => {
 	})
 }
 
-export const externalLogin = body => {
-	return fetch(ExternalLogin + "?provider=" + body, {
-		method: "POST",
-		headers: genHeaders(),
+export const externalLogin = () => {
+	return fetch(ExternalLogin, {
+		method: "GET"
 	})
 }
 

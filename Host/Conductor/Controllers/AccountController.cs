@@ -176,16 +176,13 @@ namespace Conductor.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [HttpGet]
         [Route("ExternalLogin")]
-        public IActionResult ExternalLogin(string provider, string returnUrl)
-        {
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Account",
-                                    new { ReturnUrl = returnUrl });
-
-            var properties =
-                _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-
-            return new ChallengeResult(provider, properties);
+        public IActionResult ExternalLogin()
+        {            
+            string redirectUrl = Url.Action("ExternalLoginCallback", "Account");
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+            return new ChallengeResult("Google", properties);
         }   
 
 
@@ -194,16 +191,10 @@ namespace Conductor.Controllers
         [HttpPost]
         [HttpGet]
         [Route("ExternalLoginCallback")]
-        public async Task<IActionResult>  ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult>  ExternalLoginCallback()
         {
-            if (remoteError != null)
-            {
-                return Redirect("https://service.thinkmay.net/login");
-            }
-
-            // Get the login information about the user from the external login provider
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
+            ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info != null)
             {
                 return Redirect("https://service.thinkmay.net/login");
             }
