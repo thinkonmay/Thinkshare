@@ -82,12 +82,13 @@ function externalLogin(body, status) {
 					const response = await data.json()
 					if (data.status == 200) {
 						if (response.errorCode == 0) {
-							setCookie("token", response.token, MINUTES59)
-							window.location.replace(API.Dashboard)
+							console.log(response);
+							// setCookie("token", response.token, MINUTES59)
+							// window.location.replace(API.Dashboard)
 						} else {
 							Utils.responseError("Lỗi!", "Gmail của bạn đã tồn tại", "error")
 						}
-					} else Utils.responseErrorHandler(response)
+					} else Utils.responseErrorHandler(response)	
 				})
 				.catch(Utils.fetchErrorHandler)
 		}
@@ -96,9 +97,10 @@ function externalLogin(body, status) {
 
 $(document).ready(() => {
 	if (getCookie('dalogout') == 1) {
-		signOut()
+		// signOut()
 	}
 	$('#login-google').click(() => {
+		externalLogin("Google")
 		setCookie("dalogout", 0)
 		// redirect to external login
 	})

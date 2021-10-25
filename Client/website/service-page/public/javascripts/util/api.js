@@ -12,6 +12,7 @@ export const Login = `${host}/Account/Login`
 export const LoginAdmin = `${host}/Account/Login-admin`
 export const Register = `${host}/Account/Register`
 export const GetInfor = `${host}/Account/GetInfor`
+export const ExternalLogin = `${host}/Account/ExternalLogin`
 
 export const FetchSlave = `${host}/User/FetchSlave`
 export const FetchSession = `${host}/User/FetchSession`
@@ -71,8 +72,10 @@ export const register = body => {
 }
 
 export const externalLogin = body => {
-	console.log(body);
-	return {};
+	return fetch(ExternalLogin + "?provider=" + body, {
+		method: "POST",
+		headers: genHeaders(),
+	})
 }
 
 export const getInfor = () => {
