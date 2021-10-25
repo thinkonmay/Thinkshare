@@ -3,6 +3,8 @@
 
 #include <gst/gst.h>
 #include <glib-2.0/glib.h>
+
+#include <string-spliter.h>
 #include <general-constant.h>
 
 #ifndef GST_USE_UNSTABLE_API
@@ -79,8 +81,16 @@ int
 main(int argc, char* argv[])
 {
     thinkmay_init(argv[0],19);
-
-
+    if(strlen(connection_string))
+    {
+        gchar** url_field = string_spliter(connection_string,"/");
+        gchar* parameter_field = (url_field+2);
+        gchar** parameter_array = string_pliter(parameter_field,".");
+        while(*(parameter_array++))
+        {
+            
+        }
+    }
 
     GOptionContext *context;
     GError *error = NULL;

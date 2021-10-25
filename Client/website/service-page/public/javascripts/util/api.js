@@ -70,6 +70,11 @@ export const register = body => {
 	})
 }
 
+export const externalLogin = body => {
+	console.log(body);
+	return {};
+}
+
 export const getInfor = () => {
 	return fetch(GetInfor, {
 		method: "GET",
