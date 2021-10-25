@@ -176,6 +176,7 @@ namespace Conductor.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [Route("ExternalLogin")]
         public IActionResult ExternalLogin(string provider, string returnUrl)
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account",
@@ -192,6 +193,7 @@ namespace Conductor.Controllers
         [AllowAnonymous]
         [HttpPost]
         [HttpGet]
+        [Route("ExternalLoginCallback")]
         public async Task<IActionResult>  ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
