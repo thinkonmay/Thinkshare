@@ -220,7 +220,7 @@ namespace Conductor.Controllers
                 await _userManager.AddLoginAsync(account, info);
                  
                 string token = await _tokenGenerator.GenerateJwt(account);
-                return  Redirect($"https://service.thinkmay.net/Dashboard?token={token}");
+                return  Redirect($"https://service.thinkmay.net/dashboard?token={token}");
             }
             // If there is no record in AspNetUserLogins table, the user may not have
             // a local account
