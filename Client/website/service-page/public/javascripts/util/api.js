@@ -72,7 +72,7 @@ export const register = body => {
 }
 
 export const externalLogin = body => {
-	return fetch(ExternalLogin + "?provider=" + body, {
+	return fetch(ExternalLogin + "?provider=" + body + "&returnUrl=http://conductor.thinkmay.net", {
 		method: "POST",
 		headers: genHeaders(),
 	})
