@@ -71,6 +71,7 @@ export const register = body => {
 }
 
 export const externalLogin = body => {
+	console.log(body);
 	return {};
 }
 
