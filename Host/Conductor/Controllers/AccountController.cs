@@ -177,23 +177,23 @@ namespace Conductor.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("ExternalLogin")]
-        public IActionResult ExternalLogin(string provider)
+        public IActionResult ExternalLogin(string provider, string returnUrl)
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Account",
-                                    new { ReturnUrl = "https://conductor.thinkmay.net/"});
+                                    new { ReturnUrl = returnUrl });
 
-            var properties =  _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            var properties =
+                _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 
             return new ChallengeResult(provider, properties);
-        }
+        }   
 
 
 
         [AllowAnonymous]
         [HttpPost]
         [HttpGet]
-        [Route("login-google")]
-        // the me
+        [Route("ExternalLoginCallback")]
         public async Task<IActionResult>  ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
@@ -222,7 +222,7 @@ namespace Conductor.Controllers
                 await _userManager.AddLoginAsync(account, info);
                  
                 string token = await _tokenGenerator.GenerateJwt(account);
-                return  Redirect($"https://service.thinkmay.net/Dashboard?token={token}");
+                return  Redirect($"https://service.thinkmay.net/dashboard?token={token}");
             }
             // If there is no record in AspNetUserLogins table, the user may not have
             // a local account
@@ -270,7 +270,7 @@ namespace Conductor.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
                     string token = await _tokenGenerator.GenerateJwt(user);
-                    return Redirect($"https://service.thinkmay.net/Dashboard?token={token}");
+                    return Redirect($"https://service.thinkmay.net/dashboard?token={token}");
                 }
 
                 // If we cannot find the user email we cannot continue
