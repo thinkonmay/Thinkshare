@@ -72,10 +72,12 @@ export const register = body => {
 }
 
 export const externalLogin = body => {
-	return fetch(ExternalLogin + "?provider=" + body + "&returnUrl=http://conductor.thinkmay.net", {
-		method: "POST",
-		headers: genHeaders(),
-	})
+	window.open(ExternalLogin + "?provider=" + body + "&returnUrl=http://conductor.thinkmay.net", "", "width=520, height=520")
+	return {};
+	// return fetch(ExternalLogin + "?provider=" + body + "&returnUrl=http://conductor.thinkmay.net", {
+	// 	method: "POST",
+	// 	headers: genHeaders(),	
+	// })
 }
 
 export const getInfor = () => {
