@@ -17,18 +17,30 @@ HidDCConnected(event)
 function 
 mouseButtonUp(event) 
 {
-    var mousePosition_X = clientToServerX(event.clientX);
-    var mousePosition_Y = clientToServerY(event.clientY);              
-
-    var INPUT =
+    if(app.Mouse.relativeMouse)
+    {        
+        var INPUT =
+        {
+            "Opcode":   HidOpcode.MOUSE_UP,
+            "button":   event.button,
+        }
+    
+        SendHID(JSON.stringify(INPUT));
+    }else
     {
-        "Opcode":HidOpcode.MOUSE_UP,
-        "button":event.button,
-        "dX":mousePosition_X,
-        "dY":mousePosition_Y,
-    }
+        var mousePosition_X = clientToServerX(event.clientX);
+        var mousePosition_Y = clientToServerY(event.clientY);
 
-    SendHID(JSON.stringify(INPUT));
+        var INPUT =
+        {
+            "Opcode":   HidOpcode.MOUSE_UP,
+            "button":   event.button,
+            "dX":       mousePosition_X,
+            "dY":       mousePosition_Y,
+        }
+    
+        SendHID(JSON.stringify(INPUT));
+    }
 }
 
 /**
@@ -38,20 +50,31 @@ mouseButtonUp(event)
 function 
 mouseButtonDown(event) 
 {
-    var mousePosition_X = clientToServerX(event.clientX);
-    var mousePosition_Y = clientToServerY(event.clientY);
-
-
-
-    var INPUT =
-    {
-        "Opcode":HidOpcode.MOUSE_DOWN,
-        "button":event.button,
-        "dX":mousePosition_X,
-        "dY":mousePosition_Y
+    if(app.Mouse.relativeMouse)
+    {        
+        var INPUT =
+        {
+            "Opcode":   HidOpcode.MOUSE_DOWN,
+            "button":   event.button,
+        }
+    
+        SendHID(JSON.stringify(INPUT));
     }
-
-    SendHID(JSON.stringify(INPUT));
+    else
+    {
+        var mousePosition_X = clientToServerX(event.clientX);
+        var mousePosition_Y = clientToServerY(event.clientY);
+        
+        var INPUT =
+        {
+            "Opcode":   HidOpcode.MOUSE_DOWN,
+            "button":   event.button,
+            "dX":       mousePosition_X,
+            "dY":       mousePosition_Y
+        }
+    
+        SendHID(JSON.stringify(INPUT));
+    }
 }
 
 /**
@@ -61,17 +84,23 @@ mouseButtonDown(event)
 function 
 mouseButtonMovement(event) 
 {
-    var mousePosition_X = clientToServerX(event.clientX);
-    var mousePosition_Y = clientToServerY(event.clientY);
-
-
-
+    var mousePosition_X; 
+    var mousePosition_Y;
+    if(app.Mouse.relativeMouse)
+    {
+        mousePosition_X = event.movementX;
+        mousePosition_Y = event.movementY;
+    }else
+    {
+        mousePosition_X = clientToServerX(event.clientX);
+        mousePosition_Y = clientToServerY(event.clientY);
+    }
 
     var INPUT =
     {
-        "Opcode": HidOpcode.MOUSE_MOVE,
-        "dX":mousePosition_X,
-        "dY":mousePosition_Y,
+        "Opcode":   HidOpcode.MOUSE_MOVE,
+        "dX":       mousePosition_X,
+        "dY":       mousePosition_Y,
     }
     SendHID(JSON.stringify(INPUT));
 }
@@ -82,21 +111,41 @@ mouseButtonMovement(event)
  */
 function 
 mouseWheel(event)
-{             
+{
     var mousePosition_X = clientToServerX(event.clientX);
     var mousePosition_Y = clientToServerY(event.clientY);
 
     var INPUT =
     {
-        "Opcode":HidOpcode.MOUSE_WHEEL,
-        "dX":mousePosition_X,
-        "dY":mousePosition_Y,
-        "WheeldY":event.deltaY
+        "Opcode":   HidOpcode.MOUSE_WHEEL,
+        "dX":       mousePosition_X,
+        "dY":       mousePosition_Y,
+        "WheeldY":  event.deltaY
     }
 
     SendHID(JSON.stringify(INPUT));
 }
 
+function 
+reset_mouse()
+{
+    var mousePosition_X = clientToServerX(0);
+    var mousePosition_Y = clientToServerY(0);              
+
+    var array = [0,1,2]; 
+
+    array.forEach(element => {
+        var INPUT =
+        {
+            "Opcode":HidOpcode.MOUSE_UP,
+            "button":element,
+            "dX":mousePosition_X,
+            "dY":mousePosition_Y,
+        }
+
+        SendHID(JSON.stringify(INPUT));
+    });
+}
 
 function 
 reset_keyboard()
@@ -130,52 +179,7 @@ contextMenu(event)
 }
 
 function keyup(event) 
-{  // disable problematic browser shortcuts
-    if (event.code === 'F5' && event.ctrlKey ||
-        event.code === 'KeyI' && event.ctrlKey && event.shiftKey ||
-        event.code === 'F11') {
-        event.preventDefault();
-        return;
-    }
-
-    if (event.code === 'KeyP' && event.ctrlKey && event.shiftKey) {
-        // event.target.requestPointerLock();
-        return;
-    }
-
-    /*
-    * START hotkey design
-    */
-    if(event.code === "KeyJ" && event.ctrlKey && event.shiftKey)
-    {
-        app.fileTransfer();
-    }
-
-    // capture menu hotkey
-    if (event.code === 'KeyM' && event.ctrlKey && event.shiftKey) 
-    {
-        if (document.fullscreenElement === null) 
-        {
-            app.showDrawer = !app.showDrawer;
-            event.preventDefault();
-        }
-        return;
-    }
-
-    if (event.code === 'KeyF' && event.ctrlKey && event.shiftKey) 
-    {
-        if (document.fullscreenElement === null) 
-        {
-            app.enterFullscreen();
-            event.preventDefault();
-        }
-        return;
-    }
-    /*
-    * END hotkey design
-    */
-
-
+{  
     var Keyboard =
     {
         "Opcode":HidOpcode.KEYUP,
@@ -184,23 +188,47 @@ function keyup(event)
 
     SendHID(JSON.stringify(Keyboard));
 
-}
-
-
-function 
-keydown(event) 
-{
-
     // disable problematic browser shortcuts
     if (event.code === 'F5' && event.ctrlKey ||
+        event.code === 'Tab' ||
         event.code === 'KeyI' && event.ctrlKey && event.shiftKey ||
+        event.code === 'KeyW' && event.ctrlKey ||
         event.code === 'F11') {
         event.preventDefault();
         return;
     }
 
 
-    
+    if (event.code === 'KeyP' && event.ctrlKey && event.shiftKey) {
+        if(!document.pointerLockElement)
+        {
+            app.VideoElement.requestPointerLock();
+            event.preventDefault();
+            return;
+        }
+        else
+        {
+            document.exitPointerLock();
+            event.preventDefault();
+            return;
+        }
+    }
+
+    // capture menu hotkey
+    if (event.code === 'KeyF' && event.ctrlKey && event.shiftKey) {
+        if (document.fullscreenElement === null) 
+        {
+            app.enterFullscreen();
+            event.preventDefault();
+            return;
+        }
+    }
+}
+
+
+function 
+keydown(event) 
+{
     var Keyboard =
     {
         "Opcode":HidOpcode.KEYDOWN,
@@ -208,6 +236,16 @@ keydown(event)
     }
 
     SendHID(JSON.stringify(Keyboard));
+
+    // disable problematic browser shortcuts
+    if (event.code === 'F5' && event.ctrlKey ||
+        event.code === 'Tab' ||
+        event.code === 'KeyI' && event.ctrlKey && event.shiftKey ||
+        event.code === 'KeyW' && event.ctrlKey ||
+        event.code === 'F11') {
+        event.preventDefault();
+        return;
+    }
 }
 
 
@@ -272,6 +310,14 @@ onFullscreenChange()
 
 
 
+function
+mouseLeaveEvent(event)
+{
+    reset_keyboard();
+    reset_mouse();
+}
+
+
 /**
  * Attaches input event handles to docuemnt, window and element.
  */
@@ -301,12 +347,13 @@ AttachEvent()
     app.EventListeners.push(addListener(app.VideoElement, 'mousemove', mouseButtonMovement, null));
     app.EventListeners.push(addListener(app.VideoElement, 'mousedown', mouseButtonDown, null));
     app.EventListeners.push(addListener(app.VideoElement, 'mouseup', mouseButtonUp, null));
+    app.EventListeners.push(addListener(app.VideoElement, 'mouseleave', mouseLeaveEvent, null));
 
 
     /**
      * mouse lock event
      */
-    // app.EventListeners.push(addListener(document, 'pointerlockchange', pointerLock, null));
+    app.EventListeners.push(addListener(document, 'pointerlockchange', pointerLock, null));
     
     /**
      * keyboard event
@@ -335,42 +382,32 @@ AttachEvent()
 /**
  * Sends WebRTC app command to toggle display of the remote mouse pointer.
  */
-// function pointerLock() {
-//     if (document.pointerLockElement) {
-//         var INPUT =
-//         {
-//             "Opcode":HidOpcode.POINTER_LOCK,
-//             "Value":true
-//         }
-//         SendHID(JSON.stringify(INPUT));
-//     } else {        
-//         var INPUT =
-//         {
-//             "Opcode":HidOpcode.POINTER_LOCK,
-//             "Value":false
-//         }
-//         SendHID(JSON.stringify(INPUT));
-//     }
-// }
+function pointerLock() {
+    if (document.pointerLockElement) {
+        app.Mouse.relativeMouse = true;
+        var INPUT =
+        {
+            "Opcode":HidOpcode.POINTER_LOCK,
+            "Value":true
+        }
+        SendHID(JSON.stringify(INPUT));
+    } else {        
+        app.Mouse.relativeMouse = false;
+        var INPUT =
+        {
+            "Opcode":HidOpcode.POINTER_LOCK,
+            "Value":false
+        }
+        SendHID(JSON.stringify(INPUT));
+    }
+}
 
-/**
- * Sends WebRTC app command to hide the remote pointer when exiting pointer lock.
- */
-// function exitPointerLock() {
-//     document.exitPointerLock();
-//     var INPUT =
-//     {
-//         "Opcode":HidOpcode.POINTER_LOCK,
-//         "Value":false
-//     }
-//     SendHID(JSON.stringify(INPUT));
-// }
 
 function 
 DetachEvent() 
 {
     removeListeners(app.EventListeners);
-    // exitPointerLock();
+    document.exitPointerLock();
     reset_keyboard();
 }
 

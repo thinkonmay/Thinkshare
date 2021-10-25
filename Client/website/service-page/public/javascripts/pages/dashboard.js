@@ -24,7 +24,9 @@ $(document).ready(async () => {
 		screenWidth: 2560,
 		screenHeight: 1440
 	}
+
 	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
+	setCookie("platform", "chrome", 999999)
 
 	var bitrate = document.getElementsByName("bitrate-setting");
 	for (var item = 0; item < bitrate.length; item++) {
@@ -44,6 +46,11 @@ $(document).ready(async () => {
 	var resolution = document.getElementsByName("resolution-setting");
 	for (var item = 0; item < resolution.length; item++) {
 		resolution[item].onclick = (event) => Setting.mapVideoRes(event.target.innerHTML);
+	}
+
+	var platform = document.getElementsByName("platform-setting");
+	for (var item = 0; item < platform.length; item++) {
+		platform[item].onclick = (event) => Setting.Platform(event.target.innerHTML);
 	}
 
 	noti()
@@ -80,7 +87,7 @@ $(document).ready(async () => {
 			createSlave(slave, "availableSlaves");
 		}
 	} catch (err) {
-		alert(err.message)
+		location.reload();
 	}
 
 	// set data for chart to anaylize hour used
@@ -393,6 +400,96 @@ function setDataForChart() {
 		});
 		document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
 	}
+
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	// do not delete this block, i intentionally reserve doughnutChart for future use
+    if ($("#doughnutChart").length) {
+      var doughnutChartCanvas = $("#doughnutChart").get(0).getContext("2d");
+      var doughnutPieData = {
+        datasets: [{
+          data: [40, 20, 30, 10],
+          backgroundColor: [
+            "#1F3BB3",
+            "#FDD0C7",
+            "#52CDFF",
+            "#81DADA"
+          ],
+          borderColor: [
+            "#1F3BB3",
+            "#FDD0C7",
+            "#52CDFF",
+            "#81DADA"
+          ],
+        }],
+  
+        // These labels appear in the legend and in the tooltips when hovering different arcs
+        labels: [
+          'Total',
+          'Net',
+          'Gross',
+          'AVG',
+        ]
+      };
+      var doughnutPieOptions = {
+        cutoutPercentage: 50,
+        animationEasing: "easeOutBounce",
+        animateRotate: true,
+        animateScale: false,
+        responsive: true,
+        maintainAspectRatio: true,
+        showScale: true,
+        legend: false,
+        legendCallback: function (chart) {
+          var text = [];
+          text.push('<div class="chartjs-legend"><ul class="justify-content-center">');
+          for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
+            text.push('<li><span style="background-color:' + chart.data.datasets[0].backgroundColor[i] + '">');
+            text.push('</span>');
+            if (chart.data.labels[i]) {
+              text.push(chart.data.labels[i]);
+            }
+            text.push('</li>');
+          }
+          text.push('</div></ul>');
+          return text.join("");
+        },
+        
+        layout: {
+          padding: {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+          }
+        },
+        tooltips: {
+          callbacks: {
+            title: function(tooltipItem, data) {
+              return data['labels'][tooltipItem[0]['index']];
+            },
+            label: function(tooltipItem, data) {
+              return data['datasets'][0]['data'][tooltipItem['index']];
+            }
+          },
+            
+          backgroundColor: '#fff',
+          titleFontSize: 14,
+          titleFontColor: '#0B0F32',
+          bodyFontColor: '#737F8B',
+          bodyFontSize: 11,
+          displayColors: false
+        }
+      };
+      var doughnutChart = new Chart(doughnutChartCanvas, {
+        type: 'doughnut',
+        data: doughnutPieData,
+        options: doughnutPieOptions
+      });
+      document.getElementById('doughnut-chart-legend').innerHTML = doughnutChart.generateLegend();
+    }
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////

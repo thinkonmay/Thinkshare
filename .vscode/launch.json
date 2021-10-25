@@ -5,9 +5,6 @@
     "version": "0.2.0",
     "configurations": 
     [
-
-
-
         {
             "name": "File Transfer",
             "type": "cppvsdbg",
@@ -24,7 +21,6 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/Deployment/app-packetizer/additional-resources/ThinkMay/bin/remote-app.exe",
-            "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

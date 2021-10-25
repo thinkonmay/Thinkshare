@@ -34,13 +34,17 @@ low_const(SessionCore* core,
 	Codec video = qoe_get_video_codec(qoe);
 	Codec audio = qoe_get_audio_codec(qoe);
 
+	static gboolean init = FALSE;
 
 	GstElement* video_encoder = pipeline_get_video_encoder(pipe,video);
 	GstElement* audio_encoder = pipeline_get_audio_encoder(pipe,audio);
 
-	g_object_set(video_encoder,"bitrate",
-		(gint)(LOW_CONST_VIDEO_BITRATE),NULL);
-	g_object_set(audio_encoder,"bitrate",
-		(gint)(LOW_CONST_AUDIO_BITRATE),NULL);
-
+	if(!init)
+	{
+		g_object_set(video_encoder,"bitrate",
+			(gint)(LOW_CONST_VIDEO_BITRATE),NULL);
+		g_object_set(audio_encoder,"bitrate",
+			(gint)(LOW_CONST_AUDIO_BITRATE),NULL);
+		init = TRUE;
+	}
 }
