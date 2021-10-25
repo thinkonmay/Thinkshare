@@ -324,6 +324,9 @@ namespace Conductor.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("text");
 
+                    b.Property<string>("Gender")
+                        .HasColumnType("text");
+
                     b.Property<string>("Jobs")
                         .HasColumnType("text");
 
