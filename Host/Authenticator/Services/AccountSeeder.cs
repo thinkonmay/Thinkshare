@@ -7,7 +7,7 @@ using SharedHost.Models.Shell;
 using System.Collections.Generic;
 using DbSchema.DbSeeding;
 
-namespace Conductor.Services
+namespace Authenticator.Services
 {
     public class AccountSeeder
     {

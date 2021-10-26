@@ -155,9 +155,6 @@ namespace Conductor
 
             services.AddTransient<IAdmin, Admin>();
             services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
-
-            services.AddTransient<AccountSeeder>();
-
             services.AddMvc();
         }
 

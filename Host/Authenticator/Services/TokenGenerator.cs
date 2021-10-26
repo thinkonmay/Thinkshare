@@ -12,7 +12,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Conductor.Services
+namespace Authenticator.Services
 {
     public class TokenGenerator : ITokenGenerator
     {

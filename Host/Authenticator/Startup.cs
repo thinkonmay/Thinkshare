@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
-using Conductor.Services;
+using Authenticator.Services;
 using DbSchema.SystemDb.Data;
 using Conductor.Interfaces;
 using SharedHost.Models.Auth;

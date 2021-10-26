@@ -41,15 +41,8 @@ namespace Conductor
                 var services = scope.ServiceProvider;
 
                 var db = services.GetRequiredService<ApplicationDbContext>();
-                var userManager = services.GetRequiredService<UserManager<UserAccount>>();
-                var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
-                var systemconfig = services.GetRequiredService<SystemConfig>();
-                var config = services.GetRequiredService<IConfiguration>();
 
                 ScriptModelSeeder.SeedScriptModel(db);
-                AccountSeeder.SeedRoles(roleManager);
-                AccountSeeder.SeedAdminUsers(userManager,systemconfig);
-                AccountSeeder.SeedUserRole(userManager);
             }
         }
     }
