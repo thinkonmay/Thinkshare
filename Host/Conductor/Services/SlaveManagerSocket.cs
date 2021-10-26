@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using System.Net;
 using Conductor.Interfaces;
 using SharedHost;
-using Conductor.Data;
+using DbSchema.SystemDb.Data;
 
 namespace Conductor.Services
 {

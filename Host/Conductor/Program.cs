@@ -5,11 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SharedHost.Models.User;
 using Conductor.Services;
-using Conductor.Data;
-using SharedHost.Models.Auth;
+using DbSchema.SystemDb.Data;
 using SharedHost;
 using Serilog;
-using Serilog.Formatting.Elasticsearch;
 
 namespace Conductor
 {

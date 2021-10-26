@@ -1,18 +1,15 @@
-﻿using MersenneTwister;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Conductor.Interfaces;
 using SharedHost.Models.Auth;
 using SharedHost.Models.User;
-using Conductor.Services;
 using System;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using DbSchema.DbSeeding;
 
 namespace Conductor.Controllers
 {
@@ -123,7 +120,7 @@ namespace Conductor.Controllers
                 if (result.Succeeded)
                 {
                     UserAccount u = await _userManager.FindByEmailAsync(model.Email);
-                    await _userManager.AddToRoleAsync(u, AccountSeeder.USER);
+                    await _userManager.AddToRoleAsync(u, RoleSeeding.USER);
                     string token = await _tokenGenerator.GenerateJwt(u);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now);
                 }

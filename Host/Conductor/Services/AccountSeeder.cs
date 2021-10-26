@@ -2,27 +2,18 @@
 using SharedHost.Models.User;
 using System.Linq;
 using SharedHost;
-using Conductor.Data;
+using DbSchema.SystemDb.Data;
 using SharedHost.Models.Shell;
 using System.Collections.Generic;
+using DbSchema.DbSeeding;
 
 namespace Conductor.Services
 {
     public class AccountSeeder
     {
-        public const string ADMIN = "Administrator";
-        public const string MOD = "Moderator";
-        public const string USER = "User";
-
-        
-
-        public static readonly string[] DEFAULT_ROLES = { ADMIN, MOD, USER };
-
-
-
         public static void SeedRoles(RoleManager<IdentityRole<int>> roleManager)
         {
-            foreach (var role in DEFAULT_ROLES)
+            foreach (var role in RoleSeeding.DEFAULT_ROLES)
             {
                 if (!roleManager.RoleExistsAsync(role).GetAwaiter().GetResult())
                 {
@@ -35,7 +26,7 @@ namespace Conductor.Services
 
         public static void SeedAdminUsers(UserManager<UserAccount> userManager,SystemConfig config)
         {
-            var admins = userManager.GetUsersInRoleAsync(ADMIN).GetAwaiter().GetResult();
+            var admins = userManager.GetUsersInRoleAsync(RoleSeeding.ADMIN).GetAwaiter().GetResult();
             if (admins.Count == 0)
             {
                 UserAccount admin = new UserAccount()
@@ -53,7 +44,7 @@ namespace Conductor.Services
                     var result = userManager.CreateAsync(admin, defaultPassword).GetAwaiter().GetResult();
                     if (result.Succeeded)
                     {
-                        userManager.AddToRoleAsync(admin, ADMIN).Wait();
+                        userManager.AddToRoleAsync(admin, RoleSeeding.ADMIN).Wait();
                     }
                 }
             }
@@ -65,7 +56,7 @@ namespace Conductor.Services
             foreach (var u in users)
             {
                 var roles = userManager.GetRolesAsync(u).GetAwaiter().GetResult();
-                if (roles.Count == 0) userManager.AddToRoleAsync(u, USER).Wait();
+                if (roles.Count == 0) userManager.AddToRoleAsync(u, RoleSeeding.USER).Wait();
             }
         }
     }

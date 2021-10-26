@@ -1,20 +1,12 @@
-﻿using IdentityServer4.EntityFramework.Entities;
-using IdentityServer4.EntityFramework.Extensions;
-using IdentityServer4.EntityFramework.Interfaces;
-using IdentityServer4.EntityFramework.Options;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Conductor.Models;
 using SharedHost.Models.User;
-using System.Threading.Tasks;
 using SharedHost.Models.Session;
 using SharedHost.Models.Shell;
-using SharedHost.Models.Error;
 using SharedHost.Models.Device;
 
-namespace Conductor.Data
+namespace DbSchema.SystemDb.Data
 {
     /// <summary>
     /// Database context in ef framework, readmore at https://www.entityframeworktutorial.net/efcore/entity-framework-core-dbcontext.aspx
