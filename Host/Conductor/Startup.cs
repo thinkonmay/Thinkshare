@@ -178,6 +178,12 @@ namespace Conductor
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Conductor v1"));
             }
 
+            app.Use((context, next) =>
+            {
+                context.Request.Scheme = "https";
+                return next();
+            });
+
             app.UseDefaultFiles();
             app.UseStaticFiles();
            // global cors policy
