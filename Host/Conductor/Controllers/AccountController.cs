@@ -195,7 +195,7 @@ namespace Conductor.Controllers
             // ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
             // if (info != null)
             // {
-                return Redirect("https://service.thinkmay.net/login");
+                return Ok("test");
             // }
 
             // // If the user already has a login (i.e if there is a record in AspNetUserLogins
