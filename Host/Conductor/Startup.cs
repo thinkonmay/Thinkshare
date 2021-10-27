@@ -11,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
 using Conductor.Services;
-using Conductor.Data;
+using DbSchema.SystemDb.Data;
 using Conductor.Interfaces;
 using SharedHost.Models.Auth;
 using SharedHost.Models.User;
@@ -48,10 +48,6 @@ namespace Conductor
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
                 ServiceLifetime.Transient
             );
-            
-            // for sql server
-            // services.AddDbContext<ApplicationDbContext>(options =>
-            //     options.UseSQLServer());
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -158,11 +154,7 @@ namespace Conductor
 
 
             services.AddTransient<IAdmin, Admin>();
-            services.AddTransient<ITokenGenerator, TokenGenerator>();
             services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
-
-            services.AddTransient<AccountSeeder>();
-
             services.AddMvc();
         }
 

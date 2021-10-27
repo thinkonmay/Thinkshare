@@ -5,11 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SharedHost.Models.User;
 using Conductor.Services;
-using Conductor.Data;
-using SharedHost.Models.Auth;
+using DbSchema.SystemDb.Data;
 using SharedHost;
 using Serilog;
-using Serilog.Formatting.Elasticsearch;
 
 namespace Conductor
 {
@@ -43,15 +41,8 @@ namespace Conductor
                 var services = scope.ServiceProvider;
 
                 var db = services.GetRequiredService<ApplicationDbContext>();
-                var userManager = services.GetRequiredService<UserManager<UserAccount>>();
-                var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
-                var systemconfig = services.GetRequiredService<SystemConfig>();
-                var config = services.GetRequiredService<IConfiguration>();
 
                 ScriptModelSeeder.SeedScriptModel(db);
-                AccountSeeder.SeedRoles(roleManager);
-                AccountSeeder.SeedAdminUsers(userManager,systemconfig);
-                AccountSeeder.SeedUserRole(userManager);
             }
         }
     }
