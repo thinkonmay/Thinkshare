@@ -28,6 +28,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
+    <ROW Directory="SHORTCUTDIR" Directory_Parent="TARGETDIR" DefaultDir="SHORTC~1|SHORTCUTDIR" IsPseudoRoot="1"/>
     <ROW Directory="Shell_Dir" Directory_Parent="APPDIR" DefaultDir="Shell"/>
     <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
     <ROW Directory="Temp_Dir" Directory_Parent="APPDIR" DefaultDir="Temp"/>
@@ -40,13 +41,17 @@
     <ROW Component="APPDIR" ComponentId="{6FC2F270-A62B-430B-A1E9-A34BAF05C8EE}" Directory_="APPDIR" Attributes="0"/>
     <ROW Component="Output_1.json" ComponentId="{FEC3F5BF-378A-4147-888A-7C0126FA16C6}" Directory_="Shell_Dir" Attributes="0" KeyPath="Output_1.json" Type="0"/>
     <ROW Component="ProductInformation" ComponentId="{B600F11C-0514-4B41-9CED-96BFE9C58AEE}" Directory_="APPDIR" Attributes="260" KeyPath="Version"/>
+    <ROW Component="SHORTCUTDIR" ComponentId="{AF5F2DD7-0F2C-4AA4-8A70-D5545B7B9102}" Directory_="SHORTCUTDIR" Attributes="0"/>
     <ROW Component="Temp" ComponentId="{20BED998-817B-4CD3-94AC-CEAB63A42E1E}" Directory_="Temp_Dir" Attributes="0"/>
-    <ROW Component="agent.exe" ComponentId="{D979C84D-E163-4746-8DF3-AA43AF173B19}" Directory_="bin_Dir" Attributes="256" KeyPath="agent.exe"/>
+    <ROW Component="agent.exe" ComponentId="{305D7BD1-F59D-4E81-B041-8A3E9033360B}" Directory_="bin_Dir" Attributes="256" KeyPath="agent.exe"/>
     <ROW Component="agent_log" ComponentId="{04CC02FE-CB0D-4AF4-9290-44A13E2F6294}" Directory_="agent_log_Dir" Attributes="0"/>
-    <ROW Component="filetransfer.exe" ComponentId="{59659487-5942-4781-A393-A82312E46E17}" Directory_="bin_Dir" Attributes="256" KeyPath="filetransfer.exe"/>
+    <ROW Component="filetransfer.exe" ComponentId="{004DCA39-E524-4528-91A3-632CB4144D54}" Directory_="bin_Dir" Attributes="256" KeyPath="filetransfer.exe"/>
     <ROW Component="host_configuration.json" ComponentId="{AAF3F8FB-A090-4461-AB70-0BFCD8F9970C}" Directory_="config_Dir" Attributes="0" KeyPath="host_configuration.json" Type="0"/>
+    <ROW Component="remoteapp.exe" ComponentId="{22DC12EB-8707-42AA-A55E-CF490F3CB218}" Directory_="bin_Dir" Attributes="256" KeyPath="remoteapp.exe"/>
     <ROW Component="session_core_general_log.txt" ComponentId="{C5DDF1E3-DD02-4157-A688-242C3AEE832D}" Directory_="session_core_log_Dir" Attributes="0" KeyPath="session_core_general_log.txt" Type="0"/>
-    <ROW Component="sessioncore.exe" ComponentId="{E9FC3E05-D9B1-439B-8E3C-18087A12AB1D}" Directory_="bin_Dir" Attributes="256" KeyPath="sessioncore.exe"/>
+    <ROW Component="sessioncore.exe" ComponentId="{0E4FE15D-E784-4801-B1B8-761827B7A136}" Directory_="bin_Dir" Attributes="256" KeyPath="sessioncore.exe"/>
+    <ROW Component="shareditems.lib" ComponentId="{98BA6699-41AB-4109-84B6-5B438AB88683}" Directory_="bin_Dir" Attributes="0" KeyPath="shareditems.lib" Type="0"/>
+    <ROW Component="shareditems.pdb" ComponentId="{8ECD7AEA-422B-4FAA-BD75-C4A3498EEB1E}" Directory_="bin_Dir" Attributes="0" KeyPath="shareditems.pdb" Type="4"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0"/>
@@ -75,9 +80,16 @@
     <ROW File="Script_6.ps1" Component_="Output_1.json" FileName="Script_6.ps1" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\Shell\Script_6.ps1" SelfReg="false"/>
     <ROW File="Script_7.ps1" Component_="Output_1.json" FileName="Script_7.ps1" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\Shell\Script_7.ps1" SelfReg="false"/>
     <ROW File="Script_8.ps1" Component_="Output_1.json" FileName="Script_8.ps1" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\Shell\Script_8.ps1" SelfReg="false"/>
-    <ROW File="agent.exe" Component_="agent.exe" FileName="agent.exe" Attributes="0" SourcePath="P:\personal-cloud-computing\Deployment\app-packetizer\additional-resources\ThinkMay\bin\agent.exe" SelfReg="false" DigSign="true"/>
-    <ROW File="filetransfer.exe" Component_="filetransfer.exe" FileName="FILE-T~1.EXE|file-transfer.exe" Attributes="0" SourcePath="P:\personal-cloud-computing\Deployment\app-packetizer\additional-resources\ThinkMay\bin\file-transfer.exe" SelfReg="false" DigSign="true"/>
-    <ROW File="sessioncore.exe" Component_="sessioncore.exe" FileName="SESSIO~1.EXE|session-core.exe" Attributes="0" SourcePath="P:\personal-cloud-computing\Deployment\app-packetizer\additional-resources\ThinkMay\bin\session-core.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="agent.exe" Component_="agent.exe" FileName="agent.exe" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\agent.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="agent.pdb" Component_="agent.exe" FileName="agent.pdb" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\agent.pdb" SelfReg="false"/>
+    <ROW File="filetransfer.exe" Component_="filetransfer.exe" FileName="FILE-T~1.EXE|file-transfer.exe" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\file-transfer.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="filetransfer.pdb" Component_="filetransfer.exe" FileName="FILE-T~1.PDB|file-transfer.pdb" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\file-transfer.pdb" SelfReg="false"/>
+    <ROW File="remoteapp.exe" Component_="remoteapp.exe" FileName="REMOTE~1.EXE|remote-app.exe" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\remote-app.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="remoteapp.pdb" Component_="remoteapp.exe" FileName="REMOTE~1.PDB|remote-app.pdb" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\remote-app.pdb" SelfReg="false"/>
+    <ROW File="sessioncore.exe" Component_="sessioncore.exe" FileName="SESSIO~1.EXE|session-core.exe" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\session-core.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="sessioncore.pdb" Component_="sessioncore.exe" FileName="SESSIO~1.PDB|session-core.pdb" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\session-core.pdb" SelfReg="false"/>
+    <ROW File="shareditems.lib" Component_="shareditems.lib" FileName="SHARED~1.LIB|shared-items.lib" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\shared-items.lib" SelfReg="false"/>
+    <ROW File="shareditems.pdb" Component_="shareditems.pdb" FileName="SHARED~1.PDB|shared-items.pdb" Attributes="0" SourcePath="..\..\..\additional-resources\ThinkMay\bin\shared-items.pdb" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
@@ -134,6 +146,7 @@
     <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
     <ROW Directory_="Temp_Dir" Component_="Temp" ManualDelete="false"/>
     <ROW Directory_="agent_log_Dir" Component_="agent_log" ManualDelete="false"/>
+    <ROW Directory_="SHORTCUTDIR" Component_="SHORTCUTDIR" ManualDelete="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
@@ -159,7 +172,11 @@
     <ROW Feature_="MainFeature" Component_="agent_log"/>
     <ROW Feature_="MainFeature" Component_="agent.exe"/>
     <ROW Feature_="MainFeature" Component_="filetransfer.exe"/>
+    <ROW Feature_="MainFeature" Component_="remoteapp.exe"/>
     <ROW Feature_="MainFeature" Component_="sessioncore.exe"/>
+    <ROW Feature_="MainFeature" Component_="shareditems.lib"/>
+    <ROW Feature_="MainFeature" Component_="shareditems.pdb"/>
+    <ROW Feature_="MainFeature" Component_="SHORTCUTDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
@@ -184,22 +201,33 @@
     <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="x64_Release"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiMergeModsComponent">
-    <ROW Module="basesystem1.0msvcx86_641.19.2.msm" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\base-system-1.0-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="1"/>
-    <ROW Module="gstreamer1.0capturemsvcx86_641.19.2" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-capture-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="2"/>
-    <ROW Module="gstreamer1.0codecsmsvcx86_641.19.2." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-codecs-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="3"/>
-    <ROW Module="gstreamer1.0coremsvcx86_641.19.2.ms" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-core-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="4"/>
-    <ROW Module="gstreamer1.0encodingmsvcx86_641.19." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-encoding-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="5"/>
-    <ROW Module="gstreamer1.0libavmsvcx86_641.19.2.m" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-libav-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="6"/>
-    <ROW Module="gstreamer1.0netmsvcx86_641.19.2.msm" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-net-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="7"/>
-    <ROW Module="gstreamer1.0playbackmsvcx86_641.19." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-playback-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="8"/>
-    <ROW Module="gstreamer1.0systemmsvcx86_641.19.2." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-system-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="9"/>
-    <ROW Module="gstreamer1.0visualizersmsvcx86_641." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-visualizers-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="12"/>
-    <ROW Module="gstreamer1.0vstemplatesmsvcx86_641." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-vs-templates-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="10"/>
-    <ROW Module="vsintegration1.0msvcx86_641.19.2.ms" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\vsintegration-1.0-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="11"/>
+    <ROW Module="basecryptomsvcx86_641.19.2.msm" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\base-crypto-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="1"/>
+    <ROW Module="basesystem1.0msvcx86_641.19.2.msm" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\base-system-1.0-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="2"/>
+    <ROW Module="gstreamer1.0capturemsvcx86_641.19.2" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-capture-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="3"/>
+    <ROW Module="gstreamer1.0codecsgplmsvcx86_641.19" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-codecs-gpl-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="4"/>
+    <ROW Module="gstreamer1.0codecsmsvcx86_641.19.2." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-codecs-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="5"/>
+    <ROW Module="gstreamer1.0codecsrestrictedmsvcx86" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-codecs-restricted-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="6"/>
+    <ROW Module="gstreamer1.0coremsvcx86_641.19.2.ms" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-core-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="7"/>
+    <ROW Module="gstreamer1.0devtoolsmsvcx86_641.19." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-devtools-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="8"/>
+    <ROW Module="gstreamer1.0editingmsvcx86_641.19.2" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-editing-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="9"/>
+    <ROW Module="gstreamer1.0effectsmsvcx86_641.19.2" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-effects-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="10"/>
+    <ROW Module="gstreamer1.0encodingmsvcx86_641.19." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-encoding-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="11"/>
+    <ROW Module="gstreamer1.0libavmsvcx86_641.19.2.m" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-libav-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="12"/>
+    <ROW Module="gstreamer1.0netmsvcx86_641.19.2.msm" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-net-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="13"/>
+    <ROW Module="gstreamer1.0netrestrictedmsvcx86_64" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-net-restricted-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="14"/>
+    <ROW Module="gstreamer1.0playbackmsvcx86_641.19." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-playback-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="15"/>
+    <ROW Module="gstreamer1.0qt5msvcx86_641.19.2.msm" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-qt5-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="16"/>
+    <ROW Module="gstreamer1.0systemmsvcx86_641.19.2." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-system-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="17"/>
+    <ROW Module="gstreamer1.0visualizersmsvcx86_641." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-visualizers-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="18"/>
+    <ROW Module="gstreamer1.0vstemplatesmsvcx86_641." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-vs-templates-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="19"/>
+    <ROW Module="vsintegration1.0msvcx86_641.19.2.ms" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\vsintegration-1.0-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="20"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
     <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
+    <ROW Shortcut="Agent" Directory_="SHORTCUTDIR" Name="Agent" Component_="agent.exe" Target="[SHORTCUTDIR]" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="SHORTCUTDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>

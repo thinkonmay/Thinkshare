@@ -991,7 +991,7 @@
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="x64_Release" BuildName="x64_Release" BuildOrder="1" BuildType="0" PackageFileName="ThinkmayClientSetup" Languages="en" InstallationType="4" UseLargeSchema="true" MsiPackageType="x64"/>
+    <ROW BuildKey="x64_Release" BuildName="ThinkmayClientSetup" BuildOrder="1" BuildType="0" PackageFileName="ThinkmayClientSetup" Languages="en" InstallationType="4" UseLargeSchema="true" MsiPackageType="x64"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
     <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
@@ -1233,26 +1233,26 @@
     <ROW Condition="VersionNT" Description="[ProductName] cannot be installed on [WindowsType9XDisplay]." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="x64_Release"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiMergeModsComponent">
-    <ROW Module="basecryptomsvcx86_641.19.2.msm" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\base-crypto-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="1"/>
-    <ROW Module="basesystem1.0msvcx86_641.19.2.msm" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\base-system-1.0-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="2"/>
-    <ROW Module="gstreamer1.0capturemsvcx86_641.19.2" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-capture-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="3"/>
-    <ROW Module="gstreamer1.0codecsgplmsvcx86_641.19" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-codecs-gpl-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="4"/>
-    <ROW Module="gstreamer1.0codecsmsvcx86_641.19.2." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-codecs-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="5"/>
-    <ROW Module="gstreamer1.0codecsrestrictedmsvcx86" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-codecs-restricted-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="6"/>
-    <ROW Module="gstreamer1.0coremsvcx86_641.19.2.ms" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-core-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="7"/>
-    <ROW Module="gstreamer1.0devtoolsmsvcx86_641.19." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-devtools-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="8"/>
-    <ROW Module="gstreamer1.0editingmsvcx86_641.19.2" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-editing-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="9"/>
-    <ROW Module="gstreamer1.0effectsmsvcx86_641.19.2" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-effects-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="10"/>
-    <ROW Module="gstreamer1.0encodingmsvcx86_641.19." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-encoding-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="11"/>
-    <ROW Module="gstreamer1.0libavmsvcx86_641.19.2.m" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-libav-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="12"/>
-    <ROW Module="gstreamer1.0netmsvcx86_641.19.2.msm" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-net-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="13"/>
-    <ROW Module="gstreamer1.0netrestrictedmsvcx86_64" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-net-restricted-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="14"/>
-    <ROW Module="gstreamer1.0playbackmsvcx86_641.19." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-playback-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="15"/>
-    <ROW Module="gstreamer1.0qt5msvcx86_641.19.2.msm" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-qt5-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="16"/>
-    <ROW Module="gstreamer1.0systemmsvcx86_641.19.2." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-system-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="17"/>
-    <ROW Module="gstreamer1.0visualizersmsvcx86_641." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-visualizers-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="18"/>
-    <ROW Module="gstreamer1.0vstemplatesmsvcx86_641." Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-vs-templates-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="19"/>
-    <ROW Module="vsintegration1.0msvcx86_641.19.2.ms" Path="E:\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\vsintegration-1.0-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="20"/>
+    <ROW Module="basecryptomsvcx86_641.19.2.msm" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\base-crypto-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="1"/>
+    <ROW Module="basesystem1.0msvcx86_641.19.2.msm" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\base-system-1.0-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="2"/>
+    <ROW Module="gstreamer1.0capturemsvcx86_641.19.2" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-capture-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="3"/>
+    <ROW Module="gstreamer1.0codecsgplmsvcx86_641.19" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-codecs-gpl-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="4"/>
+    <ROW Module="gstreamer1.0codecsmsvcx86_641.19.2." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-codecs-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="5"/>
+    <ROW Module="gstreamer1.0codecsrestrictedmsvcx86" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-codecs-restricted-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="6"/>
+    <ROW Module="gstreamer1.0coremsvcx86_641.19.2.ms" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-core-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="7"/>
+    <ROW Module="gstreamer1.0devtoolsmsvcx86_641.19." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-devtools-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="8"/>
+    <ROW Module="gstreamer1.0editingmsvcx86_641.19.2" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-editing-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="9"/>
+    <ROW Module="gstreamer1.0effectsmsvcx86_641.19.2" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-effects-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="10"/>
+    <ROW Module="gstreamer1.0encodingmsvcx86_641.19." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-encoding-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="11"/>
+    <ROW Module="gstreamer1.0libavmsvcx86_641.19.2.m" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-libav-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="12"/>
+    <ROW Module="gstreamer1.0netmsvcx86_641.19.2.msm" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-net-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="13"/>
+    <ROW Module="gstreamer1.0netrestrictedmsvcx86_64" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-net-restricted-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="14"/>
+    <ROW Module="gstreamer1.0playbackmsvcx86_641.19." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-playback-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="15"/>
+    <ROW Module="gstreamer1.0qt5msvcx86_641.19.2.msm" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-qt5-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="16"/>
+    <ROW Module="gstreamer1.0systemmsvcx86_641.19.2." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-system-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="17"/>
+    <ROW Module="gstreamer1.0visualizersmsvcx86_641." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-visualizers-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="18"/>
+    <ROW Module="gstreamer1.0vstemplatesmsvcx86_641." Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\gstreamer-1.0-vs-templates-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="19"/>
+    <ROW Module="vsintegration1.0msvcx86_641.19.2.ms" Path="..\..\..\..\..\..\gstreamer-1.0-msvc-x86_64-1.19.2-merge-modules\projects\repos\cerbero.git\vsintegration-1.0-msvc-x86_64-1.19.2.msm" Feature="MainFeature" Directory="APPDIR" Order="20"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
     <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>

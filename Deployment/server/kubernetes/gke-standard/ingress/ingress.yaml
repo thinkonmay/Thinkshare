@@ -42,18 +42,7 @@ spec:
             name: slavemanager
             port:
               number: 80
-
-  - host: document.thinkmay.net
-    http:
-      paths:
-      - path: /*
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: document
-            port:
-              number: 80
-
+              
   - host: thinkmay.net
     http:
       paths:
@@ -73,17 +62,5 @@ spec:
         backend:
           service:
             name: service-page
-            port:
-              number: 80
-
-
-  - host: database.thinkmay.net
-    http:
-      paths:
-      - path: /*
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: dbmanager
             port:
               number: 80
