@@ -17,6 +17,7 @@ kubectl apply -f ./deployment/slavemanager.yaml
 kubectl apply -f ./deployment/landing-page.yaml
 kubectl apply -f ./deployment/service-page.yaml
 kubectl apply -f ./deployment/admin-page.yaml
+kubectl apply -f ./deployment/resources.yaml
 
 kubectl apply -f ./logging/elasticsearch.yaml
 kubectl apply -f ./logging/elastic_svc.yaml
