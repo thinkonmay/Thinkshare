@@ -15,6 +15,6 @@ echo \
 
 apt-get update
 apt-get install docker-ce docker-ce-cli containerd.io
-apt install docker-compose
 
-docker-compose up
+docker pull pigeatgarlic/:release_latest
+docker run -p 80:80 -p 443:443 pigeatgarlic/authenticator:release_latest 

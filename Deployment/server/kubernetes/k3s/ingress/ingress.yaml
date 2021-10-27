@@ -42,6 +42,7 @@ spec:
     - signalling.thinkmay.net
     - slavemanager.thinkmay.net
     - database.thinkmay.net
+    - resources.thinkmay.net
     - admin.thinkmay.net
     - conductor.thinkmay.net
     - service.thinkmay.net
@@ -123,5 +124,15 @@ spec:
         backend:
           service:
             name: dbmanager
+            port:
+              number: 80
+  - host: resources.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: resources 
             port:
               number: 80
