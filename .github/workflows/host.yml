@@ -136,11 +136,14 @@ jobs:
       run: |
         ssh -i $SSH_KEY_PATH root@thinkmay.net
         sudo -i 
-        docker stop pigeatgarlic/authenticator:release_latest
-        docker rm   pigeatgarlic/authenticator:release_latest
-        docker rmi  pigeatgarlic/authenticator:release_latest
-        docker pull pigeatgarlic/authenticator:release_latest
-        docker run  pigeatgarlic/authenticator:release_latest 
+        docker stop "$AUTHENTICATOR_IMAGE_NAME"
+        docker rm   "$AUTHENTICATOR_IMAGE_NAME"
+        docker rmi  "$AUTHENTICATOR_IMAGE_NAME"
+        docker pull "$AUTHENTICATOR_IMAGE_NAME"
+        docker run  "$AUTHENTICATOR_IMAGE_NAME"
+      shell: bash
+      env:
+        AUTHENTICATOR_IMAGE_NAME: ${{ env.AUTHENTICATOR_IMAGE_NAME }}
 
 
 
@@ -175,6 +178,9 @@ jobs:
         kubectl rollout restart deploy conductor 
         kubectl rollout restart deploy signalling 
         kubectl rollout restart deploy slavemanager 
+      shell: bash
+      env:
+        SSH_KEY_PATH: ${{ github.workspace }}/../private.key
         
 
 
