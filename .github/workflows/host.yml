@@ -117,33 +117,21 @@ jobs:
     needs: build-authenticator
 
     steps:
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@13d241b293754004c80624b5567555c4a39ffbe3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
     - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Create SSH key
-      run: |
-        mkdir -p ~/.ssh/
-        echo "$SSH_PRIVATE_KEY" > ../private.key
-        sudo chmod 600 ../private.key
-        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-      shell: bash
-      env:
-        SSH_KNOWN_HOSTS: authenticator.thinkmay.net
-        SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
-        SSH_KEY_PATH: ${{ github.workspace }}/../private.key
-
-    - name: Deploy
-      run: |
-        ssh -i $SSH_KEY_PATH root@thinkmay.net
-        sudo -i 
-        docker stop "$AUTHENTICATOR_IMAGE_NAME"
-        docker rm   "$AUTHENTICATOR_IMAGE_NAME"
-        docker rmi  "$AUTHENTICATOR_IMAGE_NAME"
-        docker pull "$AUTHENTICATOR_IMAGE_NAME"
-        docker run  "$AUTHENTICATOR_IMAGE_NAME"
-      shell: bash
-      env:
-        AUTHENTICATOR_IMAGE_NAME: ${{ env.AUTHENTICATOR_IMAGE_NAME }}
+      uses: aws-actions/amazon-ecs-deploy-task-definition@de0132cf8cdedb79975c6d42b77eb7ea193cf28e
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true
 
 
 
