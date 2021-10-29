@@ -190,6 +190,7 @@ namespace Conductor.Controllers
 
 
         [AllowAnonymous]
+        [Route("signin-google")]
         public async Task<IActionResult>  ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)

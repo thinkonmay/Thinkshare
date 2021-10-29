@@ -7,6 +7,11 @@ metadata:
     kubernetes.io/ingress.class: "gce"
     networking.gke.io/managed-certificates: managed-cert
 spec:
+  defaultBackend:
+    service:
+      name: landing-page
+      port:
+        number: 80
   rules:
   - host: conductor.thinkmay.net
     http:
@@ -62,5 +67,16 @@ spec:
         backend:
           service:
             name: service-page
+            port:
+              number: 80
+
+  - host: resources.thinkmay.net
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: resources 
             port:
               number: 80
