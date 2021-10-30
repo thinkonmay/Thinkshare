@@ -1,6 +1,522 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="overflow: hidden;height: auto;"><head>
+    <!-- Required meta tags -->
+    <title>
+        ThinkMay | Dashboard
+    </title>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- plugins:css -->
+<link rel="stylesheet" href="vendors/feather/feather.css">
+<link rel="stylesheet" href="vendors/mdi/css/materialdesignicons.min.css">
+<link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+<link rel="stylesheet" href="vendors/typicons/typicons.css">
+<link rel="stylesheet" href="vendors/simple-line-icons/css/simple-line-icons.css">
+<link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+<!-- endinject -->
+<!-- Plugin css for this page -->
+<link rel="stylesheet" href="js/select.dataTables.min.css">
 
+
+
+<!-- End plugin css for this page -->
+<!-- inject:css -->
+<link rel="stylesheet" href="css/vertical-layout-light/style.css">
+<link rel="stylesheet" href="stylesheets/style.css">
+<!-- endinject -->
+<link rel="shortcut icon" href="images/logo-thinkmay-white.ico">
+<style>.swal2-popup.swal2-toast{box-sizing:border-box;grid-column:1/4!important;grid-row:1/4!important;grid-template-columns:1fr 99fr 1fr;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 1px rgba(0,0,0,.075),0 1px 2px rgba(0,0,0,.075),1px 2px 4px rgba(0,0,0,.075),1px 3px 8px rgba(0,0,0,.075),2px 4px 16px rgba(0,0,0,.075);pointer-events:all}.swal2-popup.swal2-toast>*{grid-column:2}.swal2-popup.swal2-toast .swal2-title{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-loading{justify-content:center}.swal2-popup.swal2-toast .swal2-input{height:2em;margin:.5em;font-size:1em}.swal2-popup.swal2-toast .swal2-validation-message{font-size:1em}.swal2-popup.swal2-toast .swal2-footer{margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-popup.swal2-toast .swal2-close{grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-popup.swal2-toast .swal2-html-container{margin:.5em 1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-html-container:empty{padding:0}.swal2-popup.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-popup.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:700}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{justify-content:flex-start;height:auto;margin:0;margin-top:.5em;padding:0 .5em}.swal2-popup.swal2-toast .swal2-styled{margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;transform:rotate(45deg);border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-.8em;left:-.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{-webkit-animation:swal2-toast-animate-success-line-tip .75s;animation:swal2-toast-animate-success-line-tip .75s}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{-webkit-animation:swal2-toast-animate-success-line-long .75s;animation:swal2-toast-animate-success-line-long .75s}.swal2-popup.swal2-toast.swal2-show{-webkit-animation:swal2-toast-show .5s;animation:swal2-toast-show .5s}.swal2-popup.swal2-toast.swal2-hide{-webkit-animation:swal2-toast-hide .1s forwards;animation:swal2-toast-hide .1s forwards}.swal2-container{display:grid;position:fixed;z-index:1060;top:0;right:0;bottom:0;left:0;box-sizing:border-box;grid-template-areas:"top-start     top            top-end" "center-start  center         center-end" "bottom-start  bottom-center  bottom-end";grid-template-rows:minmax(-webkit-min-content,auto) minmax(-webkit-min-content,auto) minmax(-webkit-min-content,auto);grid-template-rows:minmax(min-content,auto) minmax(min-content,auto) minmax(min-content,auto);height:100%;padding:.625em;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}.swal2-container.swal2-backdrop-show,.swal2-container.swal2-noanimation{background:rgba(0,0,0,.4)}.swal2-container.swal2-backdrop-hide{background:0 0!important}.swal2-container.swal2-bottom-start,.swal2-container.swal2-center-start,.swal2-container.swal2-top-start{grid-template-columns:minmax(0,1fr) auto auto}.swal2-container.swal2-bottom,.swal2-container.swal2-center,.swal2-container.swal2-top{grid-template-columns:auto minmax(0,1fr) auto}.swal2-container.swal2-bottom-end,.swal2-container.swal2-center-end,.swal2-container.swal2-top-end{grid-template-columns:auto auto minmax(0,1fr)}.swal2-container.swal2-top-start>.swal2-popup{align-self:start}.swal2-container.swal2-top>.swal2-popup{grid-column:2;align-self:start;justify-self:center}.swal2-container.swal2-top-end>.swal2-popup,.swal2-container.swal2-top-right>.swal2-popup{grid-column:3;align-self:start;justify-self:end}.swal2-container.swal2-center-left>.swal2-popup,.swal2-container.swal2-center-start>.swal2-popup{grid-row:2;align-self:center}.swal2-container.swal2-center>.swal2-popup{grid-column:2;grid-row:2;align-self:center;justify-self:center}.swal2-container.swal2-center-end>.swal2-popup,.swal2-container.swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;align-self:center;justify-self:end}.swal2-container.swal2-bottom-left>.swal2-popup,.swal2-container.swal2-bottom-start>.swal2-popup{grid-column:1;grid-row:3;align-self:end}.swal2-container.swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;justify-self:center;align-self:end}.swal2-container.swal2-bottom-end>.swal2-popup,.swal2-container.swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;align-self:end;justify-self:end}.swal2-container.swal2-grow-fullscreen>.swal2-popup,.swal2-container.swal2-grow-row>.swal2-popup{grid-column:1/4;width:100%}.swal2-container.swal2-grow-column>.swal2-popup,.swal2-container.swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}.swal2-container.swal2-no-transition{transition:none!important}.swal2-popup{display:none;position:relative;box-sizing:border-box;grid-template-columns:minmax(0,100%);width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;color:#545454;font-family:inherit;font-size:1rem}.swal2-popup:focus{outline:0}.swal2-popup.swal2-loading{overflow-y:hidden}.swal2-title{position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:#595959;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}.swal2-actions{display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:auto;margin:1.25em auto 0;padding:0}.swal2-actions:not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}.swal2-actions:not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1))}.swal2-actions:not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2))}.swal2-loader{display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;-webkit-animation:swal2-rotate-loading 1.5s linear 0s infinite normal;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 transparent #2778c4 transparent}.swal2-styled{margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px transparent;font-weight:500}.swal2-styled:not([disabled]){cursor:pointer}.swal2-styled.swal2-confirm{border:0;border-radius:.25em;background:initial;background-color:#7367f0;color:#fff;font-size:1em}.swal2-styled.swal2-confirm:focus{box-shadow:0 0 0 3px rgba(115,103,240,.5)}.swal2-styled.swal2-deny{border:0;border-radius:.25em;background:initial;background-color:#ea5455;color:#fff;font-size:1em}.swal2-styled.swal2-deny:focus{box-shadow:0 0 0 3px rgba(234,84,85,.5)}.swal2-styled.swal2-cancel{border:0;border-radius:.25em;background:initial;background-color:#6e7d88;color:#fff;font-size:1em}.swal2-styled.swal2-cancel:focus{box-shadow:0 0 0 3px rgba(110,125,136,.5)}.swal2-styled.swal2-default-outline:focus{box-shadow:0 0 0 3px rgba(100,150,200,.5)}.swal2-styled:focus{outline:0}.swal2-styled::-moz-focus-inner{border:0}.swal2-footer{justify-content:center;margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:#545454;font-size:1em}.swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto!important;height:.25em;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}.swal2-timer-progress-bar{width:100%;height:.25em;background:rgba(0,0,0,.2)}.swal2-image{max-width:100%;margin:2em auto 1em}.swal2-close{z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:0 0;color:#ccc;font-family:serif;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}.swal2-close:hover{transform:none;background:0 0;color:#f27474}.swal2-close:focus{outline:0;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}.swal2-close::-moz-focus-inner{border:0}.swal2-html-container{z-index:1;justify-content:center;margin:1em 1.6em .3em;padding:0;overflow:auto;color:#545454;font-size:1.125em;font-weight:400;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word}.swal2-checkbox,.swal2-file,.swal2-input,.swal2-radio,.swal2-select,.swal2-textarea{margin:1em 2em 0}.swal2-file,.swal2-input,.swal2-textarea{box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid #d9d9d9;border-radius:.1875em;background:inherit;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px transparent;color:inherit;font-size:1.125em}.swal2-file.swal2-inputerror,.swal2-input.swal2-inputerror,.swal2-textarea.swal2-inputerror{border-color:#f27474!important;box-shadow:0 0 2px #f27474!important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{border:1px solid #b4dbed;outline:0;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}.swal2-file::-moz-placeholder,.swal2-input::-moz-placeholder,.swal2-textarea::-moz-placeholder{color:#ccc}.swal2-file:-ms-input-placeholder,.swal2-input:-ms-input-placeholder,.swal2-textarea:-ms-input-placeholder{color:#ccc}.swal2-file::placeholder,.swal2-input::placeholder,.swal2-textarea::placeholder{color:#ccc}.swal2-range{margin:1em 2em 0;background:#fff}.swal2-range input{width:80%}.swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}.swal2-range input,.swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}.swal2-input{height:2.625em;padding:0 .75em}.swal2-file{width:75%;margin-right:auto;margin-left:auto;background:inherit;font-size:1.125em}.swal2-textarea{height:6.75em;padding:.75em}.swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:inherit;color:inherit;font-size:1.125em}.swal2-checkbox,.swal2-radio{align-items:center;justify-content:center;background:#fff;color:inherit}.swal2-checkbox label,.swal2-radio label{margin:0 .6em;font-size:1.125em}.swal2-checkbox input,.swal2-radio input{flex-shrink:0;margin:0 .4em}.swal2-input-label{display:flex;justify-content:center;margin:1em auto 0}.swal2-validation-message{align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:#f0f0f0;color:#666;font-size:1em;font-weight:300}.swal2-validation-message::before{content:"!";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}.swal2-icon{position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:.25em solid transparent;border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}.swal2-icon.swal2-error{border-color:#f27474;color:#f27474}.swal2-icon.swal2-error .swal2-x-mark{position:relative;flex-grow:1}.swal2-icon.swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}.swal2-icon.swal2-error.swal2-icon-show{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-error.swal2-icon-show .swal2-x-mark{-webkit-animation:swal2-animate-error-x-mark .5s;animation:swal2-animate-error-x-mark .5s}.swal2-icon.swal2-warning{border-color:#facea8;color:#f8bb86}.swal2-icon.swal2-info{border-color:#9de0f6;color:#3fc3ee}.swal2-icon.swal2-question{border-color:#c9dae1;color:#87adbd}.swal2-icon.swal2-success{border-color:#a5dc86;color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;transform:rotate(45deg);border-radius:50%}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=left]{top:-.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=right]{top:-.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}.swal2-icon.swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-.25em;left:-.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}.swal2-icon.swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}.swal2-icon.swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}.swal2-icon.swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-tip{-webkit-animation:swal2-animate-success-line-tip .75s;animation:swal2-animate-success-line-tip .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-long{-webkit-animation:swal2-animate-success-line-long .75s;animation:swal2-animate-success-line-long .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-circular-line-right{-webkit-animation:swal2-rotate-success-circular-line 4.25s ease-in;animation:swal2-rotate-success-circular-line 4.25s ease-in}.swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:inherit;font-weight:600}.swal2-progress-steps li{display:inline-block;position:relative}.swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}.swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}[class^=swal2]{-webkit-tap-highlight-color:transparent}.swal2-show{-webkit-animation:swal2-show .3s;animation:swal2-show .3s}.swal2-hide{-webkit-animation:swal2-hide .15s forwards;animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}@-webkit-keyframes swal2-toast-show{0%{transform:translateY(-.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0)}}@keyframes swal2-toast-show{0%{transform:translateY(-.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0)}}@-webkit-keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@-webkit-keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@-webkit-keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@-webkit-keyframes swal2-show{0%{transform:scale(.7)}45%{transform:scale(1.05)}80%{transform:scale(.95)}100%{transform:scale(1)}}@keyframes swal2-show{0%{transform:scale(.7)}45%{transform:scale(1.05)}80%{transform:scale(.95)}100%{transform:scale(1)}}@-webkit-keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}@-webkit-keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@-webkit-keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@-webkit-keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@-webkit-keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(.4);opacity:0}50%{margin-top:1.625em;transform:scale(.4);opacity:0}80%{margin-top:-.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(.4);opacity:0}50%{margin-top:1.625em;transform:scale(.4);opacity:0}80%{margin-top:-.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@-webkit-keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0);opacity:1}}@-webkit-keyframes swal2-rotate-loading{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}@keyframes swal2-rotate-loading{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto!important}body.swal2-no-backdrop .swal2-container{background-color:transparent!important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}@media print{body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow-y:scroll!important}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) .swal2-container{position:static!important}}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:transparent;pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{top:0;right:auto;bottom:auto;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{top:0;right:0;bottom:auto;left:auto}body.swal2-toast-shown .swal2-container.swal2-top-left,body.swal2-toast-shown .swal2-container.swal2-top-start{top:0;right:auto;bottom:auto;left:0}body.swal2-toast-shown .swal2-container.swal2-center-left,body.swal2-toast-shown .swal2-container.swal2-center-start{top:50%;right:auto;bottom:auto;left:0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{top:50%;right:auto;bottom:auto;left:50%;transform:translate(-50%,-50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{top:50%;right:0;bottom:auto;left:auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-left,body.swal2-toast-shown .swal2-container.swal2-bottom-start{top:auto;right:auto;bottom:0;left:0}body.swal2-toast-shown .swal2-container.swal2-bottom{top:auto;right:auto;bottom:0;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{top:auto;right:0;bottom:0;left:auto}</style><style type="text/css" data-styled-components="FiaaB gTcftA caPIRE" data-styled-components-is-local="true">
+/* sc-component-id: sc-keyframes-FiaaB */
+@-webkit-keyframes FiaaB{100%{-webkit-transform:rotate(360deg);-ms-transform:rotate(360deg);transform:rotate(360deg);}}@keyframes FiaaB{100%{-webkit-transform:rotate(360deg);-ms-transform:rotate(360deg);transform:rotate(360deg);}}
+/* sc-component-id: sc-keyframes-gTcftA */
+@-webkit-keyframes gTcftA{10%,90%{-webkit-transform:translate3d(-1px,0,0);-ms-transform:translate3d(-1px,0,0);transform:translate3d(-1px,0,0);}20%,80%{-webkit-transform:translate3d(2px,0,0);-ms-transform:translate3d(2px,0,0);transform:translate3d(2px,0,0);}30%,50%,70%{-webkit-transform:translate3d(-4px,0,0);-ms-transform:translate3d(-4px,0,0);transform:translate3d(-4px,0,0);}40%,60%{-webkit-transform:translate3d(4px,0,0);-ms-transform:translate3d(4px,0,0);transform:translate3d(4px,0,0);}}@keyframes gTcftA{10%,90%{-webkit-transform:translate3d(-1px,0,0);-ms-transform:translate3d(-1px,0,0);transform:translate3d(-1px,0,0);}20%,80%{-webkit-transform:translate3d(2px,0,0);-ms-transform:translate3d(2px,0,0);transform:translate3d(2px,0,0);}30%,50%,70%{-webkit-transform:translate3d(-4px,0,0);-ms-transform:translate3d(-4px,0,0);transform:translate3d(-4px,0,0);}40%,60%{-webkit-transform:translate3d(4px,0,0);-ms-transform:translate3d(4px,0,0);transform:translate3d(4px,0,0);}}
+/* sc-component-id: sc-keyframes-caPIRE */
+@-webkit-keyframes caPIRE{0%{-webkit-transform:scale(.75);-ms-transform:scale(.75);transform:scale(.75);}20%{-webkit-transform:scale(1);-ms-transform:scale(1);transform:scale(1);}40%{-webkit-transform:scale(.75);-ms-transform:scale(.75);transform:scale(.75);}60%{-webkit-transform:scale(1);-ms-transform:scale(1);transform:scale(1);}80%{-webkit-transform:scale(.75);-ms-transform:scale(.75);transform:scale(.75);}100%{-webkit-transform:scale(.75);-ms-transform:scale(.75);transform:scale(.75);}}@keyframes caPIRE{0%{-webkit-transform:scale(.75);-ms-transform:scale(.75);transform:scale(.75);}20%{-webkit-transform:scale(1);-ms-transform:scale(1);transform:scale(1);}40%{-webkit-transform:scale(.75);-ms-transform:scale(.75);transform:scale(.75);}60%{-webkit-transform:scale(1);-ms-transform:scale(1);transform:scale(1);}80%{-webkit-transform:scale(.75);-ms-transform:scale(.75);transform:scale(.75);}100%{-webkit-transform:scale(.75);-ms-transform:scale(.75);transform:scale(.75);}}</style></head>
+
+<body style="height: auto;">
+    <div class="container-scroller">
+        <!-- partial:partials/_navbar.html -->
+        <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+                <div class="me-3">
+                    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize">
+                        <span class="icon-menu"></span>
+                    </button>
+                </div>
+                <div>
+                    <a class="navbar-brand brand-logo" href="https://thinkmay.net" target="_blank">
+                        <img src="images/logo-thinkmay-black.png" alt="logo">
+                    </a>
+                    <a class="navbar-brand brand-logo-mini" href="https://thinkmay.net" target="_blank">
+                        <img src="images/logo-thinkmay-black.png" alt="logo">
+                    </a>
+                </div>
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-top">
+                <ul class="navbar-nav">
+                    <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+                        <h1 class="welcome-text">
+                            Welcome back, <span class="text-black fw-bold" id="WelcomeUsername">admin@thinkmay.com</span>
+                        </h1>
+                        <h3 class="welcome-sub-text">
+                            Just one step ahead
+                        </h3>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <!-- <a href="/dashboard/vi"><img src="images/vi-VN.png" width="32" height="32" /></a>
+                        <span style="padding: 5px;"></span>
+                        <a href="/dashboard/en"><img src="images/en-UK.png" width="32" height="32" /></a> -->
+
+                    <li class="nav-item d-none d-lg-block">
+                        <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
+                            <span class="input-group-addon input-group-prepend border-right">
+                                <span class="icon-calendar input-group-text calendar-icon"></span>
+                            </span>
+                            <input type="text" class="form-control">
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <form class="search-form" action="#">
+                            <i class="icon-search"></i>
+                            <input id="searchButton" type="search" class="form-control" placeholder="Search Here" title="Search here">
+                        </form>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                            <i id="inboxButton" class="icon-mail icon-lg"></i>
+                        </a>
+                        <!-- <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0"
+              aria-labelledby="notificationDropdown">
+              <a class="dropdown-item py-3 border-bottom">
+                <p class="mb-0 font-weight-medium float-left">You have 4 new notifications </p>
+                <span class="badge badge-pill badge-primary float-right" id="viewallButton">View all</span>
+              </a>
+              <a class="dropdown-item preview-item py-3">
+                <div class="preview-thumbnail">
+                  <i class="mdi mdi-alert m-auto text-primary"></i>
+                </div>
+                <div class="preview-item-content">
+                  <h6 class="preview-subject fw-normal text-dark mb-1">Application Error</h6>
+                  <p class="fw-light small-text mb-0"> Just now </p>
+                </div>
+              </a>
+              <a class="dropdown-item preview-item py-3">
+                <div class="preview-thumbnail">
+                  <i class="mdi mdi-settings m-auto text-primary"></i>
+                </div>
+                <div class="preview-item-content">
+                  <h6 class="preview-subject fw-normal text-dark mb-1">Settings</h6>
+                  <p class="fw-light small-text mb-0"> Private message </p>
+                </div>
+              </a>
+              <a class="dropdown-item preview-item py-3">
+                <div class="preview-thumbnail">
+                  <i class="mdi mdi-airballoon m-auto text-primary"></i>
+                </div>
+                <div class="preview-item-content">
+                  <h6 class="preview-subject fw-normal text-dark mb-1">New user registration</h6>
+                  <p class="fw-light small-text mb-0"> 2 days ago </p>
+                </div>
+              </a>
+            </div> -->
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i id="notiButton" class="icon-bell"></i>
+                            <span class="count"></span>
+                        </a>
+                        <!-- <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0"
+              aria-labelledby="countDropdown"id>
+              <a class="dropdown-item py-3">
+                <p class="mb-0 font-weight-medium float-left">You have 7 unread mails </p>
+                <span class="badge badge-pill badge-primary float-right">View all</span>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <img src="images/faces/face10.jpg" alt="image" class="img-sm profile-pic">
+                </div>
+                <div class="preview-item-content flex-grow py-2">
+                  <p class="preview-subject ellipsis font-weight-medium text-dark">Marian Garner </p>
+                  <p class="fw-light small-text mb-0"> The meeting is cancelled </p>
+                </div>
+              </a>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <img src="images/faces/face12.jpg" alt="image" class="img-sm profile-pic">
+                </div>
+                <div class="preview-item-content flex-grow py-2">
+                  <p class="preview-subject ellipsis font-weight-medium text-dark">David Grey </p>
+                  <p class="fw-light small-text mb-0"> The meeting is cancelled </p>
+                </div>
+              </a>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <img src="images/faces/face1.jpg" alt="image" class="img-sm profile-pic">
+                </div>
+                <div class="preview-item-content flex-grow py-2">
+                  <p class="preview-subject ellipsis font-weight-medium text-dark">Travis Jenkins </p>
+                  <p class="fw-light small-text mb-0"> The meeting is cancelled </p>
+                </div>
+              </a>
+            </div> -->
+                    </li>
+                    <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+                        <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img id="userButton" class="img-xs rounded-circle" src="images/faces/face8.jpg" alt="Profile image"> </a>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+                            <div class="dropdown-header text-center">
+                                <img class="img-md rounded-circle" src="images/faces/face8.jpg" alt="Profile image">
+                                <p class="mb-1 mt-3 font-weight-semibold">Allen Moreno</p>
+                                <p class="fw-light text-muted mb-0">allenmoreno@gmail.com</p>
+                            </div>
+                            <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My
+                                Profile <span class="badge badge-pill badge-danger">1</span></a>
+                            <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i>
+                                Pricing</a>
+                        </div>
+                    </li>
+                </ul>
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+            </div>
+        </nav>
+        <!-- partial -->
+
+
+
+
+
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial:partials/_settings-panel.html -->
+            <div class="theme-setting-wrapper">
+                <div id="settings-trigger"><i class="ti-settings"></i></div>
+                <div id="theme-settings" class="settings-panel" style="  overflow: scroll;">
+                    <i class="settings-close ti-close"></i>
+                    <p class="settings-heading">
+                        SIDEBAR SKINS
+                    </p>
+                    <div class="sidebar-bg-options selected" id="sidebar-light-theme">
+                        <div class="img-ss rounded-circle bg-light border me-3"></div>
+                        Light
+                    </div>
+                    <div class="sidebar-bg-options" id="sidebar-dark-theme">
+                        <div class="img-ss rounded-circle bg-dark border me-3">
+                        </div>
+                        Dark
+                    </div>
+                    <p class="settings-heading mt-2">
+                        HEADER SKINS
+                    </p>
+                    <div class="color-tiles mx-0 px-4" style="display: flex;justify-content: flex-start;">
+                        <div class="tiles success"></div>
+                        <div class="tiles warning"></div>
+                        <div class="tiles danger"></div>
+                        <div class="tiles info"></div>
+                        <div class="tiles dark"></div>
+                        <div class="tiles default"></div>
+                    </div>
+                    <div class="color-tiles mx-0 px-4" style="display: flex;justify-content:space-around;">
+                        <div class="dropdown">
+                            <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="images/resolution.png" height="32" width="32">
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                                <h6 class="dropdown-header">Resolution</h6>
+                                <a class="dropdown-item" name="resolution-setting">4K</a>
+                                <a class="dropdown-item" name="resolution-setting">2K</a>
+                                <a class="dropdown-item" name="resolution-setting">FullHD</a>
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="images/bitrate.png" height="32" width="32">
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                                <h6 class="dropdown-header">Remote control bitrate</h6>
+                                <a class="dropdown-item" name="bitrate-setting">ultra low</a>
+                                <a class="dropdown-item" name="bitrate-setting">low</a>
+                                <a class="dropdown-item" name="bitrate-setting">medium</a>
+                                <a class="dropdown-item" name="bitrate-setting">high</a>
+                                <a class="dropdown-item" name="bitrate-setting">very high</a>
+                                <a class="dropdown-item" name="bitrate-setting">ultra high</a>
+                                <!-- <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Separated link</a> -->
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="images/volume.png" height="32" width="32">
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                                <h6 class="dropdown-header">AudioCodec</h6>
+                                <a class="dropdown-item" name="audiocodec-setting">opus</a>
+                                <a class="dropdown-item" name="audiocodec-setting">mp3</a>
+                                <!-- <a class="dropdown-item" href="#">Something else here</a> -->
+                                <!-- <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Separated link</a> -->
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="images/video.png" height="32" width="32">
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                                <h6 class="dropdown-header">VideoCodec</h6>
+                                <a class="dropdown-item" name="videocodec-setting">vp9</a>
+                                <a class="dropdown-item" name="videocodec-setting">h264</a>
+                                <a class="dropdown-item" name="videocodec-setting">h265</a>
+                            </div>
+                        </div>
+
+                        <div class="dropdown">
+                            <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="images/platform.png" height="32" width="32">
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                                <h6 class="dropdown-header">Platform</h6>
+                                <a class="dropdown-item" name="platform-setting">chrome</a>
+                                <a class="dropdown-item" name="platform-setting">gstreamer</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- partial -->
+            <!-- partial:partials/_sidebar.html -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="mdi mdi-grid-large menu-icon"></i>
+                            <span class="menu-title">
+                                Dashboard
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item nav-category">
+                        Account
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/setting">
+                            <i class="mdi mdi-account-settings menu-icon"></i>
+                            <span class="menu-title">
+                                Setting
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="logout">
+                        <a class="nav-link" href="/logout">
+                            <i class="menu-icon mdi mdi-logout"></i>
+                            <span class="menu-title">
+                                Logout
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- partial -->
+            <div class="main-panel">
+                <div class="content-wrapper" style="overflow-y: scroll; min-height: 914px;">
+                    <div class="row">
+                        <div class="col-md-6 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Default form</h4>
+                                    <p class="card-description">
+                                        Basic form layout
+                                    </p>
+                                    <form class="forms-sample">
+                                        <div class="form-group">
+                                            <label for="exampleInputUsername1">Username</label>
+                                            <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Username">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">Email address</label>
+                                            <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword1">Password</label>
+                                            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputConfirmPassword1">Confirm Password</label>
+                                            <input type="password" class="form-control" id="exampleInputConfirmPassword1" placeholder="Password">
+                                        </div>
+                                        <div class="form-check form-check-flat form-check-primary">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input">
+                                                Remember me
+                                            <i class="input-helper"></i></label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary me-2">Submit</button>
+                                        <button class="btn btn-light">Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Horizontal Form</h4>
+                                    <p class="card-description">
+                                        Horizontal form layout
+                                    </p>
+                                    <form class="forms-sample">
+                                        <div class="form-group row">
+                                            <label for="exampleInputUsername2" class="col-sm-3 col-form-label">Email</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="exampleInputUsername2" placeholder="Username">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="exampleInputEmail2" class="col-sm-3 col-form-label">Email</label>
+                                            <div class="col-sm-9">
+                                                <input type="email" class="form-control" id="exampleInputEmail2" placeholder="Email">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="exampleInputMobile" class="col-sm-3 col-form-label">Mobile</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="exampleInputMobile" placeholder="Mobile number">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="exampleInputPassword2" class="col-sm-3 col-form-label">Password</label>
+                                            <div class="col-sm-9">
+                                                <input type="password" class="form-control" id="exampleInputPassword2" placeholder="Password">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="exampleInputConfirmPassword2" class="col-sm-3 col-form-label">Re
+                                                Password</label>
+                                            <div class="col-sm-9">
+                                                <input type="password" class="form-control" id="exampleInputConfirmPassword2" placeholder="Password">
+                                            </div>
+                                        </div>
+                                        <div class="form-check form-check-flat form-check-primary">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input">
+                                                Remember me
+                                            <i class="input-helper"></i></label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary me-2">Submit</button>
+                                        <button class="btn btn-light">Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Basic form elements</h4>
+                                    <p class="card-description">
+                                        Basic form elements
+                                    </p>
+                                    <form class="forms-sample">
+                                        <div class="form-group">
+                                            <label for="exampleInputName1">Name</label>
+                                            <input type="text" class="form-control" id="exampleInputName1" placeholder="Name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail3">Email address</label>
+                                            <input type="email" class="form-control" id="exampleInputEmail3" placeholder="Email">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputPassword4">Password</label>
+                                            <input type="password" class="form-control" id="exampleInputPassword4" placeholder="Password">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleSelectGender">Gender</label>
+                                            <select class="form-control" id="exampleSelectGender">
+                                                <option>Male</option>
+                                                <option>Female</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>File upload</label>
+                                            <input type="file" name="img[]" class="file-upload-default">
+                                            <div class="input-group col-xs-12">
+                                                <input type="text" class="form-control file-upload-info" disabled="" placeholder="Upload Image">
+                                                <span class="input-group-append">
+                                                    <button class="file-upload-browse btn btn-primary" type="button">Upload</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputCity1">City</label>
+                                            <input type="text" class="form-control" id="exampleInputCity1" placeholder="Location">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleTextarea1">Textarea</label>
+                                            <textarea class="form-control" id="exampleTextarea1" rows="4"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary me-2">Submit</button>
+                                        <button class="btn btn-light">Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                            <b>Version</b> 1.0.0
+                            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
+                                <strong>Copyright © 2014-2021 <a href="https://thinkmay.net" target="_blank">ThinkMay</a>.</strong> All rights reserved..</span>
+                            <!-- content-wrapper ends -->
+                            <!-- partial:partials/_footer.html -->
+                    </span></div>
+                </footer>
+                <!-- partial -->
+            </div>
+
+
+
+
+
+            <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+
+    <script src="plugins/jquery/jquery.min.js"></script>
+<script src="javascripts/lib/signalr.min.js" type="text/javascript"></script>
+<!-- Bootstrap 4 -->
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="javascripts/template/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="javascripts/lib/signalr/signalr.js"></script>
+<!-- plugins:js -->
+<script src="vendors/js/vendor.bundle.base.js"></script>
+<!-- endinject -->
+<!-- Plugin js for this page -->
+<script src="vendors/chart.js/Chart.min.js"></script>
+<script src="vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<script src="vendors/progressbar.js/progressbar.min.js"></script>
+
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script src="js/off-canvas.js"></script>
+<script src="js/hoverable-collapse.js"></script>
+<script src="js/template.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/todolist.js"></script>
+<!-- endinject -->
+<!-- Custom js for this page-->
+<script src="js/Chart.roundedBarCharts.js"></script>
+<!-- End custom js for this page-->
+        <script type="module" src="javascripts/pages/dashboard.js"></script>
+
+
+<iframe id="nr-ext-rsicon" style="position: absolute; display: none; width: 50px; height: 50px; z-index: 2147483647; border-style: none; background: transparent;"></iframe></body></html>
 <head>
     <!-- Required meta tags -->
     <title>
@@ -41,9 +557,9 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
-                    <a href="/dashboard/vi"><img src="images/vi-VN.png" width="32" height="32" /></a>
-                    <span style="padding: 5px;"></span>
-                    <a href="/dashboard/en"><img src="images/en-UK.png" width="32" height="32" /></a>
+                    <!-- <a href="/dashboard/vi"><img src="images/vi-VN.png" width="32" height="32" /></a>
+                        <span style="padding: 5px;"></span>
+                        <a href="/dashboard/en"><img src="images/en-UK.png" width="32" height="32" /></a> -->
 
                     <li class="nav-item d-none d-lg-block">
                         <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
@@ -473,562 +989,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Input size</h4>
-                                    <p class="card-description">
-                                        Add classes like <code>.form-control-lg</code> and
-                                        <code>.form-control-sm</code>.
-                                    </p>
-                                    <div class="form-group">
-                                        <label>Large input</label>
-                                        <input type="text" class="form-control form-control-lg" placeholder="Username"
-                                            aria-label="Username">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Default input</label>
-                                        <input type="text" class="form-control" placeholder="Username"
-                                            aria-label="Username">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Small input</label>
-                                        <input type="text" class="form-control form-control-sm" placeholder="Username"
-                                            aria-label="Username">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Select size</h4>
-                                    <p class="card-description">
-                                        Add classes like <code>.form-control-lg</code> and
-                                        <code>.form-control-sm</code>.
-                                    </p>
-                                    <div class="form-group">
-                                        <label for="exampleFormControlSelect1">Large select</label>
-                                        <select class="form-control form-control-lg" id="exampleFormControlSelect1">
-                                            <option>1</option>
-                                            <option>2</option>
-                                            <option>3</option>
-                                            <option>4</option>
-                                            <option>5</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="exampleFormControlSelect2">Default select</label>
-                                        <select class="form-control" id="exampleFormControlSelect2">
-                                            <option>1</option>
-                                            <option>2</option>
-                                            <option>3</option>
-                                            <option>4</option>
-                                            <option>5</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="exampleFormControlSelect3">Small select</label>
-                                        <select class="form-control form-control-sm" id="exampleFormControlSelect3">
-                                            <option>1</option>
-                                            <option>2</option>
-                                            <option>3</option>
-                                            <option>4</option>
-                                            <option>5</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Basic input groups</h4>
-                                    <p class="card-description">
-                                        Basic bootstrap input groups
-                                    </p>
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">@</span>
-                                            </div>
-                                            <input type="text" class="form-control" placeholder="Username"
-                                                aria-label="Username">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text bg-primary text-white">$</span>
-                                            </div>
-                                            <input type="text" class="form-control"
-                                                aria-label="Amount (to the nearest dollar)">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text">.00</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">$</span>
-                                            </div>
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">0.00</span>
-                                            </div>
-                                            <input type="text" class="form-control"
-                                                aria-label="Amount (to the nearest dollar)">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Recipient's username"
-                                                aria-label="Recipient's username">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-sm btn-primary" type="button">Search</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <button class="btn btn-sm btn-outline-primary dropdown-toggle"
-                                                    type="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                                                    aria-expanded="false">Dropdown</button>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item" href="#">Action</a>
-                                                    <a class="dropdown-item" href="#">Another action</a>
-                                                    <a class="dropdown-item" href="#">Something else here</a>
-                                                    <div role="separator" class="dropdown-divider"></div>
-                                                    <a class="dropdown-item" href="#">Separated link</a>
-                                                </div>
-                                            </div>
-                                            <input type="text" class="form-control"
-                                                aria-label="Text input with dropdown button">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Find in facebook"
-                                                aria-label="Recipient's username">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-sm btn-facebook" type="button">
-                                                    <i class="ti-facebook"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Checkbox Controls</h4>
-                                    <p class="card-description">Checkbox and radio controls (default appearance is in
-                                        primary color)</p>
-                                    <form>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input">
-                                                            Default
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" checked>
-                                                            Checked
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" disabled>
-                                                            Disabled
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" disabled
-                                                                checked>
-                                                            Disabled checked
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input"
-                                                                name="optionsRadios" id="optionsRadios1" value="">
-                                                            Default
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input"
-                                                                name="optionsRadios" id="optionsRadios2" value="option2"
-                                                                checked>
-                                                            Selected
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input"
-                                                                name="optionsRadios2" id="optionsRadios3"
-                                                                value="option3" disabled>
-                                                            Disabled
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input"
-                                                                name="optionsRadio2" id="optionsRadios4" value="option4"
-                                                                disabled checked>
-                                                            Selected and disabled
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-description">Add class <code>.form-check-{color}</code> for checkbox
-                                        and radio controls in theme colors</p>
-                                    <form>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <div class="form-check form-check-primary">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" checked>
-                                                            Primary
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-check-success">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" checked>
-                                                            Success
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-check-info">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" checked>
-                                                            Info
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-check-danger">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" checked>
-                                                            Danger
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-check-warning">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" checked>
-                                                            Warning
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <div class="form-check form-check-primary">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input"
-                                                                name="ExampleRadio1" id="ExampleRadio1" checked>
-                                                            Primary
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-check-success">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input"
-                                                                name="ExampleRadio2" id="ExampleRadio2" checked>
-                                                            Success
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-check-info">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input"
-                                                                name="ExampleRadio3" id="ExampleRadio3" checked>
-                                                            Info
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-check-danger">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input"
-                                                                name="ExampleRadio4" id="ExampleRadio4" checked>
-                                                            Danger
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check form-check-warning">
-                                                        <label class="form-check-label">
-                                                            <input type="radio" class="form-check-input"
-                                                                name="ExampleRadio5" id="ExampleRadio5" checked>
-                                                            Warning
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Inline forms</h4>
-                                    <p class="card-description">
-                                        Use the <code>.form-inline</code> class to display a series of labels, form
-                                        controls, and buttons on a single horizontal row
-                                    </p>
-                                    <form class="form-inline">
-                                        <label class="sr-only" for="inlineFormInputName2">Name</label>
-                                        <input type="text" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2"
-                                            placeholder="Jane Doe">
-
-                                        <label class="sr-only" for="inlineFormInputGroupUsername2">Username</label>
-                                        <div class="input-group mb-2 mr-sm-2">
-                                            <div class="input-group-prepend">
-                                                <div class="input-group-text">@</div>
-                                            </div>
-                                            <input type="text" class="form-control" id="inlineFormInputGroupUsername2"
-                                                placeholder="Username">
-                                        </div>
-                                        <div class="form-check mx-sm-2">
-                                            <label class="form-check-label">
-                                                <input type="checkbox" class="form-check-input" checked>
-                                                Remember me
-                                            </label>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary mb-2">Submit</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 grid-margin">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Horizontal Two column</h4>
-                                    <form class="form-sample">
-                                        <p class="card-description">
-                                            Personal info
-                                        </p>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">First Name</label>
-                                                    <div class="col-sm-9">
-                                                        <input type="text" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">Last Name</label>
-                                                    <div class="col-sm-9">
-                                                        <input type="text" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">Gender</label>
-                                                    <div class="col-sm-9">
-                                                        <select class="form-control">
-                                                            <option>Male</option>
-                                                            <option>Female</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">Date of Birth</label>
-                                                    <div class="col-sm-9">
-                                                        <input class="form-control" placeholder="dd/mm/yyyy" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">Category</label>
-                                                    <div class="col-sm-9">
-                                                        <select class="form-control">
-                                                            <option>Category1</option>
-                                                            <option>Category2</option>
-                                                            <option>Category3</option>
-                                                            <option>Category4</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">Membership</label>
-                                                    <div class="col-sm-4">
-                                                        <div class="form-check">
-                                                            <label class="form-check-label">
-                                                                <input type="radio" class="form-check-input"
-                                                                    name="membershipRadios" id="membershipRadios1"
-                                                                    value="" checked>
-                                                                Free
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-5">
-                                                        <div class="form-check">
-                                                            <label class="form-check-label">
-                                                                <input type="radio" class="form-check-input"
-                                                                    name="membershipRadios" id="membershipRadios2"
-                                                                    value="option2">
-                                                                Professional
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <p class="card-description">
-                                            Address
-                                        </p>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">Address 1</label>
-                                                    <div class="col-sm-9">
-                                                        <input type="text" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">State</label>
-                                                    <div class="col-sm-9">
-                                                        <input type="text" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">Address 2</label>
-                                                    <div class="col-sm-9">
-                                                        <input type="text" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">Postcode</label>
-                                                    <div class="col-sm-9">
-                                                        <input type="text" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">City</label>
-                                                    <div class="col-sm-9">
-                                                        <input type="text" class="form-control" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 col-form-label">Country</label>
-                                                    <div class="col-sm-9">
-                                                        <select class="form-control">
-                                                            <option>America</option>
-                                                            <option>Italy</option>
-                                                            <option>Russia</option>
-                                                            <option>Britain</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Select 2</h4>
-                                    <div class="form-group">
-                                        <label>Single select box using select 2</label>
-                                        <select class="js-example-basic-single w-100">
-                                            <option value="AL">Alabama</option>
-                                            <option value="WY">Wyoming</option>
-                                            <option value="AM">America</option>
-                                            <option value="CA">Canada</option>
-                                            <option value="RU">Russia</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Multiple select using select 2</label>
-                                        <select class="js-example-basic-multiple w-100" multiple="multiple">
-                                            <option value="AL">Alabama</option>
-                                            <option value="WY">Wyoming</option>
-                                            <option value="AM">America</option>
-                                            <option value="CA">Canada</option>
-                                            <option value="RU">Russia</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Typeahead</h4>
-                                    <p class="card-description">
-                                        A simple suggestion engine
-                                    </p>
-                                    <div class="form-group row">
-                                        <div class="col">
-                                            <label>Basic</label>
-                                            <div id="the-basics">
-                                                <input class="typeahead" type="text" placeholder="States of USA">
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <label>Bloodhound</label>
-                                            <div id="bloodhound">
-                                                <input class="typeahead" type="text" placeholder="States of USA">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                    <footer class="footer">
-                        <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-                                <b>Version</b> 1.0.0
-                                <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
-                                    <strong>Copyright &copy; 2014-2021 <a href="https://thinkmay.net"
-                                            target="_blank">ThinkMay</a>.</strong> All rights reserved..</span>
-                        </div>
-
-                        <!-- content-wrapper ends -->
-                        <!-- partial:partials/_footer.html -->
-
                 </div>
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                            <b>Version</b> 1.0.0
+                            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
+                                <strong>Copyright &copy; 2014-2021 <a href="https://thinkmay.net"
+                                        target="_blank">ThinkMay</a>.</strong> All rights reserved..</span>
+                            <!-- content-wrapper ends -->
+                            <!-- partial:partials/_footer.html -->
+                    </div>
                 </footer>
                 <!-- partial -->
             </div>
