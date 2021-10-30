@@ -142,7 +142,7 @@
           <li class="nav-item dropdown d-none d-lg-block user-dropdown">
             <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
               <img id="userButton" class="img-xs rounded-circle" src="images/faces/face8.jpg" alt="Profile image"> </a>
-            <!-- <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
                 <img class="img-md rounded-circle" src="images/faces/face8.jpg" alt="Profile image">
                 <p class="mb-1 mt-3 font-weight-semibold">Allen Moreno</p>
@@ -150,14 +150,9 @@
               </div>
               <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My
                 Profile <span class="badge badge-pill badge-danger">1</span></a>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i>
-                Messages</a>
-              <a class="dropdown-item"><i
-                  class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
               <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i>
-                FAQ</a>
-              <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
-            </div> -->
+                Pricing</a>
+            </div>
           </li>
         </ul>
         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
@@ -176,20 +171,19 @@
       <!-- partial:partials/_settings-panel.html -->
       <div class="theme-setting-wrapper">
         <div id="settings-trigger"><i class="ti-settings"></i></div>
-        <div id="theme-settings" class="settings-panel">
+        <div id="theme-settings" class="settings-panel" style="  overflow: scroll;">
           <i class="settings-close ti-close"></i>
           <p class="settings-heading">
             <%=sidebar1%>
           </p>
           <div class="sidebar-bg-options selected" id="sidebar-light-theme">
-            <div class="img-ss rounded-circle bg-light border me-3">
-              <%=sidebar_content1%>
-            </div>Light
+            <div class="img-ss rounded-circle bg-light border me-3"></div>
+            <%=sidebar_content1%>
           </div>
           <div class="sidebar-bg-options" id="sidebar-dark-theme">
             <div class="img-ss rounded-circle bg-dark border me-3">
-              <%=sidebar_content2%>
-            </div>Dark
+            </div>
+            <%=sidebar_content2%>
           </div>
           <p class="settings-heading mt-2">
             <%=sidebar2%>
@@ -202,24 +196,23 @@
             <div class="tiles dark"></div>
             <div class="tiles default"></div>
           </div>
-          <div class="color-tiles mx-0 px-4" style="display: flex;justify-content:space-between;margin-bottom: 15rem;">
+          <div class="color-tiles mx-0 px-4" style="display: flex;justify-content:space-around;">
             <div class="dropdown">
-              <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="ti-world"></i>
-              </button>
+              <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button"
+                id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img src="images/resolution.png" height="32" width="32"/>
+              </button> 
               <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                 <h6 class="dropdown-header">Resolution</h6>
                 <a class="dropdown-item" name="resolution-setting">4K</a>
                 <a class="dropdown-item" name="resolution-setting">2K</a>
                 <a class="dropdown-item" name="resolution-setting">FullHD</a>
               </div>
-            </div>                     
-          </div>
-
-          <div class="color-tiles mx-0 px-4" style="display: flex;justify-content:space-between;">
+            </div>
             <div class="dropdown">
-              <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="ti-world"></i>
+              <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button"
+                id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img src="images/bitrate.png" height="32" width="32"/>
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                 <h6 class="dropdown-header">Remote control bitrate</h6>
@@ -234,8 +227,9 @@
               </div>
             </div>
             <div class="dropdown">
-              <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="ti-world"></i>
+              <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button"
+                id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img src="images/volume.png" height="32" width="32"/>
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                 <h6 class="dropdown-header">AudioCodec</h6>
@@ -245,10 +239,11 @@
                 <!-- <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#">Separated link</a> -->
               </div>
-            </div>                     
+            </div>
             <div class="dropdown">
-              <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="ti-world"></i>
+              <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button"
+                id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img src="images/video.png" height="32" width="32"/>
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                 <h6 class="dropdown-header">VideoCodec</h6>
@@ -256,18 +251,19 @@
                 <a class="dropdown-item" name="videocodec-setting">h264</a>
                 <a class="dropdown-item" name="videocodec-setting">h265</a>
               </div>
-            </div>       
+            </div>
 
             <div class="dropdown">
-              <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="ti-world"></i>
+              <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button"
+                id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img src="images/platform.png" height="32" width="32"/>
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                 <h6 class="dropdown-header">Platform</h6>
                 <a class="dropdown-item" name="platform-setting">chrome</a>
                 <a class="dropdown-item" name="platform-setting">gstreamer</a>
               </div>
-            </div>       
+            </div>
           </div>
 
         </div>

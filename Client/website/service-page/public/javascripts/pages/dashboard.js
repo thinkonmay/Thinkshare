@@ -127,12 +127,12 @@ $(document).ready(async () => {
 			createSlave(device, "availableSlaves")
 		})
 	}).catch(function (err) {
-		location.reload();
+		// location.reload();
 	})
 
 	connection.onclose(error => {
 		console.assert(connection.state === signalR.HubConnectionState.Disconnected);
-		location.reload();
+		// location.reload();
 	});
 })
 
@@ -261,7 +261,7 @@ function inbox() {
 
 function user() {
 	document.getElementById('userButton').addEventListener('click', function () {
-		Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
+		// Developer set user info
 	});
 }
 
