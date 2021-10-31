@@ -31,118 +31,7 @@
             </div>
         </nav>
         <!-- partial -->
-
-
-
-
-
         <div class="container-fluid page-body-wrapper">
-            <!-- partial:partials/_settings-panel.html -->
-            <div class="theme-setting-wrapper">
-                <div id="theme-settings" class="settings-panel" style="  overflow: scroll;">
-                    <i class="settings-close ti-close"></i>
-                    <p class="settings-heading">
-                        <%=sidebar1%>
-                    </p>
-                    <div class="sidebar-bg-options selected" id="sidebar-light-theme">
-                        <div class="img-ss rounded-circle bg-light border me-3"></div>
-                        <%=sidebar_content1%>
-                    </div>
-                    <div class="sidebar-bg-options" id="sidebar-dark-theme">
-                        <div class="img-ss rounded-circle bg-dark border me-3">
-                        </div>
-                        <%=sidebar_content2%>
-                    </div>
-                    <p class="settings-heading mt-2">
-                        <%=sidebar2%>
-                    </p>
-                    <div class="color-tiles mx-0 px-4" style="display: flex;justify-content: flex-start;">
-                        <div class="tiles success"></div>
-                        <div class="tiles warning"></div>
-                        <div class="tiles danger"></div>
-                        <div class="tiles info"></div>
-                        <div class="tiles dark"></div>
-                        <div class="tiles default"></div>
-                    </div>
-                    <div class="color-tiles mx-0 px-4" style="display: flex;justify-content:space-around;">
-                        <div class="dropdown">
-                            <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button"
-                                id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                <img src="images/resolution.png" height="32" width="32" />
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
-                                <h6 class="dropdown-header">Resolution</h6>
-                                <a class="dropdown-item" name="resolution-setting">4K</a>
-                                <a class="dropdown-item" name="resolution-setting">2K</a>
-                                <a class="dropdown-item" name="resolution-setting">FullHD</a>
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button"
-                                id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                <img src="images/bitrate.png" height="32" width="32" />
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
-                                <h6 class="dropdown-header">Remote control bitrate</h6>
-                                <a class="dropdown-item" name="bitrate-setting">ultra low</a>
-                                <a class="dropdown-item" name="bitrate-setting">low</a>
-                                <a class="dropdown-item" name="bitrate-setting">medium</a>
-                                <a class="dropdown-item" name="bitrate-setting">high</a>
-                                <a class="dropdown-item" name="bitrate-setting">very high</a>
-                                <a class="dropdown-item" name="bitrate-setting">ultra high</a>
-                                <!-- <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Separated link</a> -->
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button"
-                                id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                <img src="images/volume.png" height="32" width="32" />
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
-                                <h6 class="dropdown-header">AudioCodec</h6>
-                                <a class="dropdown-item" name="audiocodec-setting">opus</a>
-                                <a class="dropdown-item" name="audiocodec-setting">mp3</a>
-                                <!-- <a class="dropdown-item" href="#">Something else here</a> -->
-                                <!-- <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Separated link</a> -->
-                            </div>
-                        </div>
-                        <div class="dropdown">
-                            <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button"
-                                id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                <img src="images/video.png" height="32" width="32" />
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
-                                <h6 class="dropdown-header">VideoCodec</h6>
-                                <a class="dropdown-item" name="videocodec-setting">vp9</a>
-                                <a class="dropdown-item" name="videocodec-setting">h264</a>
-                                <a class="dropdown-item" name="videocodec-setting">h265</a>
-                            </div>
-                        </div>
-
-                        <div class="dropdown">
-                            <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button"
-                                id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                <img src="images/platform.png" height="32" width="32" />
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
-                                <h6 class="dropdown-header">Platform</h6>
-                                <a class="dropdown-item" name="platform-setting">chrome</a>
-                                <a class="dropdown-item" name="platform-setting">gstreamer</a>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <!-- partial -->
-            <!-- partial:partials/_sidebar.html -->
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
                 <ul class="nav">
                     <li class="nav-item">
@@ -181,54 +70,155 @@
                         <div class="col-md-6 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">QoE Setting</h4>
+                                    <h4 class="card-title">Display Controller</h4>
                                     <p class="card-description">
                                         Enhance your experience
                                     </p>
                                     <form class="forms-sample">
-                                        <div class="form-group">
-                                            <label for="exampleSelectGender">Resolution</label>
-                                            <select class="form-control" id="exampleSelectGender">
-                                                <option>4K</option>
-                                                <option>2K</option>
-                                                <option>FullHD</option>
-                                            </select>
+                                        <div class="col-md-6">
+                                            <label>Resolution</label>
+                                            <div class="form-group">
+                                                <div class="form-check" name="resolutionOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsResolution" id="optionsResolution1"
+                                                            value="option1" />
+                                                        4K
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="resolutionOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsResolution" id="optionsResolution2"
+                                                            value="option2">
+                                                        2K
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="resolutionOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsResolution" id="optionsResolution3"
+                                                            value="option3">
+                                                        FullHD
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="exampleSelectGender">Remote control bitrate</label>
-                                            <select class="form-control" id="exampleSelectGender">
-                                                <option>ultra low</option>
-                                                <option>low</option>
-                                                <option>medium</option>
-                                                <option>high</option>
-                                                <option>very high</option>
-                                                <option>ultra high</option>
-                                            </select>
+                                        <div class="col-md-6">
+                                            <label>Remote control bitrate</label>
+                                            <div class="form-group">
+                                                <div class="form-check" name="bitrateOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsBitrate" id="optionsBitrates1" value="option1">
+                                                        ultra low
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="bitrateOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsBitrate" id="optionsRadios2" value="option2">
+                                                        low
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="bitrateOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsBitrate" id="optionsRadios3" value="option3">
+                                                        medium
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="bitrateOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsBitrate" id="optionsRadios3" value="option3">
+                                                        high
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="bitrateOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsBitrate" id="optionsRadios3" value="option3">
+                                                        very high
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="bitrateOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsBitrate" id="optionsRadios3" value="option3">
+                                                        ultra high
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="exampleSelectGender">AudioCodec</label>
-                                            <select class="form-control" id="exampleSelectGender">
-                                                <option>opus</option>
-                                                <option>mp3</option>
-                                            </select>
+                                        <div class="col-md-6">
+                                            <label>AudioCodec</label>
+                                            <div class="form-group">
+                                                <div class="form-check" name="audioOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input" name="optionsAudio"
+                                                            id="optionsAudio1" value="option1">
+                                                        opus
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="audioOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input" name="optionsAudio"
+                                                            id="optionsAudio2" value="option2">
+                                                        mp3
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="exampleSelectGender">VideoCodec</label>
-                                            <select class="form-control" id="exampleSelectGender">
-                                                <option>vp9</option>
-                                                <option>h264</option>
-                                                <option>h265</option>
-                                            </select>
+                                        <div class="col-md-6">
+                                            <label>VideoCodec</label>
+                                            <div class="form-group">
+                                                <div class="form-check" name="videoOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input" name="optionsVideo"
+                                                            id="optionsVideo1" value="option1">
+                                                        vp9
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="videoOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input" name="optionsVideo"
+                                                            id="optionsVideo2" value="option2">
+                                                        h264
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="videoOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input" name="optionsVideo"
+                                                            id="optionsVideo3" value="option2">
+                                                        h265
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="exampleSelectGender">Platform</label>
-                                            <select class="form-control" id="exampleSelectGender">
-                                                <option>chrome</option>
-                                                <option>gstreamer</option>
-                                            </select>
+                                        <div class="col-md-6">
+                                            <label>Platform</label>
+                                            <div class="form-group">
+                                                <div class="form-check" name="platformOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsPlatform" id="optionsPlatform1"
+                                                            value="option1">
+                                                        chrome
+                                                    </label>
+                                                </div>
+                                                <div class="form-check" name="platformOptions">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input"
+                                                            name="optionsPlatform" id="optionsPlatform2"
+                                                            value="option2">
+                                                        gstreamer
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <button type="submit" class="btn btn-primary me-2">Submit</button>
-                                        <button class="btn btn-light">Cancel</button>
+                                        <button id="submitDisplayCtrler" class="btn btn-primary me-2" type="button">Submit</button>
+                                        <!-- <button id="submitDisplayCtrler" class="btn btn-primary me-2">Submit</button> -->
                                     </form>
                                 </div>
                             </div>
@@ -372,7 +362,7 @@
     <!-- container-scroller -->
 
     <% include partials/dependencies %>
-        <script type="module" src="javascripts/pages/dashboard.js"></script>
+        <script type="module" src="javascripts/pages/setting.js"></script>
 </body>
 
 </html>
