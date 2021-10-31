@@ -1,3 +1,5 @@
+import * as Setting from "../util/setting.js"
+
 
 $(document).ready(() => {
 
@@ -20,7 +22,13 @@ $(document).ready(() => {
     });
     
     $('#submitDisplayCtrler').click(() => {
-        console.log(display);
+        Setting.Mode(display.bitrate);
+        Setting.AudioCodec(display.audio);
+        Setting.VideoCodec(display.video);
+        Setting.mapVideoRes(display.resolution);
+        Setting.Platform(display.platform);
     });
+
+    
 
 })
