@@ -249,7 +249,7 @@ function search() {
 
 function noti() {
 	document.getElementById('notiButton').addEventListener('click', function () {
-		Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
+		// Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
 	});
 }
 
