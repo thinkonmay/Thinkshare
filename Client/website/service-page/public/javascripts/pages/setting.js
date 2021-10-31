@@ -1,6 +1,7 @@
 import * as Setting from "../util/setting.js"
 import * as API from "../util/api.js"
 import * as Utils from "../util/utils.js"
+import * as CheckDevice from "../util/checkdevice.js"
 
 
 $(document).ready(() => {
@@ -60,6 +61,13 @@ $(document).ready(() => {
         Setting.Platform(display.platform);
     });
 
+
+    if (CheckDevice.isElectron()) {
+		$('#optionsVideo3').prob('enabled', true);
+		$('#optionsPlatform2').prob('enabled', true);
+	} else {
+		// website
+	}
 
 
 })
