@@ -26,6 +26,9 @@ export const DisconnectSession = `${host}/Session/Disconnect`
 export const ReconnectSession = `${host}/Session/Reconnect`
 export const InitializeSession = `${host}/Session/Initialize`
 
+// User
+export const SetInfor = `${host}/User/SetInfor`
+
 
 
 export const QuerySession = `${host}/Query/Session`
@@ -233,8 +236,13 @@ export const initializeSession = (SlaveID) => {
 	})
 }
 
-
-
-
-
-
+// User
+export const setInfor = (username) => {
+	return fetch(SetInfor, {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({
+			userName: username,
+		})
+	})
+}
