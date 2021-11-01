@@ -7,6 +7,35 @@
     <%=title%>
   </title>
   <% include partials/head %>
+    <style>
+      .navbar1 {
+        overflow: hidden;
+        background-color: rgb(4 3 0 / 78%);
+        position: fixed;
+        bottom: 0;
+      }
+
+      .navbar1 a {
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 26px;
+        text-decoration: none;
+        font-size: 22px;
+        float: right;
+      }
+
+      .navbar1 a:hover {
+        background: #f1f1f1;
+        color: rgb(255, 255, 255);
+      }
+
+      .navbar1 a.active {
+        background-color: #4CAF50;
+        color: #fff;
+      }
+    </style>
+
 </head>
 
 <body>
@@ -104,7 +133,7 @@
               <span class="count"></span>
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0"
-              aria-labelledby="countDropdown"id>
+              aria-labelledby="countDropdown" id>
               <a class="dropdown-item py-3">
                 <p class="mb-0 font-weight-medium float-left">You have 7 unread mails </p>
                 <span class="badge badge-pill badge-primary float-right">View all</span>
@@ -200,8 +229,8 @@
             <div class="dropdown">
               <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button"
                 id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img src="images/resolution.png" height="32" width="32"/>
-              </button> 
+                <img src="images/resolution.png" height="32" width="32" />
+              </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                 <h6 class="dropdown-header">Resolution</h6>
                 <a class="dropdown-item" name="resolution-setting">4K</a>
@@ -212,7 +241,7 @@
             <div class="dropdown">
               <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button"
                 id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img src="images/bitrate.png" height="32" width="32"/>
+                <img src="images/bitrate.png" height="32" width="32" />
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                 <h6 class="dropdown-header">Remote control bitrate</h6>
@@ -229,7 +258,7 @@
             <div class="dropdown">
               <button style="font-size:5px" class="btn btn-warning dropdown-toggle" type="button"
                 id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img src="images/volume.png" height="32" width="32"/>
+                <img src="images/volume.png" height="32" width="32" />
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                 <h6 class="dropdown-header">AudioCodec</h6>
@@ -243,7 +272,7 @@
             <div class="dropdown">
               <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button"
                 id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img src="images/video.png" height="32" width="32"/>
+                <img src="images/video.png" height="32" width="32" />
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                 <h6 class="dropdown-header">VideoCodec</h6>
@@ -256,7 +285,7 @@
             <div class="dropdown">
               <button style="font-size: 5px;" class="btn btn-warning dropdown-toggle" type="button"
                 id="dropdownMenuIconButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img src="images/platform.png" height="32" width="32"/>
+                <img src="images/platform.png" height="32" width="32" />
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                 <h6 class="dropdown-header">Platform</h6>
@@ -296,6 +325,14 @@
               <i class="menu-icon mdi mdi-logout"></i>
               <span class="menu-title">
                 <%=menu_title3%>
+              </span>
+            </a>
+          </li>
+          <li class="nav-item" id="tutorialButton">
+            <a class="nav-link">
+              <i class="menu-icon mdi mdi-lightbulb-on-outline"></i>
+              <span class="menu-title">
+                Tutorial
               </span>
             </a>
           </li>
@@ -405,8 +442,6 @@
                         </div>
                       </div>
                     </div>
-
-
                     <div class="row">
                       <div class="col-lg-8 d-flex flex-column">
                         <div class="row flex-grow">
@@ -433,6 +468,9 @@
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div class="navbar1">
+                    <p id="tutorialElement"></p>
                   </div>
                 </div>
               </div>
@@ -464,6 +502,8 @@
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
+
+
 
   <% include partials/dependencies %>
     <script type="module" src="javascripts/pages/dashboard.js"></script>

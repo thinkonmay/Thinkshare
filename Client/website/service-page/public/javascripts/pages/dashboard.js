@@ -57,6 +57,8 @@ $(document).ready(async () => {
 	search()
 	inbox()
 	user()
+	tutorial()
+
 	if (CheckDevice.isElectron()) {
 		// desktop app
 	} else {
@@ -263,6 +265,23 @@ function user() {
 	document.getElementById('userButton').addEventListener('click', function () {
 		// Developer set user info
 	});
+}
+
+function tutorial(){
+	$('#tutorialButton').click(() => {
+		console.log('saddsad')
+		$("#tutorialElement").html(`
+		<div style="padding: 100px 100px 100px 100px">
+		<p style="color: white">Ctrl + Shift + P: Hidden Mouse</p>
+		<p style="color: white">Ctrl + Shift + F: Full Screen </p>
+		</div>
+		`);
+	})
+        // let li = document.createElement('li');
+        // li.textContent = 'About Us';
+        // // add it to the ul element
+        // menu.appendChild(li);
+	
 }
 
 function setDataForChart() {
