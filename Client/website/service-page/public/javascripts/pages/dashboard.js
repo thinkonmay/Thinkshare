@@ -268,14 +268,15 @@ function user() {
 }
 
 function tutorial(){
+	// style="padding: 100px 100px 100px 100px"
+			// <p style="color: white">Ctrl + Shift + P: Hidden Mouse</p>
+		// <p style="color: white">Ctrl + Shift + F: Full Screen </p>
 	$('#tutorialButton').click(() => {
-		console.log('saddsad')
-		$("#tutorialElement").html(`
-		<div style="padding: 100px 100px 100px 100px">
-		<p style="color: white">Ctrl + Shift + P: Hidden Mouse</p>
-		<p style="color: white">Ctrl + Shift + F: Full Screen </p>
-		</div>
-		`);
+		$('#tutorialElement').show()
+	})
+
+	$('#exitButton').click(() => {
+		$('#tutorialElement').hide()
 	})
         // let li = document.createElement('li');
         // li.textContent = 'About Us';

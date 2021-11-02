@@ -34,6 +34,16 @@
         background-color: #4CAF50;
         color: #fff;
       }
+
+      #content {
+        position: relative;
+      }
+
+      #content img {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+      }
     </style>
 
 </head>
@@ -470,7 +480,14 @@
                     </div>
                   </div>
                   <div class="navbar1">
-                    <p id="tutorialElement"></p>
+                    <div id="content">
+                      <div id="tutorialElement" style="padding: 100px 100px 100px 100px; display: none;">
+                        <img id="exitButton" src="images/exit.png" height="32px" weight="32px"
+                          style="background-color: white;" />
+                          <p style="color: white">Ctrl + Shift + P: Hidden Mouse</p>
+                          <p style="color: white">Ctrl + Shift + F: Full Screen </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
