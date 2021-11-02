@@ -267,6 +267,22 @@ function user() {
 	});
 }
 
+function popUpTurorial(id, name_shortcut, excute_shortcut, src_shortcut){
+	$(`${id}`).click(function (e) {
+		$("#name_shorcut").text(name_shortcut);
+		$("#excute_shortcut").text(excute_shortcut)
+		document.getElementById("src_shortcut").src = `/videos/${src_shortcut}.mp4`
+		$('.popup-wrap').fadeIn(500);
+		$('.popup-box').removeClass('transform-out').addClass('transform-in');
+		var vid = document.getElementById("videoHiddenMouse");
+		vid.autoplay = true;
+		vid.load();
+
+		e.preventDefault();
+	});
+
+}
+
 function tutorial() {
 
 	$('#tutorialButton').click(() => {
@@ -277,19 +293,9 @@ function tutorial() {
 		$('#tutorialElement').hide()
 	})
 
-	$('#hiddenMouse').click(function (e) {
-		$("#name_shorcut").text("Hidden Mouse");
-		$("#excute_shorcut").text("Ctrl + Shift + P")
-		document.getElementById("src_shorcut").src = "/videos/Hidden_Mouse.mp4"
-		$('.popup-wrap').fadeIn(500);
-		$('.popup-box').removeClass('transform-out').addClass('transform-in');
-		var vid = document.getElementById("videoHiddenMouse");
-		vid.autoplay = true;
-		vid.load();
+	popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'Hidden_Mouse')
 
-		e.preventDefault();
-	});
-
+	
 	$('.popup-close').click(function (e) {
 		$('.popup-wrap').fadeOut(500);
 		$('.popup-box').removeClass('transform-in').addClass('transform-out');
