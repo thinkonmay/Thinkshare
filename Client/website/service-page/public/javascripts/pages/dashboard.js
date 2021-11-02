@@ -268,7 +268,19 @@ function user() {
 }
 
 function tutorial() {
-	$('#tutorialButton').click(function (e) {
+
+	$('#tutorialButton').click(() => {
+		$('#tutorialElement').show()
+	})
+
+	$('#exitButton').click(() => {
+		$('#tutorialElement').hide()
+	})
+
+	$('#hiddenMouse').click(function (e) {
+		$("#name_shorcut").text("Hidden Mouse");
+		$("#excute_shorcut").text("Ctrl + Shift + P")
+		document.getElementById("src_shorcut").src = "/videos/Hidden_Mouse.mp4"
 		$('.popup-wrap').fadeIn(500);
 		$('.popup-box').removeClass('transform-out').addClass('transform-in');
 		var vid = document.getElementById("videoHiddenMouse");
@@ -277,8 +289,6 @@ function tutorial() {
 
 		e.preventDefault();
 	});
-
-
 
 	$('.popup-close').click(function (e) {
 		$('.popup-wrap').fadeOut(500);
