@@ -294,7 +294,8 @@ function tutorial() {
 	})
 
 	popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'Hidden_Mouse')
-
+	popUpTurorial('#fullScreen', 'Full Screen', 'Ctrl + Shift + F', 'Full_Screen')
+	
 	
 	$('.popup-close').click(function (e) {
 		$('.popup-wrap').fadeOut(500);
