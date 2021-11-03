@@ -1,0 +1,143 @@
+name: HOST
+
+on:
+  push:
+    branches: [ dev ]
+    paths: 
+    - 'Host/**'
+  pull_request:
+    branches: [ dev ]
+    paths: 
+    - 'Host/**'
+  workflow_dispatch:
+
+
+#setup environment variable
+env:
+  REGISTRY: ghcr.io
+  SIGNALLING_IMAGE_NAME:  ${{ secrets.DOCKER_USERNAME }}/signalling:latest
+  SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:latest
+  CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
+  AUTHENTICATOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/authenticator:latest
+  
+jobs:      
+  build-signalling:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Signalling
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Host  
+        target: dev
+        file: Host/Signalling/Dockerfile
+        push: true
+        tags: ${{ env.SIGNALLING_IMAGE_NAME }}
+
+    - name: rollout 
+      uses: ianbelcher/eks-kubectl-action@master
+      with:
+        aws_access_key_id: ${{ secrets.aws_access_key_id }}
+        aws_secret_access_key: ${{ secrets.aws_secret_access_key }}
+        aws_region: ${{ secrets.aws_region }}
+        cluster_name: ${{ secrets.cluster_name }}
+        args: rollout restart deployment signalling
+
+  build-slavemanager:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: SlaveManager
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Host  
+        target: dev
+        file: Host/SlaveManager/Dockerfile
+        push: true
+        tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
+
+    - name: rollout 
+      uses: ianbelcher/eks-kubectl-action@master
+      with:
+        aws_access_key_id: ${{ secrets.aws_access_key_id }}
+        aws_secret_access_key: ${{ secrets.aws_secret_access_key }}
+        aws_region: ${{ secrets.aws_region }}
+        cluster_name: ${{ secrets.cluster_name }}
+        args: rollout restart deployment slavemanager
+
+  build-conductor:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Conductor
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Host 
+        target: dev
+        file: Host/Conductor/Dockerfile
+        push: true
+        tags: ${{ env.CONDUCTOR_IMAGE_NAME }}
+
+    - name: rollout 
+      uses: ianbelcher/eks-kubectl-action@master
+      with:
+        aws_access_key_id: ${{ secrets.aws_access_key_id }}
+        aws_secret_access_key: ${{ secrets.aws_secret_access_key }}
+        aws_region: ${{ secrets.aws_region }}
+        cluster_name: ${{ secrets.cluster_name }}
+        args: rollout restart deployment conductor
+
+
+  build-authenticator:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Authenticator 
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Host 
+        target: dev
+        file: Host/Authenticator/Dockerfile
+        push: true
+        tags: ${{ env.AUTHENTICATOR_IMAGE_NAME }}
+
+    - name: Rollout 
+      uses: ianbelcher/eks-kubectl-action@master
+      with:
+        aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws_region: ${{ secrets.AWS_REGION }}
+        cluster_name: ${{ secrets.CLUSTER_NAME }}
+        args: rollout restart deployment authenticator

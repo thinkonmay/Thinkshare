@@ -1,0 +1,12 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: managed-cert
+spec:
+  domains:
+    - thinkmay.net
+    - host.thinkmay.net
+    - database.thinkmay.net
+    - admin.thinkmay.net
+    - document.thinkmay.net
+    - service.thinkmay.net

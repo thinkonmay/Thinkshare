@@ -23,8 +23,6 @@ using SharedHost.Models.Session;
 using SharedHost;
 
 
-// TODO: authentification
-
 namespace Conductor.Controllers
 {
     /// <summary>

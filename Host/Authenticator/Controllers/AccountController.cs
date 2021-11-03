@@ -53,10 +53,20 @@ namespace Conductor.Controllers
                 }
                 else
                 {
-                    return AuthResponse.GenerateFailure(model.UserName, "Wrong username or password", -2);
+                    var error =  new List<IdentityError> ();
+                    error.Add(new IdentityError{
+                        Code = "Login fail",
+                        Description = "Wrong user or password" 
+                    });
+                    return AuthResponse.GenerateFailure(model.UserName, error);
                 }
             }
-            return AuthResponse.GenerateFailure(model.UserName, "Invalid login model", -1);
+            var ret =  new List<IdentityError> ();
+            ret.Add(new IdentityError{
+                Code = "Models Error",
+                Description = "Invalid Login Models" 
+            });
+            return AuthResponse.GenerateFailure(model.UserName, ret);
         }
 
 
@@ -81,16 +91,31 @@ namespace Conductor.Controllers
                     }
                     else
                     {
-                        return AuthResponse.GenerateFailure(model.UserName, "You are not admin", -1);
+                        var role_err=  new List<IdentityError> ();
+                        role_err.Add(new IdentityError{
+                            Code = "Wrong role",
+                            Description = "You are not admin" 
+                        });
+                        return AuthResponse.GenerateFailure(model.UserName, role_err);
                     }
                 }
                 else
                 {
-                    return AuthResponse.GenerateFailure(model.UserName, "Wrong username or password", -2);
+                    var wrong =  new List<IdentityError> ();
+                    wrong.Add(new IdentityError{
+                        Code = "Login fail",
+                        Description = "Account not exist" 
+                    });
+                    return AuthResponse.GenerateFailure(model.UserName, wrong);
                 }
             }
 
-            return AuthResponse.GenerateFailure(model.UserName, "Invalid login model", -1);
+            var ret =  new List<IdentityError> ();
+            ret.Add(new IdentityError{
+                Code = "Models Error",
+                Description = "Invalid Register Models" 
+            });
+            return AuthResponse.GenerateFailure(model.UserName, ret);
         }
 
         /// <summary>
@@ -126,16 +151,16 @@ namespace Conductor.Controllers
                 }
                 else
                 {
-                    List<String> error_list = new List<String>();
-                    foreach(var i in result.Errors)
-                    {
-                        error_list.Add(i.Description);
-                    } 
-                    return AuthResponse.GenerateFailure(model.Email,JsonConvert.SerializeObject(error_list), -2);
+                    return AuthResponse.GenerateFailure(model.Email,result.Errors );
                 }
             }
 
-            return AuthResponse.GenerateFailure(model.Email, "Invalid Register model", -1);
+            var ret =  new List<IdentityError> ();
+            ret.Add(new IdentityError{
+               Code = "Models Error",
+               Description = "Invalid Register Models" 
+            });
+            return AuthResponse.GenerateFailure(model.Email, ret);
         }
 
         /// <summary>
@@ -171,7 +196,6 @@ namespace Conductor.Controllers
 
 
         [AllowAnonymous]
-        [HttpPost]
         [HttpGet]
         [Route("Account/ExternalLogin")]
         public IActionResult ExternalLogin()

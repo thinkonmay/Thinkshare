@@ -53,12 +53,10 @@ spec:
   tls:
   - hosts:
     - thinkmay.net
-    - signalling.thinkmay.net
-    - slavemanager.thinkmay.net
+    - host.thinkmay.net
     - database.thinkmay.net
     - resources.thinkmay.net
     - admin.thinkmay.net
-    - conductor.thinkmay.net
     - service.thinkmay.net
     secretName: secret-tls
   rules:

@@ -166,6 +166,7 @@ nCrunchTemp_*
 *.mm.*
 AutoTest.Net/
 
+.terraform/
 # Web workbench (sass)
 .sass-cache/
 

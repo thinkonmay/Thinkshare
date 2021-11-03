@@ -11,7 +11,7 @@
 #define GST_USE_UNSTABLE_API
 #endif
 
-static gchar signalling_url[50] = "wss://signalling.thinkmay.net/Session";
+static gchar signalling_url[50] = "wss://host.thinkmay.net/Session";
 static gchar turn[100] = "turn://thinkmaycoturn:thinkmaycoturn_password@turn:stun.thinkmay.net:3478";
 static gint  session_id = 0;
 static gchar video_codec[50] = {0};

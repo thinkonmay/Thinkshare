@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: signalling
-        image: pigeatgarlic/signalling:release_latest
+        image: pigeatgarlic/signalling:latest
         imagePullPolicy: Always
         resources:
           requests:

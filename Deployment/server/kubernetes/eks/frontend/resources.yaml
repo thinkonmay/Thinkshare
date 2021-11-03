@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: resources
+  namespace: frontend
+  labels:
+    app: resources
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80    
+  selector:
+   app: resources
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resources
+  namespace: frontend
+spec:
+  selector:
+    matchLabels:
+      app: resources
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: resources
+    spec:
+      containers:
+      - name: resources
+        image: pigeatgarlic/resources:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "200m"
+          limits:
+            memory: "300Mi"
+            cpu: "300m"
+        ports:
+        - containerPort: 80

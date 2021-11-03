@@ -104,7 +104,7 @@ namespace Conductor
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidIssuer = Configuration["JwtOptions:Issuer"],
-                        ValidAudience = Configuration["JwtOptions:Audience"],
+                        ValidAudience = "http://conductor:80",
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtOptions:Key"]))
                     };
                 });

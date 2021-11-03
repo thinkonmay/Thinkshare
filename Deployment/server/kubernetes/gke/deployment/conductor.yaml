@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: conductor
+  labels:
+    app: conductor
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80    
+  selector:
+   app: conductor
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: conductor
+spec:
+  selector:
+    matchLabels:
+      app: conductor
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: conductor
+    spec:
+      containers:
+      - name: conductor
+        image: pigeatgarlic/conductor:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "200m"
+          limits:
+            memory: "300Mi"
+            cpu: "300m"
+        readinessProbe:
+          httpGet:
+            path: /swagger/index.html
+            port: 80
+        ports:
+        - containerPort: 80
