@@ -5,7 +5,7 @@ import * as Setting from "../util/setting.js"
 import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 
-
+const conductor = env.
 
 $(document).ready(async () => {
 	var defaultDeviceCap = {

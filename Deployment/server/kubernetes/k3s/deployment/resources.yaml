@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: resources
-        image: pigeatgarlic/resources:release_latest
+        image: pigeatgarlic/resources:latest
         imagePullPolicy: Always
         resources:
           requests:

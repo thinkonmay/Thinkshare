@@ -12,6 +12,7 @@ namespace SharedHost
         public string Flutter { get; set; }
         public string Conductor { get; set; }
         public string Authenticator { get; set; }
+        public string MetricCollector {get;set;}
         public string TurnConnection {get;set;}
         public TurnServer TurnServer {get;set;}
         public LoginModel AdminLogin { get; set; }

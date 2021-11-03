@@ -4,12 +4,12 @@ name: 'Terraform'
 on:
   push:
     branches:
-    - master
+    - dev
     paths: 
     - 'Deployment/server/terraform/**'
   pull_request:
     branches:
-    - master
+    - dev
     paths: 
     - 'Deployment/server/terraform/**'
 

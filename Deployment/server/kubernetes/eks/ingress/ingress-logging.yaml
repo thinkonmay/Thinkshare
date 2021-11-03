@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: logging-ingress
+  namespace: kube-logging
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    
+spec:
+  rules:
+  - host: logging.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kibana
+            port:
+              number: 5601

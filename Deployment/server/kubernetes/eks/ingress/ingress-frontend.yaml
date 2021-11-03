@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: frontend
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: service.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: service-page
+            port:
+              number: 80
+
+  - host: admin.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: admin-page
+            port:
+              number: 80
+
+  - host: resources.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: resources 
+            port:
+              number: 80

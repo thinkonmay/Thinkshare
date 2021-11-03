@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace SharedHost.Models.Auth
 {
     public class AuthResponse
     {
-        public int ErrorCode { get; set; }
         public string UserName { get; set; }
-        public string Message { get; set; }
+        public List<IdentityError>? Errors {get;set;}
         public string Token { get; set; }
         public DateTime ValidUntil { get; set; }
 
@@ -18,20 +18,18 @@ namespace SharedHost.Models.Auth
         {
             return new AuthResponse()
             {
-                ErrorCode = 0,
+                Errors = null, 
                 UserName = username,
-                Message = "Login successful",
                 Token = token,
                 ValidUntil = expiry,
             };
         }
 
-        public static AuthResponse GenerateFailure(string username, string msg, int errcode)
+        public static AuthResponse GenerateFailure(string username, IEnumerable<IdentityError> errcode)
         {
             return new AuthResponse()
             {
-                ErrorCode = errcode,
-                Message = msg,
+                Errors = errcode.ToList(),
                 UserName = username
             };
         }

@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metric-collector
+  namespace: backend
+  labels:
+    app: metric-collector
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80    
+  selector:
+   app: metric-collector
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metric-collector
+  namespace: backend
+spec:
+  selector:
+    matchLabels:
+      app: metric-collector
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: metric-collector
+    spec:
+      containers:
+      - name: metric-collector
+        image: pigeatgarlic/metric-collector:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "300m"
+          limits:
+            memory: "700Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80

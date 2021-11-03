@@ -3,34 +3,62 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+
+
+
+
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS BuildProd
 WORKDIR /src
 
 COPY ["Signalling/Signalling.csproj", "Signalling/"]
+COPY ["setting/prod/appsettings.json", "Signalling/"]
 RUN dotnet restore "Signalling/Signalling.csproj"
+
+
+# copy setting from setting prod folder to workdir
 COPY . .
 WORKDIR "/src/Signalling"
 RUN dotnet build "Signalling.csproj" -c Release -o /app/build
 
 
-FROM build AS publish
+
+
+
+
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS BuildDev
+WORKDIR /src
+
+COPY ["Signalling/Signalling.csproj", "Signalling/"]
+COPY ["setting/dev/appsettings.json", "Signalling/"]
+RUN dotnet restore "Signalling/Signalling.csproj"
+
+
+# copy setting from setting dev folder to workdir
+COPY . .
+WORKDIR "/src/Signalling"
+RUN dotnet build "Signalling.csproj" -c Release -o /app/build
+
+
+
+
+FROM BuildDev AS PublishDev
+RUN dotnet publish "Signalling.csproj" -c Release -o /app/publish
+
+FROM BuildProd AS PublishProd
 RUN dotnet publish "Signalling.csproj" -c Release -o /app/publish
 
 
-#debug image
-FROM build AS debug
-WORKDIR /src/Signalling
-
-RUN dotnet dev-certs https
-RUN apt-get update
-RUN apt-get install -y unzip
-RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l ~/vsdbg
-
-ENTRYPOINT ["dotnet", "run"]
 
 
-FROM base AS release
+
+
+# production and development image both base on base image
+FROM base AS dev
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=PublishDev /app/publish .
 ENTRYPOINT ["dotnet", "Signalling.dll"]
 
+FROM base AS prod
+WORKDIR /app
+COPY --from=PublishProd /app/publish .
+ENTRYPOINT ["dotnet", "Signalling.dll"]

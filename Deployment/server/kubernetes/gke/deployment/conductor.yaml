@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: conductor
-        image: pigeatgarlic/conductor:release_latest
+        image: pigeatgarlic/conductor:latest
         imagePullPolicy: Always
         resources:
           requests:

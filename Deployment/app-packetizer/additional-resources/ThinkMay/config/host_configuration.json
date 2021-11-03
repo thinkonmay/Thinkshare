@@ -1,5 +1,5 @@
 {
   "SlaveID": 310564073,
-  "HostUrl": "wss://slavemanager.thinkmay.net/Register",
+  "HostUrl": "wss://host.thinkmay.net/Register",
   "DisableSSL": true
 }

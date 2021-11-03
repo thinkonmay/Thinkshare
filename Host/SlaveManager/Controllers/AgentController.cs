@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace SlaveManager.Controllers
 {
-    [Route("/Agent")]
     [ApiController]
     [Produces("application/json")]
     public class WebSocketApiController : ControllerBase
@@ -22,7 +21,7 @@ namespace SlaveManager.Controllers
             _connection = connection;
         }
 
-        [HttpGet("/Register")]
+        [HttpGet("/Agent")]
         public async Task<IActionResult> Get()
         {
             var context = ControllerContext.HttpContext;

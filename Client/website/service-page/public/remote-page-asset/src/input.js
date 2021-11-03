@@ -199,6 +199,12 @@ function keyup(event)
     }
 
 
+}
+
+
+function 
+keydown(event) 
+{
     if (event.code === 'KeyP' && event.ctrlKey && event.shiftKey) {
         if(!document.pointerLockElement)
         {
@@ -223,12 +229,6 @@ function keyup(event)
             return;
         }
     }
-}
-
-
-function 
-keydown(event) 
-{
     var Keyboard =
     {
         "Opcode":HidOpcode.KEYDOWN,

@@ -39,16 +39,13 @@ spec:
   tls:
   - hosts:
     - thinkmay.net
-    - signalling.thinkmay.net
-    - slavemanager.thinkmay.net
     - database.thinkmay.net
     - resources.thinkmay.net
     - admin.thinkmay.net
-    - conductor.thinkmay.net
     - service.thinkmay.net
     secretName: secret-tls
   rules:
-  - host: conductor.thinkmay.net
+  - host: host.thinkmay.net
     http:
       paths:
       - path: /
@@ -59,10 +56,6 @@ spec:
             port:
               number: 80
 
-  #
-  - host: signalling.thinkmay.net
-    http:
-      paths:
       - path: /
         pathType: Prefix
         backend:
@@ -71,10 +64,6 @@ spec:
             port:
               number: 80
 
-
-  - host: slavemanager.thinkmay.net
-    http:
-      paths:
       - path: /
         pathType: Prefix
         backend:
@@ -126,6 +115,7 @@ spec:
             name: dbmanager
             port:
               number: 80
+
   - host: resources.thinkmay.net
     http:
       paths:
