@@ -16,9 +16,6 @@ env:
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
   AUTHENTICATOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/authenticator:latest
   
-  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: thinkmay-cluster-v1  # TODO: update to cluster name
-  GKE_ZONE: asia-southeast1-a   # TODO: update to cluster zone
 
 jobs:      
   build-signalling:
@@ -101,7 +98,6 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        target: release
         file: Host/Authenticator/Dockerfile
         push: true
         tags: ${{ env.AUTHENTICATOR_IMAGE_NAME }}
@@ -111,7 +107,6 @@ jobs:
     name: Auth-server-deploy
     runs-on: ubuntu-latest
     needs: build-authenticator
-
     steps:
     
     - name: Configure AWS credentials
@@ -136,35 +131,28 @@ jobs:
     name: Kubernetes-server-deploy
     runs-on: ubuntu-latest
     needs: [build-conductor, build-slavemanager, build-signalling] 
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    
+    steps:    
     - name: Create SSH key
       run: |
-        mkdir -p ~/.ssh/
-        echo "$SSH_PRIVATE_KEY" > ../private.key
-        sudo chmod 600 ../private.key
-        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        echo "$SSH_PRIVATE_KEY" > private.key
+        sudo chmod 600 private.key
       shell: bash
       env:
-        SSH_KNOWN_HOSTS: thinkmay.net
         SSH_PRIVATE_KEY: ${{secrets.AWS_KEY}}
-        SSH_KEY_PATH: ${{ github.workspace }}/../private.key
+    
+    - name: Checkout
+      uses: actions/checkout@v2
 
-
-    # Deploy the Docker image to the GKE cluster
-    - name: Deploy
-      run: |
-        ssh -i $SSH_KEY_PATH root@thinkmay.net
-        sudo -i
-        kubectl rollout restart deploy conductor 
-        kubectl rollout restart deploy signalling 
-        kubectl rollout restart deploy slavemanager 
-      shell: bash
-      env:
-        SSH_KEY_PATH: ${{ github.workspace }}/../private.key
+    - name: access-kubernetes
+      uses: appleboy/ssh-action@master
+      with:
+        host: thinkmay.net
+        key_path: ${{ github.workspace }}/private.key
+        script: | 
+          sudo -i 
+          kubectl rollout restart deploy conductor 
+          kubectl rollout restart deploy signalling 
+          kubectl rollout restart deploy slavemanager 
         
 
 

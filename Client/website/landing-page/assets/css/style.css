@@ -155,6 +155,31 @@ p {
   background-size: 200%;
 }
 
+.download-btn{
+  display: inline-block;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: 0 25px;
+  font-size: 16px;
+  line-height: 48px;
+  border-radius: 8px;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  z-index: 5;
+  -webkit-transition: all 0.4s ease-out 0s;
+  transition: all 0.4s ease-out 0s;
+  background: -webkit-gradient(linear, left top, right top, from(#f13d3d), color-stop(50%, #119bd2), to(#33c8c1));
+  background: linear-gradient(to right, #b43e3e 0%, #cf0c0c 50%, #b4115d 100%);
+  background-size: 200%;
+}
+
 .main-btn:hover {
   color: #fff;
   background-position: right center;

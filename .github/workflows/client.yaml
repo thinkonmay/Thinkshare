@@ -99,7 +99,7 @@ jobs:
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |
-        ssh -i $SSH_KEY_PATH root@thinkmay.net
+        ssh -i "$SSH_KEY_PATH" ubuntu@thinkmay.net
         sudo -i
         kubectl rollout restart deploy landing-page 
         kubectl rollout restart deploy service-page 
