@@ -1,37 +1,35 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: signalling
+  name: slavemanager
   labels:
-    app: signalling
-  annotations:
-    cloud.google.com/backend-config: '{"ports": {"80":"no-timeout"}}'
+    app: slavemanager
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
    - port: 80
   selector:
-   app: signalling
+   app: slavemanager
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: signalling
+  name: slavemanager
 spec:
   selector:
     matchLabels:
-      app: signalling
+      app: slavemanager
   replicas: 1
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: signalling
+        app: slavemanager
     spec:
       containers:
-      - name: signalling
-        image: pigeatgarlic/signalling:latest
+      - name: slavemanager
+        image: pigeatgarlic/slavemanager:latest
         imagePullPolicy: Always
         resources:
           requests:
@@ -40,9 +38,6 @@ spec:
           limits:
             memory: "300Mi"
             cpu: "300m"
-        readinessProbe:
-          httpGet:
-            path: /swagger/index.html
-            port: 80
         ports:
         - containerPort: 80
+        

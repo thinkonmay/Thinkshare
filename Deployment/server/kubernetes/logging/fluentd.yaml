@@ -74,10 +74,6 @@ spec:
             value: "http"
           - name: FLUENTD_SYSTEMD_CONF
             value: disable
-          - name: FLUENT_CONTAINER_TAIL_EXCLUDE_PATH
-            value: /var/log/containers/fluent*
-          - name: FLUENT_CONTAINER_TAIL_PARSER_TYPE
-            value: /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
         resources:
           limits:
             cpu: 200m

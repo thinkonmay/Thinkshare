@@ -5,8 +5,7 @@ metadata:
 spec:
   domains:
     - thinkmay.net
-    - host.thinkmay.net
-    - database.thinkmay.net
-    - admin.thinkmay.net
     - document.thinkmay.net
-    - service.thinkmay.net
+    - hostdev.thinkmay.net
+    - admindev.thinkmay.net
+    - servicedev.thinkmay.net

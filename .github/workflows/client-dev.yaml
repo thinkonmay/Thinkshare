@@ -1,12 +1,12 @@
-name: CLIENT
+name: CLIENT_DEVELOPMENT
 
 on:
   push:
-    branches: [ master ]
+    branches: [ dev ]
     paths: 
     - 'Client/website/**'
   pull_request:
-    branches: [ master ]
+    branches: [ dev ]
     paths: 
     - 'Client/website/**'
   workflow_dispatch:
@@ -18,8 +18,6 @@ env:
   LANDING_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/landing-page:latest
   ADMIN_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/admin-page:latest
 
-  GKE_CLUSTER: thinkmay-cluster-v1  # TODO: update to cluster name
-  GKE_ZONE: asia-southeast1-a   # TODO: update to cluster zone
 jobs:
   build-service:
     runs-on: ubuntu-latest
@@ -73,37 +71,34 @@ jobs:
         tags: ${{ env.ADMIN_PAGE_IMAGE }}
 
       
-
-  kubernetes-deployment:
-    name: Kubernetes-server-deploy
+  deploy-on-dev-server:
+    name: deploy
     runs-on: ubuntu-latest
-    needs: [build-admin, build-service, build-landing] 
 
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    
-    - name: Create SSH key
-      run: |
-        mkdir -p ~/.ssh/
-        echo "$SSH_PRIVATE_KEY" > ../private.key
-        sudo chmod 600 ../private.key
-        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-      shell: bash
-      env:
-        SSH_KNOWN_HOSTS: thinkmay.net
-        SSH_PRIVATE_KEY: ${{secrets.AWS_KEY}}
-        SSH_KEY_PATH: ${{ github.workspace }}/../private.key
 
+    # Setup gcloud CLI
+    - uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        project_id: ${{ secrets.GKE_PROJECT }}
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
+
+    # Configure Docker to use the gcloud command-line tool as a credential
+    # helper for authentication
+    - run: |-
+        gcloud --quiet auth configure-docker
+
+    # Get the GKE credentials so we can deploy to the cluster
+    - uses: google-github-actions/get-gke-credentials@v0.2.1
+      with:
+        location: ${{ env.GKE_ZONE }}
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        credentials: ${{ secrets.GKE_SA_KEY }}
 
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
-      run: |
-        ssh -i "$SSH_KEY_PATH" ubuntu@thinkmay.net
-        sudo -i
-        kubectl rollout restart deploy landing-page 
-        kubectl rollout restart deploy service-page 
-        kubectl rollout restart deploy admin-page 
-      shell: bash
-      env:
-        SSH_KEY_PATH: ${{ github.workspace }}/../private.key
+      run: |-
+        kubectl rollout restart deploy
+

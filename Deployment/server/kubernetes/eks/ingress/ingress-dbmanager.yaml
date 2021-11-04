@@ -10,7 +10,7 @@ spec:
   - host: database.thinkmay.net
     http:
       paths:
-      - path: /*
+      - path: /
         pathType: Prefix
         backend:
           service:

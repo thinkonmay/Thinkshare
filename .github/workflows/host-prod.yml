@@ -1,6 +1,10 @@
-name: HOST
+name: HOST_PRODUCTION
 
 on:
+  push:
+    branches: [ master ]
+    paths: 
+    - 'Host/**'
   pull_request:
     branches: [ master ]
     paths: 
@@ -10,11 +14,11 @@ on:
 
 #setup environment variable
 env:
-  REGISTRY: ghcr.io
   SIGNALLING_IMAGE_NAME:  ${{ secrets.DOCKER_USERNAME }}/signalling:latest
   SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:latest
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
   AUTHENTICATOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/authenticator:latest
+  METRIC_COLLECTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/metric-collector:latest
   
 
 jobs:      
@@ -34,7 +38,7 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host  
-        target: release
+        target: prod
         file: Host/Signalling/Dockerfile
         push: true
         tags: ${{ env.SIGNALLING_IMAGE_NAME }}
@@ -55,7 +59,7 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host  
-        target: release
+        target: prod
         file: Host/SlaveManager/Dockerfile
         push: true
         tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
@@ -76,7 +80,7 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        target: release
+        target: prod
         file: Host/Conductor/Dockerfile
         push: true
         tags: ${{ env.CONDUCTOR_IMAGE_NAME }}
@@ -98,67 +102,28 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
+        target: prod
         file: Host/Authenticator/Dockerfile
         push: true
         tags: ${{ env.AUTHENTICATOR_IMAGE_NAME }}
 
-
-  authenticator-deployment:
-    name: Auth-server-deploy
+  build-metric-collector:
     runs-on: ubuntu-latest
-    needs: build-authenticator
     steps:
-    
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@13d241b293754004c80624b5567555c4a39ffbe3
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-        
-    - name: Checkout
-      uses: aws-actions/amazon-ecs-deploy-task-definition@de0132cf8cdedb79975c6d42b77eb7ea193cf28e
-      with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: ${{ env.ECS_SERVICE }}
-        cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true
-
-
-
-
-  kubernetes-deployment:
-    name: Kubernetes-server-deploy
-    runs-on: ubuntu-latest
-    needs: [build-conductor, build-slavemanager, build-signalling] 
-    steps:    
-    - name: Create SSH key
-      run: |
-        echo "$SSH_PRIVATE_KEY" > private.key
-        sudo chmod 600 private.key
-      shell: bash
-      env:
-        SSH_PRIVATE_KEY: ${{secrets.AWS_KEY}}
-    
-    - name: Checkout
+    - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: access-kubernetes
-      uses: appleboy/ssh-action@master
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
-        host: thinkmay.net
-        key_path: ${{ github.workspace }}/private.key
-        script: | 
-          sudo -i 
-          kubectl rollout restart deploy conductor 
-          kubectl rollout restart deploy signalling 
-          kubectl rollout restart deploy slavemanager 
-        
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-
-
-
-
-
-
-
+    - name: MetricCollector
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Host 
+        target: prod
+        file: Host/MetricCollector/Dockerfile
+        push: true
+        tags: ${{ env.METRIC_COLLECTOR_IMAGE_NAME }}

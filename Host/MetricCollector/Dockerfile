@@ -7,7 +7,7 @@ EXPOSE 443
 
 
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS BuildProd
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildprod
 WORKDIR /src
 
 COPY ["MetricCollector/MetricCollector.csproj", "MetricCollector/"]
@@ -25,7 +25,7 @@ RUN dotnet build "MetricCollector.csproj" -c Release -o /app/build
 
 
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS BuildDev
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builddev
 WORKDIR /src
 
 COPY ["MetricCollector/MetricCollector.csproj", "MetricCollector/"]
@@ -41,10 +41,10 @@ RUN dotnet build "MetricCollector.csproj" -c Release -o /app/build
 
 
 
-FROM BuildDev AS PublishDev
+FROM builddev AS publishdev
 RUN dotnet publish "MetricCollector.csproj" -c Release -o /app/publish
 
-FROM BuildProd AS PublishProd
+FROM buildprod AS publishprod
 RUN dotnet publish "MetricCollector.csproj" -c Release -o /app/publish
 
 
@@ -55,10 +55,10 @@ RUN dotnet publish "MetricCollector.csproj" -c Release -o /app/publish
 # production and development image both base on base image
 FROM base AS dev
 WORKDIR /app
-COPY --from=PublishDev /app/publish .
+COPY --from=publishdev /app/publish .
 ENTRYPOINT ["dotnet", "MetricCollector.dll"]
 
 FROM base AS prod
 WORKDIR /app
-COPY --from=PublishProd /app/publish .
+COPY --from=publishprod /app/publish .
 ENTRYPOINT ["dotnet", "MetricCollector.dll"]
