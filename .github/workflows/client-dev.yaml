@@ -13,7 +13,6 @@ on:
 
 #setup environment variable
 env:
-  REGISTRY: ghcr.io
   SERVICE_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/service-page:latest
   LANDING_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/landing-page:latest
   ADMIN_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/admin-page:latest

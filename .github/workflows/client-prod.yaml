@@ -11,15 +11,7 @@ on:
     - 'Client/website/**'
   workflow_dispatch:
 
-#setup environment variable
-env:
-  REGISTRY: ghcr.io
-  SERVICE_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/service-page:latest
-  LANDING_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/landing-page:latest
-  ADMIN_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/admin-page:latest
-
 jobs:
-
   build-service:
     runs-on: ubuntu-latest
     steps:
@@ -30,12 +22,17 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%y-%m-%d-%h')"
     - name: ServicePage 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Client/website/service-page 
         push: true
         tags: ${{ env.SERVICE_PAGE_IMAGE }}
+      env:
+        SERVICE_PAGE_IMAGE: ${{ secrets.DOCKER_USERNAME }}/service-page:${{ steps.date.outputs.date }}
 
   build-landing:
     runs-on: ubuntu-latest
@@ -47,12 +44,17 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%y-%m-%d-%h')"
     - name: LandingPage 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Client/website/landing-page
         push: true
         tags: ${{ env.LANDING_PAGE_IMAGE }}
+      env:
+        LANDING_PAGE_IMAGE: ${{ secrets.DOCKER_USERNAME }}/landing-page:${{ steps.date.outputs.date }}
 
 
   build-admin:
@@ -65,9 +67,14 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%y-%m-%d-%h')"
     - name: AdminPage 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Client/website/admin-page
         push: true
         tags: ${{ env.ADMIN_PAGE_IMAGE }}
+      env:
+        ADMIN_PAGE_IMAGE: ${{ secrets.DOCKER_USERNAME }}/admin-page:${{ steps.date.outputs.date }}
