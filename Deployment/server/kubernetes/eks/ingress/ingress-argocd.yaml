@@ -11,6 +11,10 @@ spec:
   - host: cicd.thinkmay.net
     http:
       paths:
-      - backend:
-          serviceName: argocd-server
-          servicePort: http
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 80
