@@ -3,15 +3,36 @@ kind: Ingress
 metadata:
   name: ingress
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: "thinkmay-ip"
     kubernetes.io/ingress.class: "gce"
     networking.gke.io/managed-certificates: managed-cert
+    kubernetes.io/ingress.global-static-ip-name: "thinkmay-ip"
 spec:
   rules:
-  - host: host.thinkmay.net
+  - host: hostdev.thinkmay.net
     http:
       paths:
-      - path: /*
+      - path: /User/*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+      - path: /Session/*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+      - path: /Device/*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+      - path: /Shell/*
         pathType: ImplementationSpecific
         backend:
           service:
@@ -19,7 +40,15 @@ spec:
             port:
               number: 80
 
-      - path: /*
+      - path: /Account/*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+  
+      - path: /Handshake/*
         pathType: ImplementationSpecific
         backend:
           service:
@@ -27,15 +56,22 @@ spec:
             port:
               number: 80
 
-
-      - path: /*
+      - path: /Agent/*
         pathType: ImplementationSpecific
         backend:
           service:
             name: slavemanager
             port:
               number: 80
-              
+
+      - path: /Metric/*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: metric-collector
+            port:
+              number: 80
+
   - host: thinkmay.net
     http:
       paths:
@@ -47,7 +83,7 @@ spec:
             port:
               number: 80
 
-  - host: service.thinkmay.net
+  - host: servicedev.thinkmay.net
     http:
       paths:
       - path: /*
@@ -55,5 +91,16 @@ spec:
         backend:
           service:
             name: service-page
+            port:
+              number: 80
+
+  - host: admindev.thinkmay.net
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: admin-page
             port:
               number: 80

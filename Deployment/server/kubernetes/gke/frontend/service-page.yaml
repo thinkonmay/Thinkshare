@@ -5,7 +5,7 @@ metadata:
   labels:
     app: service-page
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 80    
   selector:
@@ -33,14 +33,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "200Mi"
-            cpu: "200m"
+            memory: "100Mi"
+            cpu: "100m"
           limits:
             memory: "300Mi"
             cpu: "300m"
-        readinessProbe:
-          httpGet:
-            path: /login
-            port: 80
         ports:
         - containerPort: 80

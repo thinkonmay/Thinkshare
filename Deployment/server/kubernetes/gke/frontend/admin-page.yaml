@@ -1,35 +1,35 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: landing-page
+  name: admin-page
   labels:
-    app: landing-page
+    app: admin-page
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 80    
   selector:
-   app: landing-page
+   app: admin-page
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: landing-page
+  name: admin-page
 spec:
   selector:
     matchLabels:
-      app: landing-page
+      app: admin-page
   replicas: 1
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: landing-page
+        app: admin-page
     spec:
       containers:
-      - name: landing-page
-        image: pigeatgarlic/landing-page:latest
+      - name: admin-page
+        image: pigeatgarlic/admin-page:latest
         imagePullPolicy: Always
         resources:
           requests:
