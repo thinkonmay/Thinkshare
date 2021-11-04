@@ -1,1 +1,0 @@
-const development = "https://host.thinkmay.dev"

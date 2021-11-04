@@ -5,7 +5,14 @@ import { getCookie } from "./cookie.js"
 	import @ from @
 	const host = @.{your_environment_you_wanna_use}
 */
-const host = "https://host.thinkmay.net"
+let host;
+let currentURL = document.URL
+let subdomain = currentURL.slice(0, 27)
+if (subdomain == 'https://sevices.think.net') {
+	host = "https://host.thinkmay.net"
+} else {
+	host = "http://hostdev.thinkmay.net"
+}
 
 // local api
 export const Dashboard = "/dashboard"

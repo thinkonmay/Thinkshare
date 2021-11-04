@@ -1,1 +1,0 @@
-const product = "https://host.thinkmay.net"
