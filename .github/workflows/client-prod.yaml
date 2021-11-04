@@ -1,4 +1,4 @@
-name: CLIENT
+name: CLIENT_PRODUCTION
 
 on:
   push:
@@ -53,6 +53,7 @@ jobs:
         context: Client/website/landing-page
         push: true
         tags: ${{ env.LANDING_PAGE_IMAGE }}
+
 
   build-admin:
     runs-on: ubuntu-latest

@@ -1,4 +1,4 @@
-name: HOST
+name: HOST_PRODUCTION
 
 on:
   push:
@@ -14,7 +14,6 @@ on:
 
 #setup environment variable
 env:
-  REGISTRY: ghcr.io
   SIGNALLING_IMAGE_NAME:  ${{ secrets.DOCKER_USERNAME }}/signalling:latest
   SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:latest
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
