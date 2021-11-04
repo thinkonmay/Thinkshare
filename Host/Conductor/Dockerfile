@@ -17,7 +17,6 @@ RUN dotnet restore "Conductor/Conductor.csproj"
 
 # copy setting from setting prod folder to workdir
 COPY . .
-COPY ["setting/prod/app-setting.json", "Conductor/"]
 WORKDIR "/src/Conductor"
 RUN dotnet build "Conductor.csproj" -c Release -o /app/build
 
@@ -36,7 +35,6 @@ RUN dotnet restore "Conductor/Conductor.csproj"
 
 # copy setting from setting dev folder to workdir
 COPY . .
-COPY ["setting/dev/app-setting.json", "Conductor/"]
 WORKDIR "/src/Conductor"
 RUN dotnet build "Conductor.csproj" -c Release -o /app/build
 
