@@ -14,14 +14,14 @@ on:
 
 #setup environment variable
 env:
-  REGISTRY: ghcr.io
   SIGNALLING_IMAGE_NAME:  ${{ secrets.DOCKER_USERNAME }}/signalling:latest
   SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:latest
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
   AUTHENTICATOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/authenticator:latest
   METRIC_COLLECTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/metric-collector:latest
-  
   GKE_CLUSTER: thinkmaydev
+  GKE_ZONE: asia-southeast2
+  
 jobs:      
   build-signalling:
     runs-on: ubuntu-latest
