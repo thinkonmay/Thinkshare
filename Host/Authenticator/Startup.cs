@@ -71,14 +71,6 @@ namespace Authenticator
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-                .AddGoogle(options =>
-                {
-                    var gconfig = Configuration.GetSection("Authentication:Google");
-                    options.ClientId = gconfig["ClientId"];
-                    options.ClientSecret = gconfig["ClientSecret"];
-                    options.SignInScheme = IdentityConstants.ExternalScheme;
-                }
-                )
                 .AddJwtBearer(options =>
                 {
                     options.Events = new JwtBearerEvents
@@ -108,6 +100,14 @@ namespace Authenticator
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtOptions:Key"]))
                     };
                 });
+                // .AddGoogle(options =>
+                // {
+                //     var gconfig = Configuration.GetSection("Authentication:Google");
+                //     options.ClientId = gconfig["ClientId"];
+                //     options.ClientSecret = gconfig["ClientSecret"];
+                //     options.SignInScheme = IdentityConstants.ExternalScheme;
+                // }
+                // )
 
 
             services.AddSwaggerGen(swagger =>
