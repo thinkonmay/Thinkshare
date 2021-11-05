@@ -1,6 +1,18 @@
 import { getCookie } from "./cookie.js"
 
-const host = "https://conductor.thinkmay.net"
+// get environment as docker to match env
+/*
+	import @ from @
+	const host = @.{your_environment_you_wanna_use}
+*/
+let host;
+let currentURL = document.URL
+let subdomain = currentURL.slice(0, 27)
+if (subdomain == 'https://sevices.think.net') {
+	host = "https://host.thinkmay.net"
+} else {
+	host = "http://hostdev.thinkmay.net"
+}
 
 // local api
 export const Dashboard = "/dashboard"

@@ -1,4 +1,4 @@
-name: HOST
+name: HOST_DEVELOPMENT
 
 on:
   push:
@@ -14,14 +14,14 @@ on:
 
 #setup environment variable
 env:
-  REGISTRY: ghcr.io
   SIGNALLING_IMAGE_NAME:  ${{ secrets.DOCKER_USERNAME }}/signalling:latest
   SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:latest
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
   AUTHENTICATOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/authenticator:latest
   METRIC_COLLECTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/metric-collector:latest
+  GKE_CLUSTER: thinkmaydev
+  GKE_ZONE: asia-southeast2
   
-
 jobs:      
   build-signalling:
     runs-on: ubuntu-latest
@@ -128,3 +128,35 @@ jobs:
         file: Host/MetricCollector/Dockerfile
         push: true
         tags: ${{ env.METRIC_COLLECTOR_IMAGE_NAME }}
+        
+
+  deploy-on-dev-server:
+    name: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Setup gcloud CLI
+    - uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        project_id: ${{ secrets.GKE_PROJECT }}
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
+
+    # Configure Docker to use the gcloud command-line tool as a credential
+    # helper for authentication
+    - run: |-
+        gcloud --quiet auth configure-docker
+
+    # Get the GKE credentials so we can deploy to the cluster
+    - uses: google-github-actions/get-gke-credentials@v0.2.1
+      with:
+        location: ${{ env.GKE_ZONE }}
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        credentials: ${{ secrets.GKE_SA_KEY }}
+
+    # Deploy the Docker image to the GKE cluster
+    - name: Deploy
+      run: |-
+        kubectl rollout restart deploy

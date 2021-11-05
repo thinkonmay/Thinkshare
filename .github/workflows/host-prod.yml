@@ -1,4 +1,4 @@
-name: HOST
+name: HOST_PRODUCTION
 
 on:
   push:
@@ -12,14 +12,6 @@ on:
   workflow_dispatch:
 
 
-#setup environment variable
-env:
-  REGISTRY: ghcr.io
-  SIGNALLING_IMAGE_NAME:  ${{ secrets.DOCKER_USERNAME }}/signalling:latest
-  SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:latest
-  CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
-  AUTHENTICATOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/authenticator:latest
-  METRIC_COLLECTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/metric-collector:latest
   
 
 jobs:      
@@ -35,6 +27,10 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
     - name: Signalling
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
@@ -43,6 +39,8 @@ jobs:
         file: Host/Signalling/Dockerfile
         push: true
         tags: ${{ env.SIGNALLING_IMAGE_NAME }}
+      env:
+        SIGNALLING_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/signalling:${{ steps.date.outputs.date }}
 
   build-slavemanager:
     runs-on: ubuntu-latest
@@ -56,6 +54,10 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
     - name: SlaveManager
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
@@ -64,6 +66,8 @@ jobs:
         file: Host/SlaveManager/Dockerfile
         push: true
         tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
+      env:
+        SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:${{ steps.date.outputs.date }}
 
   build-conductor:
     runs-on: ubuntu-latest
@@ -77,6 +81,10 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
     - name: Conductor
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
@@ -85,6 +93,8 @@ jobs:
         file: Host/Conductor/Dockerfile
         push: true
         tags: ${{ env.CONDUCTOR_IMAGE_NAME }}
+      env:
+        CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:${{ steps.date.outputs.date }}
 
 
   build-authenticator:
@@ -99,6 +109,10 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
     - name: Authenticator 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
@@ -107,6 +121,8 @@ jobs:
         file: Host/Authenticator/Dockerfile
         push: true
         tags: ${{ env.AUTHENTICATOR_IMAGE_NAME }}
+      env:
+        AUTHENTICATOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/authenticator:${{ steps.date.outputs.date }}
 
   build-metric-collector:
     runs-on: ubuntu-latest
@@ -119,6 +135,10 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+        
+    - name: get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
     - name: MetricCollector
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
@@ -128,3 +148,5 @@ jobs:
         file: Host/MetricCollector/Dockerfile
         push: true
         tags: ${{ env.METRIC_COLLECTOR_IMAGE_NAME }}
+      env:
+        METRIC_COLLECTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/metric-collector:${{ steps.date.outputs.date }}

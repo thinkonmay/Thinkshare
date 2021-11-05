@@ -8,7 +8,7 @@ metadata:
 
 spec:
   rules:
-  - host: cicd.thinkmay.net
+  - host: cd.thinkmay.net
     http:
       paths:
       - path: /
