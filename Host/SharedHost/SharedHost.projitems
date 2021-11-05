@@ -38,6 +38,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Telemetry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SystemConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\JwtChallange.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\Storage\" />

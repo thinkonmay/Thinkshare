@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedHost;
 using SharedHost.Models.Device;
+using SharedHost.Auth.ThinkmayAuthProtocol;
 
 namespace Conductor.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Admin]
     [Route("/Device")]
     [ApiController]
     [Produces("application/json")]

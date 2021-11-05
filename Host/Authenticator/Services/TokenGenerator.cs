@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Conductor.Interfaces;
+using Authenticator.Interfaces;
 using SharedHost.Models.Auth;
 using SharedHost.Models.User;
 using System;
@@ -16,11 +16,13 @@ namespace Authenticator.Services
 {
     public class TokenGenerator : ITokenGenerator
     {
-        //https://jasonwatmore.com/post/2020/07/21/aspnet-core-3-create-and-validate-jwt-tokens-use-custom-jwt-middleware
+
         private readonly JwtOptions _jwt;
+
         private readonly UserManager<UserAccount> _userManager;
 
-        public TokenGenerator(IOptions<JwtOptions> options, UserManager<UserAccount> userManager)
+        public TokenGenerator(IOptions<JwtOptions> options, 
+                              UserManager<UserAccount> userManager)
         {
             _jwt = options.Value;
             _userManager = userManager;
@@ -30,8 +32,6 @@ namespace Authenticator.Services
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
-
-            // add all role of user account to role claim
             var roleClaims = new List<Claim>();
             foreach (var role in roles)
             {
@@ -39,19 +39,13 @@ namespace Authenticator.Services
             }
 
             // combine default claim with customized claim
-            var claims = new Claim[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
-            }
-            .Union(userClaims).Union(roleClaims);
+            var claims = userClaims.Union(roleClaims);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwt.Key);
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Audience = _jwt.Audience,
-                Issuer = _jwt.Issuer,
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
                 Expires = DateTime.Now.AddHours(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -66,41 +60,31 @@ namespace Authenticator.Services
     
 
 
-        public int GetUserFromHttpRequest(ClaimsPrincipal User)
+        public Task<UserAccount?> ValidateToken(string token)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwt.Key);
-
-            ClaimsPrincipal principal = User as ClaimsPrincipal;  
-            if (null != principal)  
-            {  
-                foreach (Claim claim in principal.Claims)  
-                {  
-                    if(claim.Type == "id")
-                    {
-                        return Int32.Parse(claim.Value);
-                    }
-                }  
-            }
-            return -1;
-        }
-
-        
-        public bool IsAdmin(ClaimsPrincipal User)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwt.Key);
-
-            ClaimsPrincipal principal = User as ClaimsPrincipal;  
-            IEnumerable<Claim> roleClaims = User.FindAll(ClaimTypes.Role);
-            IEnumerable<string> roles = roleClaims.Select(r => r.Value);
-
-            if(roles.Contains<string>("Administrator"))
+            try
             {
-                return true;
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_jwt.Key);
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+                var jwtToken = (JwtSecurityToken)validatedToken;
+
+                var id = jwtToken.Claims.First(x => x.Type == "id").Value;
+                var account = _userManager.FindByIdAsync(id);
+                return account;
             }
-            return false;
+            catch 
+            {
+                return null;
+            }
         }
-        
     }
 }

@@ -20,6 +20,6 @@ namespace SignalRChat.Hubs
         Task LogShellOutput(ShellOutput output);
     }
 
-    [Authorize]
+    [Admin]
     public class AdminHub : Hub<IAdminHub> {   }
 }

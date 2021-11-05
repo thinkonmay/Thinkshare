@@ -21,9 +21,9 @@ namespace Conductor.Controllers
     /// <summary>
     /// Routes used by user to fetch information about the system
     /// </summary>
+    [User]
     [Route("/User")]
     [ApiController]
-    [Authorize]
     [Produces("application/json")]
     public class UserController : Controller
     {
@@ -33,17 +33,13 @@ namespace Conductor.Controllers
 
         private readonly ISlaveManagerSocket _slmsocket;
 
-        private readonly ITokenGenerator _jwt;
-
         public UserController(ApplicationDbContext db, 
                             UserManager<UserAccount> userManager,
-                            ISlaveManagerSocket slm,
-                            ITokenGenerator jwt)
+                            ISlaveManagerSocket slm)
         {
             _slmsocket = slm;
             _db = db;
             _userManager = userManager;
-            _jwt = jwt;
         }
 
 
@@ -87,8 +83,8 @@ namespace Conductor.Controllers
         [HttpGet("FetchSession")]
         public async Task<IActionResult> UserGetCurrentSesssion()
         {
-            int ClientId = _jwt.GetUserFromHttpRequest(User);
-            var session = _db.RemoteSessions.Where(s => s.ClientId == ClientId &&
+            var UserID = HttpContext.Items["UserID"];
+            var session = _db.RemoteSessions.Where(s => s.ClientId == Int32.Parse(UserID.ToString()) &&
                                                   !s.EndTime.HasValue).ToList();
             
             var ret = new List<SlaveDeviceInformation>();
@@ -105,68 +101,6 @@ namespace Conductor.Controllers
 
             // search for remote session with client id and endtime equal null
             return Ok(ret);
-        }
-
-
-        [HttpGet("GetInfor")]
-        public async Task<IActionResult> UserGetInfor()
-        {
-            int ClientId = _jwt.GetUserFromHttpRequest(User);
-            var account = await _userManager.FindByIdAsync(ClientId.ToString());
-
-            return Ok(account);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("GetSession")]
-        public async Task<IActionResult> UserGetSession()
-        {
-            int ClientId = _jwt.GetUserFromHttpRequest(User);
-
-            //get session in recent 7 days
-            var sessions = _db.RemoteSessions.Where( o => o.ClientId == ClientId &&
-                                                     o.EndTime.HasValue &&
-                                                     o.StartTime.Value.AddDays(7) >  DateTime.Now);
-
-            var ret = new List<GetSessionResponse>();
-            if(sessions == null)
-            {
-                return Ok(ret);
-            }
-            foreach(var item in sessions)
-            {
-                var i = new GetSessionResponse();
-                i.DayofWeek = item.StartTime.Value.DayOfWeek;
-                i.SessionTime = (item.EndTime - item.StartTime).Value.TotalMinutes;
-                ret.Add(i);
-            }            
-            return Ok(ret);
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("SetInfor")]
-        public async Task<IActionResult> SetAccountInfor([FromBody]UserInforModel infor)
-        {
-            int ClientId = _jwt.GetUserFromHttpRequest(User);
-
-            var account = await _userManager.FindByIdAsync(ClientId.ToString());
-
-            var result =  await _userManager.SetUserNameAsync(account, infor.UserName);
-            if(result.Succeeded)
-            {
-                return Ok();
-            }
-            else
-            {
-                return BadRequest(result.Errors.ToList());
-            }
         }
     }
 }

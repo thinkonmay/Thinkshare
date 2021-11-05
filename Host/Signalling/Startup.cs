@@ -48,26 +48,6 @@ namespace Signalling
             });
 
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Signalling",
-                    Version =
-                    "v1"
-                });
-
-                var xmlFilePath = Path.Combine(AppContext.BaseDirectory,
-                $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
-
-                c.IncludeXmlComments(xmlFilePath);
-            });
-
-            // services.AddScoped(container =>
-            // {
-            //     return new ClientIpFilter(Configuration["AdminSafeList"]);
-            // });
-
 
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
@@ -88,10 +68,12 @@ namespace Signalling
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
+
             app.UseRouting();
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
@@ -100,14 +82,6 @@ namespace Signalling
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.OAuthClientId("swagger");
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling");
-            }
-            );
         }
     }
 }

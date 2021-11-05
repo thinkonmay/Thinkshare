@@ -10,6 +10,8 @@ using SharedHost.Models.Device;
 using Conductor.Interfaces;
 using SharedHost.Models.Session;
 using Conductor.Services;
+using Microsoft.AspNetCore.Http;
+using SharedHost.Auth.ThinkmayAuthProtocol;
 
 namespace SignalRChat.Hubs
 {
@@ -54,19 +56,12 @@ namespace SignalRChat.Hubs
         Task ReportSessionInitialized(SlaveDeviceInformation slaveID);
     }
 
-    [Authorize]
+    [User]
     public class ClientHub : Hub<IClientHub>
-    {
-        private readonly ITokenGenerator _token;
-
-        public ClientHub(ITokenGenerator token)
-        {
-            _token = token;
-        }
-        
+    {        
         public override Task OnConnectedAsync()
         {
-            int UserID = _token.GetUserFromHttpRequest(Context.User);
+            var UserID = Context.Items["UserID"];
             Groups.AddToGroupAsync(Context.ConnectionId,UserID.ToString());
             return base.OnConnectedAsync();
         }

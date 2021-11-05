@@ -18,7 +18,7 @@ namespace Conductor.Controllers
     /// <summary>
     /// Routes used by admin to query current information of the system
     /// </summary>
-    [Authorize(Roles = "Administrator")]
+    [Admin]
     [Route("/Query")]
     [ApiController]
     [Produces("application/json")]
