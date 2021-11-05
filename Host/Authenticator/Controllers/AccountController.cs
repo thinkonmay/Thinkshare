@@ -195,97 +195,97 @@ namespace Conductor.Controllers
 
 
 
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("Account/ExternalLogin")]
-        public IActionResult ExternalLogin()
-        {            
-            string redirectUrl = Url.Action("signin-google");
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
-            return new ChallengeResult("Google", properties);
-        }   
+//         [AllowAnonymous]
+//         [HttpGet]
+//         [Route("Account/ExternalLogin")]
+//         public IActionResult ExternalLogin()
+//         {            
+//             string redirectUrl = Url.Action("signin-google");
+//             var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+//             return new ChallengeResult("Google", properties);
+//         }   
 
 
 
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("signin-google")]
-        public async Task<IActionResult>  ExternalLoginCallback()
-        {
-            ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info != null)
-            {
-                return Redirect("https://service.thinkmay.net/login");
-            }
+//         [AllowAnonymous]
+//         [HttpGet]
+//         [Route("signin-google")]
+//         public async Task<IActionResult>  ExternalLoginCallback()
+//         {
+//             ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
+//             if (info != null)
+//             {
+//                 return Redirect("https://service.thinkmay.net/login");
+//             }
 
-            // If the user already has a login (i.e if there is a record in AspNetUserLogins
-            // table) then sign-in the user with this external login provider
-            var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider,
-                info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+//             // If the user already has a login (i.e if there is a record in AspNetUserLogins
+//             // table) then sign-in the user with this external login provider
+//             var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider,
+//                 info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
-            if (signInResult.Succeeded)
-            {
-                string email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                UserAccount account = await _userManager.FindByEmailAsync(email);
+//             if (signInResult.Succeeded)
+//             {
+//                 string email = info.Principal.FindFirstValue(ClaimTypes.Email);
+//                 UserAccount account = await _userManager.FindByEmailAsync(email);
 
-                await _signInManager.SignInAsync(account, isPersistent: false);
-                await _userManager.AddLoginAsync(account, info);
+//                 await _signInManager.SignInAsync(account, isPersistent: false);
+//                 await _userManager.AddLoginAsync(account, info);
                  
-                string token = await _tokenGenerator.GenerateJwt(account);
-                return  Redirect($"https://service.thinkmay.net/dashboard?token={token}");
-            }
-            // If there is no record in AspNetUserLogins table, the user may not have
-            // a local account
-            else
-            {
-                // Get the email claim value
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+//                 string token = await _tokenGenerator.GenerateJwt(account);
+//                 return  Redirect($"https://service.thinkmay.net/dashboard?token={token}");
+//             }
+//             // If there is no record in AspNetUserLogins table, the user may not have
+//             // a local account
+//             else
+//             {
+//                 // Get the email claim value
+//                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
 
-                if (email != null)
-                {
-                    // Create a new user without password if we do not have a user already
-                    var user = await _userManager.FindByEmailAsync(email);
+//                 if (email != null)
+//                 {
+//                     // Create a new user without password if we do not have a user already
+//                     var user = await _userManager.FindByEmailAsync(email);
 
-                    if (user == null)
-                    {
-                        user = new UserAccount 
-                        {
-                            UserName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-                            Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                        };
+//                     if (user == null)
+//                     {
+//                         user = new UserAccount 
+//                         {
+//                             UserName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+//                             Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+//                         };
 
-                        if(info.Principal.FindFirstValue(ClaimTypes.MobilePhone) != null)
-                        {
-                            user.PhoneNumber = info.Principal.FindFirstValue(ClaimTypes.MobilePhone);
-                        }
-                        if(info.Principal.FindFirstValue(ClaimTypes.DateOfBirth) != null)
-                        {
-                        }
-                        if(info.Principal.FindFirstValue(ClaimTypes.Gender) != null)
-                        {
-                            user.Gender = info.Principal.FindFirstValue(ClaimTypes.Gender); 
-                        }
-                        if(info.Principal.FindFirstValue(ClaimTypes.Surname) != null)
-                        {
-                            user.FullName = 
-                                $"{info.Principal.FindFirstValue(ClaimTypes.GivenName)} "+ 
-                                $"{info.Principal.FindFirstValue(ClaimTypes.Surname)}";
-                        }
+//                         if(info.Principal.FindFirstValue(ClaimTypes.MobilePhone) != null)
+//                         {
+//                             user.PhoneNumber = info.Principal.FindFirstValue(ClaimTypes.MobilePhone);
+//                         }
+//                         if(info.Principal.FindFirstValue(ClaimTypes.DateOfBirth) != null)
+//                         {
+//                         }
+//                         if(info.Principal.FindFirstValue(ClaimTypes.Gender) != null)
+//                         {
+//                             user.Gender = info.Principal.FindFirstValue(ClaimTypes.Gender); 
+//                         }
+//                         if(info.Principal.FindFirstValue(ClaimTypes.Surname) != null)
+//                         {
+//                             user.FullName = 
+//                                 $"{info.Principal.FindFirstValue(ClaimTypes.GivenName)} "+ 
+//                                 $"{info.Principal.FindFirstValue(ClaimTypes.Surname)}";
+//                         }
 
-                        await _userManager.CreateAsync(user);
-                    }
+//                         await _userManager.CreateAsync(user);
+//                     }
 
-                    // Add a login (i.e insert a row for the user in AspNetUserLogins table)
-                    await _userManager.AddLoginAsync(user, info);
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+//                     // Add a login (i.e insert a row for the user in AspNetUserLogins table)
+//                     await _userManager.AddLoginAsync(user, info);
+//                     await _signInManager.SignInAsync(user, isPersistent: false);
 
-                    string token = await _tokenGenerator.GenerateJwt(user);
-                    return Redirect($"https://service.thinkmay.net/dashboard?token={token}");
-                }
+//                     string token = await _tokenGenerator.GenerateJwt(user);
+//                     return Redirect($"https://service.thinkmay.net/dashboard?token={token}");
+//                 }
 
-                // If we cannot find the user email we cannot continue
-                return Redirect("https://service.thinkmay.net/login");
-            }
-        }
+//                 // If we cannot find the user email we cannot continue
+//                 return Redirect("https://service.thinkmay.net/login");
+//             }
+//         }
     }
 }
