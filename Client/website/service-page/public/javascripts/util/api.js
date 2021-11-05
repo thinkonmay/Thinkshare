@@ -8,7 +8,7 @@ import { getCookie } from "./cookie.js"
 let host;
 let currentURL = document.URL
 let subdomain = currentURL.slice(0, 28)
-if (subdomain == 'https://sevice.thinkmay.net') {
+if (subdomain == 'https://service.thinkmay.net') {
 	host = "https://host.thinkmay.net"
 } else {
 	host = "http://hostdev.thinkmay.net"
