@@ -10,6 +10,7 @@ using SharedHost.Models.Device;
 using SharedHost.Models.Error;
 using SharedHost.Models.User;
 using SharedHost.Models.Shell;
+using SharedHost.Auth.ThinkmayAuthProtocol;
 
 namespace SignalRChat.Hubs
 {

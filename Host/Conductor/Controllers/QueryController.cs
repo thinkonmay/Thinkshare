@@ -12,6 +12,7 @@ using SharedHost.Models.Device;
 using SharedHost.Models.Error;
 using System.Linq;
 using SharedHost;
+using SharedHost.Auth.ThinkmayAuthProtocol;
 
 namespace Conductor.Controllers
 {

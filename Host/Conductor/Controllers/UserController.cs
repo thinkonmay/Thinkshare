@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using SharedHost.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using DbSchema.SystemDb.Data;
 using Conductor.Interfaces;
-using Conductor.Models;
-using Conductor.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -13,8 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using SharedHost.Models.User;
 using SharedHost.Models.Device;
-using SharedHost.Models.Session;
-using SharedHost.Models.ResponseModel;
+using SharedHost.Auth.ThinkmayAuthProtocol;
 
 namespace Conductor.Controllers
 {
