@@ -8,11 +8,11 @@ import { getCookie } from "./cookie.js"
 let host;
 let currentURL = document.URL
 let subdomain = currentURL.slice(0, 28)
-if (subdomain == 'https://service.thinkmay.net') {
+// if (subdomain == 'https://service.thinkmay.net') {
 	host = "https://host.thinkmay.net"
-} else {
-	host = "http://hostdev.thinkmay.net"
-}
+// } else {
+// 	host = "http://hostdev.thinkmay.net"
+// }
 
 // local api
 export const Dashboard = "/dashboard"
@@ -20,27 +20,26 @@ export const Initialize = "/initialize"
 export const Reconnect = "/reconnect"
 
 // thinkmay api
+// Account API
 export const Login = `${host}/Account/Login`
 export const Register = `${host}/Account/Register`
+export const GrantRole = `${host}/Account/GrantRole`
 export const GetInfor = `${host}/Account/GetInfor`
+export const SetInfor = `${host}/Account/SetInfor`
 export const GetSession = `${host}/Account/GetSession`
-export const ExternalLogin = `${host}/Account/ExternalLogin`
 
-export const FetchSlave = `${host}/User/FetchSlave`
-export const FetchSession = `${host}/User/FetchSession`
-
-export const RejectDevice = `${host}/Device/Reject/`
-export const DisconnectDevice = `${host}/Device/Disconnect`
-
+// Session API
+export const InitializeSession = `${host}/Session/Initialize`
 export const TerminateSession = `${host}/Session/Terminate`
 export const DisconnectSession = `${host}/Session/Disconnect`
 export const ReconnectSession = `${host}/Session/Reconnect`
-export const InitializeSession = `${host}/Session/Initialize`
 
-// User
-export const SetInfor = `${host}/User/SetInfor`
+// export const RejectDevice = `${host}/Device/Reject/`
+// export const DisconnectDevice = `${host}/Device/Disconnect`
 
-
+// User API
+export const FetchSlave = `${host}/User/FetchSlave`
+export const FetchSession = `${host}/User/FetchSession`
 
 export const QuerySession = `${host}/Query/Session`
 

@@ -20,7 +20,7 @@ function login(body) {
 				.then(async data => {
 					const response = await data.json()
 					if (data.status == 200) {
-						if (response.error == null) {
+						if (response.errors == null) {
 							setCookie("token", response.token, MINUTES59)
 							window.location.replace(API.Dashboard)
 						} else {
