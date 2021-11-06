@@ -21,14 +21,13 @@ export const Reconnect = "/reconnect"
 
 // thinkmay api
 export const Login = `${host}/Account/Login`
-export const LoginAdmin = `${host}/Account/Login-admin`
 export const Register = `${host}/Account/Register`
 export const GetInfor = `${host}/Account/GetInfor`
+export const GetSession = `${host}/Account/GetSession`
 export const ExternalLogin = `${host}/Account/ExternalLogin`
 
 export const FetchSlave = `${host}/User/FetchSlave`
 export const FetchSession = `${host}/User/FetchSession`
-export const GetSession = `${host}/User/GetSession`
 
 export const RejectDevice = `${host}/Device/Reject/`
 export const DisconnectDevice = `${host}/Device/Disconnect`
@@ -89,10 +88,6 @@ export const register = body => {
 export const externalLogin = body => {
 	window.open(ExternalLogin + "?provider=" + body + "&returnUrl=http://conductor.thinkmay.net", "", "width=520, height=520")
 	return {};
-	// return fetch(ExternalLogin + "?provider=" + body + "&returnUrl=http://conductor.thinkmay.net", {
-	// 	method: "POST",
-	// 	headers: genHeaders(),	
-	// })
 }
 
 export const getInfor = () => {
