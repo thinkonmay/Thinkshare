@@ -56,12 +56,15 @@ namespace SignalRChat.Hubs
         Task ReportSessionInitialized(SlaveDeviceInformation slaveID);
     }
 
-    [User]
     public class ClientHub : Hub<IClientHub>
     {        
         public override Task OnConnectedAsync()
         {
             var UserID = Context.Items["UserID"];
+            if(UserID == null)
+            {
+                return;
+            }
             Groups.AddToGroupAsync(Context.ConnectionId,UserID.ToString());
             return base.OnConnectedAsync();
         }
