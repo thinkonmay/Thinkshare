@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: slavemanager
-        image: pigeatgarlic/slavemanager:2021-11-05
+        image: pigeatgarlic/slavemanager:2021-11-06
         imagePullPolicy: Always
         resources:
           requests:
