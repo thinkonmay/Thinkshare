@@ -61,12 +61,6 @@ namespace MetricCollector
                 c.IncludeXmlComments(xmlFilePath);
             });
 
-            // services.AddScoped(container =>
-            // {
-            //     return new ClientIpFilter(Configuration["AdminSafeList"]);
-            // });
-
-
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
             services.AddTransient<IScriptGetter, ScriptGetter>();
             services.AddMvc();
@@ -85,11 +79,16 @@ namespace MetricCollector
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
+
             app.UseRouting();
+            app.UseMiddleware<JwtMiddleware>();
+            app.UseMiddleware<AuthorizeMiddleWare>();
+
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
             {

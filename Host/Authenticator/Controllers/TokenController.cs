@@ -19,7 +19,7 @@ namespace Authenticator.Controllers
         private readonly UserManager<UserAccount> _userManager;
         private readonly SignInManager<UserAccount> _signInManager;
         private readonly ITokenGenerator _tokenGenerator;
-        private readonly SystemConfig config;
+        private readonly SystemConfig _config;
 
         public TokenController(
             UserManager<UserAccount> userManager,
@@ -30,6 +30,7 @@ namespace Authenticator.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenGenerator = tokenGenerator;
+            _config = config;
         }
 
         /// <summary>
@@ -37,7 +38,7 @@ namespace Authenticator.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpPost]
         [Route("Challange")]
         public async Task<IActionResult> Validate([FromBody] AuthenticationRequest request)
         {
@@ -50,7 +51,7 @@ namespace Authenticator.Controllers
                     IsAdmin = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.ADMIN),
                     IsManager = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.MOD),
                     IsUser = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.USER),
-                    ValidatedBy = config.Authenticator
+                    ValidatedBy = _config.Authenticator
                 };
 
                 return Ok(resp);
