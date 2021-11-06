@@ -64,8 +64,8 @@ namespace SignalRChat.Hubs
             if(UserID != null)
             {
                 Groups.AddToGroupAsync(Context.ConnectionId,UserID.ToString());
-                return base.OnConnectedAsync();
             }
+            return base.OnConnectedAsync();
         }
     }
 }
