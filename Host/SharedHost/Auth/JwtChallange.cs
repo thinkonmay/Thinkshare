@@ -27,24 +27,11 @@ namespace SharedHost.Auth
 
         public async Task Invoke(HttpContext context)
         {
-            var path = context.Request.Path;
-            string token;
-
-            if ((path.StartsWithSegments("/ClientHub")) || 
-                (path.StartsWithSegments("/AdminHub" )))
-            {
-                token = context.Request.Query["access_token"];
-            }
-            else
-            {
-                token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            }
-
+            string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (token != null)
             {
                 attachUserToContext(context,  token);
             }
-
             await _next(context);
         }
 
