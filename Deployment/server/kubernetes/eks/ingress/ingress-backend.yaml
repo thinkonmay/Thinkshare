@@ -74,6 +74,37 @@ spec:
             port:
               number: 80
 
+      - path: /AdminHub
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+
+      - path: /ClientHub
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+
+      - path: /AdminHub/*
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+
+      - path: /ClientHub/*
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
       - path: /Metric/*
         pathType: Prefix
         backend:

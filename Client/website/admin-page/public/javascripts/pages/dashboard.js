@@ -58,7 +58,7 @@ $(document).ready(async () => {
 	var stateSignalR = document.getElementById('state-signalr');
 	// Connect to hub signalR with access-token Bearer Authorzation
 	const connection = new signalR.HubConnectionBuilder()
-		.withUrl(`https://conductor.thinkmay.net/ClientHub`, {
+		.withUrl(`https://host.thinkmay.net/ClientHub`, {
 			accessTokenFactory: () => getCookie("token") // Return access token
 		}).build()
 	connection.start().then(function () {
@@ -95,7 +95,7 @@ $(document).ready(async () => {
 	// var stateSignalR = document.getElementById('state-signalr');
 	// // Connect to hub signalR with access-token Bearer Authorzation
 	// const connection = new signalR.HubConnectionBuilder()
-	// 	.withUrl(`https://conductor.thinkmay.net/AdminHub`, {
+	// 	.withUrl(`https://host.thinkmay.net/AdminHub`, {
 	// 		accessTokenFactory: () => getCookie("token") // Return access token
 	// 	}).build()
 	// connection.start().then(function () {

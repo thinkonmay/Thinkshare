@@ -1,6 +1,6 @@
 import {getCookie} from "./cookie.js"
 
-const host = "https://conductor.thinkmay.net"
+const host = "https://host.thinkmay.net"
 
 
 
