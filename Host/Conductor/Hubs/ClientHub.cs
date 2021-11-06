@@ -61,12 +61,11 @@ namespace SignalRChat.Hubs
         public override Task OnConnectedAsync()
         {
             var UserID = Context.Items["UserID"];
-            if(UserID == null)
+            if(UserID != null)
             {
-                return;
+                Groups.AddToGroupAsync(Context.ConnectionId,UserID.ToString());
+                return base.OnConnectedAsync();
             }
-            Groups.AddToGroupAsync(Context.ConnectionId,UserID.ToString());
-            return base.OnConnectedAsync();
         }
     }
 }
