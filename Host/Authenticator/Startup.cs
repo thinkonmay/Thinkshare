@@ -121,7 +121,9 @@ namespace Authenticator
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .AllowAnyHeader()); // allow any origin
+                .WithMethods("GET", "POST")
+                .AllowCredentials()
+                .SetIsOriginAllowed(origin => true)); // allow any origin
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
