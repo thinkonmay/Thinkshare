@@ -6,7 +6,7 @@ metadata:
   labels:
     app: conductor
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 80    
   selector:
@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: conductor
-        image: pigeatgarlic/conductor:latest
+        image: pigeatgarlic/conductor:2021-11-05
         imagePullPolicy: Always
         resources:
           requests:

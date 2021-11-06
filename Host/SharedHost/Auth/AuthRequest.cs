@@ -14,7 +14,7 @@ namespace SharedHost.Auth
     public class AuthenticationResponse 
     {
         [Required]
-        public int  UserID {get;set;}
+        public string  UserID {get;set;}
 
         [Required]
         public bool IsAdmin {get;set;}

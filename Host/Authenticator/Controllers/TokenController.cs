@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using DbSchema.DbSeeding;
 using SharedHost;
+using System;
 
 namespace Authenticator.Controllers
 {
@@ -44,8 +45,8 @@ namespace Authenticator.Controllers
             {
                 var account = await _tokenGenerator.ValidateToken(request.token);
                 var resp = new AuthenticationResponse
-                {
-                    UserID = account.Id,
+                { 
+                    UserID = await _userManager.GetUserIdAsync(account),
                     IsAdmin = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.ADMIN),
                     IsManager = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.MOD),
                     IsUser = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.USER),
