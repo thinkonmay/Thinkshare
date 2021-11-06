@@ -1,5 +1,13 @@
-$CpuCores = (Get-WMIObject Win32_ComputerSystem).NumberOfLogicalProcessors
-$Samples = (Get-Counter "\Process($Processname*)\% Processor Time").CounterSamples
-$Samples | Select `
-InstanceName,
-@{Name="CPUpercentage";Expression={[Decimal]::Round(($_.CookedValue / $CpuCores), 2)}} | ConvertTo-Json
+$storage = (get-wmiobject -class win32_logicaldisk)
+$ret = @()
+foreach ( $node in $storage )
+{
+    $temp = @{
+    "DeviceID"= $node.DeviceID
+    "DeviceType"= $node.DeviceType
+    "FreeSpace"= $([math]::Round($node.FreeSpace/1GB))
+    "Size"= $([math]::Round($node.Size/1GB))
+    }
+    $ret += $temp
+}
+$ret | ConvertTo-Json
