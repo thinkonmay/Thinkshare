@@ -12,6 +12,7 @@ namespace SharedHost.Models.User
         /// </summary>
         //public virtual ICollection<StorageBlock> currentStorage { get; set; }
 
+
         public string FullName { get; set; }
         public string? Jobs { get; set; }
         public string? Gender {get;set;}
