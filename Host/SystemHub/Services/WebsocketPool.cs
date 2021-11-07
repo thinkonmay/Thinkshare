@@ -18,8 +18,57 @@ namespace SystemHub.Services
             clientHub  = new ConcurrentDictionary<int, List<WebSocket>>();
             managerHub   = new ConcurrentDictionary<int, List<WebSocket>>();
             adminHub = new List<WebSocket>();
+
+            Task.Run(() => ConnectionHeartBeat());
         }
 
+        public async Task ConnectionHeartBeat()
+        {
+            try
+            {
+                foreach (var groupsocket in clientHub.Values)
+                {
+                    if(groupsocket.Count() == 0)
+                    {
+                        clientHub.TryRemove(clientHub.Where(o => o.Value == groupsocket));
+                    }
+                    foreach (var socket in groupsocket)
+                    {
+                        if(socket.State == WebSocketState.Closed) 
+                        {
+                            groupsocket.Remove(socket);
+                        }
+                    }   
+                }
+
+                foreach (var groupsocket in managerHub.Values)
+                {
+                    if(groupsocket.Count() == 0)
+                    {
+                        clientHub.TryRemove(clientHub.Where(o => o.Value == groupsocket));
+                    }
+                    foreach (var socket in groupsocket)
+                    {
+                        if(socket.State == WebSocketState.Closed) 
+                        {
+                            groupsocket.Remove(socket);
+                        }
+                    }   
+                }
+                
+                foreach (var socket in adminHub)
+                {
+                    if(socket.State == WebSocketState.Closed) 
+                    {
+                        groupsocket.Remove(socket);
+                    }
+                }
+                Thread.Sleep(100);
+            }catch(Exception ex)
+            {
+                await ConnectionHeartBeat();
+            }
+        }
         private ConcurrentDictionary<int, List<WebSocket>> clientHub;
         private ConcurrentDictionary<int, List<WebSocket>> managerHub;
         private List<WebSocket> adminHub;
@@ -32,12 +81,28 @@ namespace SystemHub.Services
 
         public void AddtoClientHub(int ID, WebSocket socket)
         {
-            clientHub.Where(o => o.Key == ID).FirstOrDefault().Value.Add(socket);
+            if(clientHub.Where(o => o.Key == ID).Count() > 0)
+            {
+                clientHub.Where(o => o.Key == ID).FirstOrDefault().Value.Add(socket);
+            }
+            else
+            {
+                var newClientKey = new KeyValuePair<int, List<WebSocket>>(ID, new List<WebSocket>{socket});
+                clientHub.TryAdd(newClientKey);
+            }
         }
 
         public void AddtoManagerHub(int ID, WebSocket socket)
         {
-            managerHub.Where(o => o.Key == ID).FirstOrDefault().Value.Add(socket);
+            if(managerHub.Where(o => o.Key == ID).Count() > 0)
+            {
+                managerHub.Where(o => o.Key == ID).FirstOrDefault().Value.Add(socket);
+            }
+            else
+            {
+                var newClientKey = new KeyValuePair<int, List<WebSocket>>(ID, new List<WebSocket>{socket});
+                managerHub.TryAdd(newClientKey);
+            }
         }
 
 
