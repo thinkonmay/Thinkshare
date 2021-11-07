@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using SystemHub.Interfaces;
+using System.Threading.Tasks;
 
 namespace SystemHub.Services
 {
@@ -30,7 +31,7 @@ namespace SystemHub.Services
                 {
                     if(groupsocket.Count() == 0)
                     {
-                        clientHub.TryRemove(clientHub.Where(o => o.Value == groupsocket));
+                        clientHub.TryRemove(clientHub.Where(o => o.Value == groupsocket).First());
                     }
                     foreach (var socket in groupsocket)
                     {
@@ -45,7 +46,7 @@ namespace SystemHub.Services
                 {
                     if(groupsocket.Count() == 0)
                     {
-                        clientHub.TryRemove(clientHub.Where(o => o.Value == groupsocket));
+                        clientHub.TryRemove(clientHub.Where(o => o.Value == groupsocket).First());
                     }
                     foreach (var socket in groupsocket)
                     {
@@ -60,7 +61,7 @@ namespace SystemHub.Services
                 {
                     if(socket.State == WebSocketState.Closed) 
                     {
-                        groupsocket.Remove(socket);
+                        adminHub.Remove(socket);
                     }
                 }
                 Thread.Sleep(100);
@@ -87,8 +88,9 @@ namespace SystemHub.Services
             }
             else
             {
-                var newClientKey = new KeyValuePair<int, List<WebSocket>>(ID, new List<WebSocket>{socket});
-                clientHub.TryAdd(newClientKey);
+                var newConnection = new List<WebSocket>();
+                newConnection.Add(socket);
+                clientHub.TryAdd(ID,newConnection);
             }
         }
 
@@ -100,8 +102,9 @@ namespace SystemHub.Services
             }
             else
             {
-                var newClientKey = new KeyValuePair<int, List<WebSocket>>(ID, new List<WebSocket>{socket});
-                managerHub.TryAdd(newClientKey);
+                var newConnection = new List<WebSocket>();
+                newConnection.Add(socket);
+                clientHub.TryAdd(ID, newConnection);
             }
         }
 
