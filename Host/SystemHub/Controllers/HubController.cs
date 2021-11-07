@@ -1,13 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Signalling.Interfaces;
 using System.Net;
 using SharedHost;
 using SystemHub.Interfaces;
 using RestSharp;
 using SharedHost.Auth;
 using Newtonsoft.Json;
-using System;
 
 namespace Signalling.Controllers
 {

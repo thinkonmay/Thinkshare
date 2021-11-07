@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Threading.Tasks;
 
-namespace Signalling.Interfaces
+namespace SystemHub.Interfaces
 {
     public interface IWebSocketHandler
     {

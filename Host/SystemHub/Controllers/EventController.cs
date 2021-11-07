@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Signalling.Interfaces;
 using SharedHost;
 using SystemHub.Interfaces;
-using Newtonsoft.Json;
 using SharedHost.Models.Hub;
 
 namespace Signalling.Controllers

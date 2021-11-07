@@ -1,17 +1,12 @@
-﻿using RestSharp;
-using SharedHost;
-using SharedHost.Models.Session;
+﻿using SharedHost;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using SystemHub.Interfaces;
 using System.Threading.Tasks;
 using SharedHost.Auth;
 using SharedHost.Models.Hub;
-using Signalling.Interfaces;
 using Newtonsoft.Json;
 
 namespace SystemHub.Services
