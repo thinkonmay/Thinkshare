@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildprod
 WORKDIR /src
 
 COPY ["SlaveManager/SlaveManager.csproj", "SlaveManager/"]
-COPY ["setting/prod/appsettings.json", "SlaveManager/"]
+COPY ["SharedHost/setting/prod/appsettings.json", "SlaveManager/"]
 RUN dotnet restore "SlaveManager/SlaveManager.csproj"
 
 
@@ -29,7 +29,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builddev
 WORKDIR /src
 
 COPY ["SlaveManager/SlaveManager.csproj", "SlaveManager/"]
-COPY ["setting/dev/appsettings.json", "SlaveManager/"]
+COPY ["SharedHost/setting/dev/appsettings.json", "SlaveManager/"]
 RUN dotnet restore "SlaveManager/SlaveManager.csproj"
 
 

@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildprod
 WORKDIR /src
 
 COPY ["MetricCollector/MetricCollector.csproj", "MetricCollector/"]
-COPY ["setting/prod/appsettings.json", "MetricCollector/"]
+COPY ["SharedHost/setting/prod/appsettings.json", "MetricCollector/"]
 RUN dotnet restore "MetricCollector/MetricCollector.csproj"
 
 
@@ -29,7 +29,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builddev
 WORKDIR /src
 
 COPY ["MetricCollector/MetricCollector.csproj", "MetricCollector/"]
-COPY ["setting/dev/appsettings.json", "MetricCollector/"]
+COPY ["SharedHost/setting/dev/appsettings.json", "MetricCollector/"]
 RUN dotnet restore "MetricCollector/MetricCollector.csproj"
 
 

@@ -95,6 +95,7 @@ $(document).ready(async () => {
 	// set data for chart to anaylize hour used
 	setDataForChart();
 
+	var connect = new WebSocket()
 
 	// var stateSignalR = document.getElementById('state-signalr');
 	// Connect to hub signalR with access-token Bearer Authorzation

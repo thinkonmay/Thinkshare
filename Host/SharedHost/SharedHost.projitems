@@ -13,8 +13,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\JwtOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\LoginModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserAccount.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserInforModel.cs" />    
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserInforModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\Cluster.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Hub\HubMessageModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ResponseModel\GetSessionResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\ScriptModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\ShellSession.cs" />
