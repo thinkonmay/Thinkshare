@@ -13,6 +13,7 @@ namespace SharedHost
         public string Authenticator { get; set; }
         public string MetricCollector {get;set;}
         public string TurnConnection {get;set;}
+        public string SystemHub {get;set;}
         public TurnServer TurnServer {get;set;}
         public LoginModel AdminLogin { get; set; }
     }

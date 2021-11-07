@@ -1,28 +1,20 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Http;
 using Conductor.Services;
 using DbSchema.SystemDb.Data;
 using Conductor.Interfaces;
-using SharedHost.Models.Auth;
 using SharedHost.Models.User;
 using System;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using SignalRChat.Hubs;
-using System.Threading.Tasks;
 using SharedHost;
 using SharedHost.Auth;
+using Conductor.Hubs;
 
 namespace Conductor
 {
@@ -97,11 +89,12 @@ namespace Conductor
                     }
                 }); 
             });
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
-            services.AddSignalR();
-            services.AddTransient<IAdmin, Admin>();
-            services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
             services.AddMvc();
+            services.AddTransient<IAdmin, Admin>();
+            services.AddTransient<IAdminHub,AdminHub>();
+            services.AddTransient<IClientHub,ClientHub>();
+            services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
+            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -132,9 +125,6 @@ namespace Conductor
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                    
-                endpoints.MapHub<AdminHub>("/AdminHub");
-                endpoints.MapHub<ClientHub>("/ClientHub");
             });
         }
     }

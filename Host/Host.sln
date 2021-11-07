@@ -13,9 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conductor", "Conductor\Cond
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetricCollector", "MetricCollector\MetricCollector.csproj", "{4F9D3DA4-1264-42EB-8804-F5B9822E7B0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authenticator", "Authenticator\Authenticator.csproj", "{1C21EEB7-04C7-4574-B276-C37B169B223F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authenticator", "Authenticator\Authenticator.csproj", "{1C21EEB7-04C7-4574-B276-C37B169B223F}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DbSchema", "DbSchema\DbSchema.shproj", "{FDD0CFDC-C9C1-45BE-9D9F-EC71D1941930}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemHub", "SystemHub\SystemHub.csproj", "{8B733DAA-C5E9-4245-AF44-4BB42CDFEC79}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -24,6 +26,7 @@ Global
 		SharedHost\SharedHost.projitems*{1c21eeb7-04c7-4574-b276-c37b169b223f}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{4f9d3da4-1264-42eb-8804-f5b9822e7b0d}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{6e362b62-5b06-4a28-98ae-9fdc94495bb9}*SharedItemsImports = 13
+		SharedHost\SharedHost.projitems*{8b733daa-c5e9-4245-af44-4bb42cdfec79}*SharedItemsImports = 5
 		DbSchema\DbSchema.projitems*{a972cf97-de50-4cf3-a9af-23a0815a3e29}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{a972cf97-de50-4cf3-a9af-23a0815a3e29}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{b8a9573e-234b-4387-b7bd-e7c46fa2111c}*SharedItemsImports = 5
@@ -54,6 +57,10 @@ Global
 		{1C21EEB7-04C7-4574-B276-C37B169B223F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C21EEB7-04C7-4574-B276-C37B169B223F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C21EEB7-04C7-4574-B276-C37B169B223F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B733DAA-C5E9-4245-AF44-4BB42CDFEC79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B733DAA-C5E9-4245-AF44-4BB42CDFEC79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B733DAA-C5E9-4245-AF44-4BB42CDFEC79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B733DAA-C5E9-4245-AF44-4BB42CDFEC79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

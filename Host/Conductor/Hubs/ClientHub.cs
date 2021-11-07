@@ -1,19 +1,12 @@
-using IdentityServer4.EntityFramework.Entities;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
-using SharedHost.Models;
-using Conductor.Services;
-using Conductor.Models;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using SharedHost.Models.Device;
-using Conductor.Interfaces;
-using SharedHost.Models.Session;
-using Conductor.Services;
-using Microsoft.AspNetCore.Http;
-using SharedHost.Auth.ThinkmayAuthProtocol;
+using SharedHost;
+using RestSharp;
+using SharedHost.Models.Hub;
+using Newtonsoft.Json;
 
-namespace SignalRChat.Hubs
+namespace Conductor.Hubs
 {
     public interface IClientHub
     {
@@ -30,42 +23,155 @@ namespace SignalRChat.Hubs
         /// <param name="device"></param>
         /// <returns></returns>
         Task ReportNewSlaveAvailable(SlaveDeviceInformation device);
+
         /// <summary>
         /// Disconnected by something wrong on server => report to user use this device
         /// </summary>
         /// <param name="slaveID"></param>
         /// <returns></returns>
-        Task ReportSessionDisconnected(int slaveID);
+        Task ReportSessionDisconnected(int slaveID, int ID);
+
         /// <summary>
         /// Else behind
         /// </summary>
         /// <param name="slaveID"></param>
         /// <returns></returns>
-        Task ReportSessionReconnected(int slaveID);
+        Task ReportSessionReconnected(int slaveID, int ID);
+
         /// <summary>
         /// Else behind
         /// </summary>
         /// <param name="slaveID"></param>
         /// <returns></returns>
-        Task ReportSessionTerminated(int slaveID);
+        Task ReportSessionTerminated(int slaveID, int ID);
+
         /// <summary>
         /// Else behind
         /// </summary>
         /// <param name="slaveID"></param>
         /// <returns></returns>
-        Task ReportSessionInitialized(SlaveDeviceInformation slaveID);
+        Task ReportSessionInitialized(SlaveDeviceInformation slaveID, int ID);
     }
 
-    public class ClientHub : Hub<IClientHub>
-    {        
-        public override Task OnConnectedAsync()
+    public class ClientHub : IClientHub
+    {
+        private readonly SystemConfig _config;
+
+        private readonly RestClient _NotificationHub;
+
+        public ClientHub(SystemConfig config)
         {
-            var UserID = Context.Items["UserID"];
-            if(UserID != null)
+            _config = config;
+            _NotificationHub = new RestClient(config.SystemHub+"/Event");
+        }
+
+
+        public async Task ReportSessionDisconnected(int slaveID, int ID)
+        {
+            var data = new EventModel
             {
-                Groups.AddToGroupAsync(Context.ConnectionId,UserID.ToString());
-            }
-            return base.OnConnectedAsync();
+                EventName = "ReportSessionDisconnected",
+                Message = slaveID.ToString()
+            };
+
+            /*generate rest post to signalling server*/
+            var request = new RestRequest("Client")
+                .AddQueryParameter("ID", ID.ToString())
+                .AddJsonBody(data);
+            request.Method = Method.POST;
+            await _NotificationHub.ExecuteAsync(request);
+        }
+
+        public async Task ReportSessionInitialized(SlaveDeviceInformation slaveID, int ID)
+        {
+            var data = new EventModel
+            {
+                EventName = "ReportSessionInitialized",
+                Message = slaveID.ToString()
+            };
+
+            /*generate rest post to signalling server*/
+            var request = new RestRequest("Client")
+                .AddQueryParameter("ID", ID.ToString())
+                .AddJsonBody(data);
+            request.Method = Method.POST;
+            await _NotificationHub.ExecuteAsync(request);
+        }
+
+        public async Task ReportSessionReconnected(int slaveID, int ID)
+        {
+            var data = new EventModel
+            {
+                EventName = "ReportSessionReconnected",
+                Message = slaveID.ToString()
+            };
+
+            /*generate rest post to signalling server*/
+            var request = new RestRequest("Client")
+                .AddQueryParameter("ID", ID.ToString())
+                .AddJsonBody(data);
+            request.Method = Method.POST;
+            await _NotificationHub.ExecuteAsync(request);
+        }
+
+        public async Task ReportSessionTerminated(int slaveID, int ID)
+        {
+            var data = new EventModel
+            {
+                EventName = "ReportSessionTerminated",
+                Message = slaveID.ToString()
+            };
+
+            /*generate rest post to signalling server*/
+            var request = new RestRequest("Client")
+                .AddQueryParameter("ID", ID.ToString())
+                .AddJsonBody(data);
+            request.Method = Method.POST;
+            await _NotificationHub.ExecuteAsync(request);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public async Task ReportSlaveObtained(int slaveID)
+        {
+            var data = new EventModel
+            {
+                EventName = "ReportSessionTerminated",
+                Message = slaveID.ToString()
+            };
+
+            /*generate rest post to signalling server*/
+            var request = new RestRequest("Broadcast")
+                .AddJsonBody(data);
+            request.Method = Method.POST;
+            await _NotificationHub.ExecuteAsync(request);
+        }
+
+        public async Task ReportNewSlaveAvailable(SlaveDeviceInformation device)
+        {
+            var data = new EventModel
+            {
+                EventName = "ReportSessionTerminated",
+                Message = JsonConvert.SerializeObject(device)
+            };
+
+            /*generate rest post to signalling server*/
+            var request = new RestRequest("Broadcast")
+                .AddJsonBody(data);
+            request.Method = Method.POST;
+            await _NotificationHub.ExecuteAsync(request);
         }
     }
 }

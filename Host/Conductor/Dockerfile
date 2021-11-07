@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildprod
 WORKDIR /src
 
 COPY ["Conductor/Conductor.csproj", "Conductor/"]
-COPY ["setting/prod/appsettings.json", "Conductor/"]
+COPY ["SharedHost/setting/prod/appsettings.json", "Conductor/"]
 RUN dotnet restore "Conductor/Conductor.csproj"
 
 
@@ -29,7 +29,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builddev
 WORKDIR /src
 
 COPY ["Conductor/Conductor.csproj", "Conductor/"]
-COPY ["setting/dev/appsettings.json", "Conductor/"]
+COPY ["SharedHost/setting/dev/appsettings.json", "Conductor/"]
 RUN dotnet restore "Conductor/Conductor.csproj"
 
 

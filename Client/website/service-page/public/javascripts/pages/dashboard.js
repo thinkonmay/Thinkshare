@@ -94,50 +94,68 @@ $(document).ready(async () => {
 
 	// set data for chart to anaylize hour used
 	setDataForChart();
+	const Websocket = new WebSocket(`wss://host.thinkmay.net/Hub?token=${getCookie("token")}`)	
+	
+    Websocket.addEventListener('open', onWebsocketOpen);
+    Websocket.addEventListener('message', onClientHubEvent);
+    Websocket.addEventListener('error', onWebsocketClose);
+    Websocket.addEventListener('close', onWebsocketClose);
 
 
-	// var stateSignalR = document.getElementById('state-signalr');
-	// Connect to hub signalR with access-token Bearer Authorzation
-	const connection = new signalR.HubConnectionBuilder()
-		.withUrl(`https://host.thinkmay.net/ClientHub`, {
-			accessTokenFactory: () => getCookie("token") // Return access token
-		}).build()
-	connection.start().then(function () {
-		console.log("connected to signalR hub");
-
-		// we use signalR to inform browser 
-		// about all state changes event of slave and session
-		connection.on("ReportSessionDisconnected", function (slaveId) {
-			setState("OFF_REMOTE", slaveId)
-		})
-		connection.on("ReportSessionReconnected", function (slaveId) {
-			setState("ON_SESSION", slaveId);
-		})
-		connection.on("ReportSessionTerminated", function (slaveId) {
-			var slave = document.getElementById(`slavesInUses${slaveId}`);
-			slave.remove()
-		})
-		connection.on("ReportSlaveObtained", function (slaveId) {
-			var slave = document.getElementById(`availableSlaves${slaveId}`);
-			slave.remove()
-		})
-		connection.on("ReportSessionInitialized", function (slaveInfor) {
-			slaveInfor.serviceState = "ON_SESSION";
-			createSlave(slaveInfor, "slavesInUses")
-		})
-		connection.on("ReportNewSlaveAvailable", function (device) {
-			createSlave(device, "availableSlaves")
-		})
-	}).catch(function (err) {
-		// location.reload();
-	})
-
-	connection.onclose(error => {
-		console.assert(connection.state === signalR.HubConnectionState.Disconnected);
-		// location.reload();
-	});
 })
 
+function onClientHubEvent (event)
+{
+    try {
+    var message_json = JSON.parse(event.data);
+    } catch (e) {
+		console.log("Error parsing incoming JSON: " + event.data);
+        return;
+    }
+
+	if(message_json.eventName === "ReportSessionDisconnected")  
+	{
+		var slaveId = message_json.message
+		setState("OFF_REMOTE", slaveId)
+	}
+	if(message_json.eventName === "ReportSessionReconnected")  
+	{
+		var slaveId = message_json.message
+		setState("ON_SESSION", slaveId);
+	}
+	if(message_json.eventName === "ReportSessionTerminated")  
+	{
+		var slaveId = message_json.message
+		var slave = document.getElementById(`slavesInUses${slaveId}`);
+		slave.remove()
+	}
+	if(message_json.eventName === "ReportSlaveObtained")  
+	{
+		var slaveId = message_json.message
+		var slave = document.getElementById(`availableSlaves${slaveId}`);
+		slave.remove()
+	}
+	if(message_json.eventName === "ReportSessionInitialized")  
+	{
+		var device = JSON.parse(message_json.message)
+		device.serviceState = "ON_SESSION";
+		createSlave(device, "slavesInUses")
+	}
+	if(message_json.eventName === "ReportNewSlaveAvailable")  
+	{
+		var device = JSON.parse(message_json.message)
+		createSlave(device, "availableSlaves")
+	}
+}
+
+function onWebsocketOpen () 
+{
+	console.log("connected to client hub");
+}
+function onWebsocketClose() 
+{
+	location.reload();
+};
 
 function createSlave(slave, queue) {
 	append(queue, `

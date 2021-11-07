@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildprod
 WORKDIR /src
 
 COPY ["Authenticator/Authenticator.csproj", "Authenticator/"]
-COPY ["setting/prod/appsettings.json", "Authenticator/"]
+COPY ["SharedHost/setting/prod/appsettings.json", "Authenticator/"]
 RUN dotnet restore "Authenticator/Authenticator.csproj"
 
 
@@ -29,7 +29,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builddev
 WORKDIR /src
 
 COPY ["Authenticator/Authenticator.csproj", "Authenticator/"]
-COPY ["setting/dev/appsettings.json", "Authenticator/"]
+COPY ["SharedHost/setting/dev/appsettings.json", "Authenticator/"]
 RUN dotnet restore "Authenticator/Authenticator.csproj"
 
 
