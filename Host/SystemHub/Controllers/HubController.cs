@@ -55,21 +55,13 @@ namespace Signalling.Controllers
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
                     var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(result.Content);
+                    if(!claim.IsUser || !claim.IsManager || !claim.IsAdmin)
+                    {
+                        return NotFound();
+                    }
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                    if (claim.IsUser)
-                    {
-                        _Pool.AddtoClientHub(Int32.Parse(claim.UserID),webSocket);
-                    }
-                    if(claim.IsManager)
-                    {
-                        _Pool.AddtoManagerHub(Int32.Parse(claim.UserID), webSocket);
-                    }
-                    if(claim.IsAdmin)
-                    {
-                        _Pool.AddtoAdminHub(webSocket);
-                    }
-
+                    _Pool.AddtoPool(claim, webSocket);
                     await _wsHandler.Handle(webSocket);
                     await _wsHandler.Close(webSocket);
                 }

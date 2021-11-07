@@ -152,7 +152,7 @@ function onWebsocketOpen ()
 {
 	console.log("connected to client hub");
 }
-function onWebsocketClose() 
+function onWebsocketClose(event) 
 {
 	location.reload();
 };

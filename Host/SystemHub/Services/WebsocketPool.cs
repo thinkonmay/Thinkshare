@@ -9,59 +9,42 @@ using System.Net.WebSockets;
 using System.Threading;
 using SystemHub.Interfaces;
 using System.Threading.Tasks;
+using SharedHost.Auth;
+using SharedHost.Models.Hub;
+using Signalling.Interfaces;
+using Newtonsoft.Json;
 
 namespace SystemHub.Services
 {
     public class WebsocketPool : IWebsocketPool
     {
-        public WebsocketPool(SystemConfig config)
+        private readonly List<KeyValuePair<AuthenticationResponse, WebSocket>> _WebSocketsPool;
+
+        private readonly IWebSocketHandler _WebSocketHandler;
+
+        
+        
+        public WebsocketPool(SystemConfig config,
+                             IWebSocketHandler wsHandler)
         {
-            clientHub  = new ConcurrentDictionary<int, List<WebSocket>>();
-            managerHub   = new ConcurrentDictionary<int, List<WebSocket>>();
-            adminHub = new List<WebSocket>();
+            _WebSocketsPool = new List<KeyValuePair<AuthenticationResponse, WebSocket>>();
+            _WebSocketHandler = wsHandler;
 
             Task.Run(() => ConnectionHeartBeat());
         }
 
+
+
+
         public async Task ConnectionHeartBeat()
         {
             try
-            {
-                foreach (var groupsocket in clientHub.Values)
+            {                
+                foreach (var socket in _WebSocketsPool)
                 {
-                    if(groupsocket.Count() == 0)
+                    if(socket.Value.State == WebSocketState.Closed) 
                     {
-                        clientHub.TryRemove(clientHub.Where(o => o.Value == groupsocket).First());
-                    }
-                    foreach (var socket in groupsocket)
-                    {
-                        if(socket.State == WebSocketState.Closed) 
-                        {
-                            groupsocket.Remove(socket);
-                        }
-                    }   
-                }
-
-                foreach (var groupsocket in managerHub.Values)
-                {
-                    if(groupsocket.Count() == 0)
-                    {
-                        clientHub.TryRemove(clientHub.Where(o => o.Value == groupsocket).First());
-                    }
-                    foreach (var socket in groupsocket)
-                    {
-                        if(socket.State == WebSocketState.Closed) 
-                        {
-                            groupsocket.Remove(socket);
-                        }
-                    }   
-                }
-                
-                foreach (var socket in adminHub)
-                {
-                    if(socket.State == WebSocketState.Closed) 
-                    {
-                        adminHub.Remove(socket);
+                        _WebSocketsPool.Remove(socket);
                     }
                 }
                 Thread.Sleep(100);
@@ -70,134 +53,60 @@ namespace SystemHub.Services
                 await ConnectionHeartBeat();
             }
         }
-        private ConcurrentDictionary<int, List<WebSocket>> clientHub;
-        private ConcurrentDictionary<int, List<WebSocket>> managerHub;
-        private List<WebSocket> adminHub;
 
 
-        public void AddtoAdminHub(WebSocket session)
+        public void AddtoPool(AuthenticationResponse resp,WebSocket session)
         {
-            adminHub.Add(session);
-        }
-
-        public void AddtoClientHub(int ID, WebSocket socket)
-        {
-            if(clientHub.Where(o => o.Key == ID).Count() > 0)
-            {
-                clientHub.Where(o => o.Key == ID).FirstOrDefault().Value.Add(socket);
-            }
-            else
-            {
-                var newConnection = new List<WebSocket>();
-                newConnection.Add(socket);
-                clientHub.TryAdd(ID,newConnection);
-            }
-        }
-
-        public void AddtoManagerHub(int ID, WebSocket socket)
-        {
-            if(managerHub.Where(o => o.Key == ID).Count() > 0)
-            {
-                managerHub.Where(o => o.Key == ID).FirstOrDefault().Value.Add(socket);
-            }
-            else
-            {
-                var newConnection = new List<WebSocket>();
-                newConnection.Add(socket);
-                clientHub.TryAdd(ID, newConnection);
-            }
+            _WebSocketsPool.Add(new KeyValuePair<AuthenticationResponse,WebSocket>(resp,session));
         }
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public List<WebSocket> GetClientSockets(int ClientID)
+        public void BroadcastClientEventById(int UserID, EventModel data)
         {
-            var ret = new List<WebSocket>();
-            foreach (var i in clientHub)
+            foreach (var item in _WebSocketsPool)
             {
-                foreach (var j in i.Value)
+                if (item.Key.IsUser && item.Key.UserID == UserID.ToString())
                 {
-                    if (j.State == WebSocketState.Closed)
-                    {
-                        i.Value.Remove(j);
-                    }
-                    else if (j.State == WebSocketState.Open)
-                    {
-                        if (i.Key == ClientID)
-                        {
-                            ret.Add(j);
-                        }
-                    }
+                    _WebSocketHandler.SendMessage(item.Value, JsonConvert.SerializeObject(data));
                 }
             }
-            return ret;
         }
 
 
-        public List<WebSocket> GetManagerSockets(int ManagerID)
+        public void BroadcastClientEvent(EventModel data)
         {
-            var ret = new List<WebSocket>();
-            foreach (var i in managerHub)
+            foreach (var item in _WebSocketsPool)
             {
-                foreach (var j in i.Value)
+                if (item.Key.IsUser)
                 {
-                    if (j.State == WebSocketState.Closed)
-                    {
-                        i.Value.Remove(j);
-                    }
-                    else if (j.State == WebSocketState.Open)
-                    {
-                        if(i.Key == ManagerID)
-                        {
-                            ret.Add(j);
-                        }
-                    }
+                    _WebSocketHandler.SendMessage(item.Value, JsonConvert.SerializeObject(data));
                 }
             }
-            return ret;
         }
 
-        public List<WebSocket> GetAdminSockets()
-        {
-            return adminHub;
-        }
 
-        public List<WebSocket> GetAllClientSockets()
+        public void BroadcastManagerEventByID(int ManagerID, EventModel data)
         {
-            var ret = new List<WebSocket>();
-            foreach (var i in clientHub)
+            foreach (var item in _WebSocketsPool)
             {
-                foreach (var j in i.Value)
+                if (item.Key.IsManager && item.Key.UserID == ManagerID.ToString())
                 {
-                    if (j.State == WebSocketState.Closed)
-                    {
-                        i.Value.Remove(j);
-                    }
-                    else if (j.State == WebSocketState.Open)
-                    {
-                        ret.Add(j);                        
-                    }
+                    _WebSocketHandler.SendMessage(item.Value, JsonConvert.SerializeObject(data));
                 }
             }
-            return ret;
+        }
+
+        public void BroadcastAdminEvent(EventModel data)
+        {
+            foreach(var item in _WebSocketsPool)
+            {
+                if(item.Key.IsAdmin)
+                {
+                    _WebSocketHandler.SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                }
+            }
         }
     }
 }
