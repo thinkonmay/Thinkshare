@@ -94,7 +94,24 @@ namespace SystemHub.Services
             return adminHub;
         }
 
-
-
+        public List<WebSocket> GetAllClientSockets()
+        {
+            var ret = new List<WebSocket>();
+            foreach (var i in clientHub)
+            {
+                foreach (var j in i.Value)
+                {
+                    if (j.State == WebSocketState.Closed)
+                    {
+                        i.Value.Remove(j);
+                    }
+                    else
+                    {
+                        ret.Add(j);                        
+                    }
+                }
+            }
+            return ret;
+        }
     }
 }

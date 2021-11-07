@@ -17,5 +17,8 @@ namespace SystemHub.Interfaces
         public List<WebSocket> GetClientSockets(int ClientID);
         public List<WebSocket> GetManagerSockets(int ClientID);
         public List<WebSocket> GetAdminSockets();
+
+
+        public List<WebSocket> GetAllClientSockets();
     }
 }

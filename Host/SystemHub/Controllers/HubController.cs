@@ -70,7 +70,6 @@ namespace Signalling.Controllers
                         _Pool.AddtoAdminHub(webSocket);
                     }
 
-
                     await _wsHandler.Handle(webSocket);
                     await _wsHandler.Close(webSocket);
                 }

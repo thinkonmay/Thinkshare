@@ -29,16 +29,32 @@ namespace Signalling.Controllers
         }
 
         [HttpPost("Client")]
-        public IActionResult Post(int ID, string EventName, [FromBody] string data )
+        public IActionResult ClientPost(int ID, [FromBody] EventModel data )
         {
             foreach(var item in _Pool.GetClientSockets(ID))
             {
-                var i = new HubMessage
-                {
-                    EventName = EventName,
-                    Message = data
-                };
-                _wsHandler.SendMessage(item,JsonConvert.SerializeObject(i));
+                _wsHandler.SendMessage(item,JsonConvert.SerializeObject(data));
+            }
+            return Ok();
+        }
+
+
+        [HttpPost("Broadcast")]
+        public IActionResult BroadcastPost([FromBody] EventModel data)
+        {
+            foreach (var item in _Pool.GetAllClientSockets())
+            {
+                _wsHandler.SendMessage(item, JsonConvert.SerializeObject(data));
+            }
+            return Ok();
+        }
+
+        [HttpPost("Admin")]
+        public IActionResult AdminPost([FromBody] EventModel data)
+        {
+            foreach (var item in _Pool.GetAdminSockets())
+            {
+                _wsHandler.SendMessage(item, JsonConvert.SerializeObject(data));
             }
             return Ok();
         }
