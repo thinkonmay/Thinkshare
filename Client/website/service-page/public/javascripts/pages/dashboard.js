@@ -154,7 +154,7 @@ function onWebsocketOpen ()
 }
 function onWebsocketClose(event) 
 {
-	location.reload();
+	// location.reload();
 };
 
 function createSlave(slave, queue) {
@@ -289,7 +289,7 @@ function popUpTurorial(id, name_shortcut, excute_shortcut, src_shortcut){
 	$(`${id}`).click(function (e) {
 		$("#name_shorcut").text(name_shortcut);
 		$("#excute_shortcut").text(excute_shortcut)
-		document.getElementById("src_shortcut").src = src_shortcut
+		document.getElementById("videoHiddenMouse").src = `/videos/${src_shortcut}.gif`
 		$('.popup-wrap').fadeIn(500);
 		$('.popup-box').removeClass('transform-out').addClass('transform-in');
 		var vid = document.getElementById("videoHiddenMouse");
@@ -311,8 +311,8 @@ async function tutorial() {
 		$('#tutorialElement').hide()
 	})
 
-	await popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'https://www.youtube.com/embed/JOfEkhSztNk')
-	await popUpTurorial('#fullScreen', 'Full Screen', 'Ctrl + Shift + F', 'https://www.youtube.com/embed/sdI84y50wxw')
+	await popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'Hidden_Mouse_x2.5')
+	await popUpTurorial('#fullScreen', 'Full Screen', 'Ctrl + Shift + F', 'Full_Screen_x2.5')
 	
 	
 	$('.popup-close').click(function (e) {
