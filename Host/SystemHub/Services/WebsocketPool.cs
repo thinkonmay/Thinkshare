@@ -42,6 +42,24 @@ namespace SystemHub.Services
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public List<WebSocket> GetClientSockets(int ClientID)
         {
             var ret = new List<WebSocket>();
@@ -53,7 +71,7 @@ namespace SystemHub.Services
                     {
                         i.Value.Remove(j);
                     }
-                    else
+                    else if (j.State == WebSocketState.Open)
                     {
                         if (i.Key == ClientID)
                         {
@@ -77,7 +95,7 @@ namespace SystemHub.Services
                     {
                         i.Value.Remove(j);
                     }
-                    else
+                    else if (j.State == WebSocketState.Open)
                     {
                         if(i.Key == ManagerID)
                         {
@@ -105,7 +123,7 @@ namespace SystemHub.Services
                     {
                         i.Value.Remove(j);
                     }
-                    else
+                    else if (j.State == WebSocketState.Open)
                     {
                         ret.Add(j);                        
                     }

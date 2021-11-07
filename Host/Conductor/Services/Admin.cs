@@ -2,7 +2,6 @@
 using Conductor.Interfaces;
 using System;
 using System.Threading.Tasks;
-using SignalRChat.Hubs;
 using System.Linq;
 using SharedHost.Models.Error;
 using SharedHost.Models.Device;
@@ -12,6 +11,7 @@ using SharedHost;
 using Newtonsoft.Json;
 using SharedHost.Models.User;
 using Microsoft.AspNetCore.Identity;
+using Conductor.Hubs;
 
 namespace Conductor.Services
 {

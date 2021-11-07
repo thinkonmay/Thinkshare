@@ -1,20 +1,28 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Conductor.Services;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using SharedHost.Models.Shell;
-using SharedHost.Auth.ThinkmayAuthProtocol;
 using SharedHost.Models.Hub;
 using RestSharp;
 using Newtonsoft.Json;
 using SharedHost;
 
-namespace SignalRChat.Hubs
+namespace Conductor.Hubs
 {
     public interface IAdminHub
     {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="information"></param>
+        /// <returns></returns>
         Task ReportSlaveRegistered(SlaveDeviceInformation information);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="output"></param>
+        /// <returns></returns>
         Task LogShellOutput(ShellOutput output);
     }
 

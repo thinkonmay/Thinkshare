@@ -28,9 +28,9 @@ namespace Signalling.Controllers
                             IWebsocketPool pool,
                             SystemConfig config)
         {
-            _wsHandler = wsHandler;
             _Pool = queue;
             _config = config;
+            _wsHandler = wsHandler;
             _client = new RestClient(config.Authenticator+"/Token");
         }
 
@@ -52,7 +52,7 @@ namespace Signalling.Controllers
                 request.Method = Method.POST;
 
                 var result = _client.Execute(request);
-                if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                if (result.StatusCode == HttpStatusCode.OK)
                 {
                     var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(result.Content);
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();

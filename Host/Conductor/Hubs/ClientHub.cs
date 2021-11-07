@@ -6,7 +6,7 @@ using RestSharp;
 using SharedHost.Models.Hub;
 using Newtonsoft.Json;
 
-namespace SignalRChat.Hubs
+namespace Conductor.Hubs
 {
     public interface IClientHub
     {
@@ -23,24 +23,28 @@ namespace SignalRChat.Hubs
         /// <param name="device"></param>
         /// <returns></returns>
         Task ReportNewSlaveAvailable(SlaveDeviceInformation device);
+
         /// <summary>
         /// Disconnected by something wrong on server => report to user use this device
         /// </summary>
         /// <param name="slaveID"></param>
         /// <returns></returns>
         Task ReportSessionDisconnected(int slaveID, int ID);
+
         /// <summary>
         /// Else behind
         /// </summary>
         /// <param name="slaveID"></param>
         /// <returns></returns>
         Task ReportSessionReconnected(int slaveID, int ID);
+
         /// <summary>
         /// Else behind
         /// </summary>
         /// <param name="slaveID"></param>
         /// <returns></returns>
         Task ReportSessionTerminated(int slaveID, int ID);
+
         /// <summary>
         /// Else behind
         /// </summary>
