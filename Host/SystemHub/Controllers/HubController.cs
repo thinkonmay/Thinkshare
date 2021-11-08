@@ -53,7 +53,7 @@ namespace Signalling.Controllers
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
                     var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(result.Content);
-                    if(!claim.IsUser || !claim.IsManager || !claim.IsAdmin)
+                    if(!claim.IsUser && !claim.IsManager & !claim.IsAdmin)
                     {
                         return NotFound();
                     }

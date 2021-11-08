@@ -94,7 +94,7 @@ $(document).ready(async () => {
 
 	// set data for chart to anaylize hour used
 	setDataForChart();
-	const Websocket = new WebSocket(`wss://host.thinkmay.net/Hub?token=${getCookie("token")}`)	
+	const Websocket = new WebSocket(`wss://localhost:5000/Hub?token=${getCookie("token")}`)	
 	
     Websocket.addEventListener('open', onWebsocketOpen);
     Websocket.addEventListener('message', onClientHubEvent);
@@ -115,35 +115,35 @@ function onClientHubEvent (event)
 
 	if(message_json.eventName === "ReportSessionDisconnected")  
 	{
-		var slaveId = message_json.message
+		var slaveId = message_json.Message
 		setState("OFF_REMOTE", slaveId)
 	}
 	if(message_json.eventName === "ReportSessionReconnected")  
 	{
-		var slaveId = message_json.message
+		var slaveId = message_json.Message
 		setState("ON_SESSION", slaveId);
 	}
 	if(message_json.eventName === "ReportSessionTerminated")  
 	{
-		var slaveId = message_json.message
+		var slaveId = message_json.Message
 		var slave = document.getElementById(`slavesInUses${slaveId}`);
 		slave.remove()
 	}
 	if(message_json.eventName === "ReportSlaveObtained")  
 	{
-		var slaveId = message_json.message
+		var slaveId = message_json.Message
 		var slave = document.getElementById(`availableSlaves${slaveId}`);
 		slave.remove()
 	}
 	if(message_json.eventName === "ReportSessionInitialized")  
 	{
-		var device = JSON.parse(message_json.message)
+		var device = JSON.parse(message_json.Message)
 		device.serviceState = "ON_SESSION";
 		createSlave(device, "slavesInUses")
 	}
 	if(message_json.eventName === "ReportNewSlaveAvailable")  
 	{
-		var device = JSON.parse(message_json.message)
+		var device = JSON.parse(message_json.Message)
 		createSlave(device, "availableSlaves")
 	}
 }
