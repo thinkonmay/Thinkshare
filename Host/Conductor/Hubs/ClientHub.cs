@@ -145,7 +145,7 @@ namespace Conductor.Hubs
         {
             var data = new EventModel
             {
-                EventName = "ReportSessionTerminated",
+                EventName = "ReportSlaveObtained",
                 Message = slaveID.ToString()
             };
 
@@ -160,7 +160,7 @@ namespace Conductor.Hubs
         {
             var data = new EventModel
             {
-                EventName = "ReportSessionTerminated",
+                EventName = "ReportNewSlaveAvailable",
                 Message = JsonConvert.SerializeObject(device)
             };
 

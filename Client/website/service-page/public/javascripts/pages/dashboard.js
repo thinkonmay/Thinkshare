@@ -113,35 +113,35 @@ function onClientHubEvent (event)
         return;
     }
 
-	if(message_json.eventName === "ReportSessionDisconnected")  
+	if(message_json.EventName === "ReportSessionDisconnected")  
 	{
 		var slaveId = message_json.Message
 		setState("OFF_REMOTE", slaveId)
 	}
-	if(message_json.eventName === "ReportSessionReconnected")  
+	if(message_json.EventName === "ReportSessionReconnected")  
 	{
 		var slaveId = message_json.Message
 		setState("ON_SESSION", slaveId);
 	}
-	if(message_json.eventName === "ReportSessionTerminated")  
+	if(message_json.EventName === "ReportSessionTerminated")  
 	{
 		var slaveId = message_json.Message
 		var slave = document.getElementById(`slavesInUses${slaveId}`);
 		slave.remove()
 	}
-	if(message_json.eventName === "ReportSlaveObtained")  
+	if(message_json.EventName === "ReportSlaveObtained")  
 	{
 		var slaveId = message_json.Message
 		var slave = document.getElementById(`availableSlaves${slaveId}`);
 		slave.remove()
 	}
-	if(message_json.eventName === "ReportSessionInitialized")  
+	if(message_json.EventName === "ReportSessionInitialized")  
 	{
 		var device = JSON.parse(message_json.Message)
 		device.serviceState = "ON_SESSION";
 		createSlave(device, "slavesInUses")
 	}
-	if(message_json.eventName === "ReportNewSlaveAvailable")  
+	if(message_json.EventName === "ReportNewSlaveAvailable")  
 	{
 		var device = JSON.parse(message_json.Message)
 		createSlave(device, "availableSlaves")
