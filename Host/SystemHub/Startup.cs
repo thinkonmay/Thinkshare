@@ -6,10 +6,8 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using System.Reflection;
 using SharedHost;
-using SharedHost.Auth;
 using SystemHub.Interfaces;
 using SystemHub.Services;
-using Signalling.Interfaces;
 using Microsoft.OpenApi.Models;
 
 namespace SystemHub

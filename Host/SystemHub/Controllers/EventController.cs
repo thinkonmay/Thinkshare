@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Signalling.Interfaces;
 using SharedHost;
 using SystemHub.Interfaces;
-using Newtonsoft.Json;
 using SharedHost.Models.Hub;
 
-namespace Signalling.Controllers
+namespace SystemHub.Controllers
 {
     [Route("/Event")]
     [ApiController]
@@ -31,10 +29,7 @@ namespace Signalling.Controllers
         [HttpPost("Client")]
         public IActionResult ClientPost(int ID, [FromBody] EventModel data )
         {
-            foreach(var item in _Pool.GetClientSockets(ID))
-            {
-                _wsHandler.SendMessage(item,JsonConvert.SerializeObject(data));
-            }
+            _Pool.BroadcastClientEventById(ID,data);
             return Ok();
         }
 
@@ -42,20 +37,14 @@ namespace Signalling.Controllers
         [HttpPost("Broadcast")]
         public IActionResult BroadcastPost([FromBody] EventModel data)
         {
-            foreach (var item in _Pool.GetAllClientSockets())
-            {
-                _wsHandler.SendMessage(item, JsonConvert.SerializeObject(data));
-            }
+            _Pool.BroadcastClientEvent(data);
             return Ok();
         }
 
         [HttpPost("Admin")]
         public IActionResult AdminPost([FromBody] EventModel data)
         {
-            foreach (var item in _Pool.GetAdminSockets())
-            {
-                _wsHandler.SendMessage(item, JsonConvert.SerializeObject(data));
-            }
+            _Pool.BroadcastAdminEvent(data);
             return Ok();
         }
     }

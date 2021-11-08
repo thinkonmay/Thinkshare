@@ -55,13 +55,10 @@ namespace Conductor.Hubs
 
     public class ClientHub : IClientHub
     {
-        private readonly SystemConfig _config;
-
         private readonly RestClient _NotificationHub;
 
         public ClientHub(SystemConfig config)
         {
-            _config = config;
             _NotificationHub = new RestClient(config.SystemHub+"/Event");
         }
 
@@ -87,7 +84,7 @@ namespace Conductor.Hubs
             var data = new EventModel
             {
                 EventName = "ReportSessionInitialized",
-                Message = slaveID.ToString()
+                Message = JsonConvert.SerializeObject(slaveID)
             };
 
             /*generate rest post to signalling server*/
@@ -148,7 +145,7 @@ namespace Conductor.Hubs
         {
             var data = new EventModel
             {
-                EventName = "ReportSessionTerminated",
+                EventName = "ReportSlaveObtained",
                 Message = slaveID.ToString()
             };
 
@@ -163,7 +160,7 @@ namespace Conductor.Hubs
         {
             var data = new EventModel
             {
-                EventName = "ReportSessionTerminated",
+                EventName = "ReportNewSlaveAvailable",
                 Message = JsonConvert.SerializeObject(device)
             };
 

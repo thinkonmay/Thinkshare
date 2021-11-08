@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: systemhub
-        image: pigeatgarlic/systemhub:2021-11-07
+        image: pigeatgarlic/systemhub:2021-11-08
         imagePullPolicy: Always
         resources:
           requests:

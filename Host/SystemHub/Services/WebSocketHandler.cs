@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Signalling.Interfaces;
-using System;
+﻿using System;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
@@ -13,11 +11,8 @@ namespace SystemHub.Services
     public class WebSocketHandler : IWebSocketHandler
     {
 
-        private readonly IWebsocketPool Queue;
-
-        public WebSocketHandler(IWebsocketPool queue)
+        public WebSocketHandler()
         {
-            Queue = queue;
         }
 
 

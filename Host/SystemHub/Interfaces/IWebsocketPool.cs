@@ -1,24 +1,16 @@
-﻿using SharedHost.Models.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using SharedHost.Auth;
+using SharedHost.Models.Hub;
 using System.Net.WebSockets;
-using System.Threading.Tasks;
 
 namespace SystemHub.Interfaces
 {
     public interface IWebsocketPool
     {
+        void AddtoPool(AuthenticationResponse resp, WebSocket session);
+        void BroadcastClientEventById(int UserID, EventModel data);
+        void BroadcastClientEvent(EventModel data);
+        void BroadcastManagerEventByID(int ManagerID, EventModel data);
+        void BroadcastAdminEvent(EventModel data);
 
-        public void AddtoClientHub(int ID, WebSocket socket);
-        public void AddtoManagerHub(int ID, WebSocket socket);
-        public void AddtoAdminHub(WebSocket socket);
-
-        public List<WebSocket> GetClientSockets(int ClientID);
-        public List<WebSocket> GetManagerSockets(int ClientID);
-        public List<WebSocket> GetAdminSockets();
-
-
-        public List<WebSocket> GetAllClientSockets();
     }
 }
