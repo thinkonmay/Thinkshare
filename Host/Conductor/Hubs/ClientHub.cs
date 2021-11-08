@@ -84,7 +84,7 @@ namespace Conductor.Hubs
             var data = new EventModel
             {
                 EventName = "ReportSessionInitialized",
-                Message = slaveID.ToString()
+                Message = JsonConvert.SerializeObject(slaveID)
             };
 
             /*generate rest post to signalling server*/

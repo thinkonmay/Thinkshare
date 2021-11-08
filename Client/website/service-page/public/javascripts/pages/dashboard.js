@@ -138,12 +138,22 @@ function onClientHubEvent (event)
 	if(message_json.EventName === "ReportSessionInitialized")  
 	{
 		var device = JSON.parse(message_json.Message)
+		device.os = device.OS;
+		device.raMcapacity= device.RAMcapacity;
+		device.gpu = device.GPU;
+		device.id = device.ID;
+		device.cpu = device.CPU;
 		device.serviceState = "ON_SESSION";
 		createSlave(device, "slavesInUses")
 	}
 	if(message_json.EventName === "ReportNewSlaveAvailable")  
 	{
 		var device = JSON.parse(message_json.Message)
+		device.os = device.OS;
+		device.raMcapacity= device.RAMcapacity;
+		device.gpu = device.GPU;
+		device.id = device.ID;
+		device.cpu = device.CPU;
 		createSlave(device, "availableSlaves")
 	}
 }
@@ -168,7 +178,7 @@ function createSlave(slave, queue) {
           <div class="row">
 			<h2 class="lead"><b>Device</b></h2>
 			<ul class="ml-4 mb-0 fa-ul text-muted">
-			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.cpu}</li>
+			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>CPU: ${slave.cpu}</li>
 			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
 			<li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
 			<li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
