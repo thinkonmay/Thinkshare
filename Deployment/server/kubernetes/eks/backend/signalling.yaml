@@ -6,7 +6,7 @@ metadata:
   labels:
     app: signalling
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
    - port: 80
   selector:
@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: signalling
-        image: pigeatgarlic/signalling:latest
+        image: pigeatgarlic/signalling:2021-11-06
         imagePullPolicy: Always
         resources:
           requests:

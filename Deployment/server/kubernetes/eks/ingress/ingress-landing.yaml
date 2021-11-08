@@ -4,14 +4,17 @@ metadata:
   name: ingress
   namespace: landing-page
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:574816112352:certificate/dce31d8b-2f3a-47e1-9101-4929a5730f8b
 
 spec:
   rules:
   - host: thinkmay.net
     http:
       paths:
-      - path: /
+      - path: /*
         pathType: Prefix
         backend:
           service:

@@ -7,12 +7,12 @@ import { getCookie } from "./cookie.js"
 */
 let host;
 let currentURL = document.URL
-let subdomain = currentURL.slice(0, 27)
-if (subdomain == 'https://sevices.think.net') {
+let subdomain = currentURL.slice(0, 28)
+// if (subdomain == 'https://service.thinkmay.net') {
 	host = "https://host.thinkmay.net"
-} else {
-	host = "http://hostdev.thinkmay.net"
-}
+// } else {
+// 	host = "http://hostdev.thinkmay.net"
+// }
 
 // local api
 export const Dashboard = "/dashboard"
@@ -20,28 +20,26 @@ export const Initialize = "/initialize"
 export const Reconnect = "/reconnect"
 
 // thinkmay api
+// Account API
 export const Login = `${host}/Account/Login`
-export const LoginAdmin = `${host}/Account/Login-admin`
 export const Register = `${host}/Account/Register`
+export const GrantRole = `${host}/Account/GrantRole`
 export const GetInfor = `${host}/Account/GetInfor`
-export const ExternalLogin = `${host}/Account/ExternalLogin`
+export const SetInfor = `${host}/Account/SetInfor`
+export const GetSession = `${host}/Account/GetSession`
 
-export const FetchSlave = `${host}/User/FetchSlave`
-export const FetchSession = `${host}/User/FetchSession`
-export const GetSession = `${host}/User/GetSession`
-
-export const RejectDevice = `${host}/Device/Reject/`
-export const DisconnectDevice = `${host}/Device/Disconnect`
-
+// Session API
+export const InitializeSession = `${host}/Session/Initialize`
 export const TerminateSession = `${host}/Session/Terminate`
 export const DisconnectSession = `${host}/Session/Disconnect`
 export const ReconnectSession = `${host}/Session/Reconnect`
-export const InitializeSession = `${host}/Session/Initialize`
 
-// User
-export const SetInfor = `${host}/User/SetInfor`
+// export const RejectDevice = `${host}/Device/Reject/`
+// export const DisconnectDevice = `${host}/Device/Disconnect`
 
-
+// User API
+export const FetchSlave = `${host}/User/FetchSlave`
+export const FetchSession = `${host}/User/FetchSession`
 
 export const QuerySession = `${host}/Query/Session`
 
@@ -87,12 +85,8 @@ export const register = body => {
 }
 
 export const externalLogin = body => {
-	window.open(ExternalLogin + "?provider=" + body + "&returnUrl=http://conductor.thinkmay.net", "", "width=520, height=520")
+	window.open(ExternalLogin + "?provider=" + body + "&returnUrl=http://host.thinkmay.net", "", "width=520, height=520")
 	return {};
-	// return fetch(ExternalLogin + "?provider=" + body + "&returnUrl=http://conductor.thinkmay.net", {
-	// 	method: "POST",
-	// 	headers: genHeaders(),	
-	// })
 }
 
 export const getInfor = () => {

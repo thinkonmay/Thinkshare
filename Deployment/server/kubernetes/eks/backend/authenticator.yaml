@@ -7,7 +7,7 @@ metadata:
   labels:
     app: authenticator
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - port: 80    
   selector:
@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: authenticator
-        image: pigeatgarlic/authenticator:latest
+        image: pigeatgarlic/authenticator:2021-11-06
         imagePullPolicy: Always
         resources:
           requests:

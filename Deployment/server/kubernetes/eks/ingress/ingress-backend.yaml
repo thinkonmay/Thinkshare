@@ -5,35 +5,44 @@ metadata:
   name: ingress
   namespace: backend
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:574816112352:certificate/6814b5e8-94a7-4801-b783-d6c46edc0b99 
 
 spec:
   rules:
-  - host: host.thinkmay.net
-    http:
+  - http:
       paths:
-      - path: /User
+      - path: /User/*
         pathType: Prefix
         backend:
           service:
             name: conductor
             port:
               number: 80
-      - path: /Session
+      - path: /Session/*
         pathType: Prefix
         backend:
           service:
             name: conductor
             port:
               number: 80
-      - path: /Device
+      - path: /Device/*
         pathType: Prefix
         backend:
           service:
             name: conductor
             port:
               number: 80
-      - path: /Shell
+      - path: /Shell/*
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+      - path: /Query/*
         pathType: Prefix
         backend:
           service:
@@ -41,14 +50,14 @@ spec:
             port:
               number: 80
 
-      - path: /Account
+      - path: /Account/*
         pathType: Prefix
         backend:
           service:
             name: authenticator
             port:
               number: 80
-  
+ 
       - path: /Handshake
         pathType: Prefix
         backend:
@@ -65,7 +74,16 @@ spec:
             port:
               number: 80
 
-      - path: /Metric
+
+      - path: /Hub
+        pathType: Prefix
+        backend:
+          service:
+            name: systemhub
+            port:
+              number: 80
+
+      - path: /Metric/*
         pathType: Prefix
         backend:
           service:

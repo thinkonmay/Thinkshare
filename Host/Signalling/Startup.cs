@@ -47,12 +47,12 @@ namespace Signalling
                     builder => builder.AllowAnyOrigin());
             });
 
-            services.AddControllers();
+            services.AddControllers();            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Signalling",
+                    Title = "Host",
                     Version =
                     "v1"
                 });
@@ -62,12 +62,6 @@ namespace Signalling
 
                 c.IncludeXmlComments(xmlFilePath);
             });
-
-            // services.AddScoped(container =>
-            // {
-            //     return new ClientIpFilter(Configuration["AdminSafeList"]);
-            // });
-
 
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
@@ -79,19 +73,17 @@ namespace Signalling
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
+
             app.UseRouting();
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
@@ -100,14 +92,6 @@ namespace Signalling
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.OAuthClientId("swagger");
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling");
-            }
-            );
         }
     }
 }

@@ -9,11 +9,11 @@ namespace SharedHost
         public string SignallingWs { get; set; }
         public string SlaveManager { get; set; }
         public string SlaveManagerWs { get; set; }
-        public string Flutter { get; set; }
         public string Conductor { get; set; }
         public string Authenticator { get; set; }
         public string MetricCollector {get;set;}
         public string TurnConnection {get;set;}
+        public string SystemHub {get;set;}
         public TurnServer TurnServer {get;set;}
         public LoginModel AdminLogin { get; set; }
     }

@@ -94,50 +94,78 @@ $(document).ready(async () => {
 
 	// set data for chart to anaylize hour used
 	setDataForChart();
+	const Websocket = new WebSocket(`wss://host.thinkmay.net/Hub?token=${getCookie("token")}`)	
+	
+    Websocket.addEventListener('open', onWebsocketOpen);
+    Websocket.addEventListener('message', onClientHubEvent);
+    Websocket.addEventListener('error', onWebsocketClose);
+    Websocket.addEventListener('close', onWebsocketClose);
 
 
-	// var stateSignalR = document.getElementById('state-signalr');
-	// Connect to hub signalR with access-token Bearer Authorzation
-	const connection = new signalR.HubConnectionBuilder()
-		.withUrl(`https://conductor.thinkmay.net/ClientHub`, {
-			accessTokenFactory: () => getCookie("token") // Return access token
-		}).build()
-	connection.start().then(function () {
-		console.log("connected to signalR hub");
-
-		// we use signalR to inform browser 
-		// about all state changes event of slave and session
-		connection.on("ReportSessionDisconnected", function (slaveId) {
-			setState("OFF_REMOTE", slaveId)
-		})
-		connection.on("ReportSessionReconnected", function (slaveId) {
-			setState("ON_SESSION", slaveId);
-		})
-		connection.on("ReportSessionTerminated", function (slaveId) {
-			var slave = document.getElementById(`slavesInUses${slaveId}`);
-			slave.remove()
-		})
-		connection.on("ReportSlaveObtained", function (slaveId) {
-			var slave = document.getElementById(`availableSlaves${slaveId}`);
-			slave.remove()
-		})
-		connection.on("ReportSessionInitialized", function (slaveInfor) {
-			slaveInfor.serviceState = "ON_SESSION";
-			createSlave(slaveInfor, "slavesInUses")
-		})
-		connection.on("ReportNewSlaveAvailable", function (device) {
-			createSlave(device, "availableSlaves")
-		})
-	}).catch(function (err) {
-		// location.reload();
-	})
-
-	connection.onclose(error => {
-		console.assert(connection.state === signalR.HubConnectionState.Disconnected);
-		// location.reload();
-	});
 })
 
+function onClientHubEvent (event)
+{
+    try {
+    var message_json = JSON.parse(event.data);
+    } catch (e) {
+		console.log("Error parsing incoming JSON: " + event.data);
+        return;
+    }
+
+	if(message_json.EventName === "ReportSessionDisconnected")  
+	{
+		var slaveId = message_json.Message
+		setState("OFF_REMOTE", slaveId)
+	}
+	if(message_json.EventName === "ReportSessionReconnected")  
+	{
+		var slaveId = message_json.Message
+		setState("ON_SESSION", slaveId);
+	}
+	if(message_json.EventName === "ReportSessionTerminated")  
+	{
+		var slaveId = message_json.Message
+		var slave = document.getElementById(`slavesInUses${slaveId}`);
+		slave.remove()
+	}
+	if(message_json.EventName === "ReportSlaveObtained")  
+	{
+		var slaveId = message_json.Message
+		var slave = document.getElementById(`availableSlaves${slaveId}`);
+		slave.remove()
+	}
+	if(message_json.EventName === "ReportSessionInitialized")  
+	{
+		var device = JSON.parse(message_json.Message)
+		device.os = device.OS;
+		device.raMcapacity= device.RAMcapacity;
+		device.gpu = device.GPU;
+		device.id = device.ID;
+		device.cpu = device.CPU;
+		device.serviceState = "ON_SESSION";
+		createSlave(device, "slavesInUses")
+	}
+	if(message_json.EventName === "ReportNewSlaveAvailable")  
+	{
+		var device = JSON.parse(message_json.Message)
+		device.os = device.OS;
+		device.raMcapacity= device.RAMcapacity;
+		device.gpu = device.GPU;
+		device.id = device.ID;
+		device.cpu = device.CPU;
+		createSlave(device, "availableSlaves")
+	}
+}
+
+function onWebsocketOpen () 
+{
+	console.log("connected to client hub");
+}
+function onWebsocketClose(event) 
+{
+	location.reload();
+};
 
 function createSlave(slave, queue) {
 	append(queue, `
@@ -150,7 +178,7 @@ function createSlave(slave, queue) {
           <div class="row">
 			<h2 class="lead"><b>Device</b></h2>
 			<ul class="ml-4 mb-0 fa-ul text-muted">
-			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.cpu}</li>
+			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>CPU: ${slave.cpu}</li>
 			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
 			<li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
 			<li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
@@ -271,7 +299,7 @@ function popUpTurorial(id, name_shortcut, excute_shortcut, src_shortcut){
 	$(`${id}`).click(function (e) {
 		$("#name_shorcut").text(name_shortcut);
 		$("#excute_shortcut").text(excute_shortcut)
-		document.getElementById("src_shortcut").src = src_shortcut
+		document.getElementById("videoHiddenMouse").src = `/videos/${src_shortcut}.gif`
 		$('.popup-wrap').fadeIn(500);
 		$('.popup-box').removeClass('transform-out').addClass('transform-in');
 		var vid = document.getElementById("videoHiddenMouse");
@@ -293,8 +321,8 @@ async function tutorial() {
 		$('#tutorialElement').hide()
 	})
 
-	await popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'https://www.youtube.com/embed/JOfEkhSztNk')
-	await popUpTurorial('#fullScreen', 'Full Screen', 'Ctrl + Shift + F', 'https://www.youtube.com/embed/sdI84y50wxw')
+	await popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'Hidden_Mouse_x2.5')
+	await popUpTurorial('#fullScreen', 'Full Screen', 'Ctrl + Shift + F', 'Full_Screen_x2.5')
 	
 	
 	$('.popup-close').click(function (e) {

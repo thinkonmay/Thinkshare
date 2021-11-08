@@ -11,7 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildprod
 WORKDIR /src
 
 COPY ["Signalling/Signalling.csproj", "Signalling/"]
-COPY ["setting/prod/appsettings.json", "Signalling/"]
+COPY ["SharedHost/setting/prod/appsettings.json", "Signalling/"]
 RUN dotnet restore "Signalling/Signalling.csproj"
 
 
@@ -29,7 +29,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builddev
 WORKDIR /src
 
 COPY ["Signalling/Signalling.csproj", "Signalling/"]
-COPY ["setting/dev/appsettings.json", "Signalling/"]
+COPY ["SharedHost/setting/dev/appsettings.json", "Signalling/"]
 RUN dotnet restore "Signalling/Signalling.csproj"
 
 

@@ -21,16 +21,16 @@ using System.Security.Claims;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
 using SharedHost;
-
+using SharedHost.Auth.ThinkmayAuthProtocol;
 
 namespace Conductor.Controllers
 {
     /// <summary>
     /// Routes related to session initialize/termination process
     /// </summary>
-    [Route("/Session")]
+    [User]
     [ApiController]
-    [Authorize]
+    [Route("/Session")]
     [Produces("application/json")]
     public class SessionController : Controller
     {
@@ -42,8 +42,6 @@ namespace Conductor.Controllers
 
         private readonly RestClient Signalling;
 
-        private readonly ITokenGenerator _jwt;
-
         private readonly ISlaveManagerSocket _slmsocket;
 
         private readonly UserManager<UserAccount> _userManager;
@@ -52,13 +50,11 @@ namespace Conductor.Controllers
                                 SystemConfig config, 
                                 IAdmin admin,
                                 ISlaveManagerSocket slmsocket,
-                                ITokenGenerator jwt,
                                 UserManager<UserAccount> userManager)
         {
             _db = db;
             _admin = admin;
             _slmsocket = slmsocket;
-            _jwt = jwt;
             _userManager = userManager;
             
             Configuration = config;
@@ -73,8 +69,7 @@ namespace Conductor.Controllers
         [HttpPost("Initialize")]
         public async Task<IActionResult> Create([FromBody] ClientRequest request)
         {
-            int ClientId = _jwt.GetUserFromHttpRequest(User);
-
+            var UserID = HttpContext.Items["UserID"];
             var Query = await _slmsocket.GetSlaveState(request.SlaveId);
 
             // search for availability of slave device
@@ -92,7 +87,7 @@ namespace Conductor.Controllers
             /*create new session with gevin session request from user*/
             var sess = new RemoteSession(QoE,sessionPair,Configuration)
             {
-                Client = await _userManager.FindByIdAsync(ClientId.ToString()),
+                Client = await _userManager.FindByIdAsync(UserID.ToString()),
                 Slave = _db.Devices.Find(request.SlaveId)
             };
 
@@ -131,11 +126,9 @@ namespace Conductor.Controllers
         /// <returns></returns>
         [HttpDelete("Terminate")]
         public async Task<IActionResult> Terminate(int SlaveID)
-        {            
-            //get client id from request
-            var ClientId =  _jwt.GetUserFromHttpRequest(User);
-
-            var userAccount = await _userManager.FindByIdAsync(ClientId.ToString());
+        {
+            var UserID = HttpContext.Items["UserID"];
+            var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
 
             var device = _db.Devices.Find(SlaveID);
 
@@ -187,11 +180,10 @@ namespace Conductor.Controllers
         /// <returns></returns>
         [HttpPost("Disconnect")]
         public async Task<IActionResult> DisconnectRemoteControl(int SlaveID)
-        {   
+        {
             // get ClientId from request         
-            var ClientId =  _jwt.GetUserFromHttpRequest(User);
-
-            var userAccount = await _userManager.FindByIdAsync(ClientId.ToString());
+            var UserID = HttpContext.Items["UserID"];
+            var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
 
             var device = _db.Devices.Find(SlaveID);
 
@@ -225,11 +217,10 @@ namespace Conductor.Controllers
         /// <returns></returns>
         [HttpPost("Reconnect")]
         public async Task<IActionResult> ReconnectRemoteControl(int SlaveID)
-        {            
+        {
             // get ClientId from user request
-            var ClientId =  _jwt.GetUserFromHttpRequest(User);
-
-            var userAccount = await _userManager.FindByIdAsync(ClientId.ToString());
+            var UserID = HttpContext.Items["UserID"];
+            var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
 
             var device = _db.Devices.Find(SlaveID);
 

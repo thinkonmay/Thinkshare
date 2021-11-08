@@ -12,13 +12,14 @@ using SharedHost.Models.Device;
 using SharedHost.Models.Error;
 using System.Linq;
 using SharedHost;
+using SharedHost.Auth.ThinkmayAuthProtocol;
 
 namespace Conductor.Controllers
 {
     /// <summary>
     /// Routes used by admin to query current information of the system
     /// </summary>
-    [Authorize(Roles = "Administrator")]
+    [Admin]
     [Route("/Query")]
     [ApiController]
     [Produces("application/json")]

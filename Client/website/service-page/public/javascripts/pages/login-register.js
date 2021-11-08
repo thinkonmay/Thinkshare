@@ -20,10 +20,11 @@ function login(body) {
 				.then(async data => {
 					const response = await data.json()
 					if (data.status == 200) {
-						if (response.errorCode == 0) {
+						if (response.errors == null) {
 							setCookie("token", response.token, MINUTES59)
 							window.location.replace(API.Dashboard)
 						} else {
+							console.log(response.error);
 							Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
 						}
 					} else Utils.responseErrorHandler(response)

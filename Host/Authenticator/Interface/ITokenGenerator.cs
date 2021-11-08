@@ -1,8 +1,7 @@
 ﻿using SharedHost.Models.User;
 using System.Threading.Tasks;
-using System.Security.Claims;
 
-namespace Conductor.Interfaces
+namespace Authenticator.Interfaces
 {
     public interface ITokenGenerator
     {
@@ -15,16 +14,10 @@ namespace Conductor.Interfaces
 
         /// <summary>
         /// 
-        /// </summary>
-        /// <param name="User"></param>
-        /// <returns></returns>
-        int GetUserFromHttpRequest(ClaimsPrincipal User);
-
-        /// <summary>
         /// 
         /// </summary>
-        /// <param name="User"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        bool IsAdmin(ClaimsPrincipal User);
+        Task<UserAccount?> ValidateToken(string token);
     }
 }

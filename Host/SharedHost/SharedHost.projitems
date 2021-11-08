@@ -13,8 +13,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\JwtOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\LoginModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserAccount.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserInforModel.cs" />    
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserInforModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\Cluster.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Hub\EventModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ResponseModel\GetSessionResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\ScriptModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\ShellSession.cs" />
@@ -38,6 +39,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Telemetry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SystemConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\JwtChallange.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\Storage\" />

@@ -17,7 +17,6 @@ using RestSharp;
 
 namespace Signalling.Controllers
 {
-    [Route("/Session")]
     [ApiController]
     [Produces("application/json")]
     public class SessionsController : ControllerBase
@@ -33,7 +32,7 @@ namespace Signalling.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("Handshake")]
         public async Task<IActionResult> Get()
         {
             var context = ControllerContext.HttpContext;

@@ -1,22 +1,14 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SharedHost;
 using SlaveManager.Interfaces;
 using SlaveManager.Services;
-using SlaveManager.SlaveDevices;
 using System;
 using System.IO;
 using System.Reflection;
-using System.Text;
 namespace SlaveManager
 {
     public class Startup
@@ -36,16 +28,13 @@ namespace SlaveManager
                 options.AddPolicy("AllowAllOrigins",
                     builder => builder.AllowAnyOrigin());
             });
-
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
-
-
-
-            services.AddSwaggerGen(swagger =>
+            
+            services.AddControllers();            
+            services.AddSwaggerGen(c =>
             {
-                swagger.SwaggerDoc("v1", new OpenApiInfo
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "SlaveManager",
+                    Title = "Host",
                     Version =
                     "v1"
                 });
@@ -53,9 +42,9 @@ namespace SlaveManager
                 var xmlFilePath = Path.Combine(AppContext.BaseDirectory,
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
-                swagger.IncludeXmlComments(xmlFilePath);
+                c.IncludeXmlComments(xmlFilePath);
             });
-
+            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
             services.AddSingleton<ISlavePool, SlavePool>();
             services.AddTransient<IWebSocketConnection, WebSocketConnection>();
@@ -65,14 +54,10 @@ namespace SlaveManager
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "slavemanager v1"));
-            }
-
+        {            
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
+            
             app.UseDefaultFiles();
             app.UseStaticFiles();
             // global cors policy
@@ -91,14 +76,6 @@ namespace SlaveManager
                     pattern: "{controller=Home}/{action=Index}/{id?}");
 
             });
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.OAuthClientId("swagger");
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling");
-            }
-            );
         }
     }
 }

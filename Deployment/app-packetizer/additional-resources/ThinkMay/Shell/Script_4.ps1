@@ -1,8 +1,13 @@
-$GpuMemTotal = (((Get-Counter "\GPU Process Memory(*)\Local Usage").CounterSamples | where CookedValue).CookedValue | measure -sum).sum 
-$GpuUseTotal = (((Get-Counter "\GPU Engine(*engtype_3D)\Utilization Percentage").CounterSamples | where CookedValue).CookedValue | measure -sum).sum 
-@"
+$storage = (get-wmiobject -class win32_logicaldisk)
+$ret = @()
+foreach ( $node in $storage )
 {
-"GPUMem": $([math]::Round($GpuMemTotal/1MB,2)),
-"GPUEngine": $([math]::Round($GpuUseTotal,2))
+    $temp = @{
+    "DeviceID"= $node.DeviceID
+    "DeviceType"= $node.DeviceType
+    "FreeSpace"= $([math]::Round($node.FreeSpace/1GB))
+    "Size"= $([math]::Round($node.Size/1GB))
+    }
+    $ret += $temp
 }
-"@
+$ret | ConvertTo-Json
