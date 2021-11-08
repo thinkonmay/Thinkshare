@@ -11,11 +11,8 @@ namespace SystemHub.Services
     public class WebSocketHandler : IWebSocketHandler
     {
 
-        private readonly IWebsocketPool Queue;
-
-        public WebSocketHandler(IWebsocketPool queue)
+        public WebSocketHandler()
         {
-            Queue = queue;
         }
 
 
