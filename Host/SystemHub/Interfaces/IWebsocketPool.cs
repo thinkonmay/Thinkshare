@@ -6,11 +6,11 @@ namespace SystemHub.Interfaces
 {
     public interface IWebsocketPool
     {
-        public void AddtoPool(AuthenticationResponse resp, WebSocket session);
-        public void BroadcastClientEventById(int UserID, EventModel data);
-        public void BroadcastClientEvent(EventModel data);
-        public void BroadcastManagerEventByID(int ManagerID, EventModel data);
-        public void BroadcastAdminEvent(EventModel data);
+        void AddtoPool(AuthenticationResponse resp, WebSocket session);
+        void BroadcastClientEventById(int UserID, EventModel data);
+        void BroadcastClientEvent(EventModel data);
+        void BroadcastManagerEventByID(int ManagerID, EventModel data);
+        void BroadcastAdminEvent(EventModel data);
 
     }
 }

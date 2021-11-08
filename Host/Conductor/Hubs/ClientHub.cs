@@ -55,13 +55,10 @@ namespace Conductor.Hubs
 
     public class ClientHub : IClientHub
     {
-        private readonly SystemConfig _config;
-
         private readonly RestClient _NotificationHub;
 
         public ClientHub(SystemConfig config)
         {
-            _config = config;
             _NotificationHub = new RestClient(config.SystemHub+"/Event");
         }
 

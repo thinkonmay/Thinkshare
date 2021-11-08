@@ -94,7 +94,7 @@ $(document).ready(async () => {
 
 	// set data for chart to anaylize hour used
 	setDataForChart();
-	const Websocket = new WebSocket(`wss://localhost:5000/Hub?token=${getCookie("token")}`)	
+	const Websocket = new WebSocket(`wss://host.thinkmay.net/Hub?token=${getCookie("token")}`)	
 	
     Websocket.addEventListener('open', onWebsocketOpen);
     Websocket.addEventListener('message', onClientHubEvent);
@@ -154,7 +154,7 @@ function onWebsocketOpen ()
 }
 function onWebsocketClose(event) 
 {
-	// location.reload();
+	location.reload();
 };
 
 function createSlave(slave, queue) {

@@ -7,7 +7,7 @@ using RestSharp;
 using SharedHost.Auth;
 using Newtonsoft.Json;
 
-namespace Signalling.Controllers
+namespace SystemHub.Controllers
 {
     [ApiController]
     [Produces("application/json")]

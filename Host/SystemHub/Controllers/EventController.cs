@@ -3,7 +3,7 @@ using SharedHost;
 using SystemHub.Interfaces;
 using SharedHost.Models.Hub;
 
-namespace Signalling.Controllers
+namespace SystemHub.Controllers
 {
     [Route("/Event")]
     [ApiController]
