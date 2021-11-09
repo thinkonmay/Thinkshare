@@ -51,7 +51,11 @@ function
 onServerMessage(event) 
 {
     try {
-    var message_json = JSON.parse(event.data);
+        if(event.data === "ping"){
+            app.setDebug("ping signalling server successful")
+            return;
+        }
+        var message_json = JSON.parse(event.data);
     } catch (e) {
         if (e instanceof SyntaxError) {
             app.setDebug("Error parsing incoming JSON: " + event.data);

@@ -1,1 +1,1 @@
-EmptySession
+{"SlaveID":1834175345,"SessionSlaveID":185953761,"TurnConnection":"turn://thinkmaycoturn:thinkmaycoturn_password@turn:stun.thinkmay.net:3478","SignallingUrl":"wss://host.thinkmay.net/Handshake","QoE":{"ID":0,"ScreenWidth":2560,"ScreenHeight":1440,"AudioCodec":4,"VideoCodec":1,"QoEMode":4}}

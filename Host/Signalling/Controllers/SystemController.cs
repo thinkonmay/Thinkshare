@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SharedHost.Models.Session;
-using Signalling.Filters;
 using Signalling.Interfaces;
 using Signalling.Models;
 using System;

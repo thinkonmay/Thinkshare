@@ -30,7 +30,7 @@ namespace SlaveManager.Services
             _config = config;
             _socket = socket;
             SlaveList = new ConcurrentDictionary<int, SlaveDevice>();
-            SamplePeriod = 60* 1000;
+            SamplePeriod = 30 * 1000;
             Task.Run(() => SystemHeartBeat());
         }
 
