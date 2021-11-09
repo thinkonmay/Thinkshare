@@ -1,5 +1,6 @@
 ﻿using RestSharp;
 using SharedHost;
+using System.Text;
 using SharedHost.Models.Session;
 using Signalling.Interfaces;
 using System;
@@ -14,6 +15,12 @@ namespace Signalling.Services
 {
     public class SessionQueue : ISessionQueue
     {
+        private readonly RestClient _conductor;
+
+        private ConcurrentDictionary<int, WebSocket> onlineList;
+
+        private List<SessionPair> sessionPairs;
+        
         public SessionQueue(SystemConfig config)
         {
             onlineList = new ConcurrentDictionary<int, WebSocket>();
@@ -21,13 +28,29 @@ namespace Signalling.Services
             sessionPairs = new List<SessionPair>();
 
             _conductor = new RestClient(config.Conductor + "/ReportSession");
+
+            Task.Run(() => SystemHeartBeat());
         }
 
-        private readonly RestClient _conductor;
-
-        private ConcurrentDictionary<int, WebSocket> onlineList;
-
-        private List<SessionPair> sessionPairs; //<ClientID, SlaveID>
+        public async Task SystemHeartBeat()
+        {
+            try
+            {
+                while(true)
+                {
+                    foreach(var item in onlineList)
+                    {
+                        var bytes = Encoding.UTF8.GetBytes("ping");
+                        var buffer = new ArraySegment<byte>(bytes);
+                        item.Value.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+                    }
+                    Thread.Sleep(30000);
+                }
+            }catch(Exception ex)
+            {
+                await SystemHeartBeat();
+            }
+        }
 
 
         public bool AddSessionPair(SessionPair session)

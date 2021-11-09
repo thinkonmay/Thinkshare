@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using SharedHost;
-using Signalling.Filters;
 using Signalling.Interfaces;
 using Signalling.Services;
 using System;
