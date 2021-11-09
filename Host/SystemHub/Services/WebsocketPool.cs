@@ -26,12 +26,30 @@ namespace SystemHub.Services
             _WebSocketHandler = wsHandler;
 
             Task.Run(() => ConnectionHeartBeat());
+            Task.Run(() => ConnectionStateCheck());
         }
 
 
 
-
         public async Task ConnectionHeartBeat()
+        {
+            try
+            {                
+                foreach (var socket in _WebSocketsPool)
+                {
+                    if(socket.Value.State == WebSocketState.Open)
+                    {
+                        _WebSocketHandler.SendMessage(socket.Value,"ping");
+                    }
+                }
+                Thread.Sleep(30000);
+            }catch(Exception ex)
+            {
+                await ConnectionHeartBeat();
+            }
+        }
+
+        public async Task ConnectionStateCheck()
         {
             try
             {                
@@ -45,7 +63,7 @@ namespace SystemHub.Services
                 Thread.Sleep(100);
             }catch(Exception ex)
             {
-                await ConnectionHeartBeat();
+                await ConnectionStateCheck();
             }
         }
 

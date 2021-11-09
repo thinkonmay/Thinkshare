@@ -1,5 +1,5 @@
 # use ubuntu as doxygen build image
-FROM ubuntu:latest AS build
+FROM ubuntu AS build
 # make app 
 RUN mkdir /app
 RUN mkdir /build

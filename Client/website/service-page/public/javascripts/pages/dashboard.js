@@ -94,20 +94,23 @@ $(document).ready(async () => {
 
 	// set data for chart to anaylize hour used
 	setDataForChart();
+
+	// using websocket to connect to systemhub
 	const Websocket = new WebSocket(`wss://host.thinkmay.net/Hub?token=${getCookie("token")}`)	
-	
     Websocket.addEventListener('open', onWebsocketOpen);
     Websocket.addEventListener('message', onClientHubEvent);
     Websocket.addEventListener('error', onWebsocketClose);
     Websocket.addEventListener('close', onWebsocketClose);
-
-
 })
 
 function onClientHubEvent (event)
 {
     try {
-    var message_json = JSON.parse(event.data);
+        if(event.data === "ping"){
+            console.log("ping host successful")
+            return;
+        }
+		var message_json = JSON.parse(event.data);
     } catch (e) {
 		console.log("Error parsing incoming JSON: " + event.data);
         return;

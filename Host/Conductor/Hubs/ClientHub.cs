@@ -79,12 +79,12 @@ namespace Conductor.Hubs
             await _NotificationHub.ExecuteAsync(request);
         }
 
-        public async Task ReportSessionInitialized(SlaveDeviceInformation slaveID, int ID)
+        public async Task ReportSessionInitialized(SlaveDeviceInformation slave, int ID)
         {
             var data = new EventModel
             {
                 EventName = "ReportSessionInitialized",
-                Message = JsonConvert.SerializeObject(slaveID)
+                Message = JsonConvert.SerializeObject(slave)
             };
 
             /*generate rest post to signalling server*/
