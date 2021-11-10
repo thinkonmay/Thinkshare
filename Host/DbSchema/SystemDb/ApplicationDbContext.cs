@@ -39,5 +39,6 @@ namespace DbSchema.SystemDb.Data
         public DbSet<RemoteSession> RemoteSessions { get; set; }
         public DbSet<ShellSession> ShellSession { get; set; }
         public DbSet<ScriptModel> ScriptModels { get; set; }
+        public DbSet<DeviceCap> DefaultSettings { get; set; }
     }
 }

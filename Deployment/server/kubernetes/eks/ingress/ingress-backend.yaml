@@ -50,6 +50,13 @@ spec:
             port:
               number: 80
 
+      - path: /Setting/*
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
       - path: /Account/*
         pathType: Prefix
         backend:
