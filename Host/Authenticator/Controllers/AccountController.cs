@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Authenticator.Interfaces;
 using SharedHost.Models.Auth;
 using SharedHost.Models.User;
+using SharedHost.Models.Device;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -131,23 +132,6 @@ namespace Authenticator.Controllers
 
 
         /// <summary>
-        /// add role to specific user
-        /// </summary>
-        /// <param name="UserID"></param>
-        /// <param name="Role"></param>
-        /// <returns></returns>
-        [Admin]
-        [HttpPost("GrantRole")]
-        public async Task<IActionResult> GrantRole(string UserEmail, string Role)
-        {
-            var account = await _userManager.FindByEmailAsync(UserEmail);
-            await _userManager.AddToRoleAsync(account, Role);
-            return Ok();
-        }
-
-
-
-        /// <summary>
         /// get personal information of user
         /// </summary>
         /// <returns></returns>
@@ -182,6 +166,9 @@ namespace Authenticator.Controllers
                 return BadRequest(result.Errors.ToList());
             }
         }
+
+
+
 
 
 

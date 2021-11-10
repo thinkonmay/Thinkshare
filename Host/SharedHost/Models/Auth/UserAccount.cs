@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
-using SharedHost.Models.Session;
+using SharedHost.Models.Device;
 using System.Collections.Generic;
 
 namespace SharedHost.Models.User
@@ -19,5 +19,6 @@ namespace SharedHost.Models.User
         public DateTime? DateOfBirth { get; set; }
         public DateTime? Created { get; set; }
         public string Avatar {get; set; }
+        public virtual DeviceCap? DefaultSetting {get;set;}
     }
 }
