@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using MersenneTwister;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Authenticator.Interfaces;
@@ -150,14 +151,21 @@ namespace Authenticator.Controllers
                 {
                     user = new UserAccount
                     {
-                        UserName = payload.Name,
+                        UserName = Randoms.Next().ToString(),
                         Email = payload.Email,
                         Avatar = payload.Picture,
-                        Created = DateTime.Now,
-                        FullName = payload.Name
+                        FullName = payload.Name,
+                        DateOfBirth = DateTime.Now,
+                        PhoneNumber = "0123456789",
+                        Jobs = "DefaultJob"
                     };
 
-                    await _userManager.CreateAsync(user);
+                    var result = await _userManager.CreateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        UserAccount u = await _userManager.FindByEmailAsync(payload.Email);
+                        await _userManager.AddToRoleAsync(u, RoleSeeding.USER);
+                    }
                 }
 
                 // Add a login (i.e insert a row for the user in AspNetUserLogins table)
