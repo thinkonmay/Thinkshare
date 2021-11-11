@@ -317,11 +317,11 @@ function popUpTurorial(id, name_shortcut, excute_shortcut, src_shortcut){
 async function tutorial() {
 
 	$('#tutorialButton').click(() => {
-		$('#tutorialElement').show()
+		$('#content').show()
 	})
 
 	$('#exitButton').click(() => {
-		$('#tutorialElement').hide()
+		$('#content').hide()
 	})
 
 	await popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'Hidden_Mouse_x2.5')
