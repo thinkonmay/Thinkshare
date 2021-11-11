@@ -14,6 +14,7 @@ namespace SharedHost
         public string MetricCollector {get;set;}
         public string TurnConnection {get;set;}
         public string SystemHub {get;set;}
+        public string GoogleOauthID {get;set;}
         public TurnServer TurnServer {get;set;}
         public LoginModel AdminLogin { get; set; }
     }

@@ -13,6 +13,7 @@ using DbSchema.DbSeeding;
 using SharedHost.Auth.ThinkmayAuthProtocol;
 using System.Linq;
 using DbSchema.SystemDb.Data;
+using SharedHost;
 using SharedHost.Models.ResponseModel;
 using Google.Apis.Auth;
 using SharedHost.Auth;
@@ -27,12 +28,16 @@ namespace Authenticator.Controllers
         private readonly SignInManager<UserAccount> _signInManager;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly ApplicationDbContext _db;
+        
+        private readonly SystemConfig _config;
         public AccountController(
             UserManager<UserAccount> userManager,
             SignInManager<UserAccount> signInManager,
             ITokenGenerator tokenGenerator,
-            ApplicationDbContext db)
+            ApplicationDbContext db,
+            SystemConfig config)
         {
+            _config = config;
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenGenerator = tokenGenerator;
@@ -127,7 +132,7 @@ namespace Authenticator.Controllers
 
 
         [HttpPost]
-        [Route("Grant")]
+        [Route("ExchangeToken")]
         public async Task<IActionResult> Request(AuthenticationRequest request)
         {
 
@@ -135,7 +140,7 @@ namespace Authenticator.Controllers
             {
                 var validationSettings = new GoogleJsonWebSignature.ValidationSettings
                 {
-                    Audience = new string[] { "536985793558-hd2hap9hjvioft1973lst6edol3k0fiu.apps.googleusercontent.com" }
+                    Audience = new string[] { _config.GoogleOauthID }
                 };
 
                 var payload = await GoogleJsonWebSignature.ValidateAsync(request.token, validationSettings);

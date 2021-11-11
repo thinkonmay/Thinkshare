@@ -62,39 +62,5 @@ namespace Authenticator.Controllers
                 return BadRequest(); 
             }
         }
-
-        /// <summary>
-        /// login to server with email/username and password
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("Grant")]
-        public async Task<IActionResult> Request(ExternalLoginModel request)
-        {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-
-            if (user == null)
-            {
-                user = new UserAccount 
-                {
-                    UserName = request.UserName,
-                    Email = request.Email,
-                    Avatar = request.Picture
-                };
-
-                await _userManager.CreateAsync(user);
-            }
-
-            // Add a login (i.e insert a row for the user in AspNetUserLogins table)
-            await _signInManager.SignInAsync(user, isPersistent: false);
-
-            string token = await _tokenGenerator.GenerateJwt(user);
-            var resp = new AuthenticationRequest
-            { 
-                token = token 
-            };
-            return Ok(resp);
-        }
     }
 }

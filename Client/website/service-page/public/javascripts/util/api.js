@@ -23,6 +23,7 @@ export const Reconnect = "/reconnect"
 // Account API
 export const Login = `${host}/Account/Login`
 export const Register = `${host}/Account/Register`
+export const Token = `${host}/Account/ExchangeToken`
 export const GrantRole = `${host}/Account/GrantRole`
 export const GetInfor = `${host}/Account/GetInfor`
 export const SetInfor = `${host}/Account/SetInfor`
@@ -84,10 +85,17 @@ export const register = body => {
 	})
 }
 
-export const externalLogin = body => {
-	window.open(ExternalLogin + "?provider=" + body + "&returnUrl=http://host.thinkmay.net", "", "width=520, height=520")
-	return {};
+export const tokenExchange = body => {
+	return fetch(Token, {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({
+			token: body.token,
+			Validator: body.Validator
+		})
+	})
 }
+
 
 export const getInfor = () => {
 	return fetch(GetInfor, {
