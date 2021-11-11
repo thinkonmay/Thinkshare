@@ -14,7 +14,8 @@ API.getInfor().then(async data => {
 })
 $(document).ready(async () => {
 	$('#logout').click(() => {
-		setCookie("dalogout", 1)
+		setCookie("logout", "true")
+		setCookie("token", null)
 	})
 
 	var defaultDeviceCap = {

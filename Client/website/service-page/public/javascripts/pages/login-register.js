@@ -87,64 +87,46 @@ function renderButton() {
 
 // Sign-in success callback
 function onSuccess(Response) {
-
 	try {
 		const loginForm = {
 			token: Response.Zb.id_token,
 			Validator: "authenticator"
 		}
-
-		const loginData = googleLoginUser(loginForm);
-		setCookie("token", loginData.token, MINUTES59);
-
+		var logout = getCookie("logout"); 
+		if(logout == "false" || logout == undefined)
+		{
+			googleLoginUser(loginForm)
+		}
 	} catch (error){
 		console.log(error)
 	}
 }
 
 const googleLoginUser = async (userForm) => {
-	try {
-		const response = await API.tokenExchange(userForm)
-		return response.data;
-	} catch (error) {
-		if (error.response.data)
-			return error.response.data;
-		else 
-			return {success: false, message: error.message};
-	}
+	Utils.newSwal.fire({
+		title: "Đang đăng nhập",
+		text: "Vui lòng chờ . . .",
+		didOpen: () => {
+			API.tokenExchange(userForm)
+				.then(async data => {
+					const response = await data.json()
+					if (data.status == 200) {
+						if (response.errors == null) {
+							setCookie("token", response.token, MINUTES59)
+							window.location.replace(API.Dashboard)
+						} else {
+							console.log(response.error);
+							Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
+						}
+					} else Utils.responseErrorHandler(response)
+				})
+			
+		}
+	})
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	
+	
+	
 
 
 // Sign-in failure callback
@@ -157,12 +139,10 @@ $(document).ready(() => {
 
 	renderButton();
 
-	if (getCookie('dalogout') == 1) {
-		// signOut()
-	}
-	$('#login-google').click(() => {
-		console.log("đời");
+	$('#gSignIn').click(() => {
+		setCookie('logout', 'false', MINUTES59);
 	})
+
 	$('#login').click(() => {
 		$("form").submit(event => {
 			event.preventDefault()
