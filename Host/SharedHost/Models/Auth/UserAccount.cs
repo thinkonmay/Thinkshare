@@ -18,7 +18,7 @@ namespace SharedHost.Models.User
         public string? Gender {get;set;}
         public DateTime? DateOfBirth { get; set; }
         public DateTime? Created { get; set; }
-        public string Avatar {get; set; }
+        public string? Avatar {get; set; }
         public virtual DeviceCap? DefaultSetting {get;set;}
     }
 }

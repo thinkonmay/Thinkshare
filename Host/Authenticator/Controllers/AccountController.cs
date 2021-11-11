@@ -14,6 +14,8 @@ using SharedHost.Auth.ThinkmayAuthProtocol;
 using System.Linq;
 using DbSchema.SystemDb.Data;
 using SharedHost.Models.ResponseModel;
+using Google.Apis.Auth;
+using SharedHost.Auth;
 
 namespace Authenticator.Controllers
 {
@@ -124,6 +126,52 @@ namespace Authenticator.Controllers
 
 
 
+        [HttpPost]
+        [Route("Grant")]
+        public async Task<IActionResult> Request(AuthenticationRequest request)
+        {
+
+            try
+            {
+                var validationSettings = new GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = new string[] { "536985793558-hd2hap9hjvioft1973lst6edol3k0fiu.apps.googleusercontent.com" }
+                };
+
+                var payload = await GoogleJsonWebSignature.ValidateAsync(request.token, validationSettings);
+                var user = await _userManager.FindByEmailAsync(payload.Email);
+
+                if (user == null)
+                {
+                    user = new UserAccount
+                    {
+                        UserName = payload.Name,
+                        Email = payload.Email,
+                        Avatar = payload.Picture,
+                        Created = DateTime.Now,
+                        FullName = payload.Name
+                    };
+
+                    await _userManager.CreateAsync(user);
+                }
+
+                // Add a login (i.e insert a row for the user in AspNetUserLogins table)
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
+                string token = await _tokenGenerator.GenerateJwt(user);
+                var resp = new AuthenticationRequest
+                {
+                    token = token,
+                    Validator = "https://host.thinkmay.net/"
+                };
+                return Ok(resp);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Debug(ex.Message);
+                return BadRequest();
+            }
+        }
 
 
 
