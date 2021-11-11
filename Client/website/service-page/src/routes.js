@@ -4,7 +4,6 @@ module.exports = {
 	//  ╚╩╝╚═╝╚═╝╩  ╩ ╩╚═╝╚═╝╚═╝
 	"GET /": {action: "view-login"},
 	"GET /login": {action: "view-login"},
-	"GET /login-admin": {action: "view-login-admin"},
 	"GET /register": {action: "view-register"},
 	"GET /dashboard": {action: "view-dashboard"},
 	"GET /setting": {action: "view-setting"},

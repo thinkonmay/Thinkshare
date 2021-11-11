@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Authenticator.Interfaces;
 using SharedHost.Models.User;
+using SharedHost.Models.Auth;
 using SharedHost.Auth;
 using System.Threading.Tasks;
 using System.Linq;

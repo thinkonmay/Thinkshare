@@ -72,19 +72,96 @@ function register(body, status) {
 	})
 }
 
-function externalLogin() {
-	window.open(API.ExternalLogin);
+
+function renderButton() {
+	gapi.signin2.render('gSignIn', {
+		'scope': 'profile email',
+		'width': 240,
+		'height': 50,
+		'longtitle': true,
+		'theme': 'dark',
+		'onsuccess': onSuccess,
+		'onfailure': onFailure
+	});
+}
+
+// Sign-in success callback
+function onSuccess(Response) {
+
+	try {
+		const loginForm = {
+			token: Response.Zb.id_token,
+			Validator: "authenticator"
+		}
+
+		const loginData = googleLoginUser(loginForm);
+		setCookie("token", loginData.token, MINUTES59);
+
+	} catch (error){
+		console.log(error)
+	}
+}
+
+const googleLoginUser = async (userForm) => {
+	try {
+		const response = await API.tokenExchange(userForm)
+		return response.data;
+	} catch (error) {
+		if (error.response.data)
+			return error.response.data;
+		else 
+			return {success: false, message: error.message};
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Sign-in failure callback
+function onFailure(error) {
+	alert("Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại! ")
 }
 
 
 $(document).ready(() => {
+
+	renderButton();
+
 	if (getCookie('dalogout') == 1) {
 		// signOut()
 	}
 	$('#login-google').click(() => {
-		externalLogin()
-		setCookie("dalogout", 0)
-		// redirect to external login
+		console.log("đời");
 	})
 	$('#login').click(() => {
 		$("form").submit(event => {

@@ -13,7 +13,10 @@ using DbSchema.DbSeeding;
 using SharedHost.Auth.ThinkmayAuthProtocol;
 using System.Linq;
 using DbSchema.SystemDb.Data;
+using SharedHost;
 using SharedHost.Models.ResponseModel;
+using Google.Apis.Auth;
+using SharedHost.Auth;
 
 namespace Authenticator.Controllers
 {
@@ -25,12 +28,16 @@ namespace Authenticator.Controllers
         private readonly SignInManager<UserAccount> _signInManager;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly ApplicationDbContext _db;
+        
+        private readonly SystemConfig _config;
         public AccountController(
             UserManager<UserAccount> userManager,
             SignInManager<UserAccount> signInManager,
             ITokenGenerator tokenGenerator,
-            ApplicationDbContext db)
+            ApplicationDbContext db,
+            SystemConfig config)
         {
+            _config = config;
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenGenerator = tokenGenerator;
@@ -124,6 +131,52 @@ namespace Authenticator.Controllers
 
 
 
+        [HttpPost]
+        [Route("ExchangeToken")]
+        public async Task<IActionResult> Request(AuthenticationRequest request)
+        {
+
+            try
+            {
+                var validationSettings = new GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = new string[] { _config.GoogleOauthID }
+                };
+
+                var payload = await GoogleJsonWebSignature.ValidateAsync(request.token, validationSettings);
+                var user = await _userManager.FindByEmailAsync(payload.Email);
+
+                if (user == null)
+                {
+                    user = new UserAccount
+                    {
+                        UserName = payload.Name,
+                        Email = payload.Email,
+                        Avatar = payload.Picture,
+                        Created = DateTime.Now,
+                        FullName = payload.Name
+                    };
+
+                    await _userManager.CreateAsync(user);
+                }
+
+                // Add a login (i.e insert a row for the user in AspNetUserLogins table)
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
+                string token = await _tokenGenerator.GenerateJwt(user);
+                var resp = new AuthenticationRequest
+                {
+                    token = token,
+                    Validator = "https://host.thinkmay.net/"
+                };
+                return Ok(resp);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Debug(ex.Message);
+                return BadRequest();
+            }
+        }
 
 
 
