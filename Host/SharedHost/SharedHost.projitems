@@ -14,7 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\LoginModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserInforModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\ExternalLoginModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\Cluster.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Hub\EventModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ResponseModel\GetSessionResponse.cs" />
