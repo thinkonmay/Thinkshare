@@ -8,72 +8,228 @@
         "WorkingSet":  0.01171875
     },
     {
-        "Name":  "GoogleCrashHandler",
-        "WorkingSet":  0.3125
-    },
-    {
         "Name":  "GoogleCrashHandler64",
-        "WorkingSet":  0.375
+        "WorkingSet":  0.2421875
     },
     {
         "Name":  "smss",
-        "WorkingSet":  0.41796875
-    },
-    {
-        "Name":  "RAVCpl64",
-        "WorkingSet":  0.69921875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  1.16015625
-    },
-    {
-        "Name":  "wininit",
-        "WorkingSet":  1.1796875
-    },
-    {
-        "Name":  "MpCopyAccelerator",
-        "WorkingSet":  1.40234375
+        "WorkingSet":  0.3671875
     },
     {
         "Name":  "fontdrvhost",
-        "WorkingSet":  1.40625
+        "WorkingSet":  0.6328125
+    },
+    {
+        "Name":  "YourPhone",
+        "WorkingSet":  0.67578125
+    },
+    {
+        "Name":  "SystemSettings",
+        "WorkingSet":  0.6875
+    },
+    {
+        "Name":  "fontdrvhost",
+        "WorkingSet":  0.703125
+    },
+    {
+        "Name":  "YourPhone",
+        "WorkingSet":  0.79296875
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  1.54296875
+        "WorkingSet":  0.87890625
     },
     {
-        "Name":  "svchost",
-        "WorkingSet":  1.57421875
+        "Name":  "cmd",
+        "WorkingSet":  0.93359375
     },
     {
-        "Name":  "RtkAudioService64",
-        "WorkingSet":  1.59765625
+        "Name":  "cmd",
+        "WorkingSet":  0.94140625
     },
     {
-        "Name":  "jhi_service",
-        "WorkingSet":  1.62890625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  1.734375
-    },
-    {
-        "Name":  "AggregatorHost",
-        "WorkingSet":  1.83203125
+        "Name":  "wininit",
+        "WorkingSet":  0.9453125
     },
     {
         "Name":  "ibtsiva",
-        "WorkingSet":  1.96484375
+        "WorkingSet":  0.97265625
     },
     {
         "Name":  "RAVBg64",
-        "WorkingSet":  1.98046875
+        "WorkingSet":  1
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  2.02734375
+        "WorkingSet":  1.01171875
+    },
+    {
+        "Name":  "PowerMgr",
+        "WorkingSet":  1.0546875
+    },
+    {
+        "Name":  "esif_uf",
+        "WorkingSet":  1.06640625
+    },
+    {
+        "Name":  "RAVCpl64",
+        "WorkingSet":  1.08984375
+    },
+    {
+        "Name":  "RtkAudioService64",
+        "WorkingSet":  1.09765625
+    },
+    {
+        "Name":  "Microsoft.Photos",
+        "WorkingSet":  1.19140625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.234375
+    },
+    {
+        "Name":  "RAVCpl64",
+        "WorkingSet":  1.25390625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.3671875
+    },
+    {
+        "Name":  "ShellExperienceHost",
+        "WorkingSet":  1.390625
+    },
+    {
+        "Name":  "ss_conn_service",
+        "WorkingSet":  1.3984375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.4140625
+    },
+    {
+        "Name":  "jhi_service",
+        "WorkingSet":  1.4375
+    },
+    {
+        "Name":  "winlogon",
+        "WorkingSet":  1.45703125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.4765625
+    },
+    {
+        "Name":  "GoogleCrashHandler",
+        "WorkingSet":  1.5078125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.51171875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.515625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  1.546875
+    },
+    {
+        "Name":  "ss_conn_service2",
+        "WorkingSet":  1.59765625
+    },
+    {
+        "Name":  "Microsoft.Photos",
+        "WorkingSet":  1.625
+    },
+    {
+        "Name":  "WacomHost",
+        "WorkingSet":  1.65234375
+    },
+    {
+        "Name":  "WTabletServiceISD",
+        "WorkingSet":  1.66796875
+    },
+    {
+        "Name":  "ssh",
+        "WorkingSet":  1.71484375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.75
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.7734375
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  1.78125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  1.80078125
+    },
+    {
+        "Name":  "sqlwriter",
+        "WorkingSet":  1.8828125
+    },
+    {
+        "Name":  "csrss",
+        "WorkingSet":  1.890625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.890625
+    },
+    {
+        "Name":  "RAVBg64",
+        "WorkingSet":  1.890625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.92578125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.9296875
+    },
+    {
+        "Name":  "Cortana",
+        "WorkingSet":  1.94140625
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  1.953125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  1.984375
+    },
+    {
+        "Name":  "csrss",
+        "WorkingSet":  2
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.00390625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.01953125
+    },
+    {
+        "Name":  "rundll32",
+        "WorkingSet":  2.0234375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.03125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  2.04296875
     },
     {
         "Name":  "svchost",
@@ -81,191 +237,391 @@
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  2.08203125
+        "WorkingSet":  2.09765625
+    },
+    {
+        "Name":  "AggregatorHost",
+        "WorkingSet":  2.203125
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  2.21484375
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  2.234375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  2.28515625
+    },
+    {
+        "Name":  "ssh",
+        "WorkingSet":  2.36328125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  2.11328125
+        "WorkingSet":  2.36328125
     },
     {
-        "Name":  "WinStore.App",
-        "WorkingSet":  2.15234375
+        "Name":  "ISD_TabletUser",
+        "WorkingSet":  2.3828125
     },
     {
-        "Name":  "svchost",
-        "WorkingSet":  2.16015625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  2.32421875
-    },
-    {
-        "Name":  "csrss",
-        "WorkingSet":  2.4765625
-    },
-    {
-        "Name":  "sqlwriter",
-        "WorkingSet":  2.4765625
-    },
-    {
-        "Name":  "WUDFHost",
-        "WorkingSet":  2.5703125
-    },
-    {
-        "Name":  "esif_uf",
-        "WorkingSet":  2.57421875
+        "Name":  "ctfmon",
+        "WorkingSet":  2.39453125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  2.63671875
+        "WorkingSet":  2.40625
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  2.65234375
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  2.69921875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  2.86328125
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  2.89453125
-    },
-    {
-        "Name":  "WTabletServiceISD",
-        "WorkingSet":  3.01171875
-    },
-    {
-        "Name":  "IpOverUsbSvc",
-        "WorkingSet":  3.07421875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  3.1328125
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  3.16796875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  3.1875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  3.41796875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  3.5
-    },
-    {
-        "Name":  "csrss",
-        "WorkingSet":  3.5
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  3.6015625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  3.640625
+        "WorkingSet":  2.44921875
     },
     {
         "Name":  "fontdrvhost",
-        "WorkingSet":  3.73046875
+        "WorkingSet":  2.4609375
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  2.5
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  3.76171875
+        "WorkingSet":  2.5078125
+    },
+    {
+        "Name":  "slack",
+        "WorkingSet":  2.55078125
+    },
+    {
+        "Name":  "igfxext",
+        "WorkingSet":  2.56640625
+    },
+    {
+        "Name":  "igfxext",
+        "WorkingSet":  2.5703125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  3.78125
+        "WorkingSet":  2.703125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  3.81640625
+        "WorkingSet":  2.7265625
     },
     {
-        "Name":  "cmd",
-        "WorkingSet":  3.95703125
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  3.95703125
+        "Name":  "pservice",
+        "WorkingSet":  2.75
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  4.10546875
+        "WorkingSet":  2.75
+    },
+    {
+        "Name":  "dllhost",
+        "WorkingSet":  2.76953125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  4.12109375
+        "WorkingSet":  2.83203125
+    },
+    {
+        "Name":  "IpOverUsbSvc",
+        "WorkingSet":  2.921875
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  4.2265625
+        "WorkingSet":  2.92578125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  4.3203125
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  4.359375
-    },
-    {
-        "Name":  "cmd",
-        "WorkingSet":  4.43359375
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  4.5
-    },
-    {
-        "Name":  "Microsoft.Photos",
-        "WorkingSet":  4.578125
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  4.7421875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  5.01171875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  5.04296875
-    },
-    {
-        "Name":  "spoolsv",
-        "WorkingSet":  5.078125
-    },
-    {
-        "Name":  "conhost",
-        "WorkingSet":  5.11328125
-    },
-    {
-        "Name":  "SgrmBroker",
-        "WorkingSet":  5.23046875
+        "WorkingSet":  2.97265625
     },
     {
         "Name":  "LMS",
-        "WorkingSet":  5.23828125
+        "WorkingSet":  3.01953125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  5.27734375
+        "WorkingSet":  3.01953125
     },
     {
-        "Name":  "NisSrv",
-        "WorkingSet":  5.328125
+        "Name":  "PowerMgr",
+        "WorkingSet":  3.10546875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.109375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.19921875
+    },
+    {
+        "Name":  "winlogon",
+        "WorkingSet":  3.20703125
+    },
+    {
+        "Name":  "SecurityHealthSystray",
+        "WorkingSet":  3.2421875
+    },
+    {
+        "Name":  "dllhost",
+        "WorkingSet":  3.26171875
+    },
+    {
+        "Name":  "csrss",
+        "WorkingSet":  3.3984375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.421875
+    },
+    {
+        "Name":  "SecurityHealthSystray",
+        "WorkingSet":  3.44140625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.4453125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.50390625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.53515625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.5390625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.62109375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.6328125
+    },
+    {
+        "Name":  "ApplicationFrameHost",
+        "WorkingSet":  3.74609375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.890625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.8984375
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  3.9765625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  3.98828125
+    },
+    {
+        "Name":  "rundll32",
+        "WorkingSet":  4.0078125
+    },
+    {
+        "Name":  "TeamViewer_Service",
+        "WorkingSet":  4.01171875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.01171875
+    },
+    {
+        "Name":  "spoolsv",
+        "WorkingSet":  4.0390625
+    },
+    {
+        "Name":  "SystemSettingsBroker",
+        "WorkingSet":  4.1015625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  4.18359375
+    },
+    {
+        "Name":  "UserOOBEBroker",
+        "WorkingSet":  4.20703125
+    },
+    {
+        "Name":  "smartscreen",
+        "WorkingSet":  4.2109375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  4.23828125
+    },
+    {
+        "Name":  "UserOOBEBroker",
+        "WorkingSet":  4.24609375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.265625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.2734375
+    },
+    {
+        "Name":  "gxxsvc",
+        "WorkingSet":  4.34375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.390625
+    },
+    {
+        "Name":  "ApplicationFrameHost",
+        "WorkingSet":  4.39453125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.48046875
+    },
+    {
+        "Name":  "DolbyDAX2API",
+        "WorkingSet":  4.5234375
+    },
+    {
+        "Name":  "ISD_Tablet",
+        "WorkingSet":  4.6796875
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.69921875
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.71484375
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.71484375
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.71875
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.71875
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.71875
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.71875
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.71875
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.73046875
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.80078125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.83203125
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.84375
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.84375
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.84375
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.84765625
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.84765625
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.8515625
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.8515625
+    },
+    {
+        "Name":  "cmd",
+        "WorkingSet":  4.8515625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  4.875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.90234375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  4.90234375
+    },
+    {
+        "Name":  "warp-svc",
+        "WorkingSet":  4.94140625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.00390625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.0390625
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  5.10546875
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  5.34375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.35546875
+    },
+    {
+        "Name":  "LogonUI",
+        "WorkingSet":  5.36328125
     },
     {
         "Name":  "svchost",
@@ -273,634 +629,954 @@
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  5.45703125
+        "WorkingSet":  5.453125
     },
     {
-        "Name":  "conhost",
-        "WorkingSet":  5.48046875
+        "Name":  "helper",
+        "WorkingSet":  5.4609375
     },
     {
-        "Name":  "PowerMgr",
-        "WorkingSet":  5.5
-    },
-    {
-        "Name":  "conhost",
+        "Name":  "NisSrv",
         "WorkingSet":  5.5234375
     },
     {
+        "Name":  "SystemSettingsBroker",
+        "WorkingSet":  5.57421875
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  5.58984375
+    },
+    {
         "Name":  "svchost",
-        "WorkingSet":  5.6953125
+        "WorkingSet":  5.59765625
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  5.609375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  5.66015625
     },
     {
         "Name":  "services",
-        "WorkingSet":  5.76953125
+        "WorkingSet":  5.76171875
     },
     {
-        "Name":  "OneApp.IGCC.WinService",
-        "WorkingSet":  5.78515625
+        "Name":  "WmiPrvSE",
+        "WorkingSet":  6.07421875
     },
     {
-        "Name":  "svchost",
-        "WorkingSet":  5.8046875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  5.84765625
+        "Name":  "dllhost",
+        "WorkingSet":  6.1796875
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  6.0859375
+        "WorkingSet":  6.19921875
     },
     {
-        "Name":  "com.docker.service",
-        "WorkingSet":  6.15625
+        "Name":  "VsDebugConsole",
+        "WorkingSet":  6.34765625
     },
     {
-        "Name":  "svchost",
-        "WorkingSet":  6.2265625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  6.23828125
-    },
-    {
-        "Name":  "svchost",
+        "Name":  "taskhostw",
         "WorkingSet":  6.390625
     },
     {
         "Name":  "svchost",
+        "WorkingSet":  6.3984375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  6.44921875
+    },
+    {
+        "Name":  "utorrentie",
         "WorkingSet":  6.48046875
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  6.515625
-    },
-    {
-        "Name":  "conhost",
-        "WorkingSet":  6.5390625
-    },
-    {
-        "Name":  "conhost",
-        "WorkingSet":  6.5546875
-    },
-    {
-        "Name":  "TeamViewer_Service",
-        "WorkingSet":  6.65625
-    },
-    {
-        "Name":  "msedgewebview2",
-        "WorkingSet":  6.65625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  6.84765625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  6.90625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  6.96484375
-    },
-    {
-        "Name":  "gxxsvc",
-        "WorkingSet":  7.02734375
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  7.0859375
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  7.1171875
-    },
-    {
-        "Name":  "ISD_TabletUser",
-        "WorkingSet":  7.2265625
-    },
-    {
-        "Name":  "winlogon",
-        "WorkingSet":  7.28515625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  7.30078125
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  7.640625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  7.703125
-    },
-    {
-        "Name":  "DolbyDAX2API",
-        "WorkingSet":  7.83984375
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  8.09765625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  8.17578125
-    },
-    {
-        "Name":  "ssh",
-        "WorkingSet":  8.2890625
+        "WorkingSet":  6.62890625
     },
     {
         "Name":  "NVDisplay.Container",
-        "WorkingSet":  8.47265625
+        "WorkingSet":  6.640625
+    },
+    {
+        "Name":  "OneApp.IGCC.WinService",
+        "WorkingSet":  6.796875
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  8.88671875
+        "WorkingSet":  6.8828125
     },
     {
-        "Name":  "UserOOBEBroker",
-        "WorkingSet":  9.078125
+        "Name":  "com.docker.service",
+        "WorkingSet":  6.8828125
     },
     {
-        "Name":  "SecurityHealthSystray",
-        "WorkingSet":  9.1875
+        "Name":  "conhost",
+        "WorkingSet":  6.91015625
+    },
+    {
+        "Name":  "SgrmBroker",
+        "WorkingSet":  6.94140625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  7.1015625
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  7.21875
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  7.28515625
     },
     {
         "Name":  "SecurityHealthService",
-        "WorkingSet":  9.3515625
+        "WorkingSet":  7.74609375
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  9.44921875
+        "WorkingSet":  7.84375
     },
     {
-        "Name":  "igfxext",
-        "WorkingSet":  9.4921875
+        "Name":  "chrome",
+        "WorkingSet":  8.19921875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  8.26953125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  8.296875
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  8.30859375
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  8.35546875
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  9.53125
+        "WorkingSet":  8.3671875
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  8.60546875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  8.75390625
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  9.87890625
+        "WorkingSet":  8.84375
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  9.8828125
+        "WorkingSet":  8.9140625
+    },
+    {
+        "Name":  "Garena",
+        "WorkingSet":  9.125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  9.203125
+    },
+    {
+        "Name":  "slack",
+        "WorkingSet":  9.2109375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  9.33984375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  9.41796875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  9.6953125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  9.75390625
     },
     {
         "Name":  "dasHost",
-        "WorkingSet":  10.09375
+        "WorkingSet":  9.91796875
+    },
+    {
+        "Name":  "taskhostw",
+        "WorkingSet":  10.26171875
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  10.39453125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  10.51171875
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  10.515625
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  10.515625
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  10.51953125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  10.51953125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  10.5234375
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  10.52734375
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  10.53125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  10.53125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  10.44140625
+        "WorkingSet":  10.83984375
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  10.578125
+        "WorkingSet":  10.9921875
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  10.91796875
+        "WorkingSet":  11.1484375
     },
     {
-        "Name":  "WmiPrvSE",
-        "WorkingSet":  11.0703125
+        "Name":  "chrome",
+        "WorkingSet":  11.3203125
     },
     {
-        "Name":  "rundll32",
-        "WorkingSet":  11.43359375
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  11.5390625
+        "Name":  "parsecd",
+        "WorkingSet":  11.3359375
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  11.58203125
-    },
-    {
-        "Name":  "helper",
-        "WorkingSet":  11.71484375
-    },
-    {
-        "Name":  "WacomHost",
-        "WorkingSet":  11.875
+        "WorkingSet":  11.48046875
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  12.11328125
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  12.1875
+        "WorkingSet":  11.484375
     },
     {
         "Name":  "audiodg",
-        "WorkingSet":  12.453125
+        "WorkingSet":  11.49609375
     },
     {
-        "Name":  "svchost",
-        "WorkingSet":  12.640625
+        "Name":  "SamsungDeX",
+        "WorkingSet":  11.76171875
     },
     {
-        "Name":  "svchost",
+        "Name":  "OneDrive",
+        "WorkingSet":  11.80078125
+    },
+    {
+        "Name":  "ctfmon",
+        "WorkingSet":  11.98046875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  12.13671875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  12.4375
+    },
+    {
+        "Name":  "WmiPrvSE",
+        "WorkingSet":  12.609375
+    },
+    {
+        "Name":  "sihost",
         "WorkingSet":  12.703125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  12.82421875
-    },
-    {
-        "Name":  "utorrentie",
-        "WorkingSet":  12.9609375
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  13.09765625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  13.35546875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  13.45703125
-    },
-    {
-        "Name":  "UniKeyNT",
-        "WorkingSet":  14.109375
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  14.34765625
-    },
-    {
-        "Name":  "cpptools",
-        "WorkingSet":  14.75390625
-    },
-    {
-        "Name":  "ISD_Tablet",
-        "WorkingSet":  14.8515625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  14.8671875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  14.89453125
-    },
-    {
-        "Name":  "RuntimeBroker",
-        "WorkingSet":  15.6796875
-    },
-    {
-        "Name":  "dllhost",
-        "WorkingSet":  15.78515625
+        "WorkingSet":  12.78515625
     },
     {
         "Name":  "lsass",
-        "WorkingSet":  15.90234375
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  15.9921875
-    },
-    {
-        "Name":  "RuntimeBroker",
-        "WorkingSet":  16.19140625
-    },
-    {
-        "Name":  "msedgewebview2",
-        "WorkingSet":  16.47265625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  16.95703125
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  17.52734375
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  17.734375
-    },
-    {
-        "Name":  "agent",
-        "WorkingSet":  18.21484375
-    },
-    {
-        "Name":  "RuntimeBroker",
-        "WorkingSet":  18.5234375
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  18.7265625
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  19.01953125
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  19.671875
-    },
-    {
-        "Name":  "taskhostw",
-        "WorkingSet":  19.8671875
-    },
-    {
-        "Name":  "ctfmon",
-        "WorkingSet":  19.9921875
-    },
-    {
-        "Name":  "smartscreen",
-        "WorkingSet":  20.45703125
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  21.44921875
-    },
-    {
-        "Name":  "RuntimeBroker",
-        "WorkingSet":  21.6171875
-    },
-    {
-        "Name":  "svchost",
-        "WorkingSet":  22.03515625
-    },
-    {
-        "Name":  "Code",
-        "WorkingSet":  23.6875
-    },
-    {
-        "Name":  "NVDisplay.Container",
-        "WorkingSet":  24.484375
-    },
-    {
-        "Name":  "uTorrent",
-        "WorkingSet":  25.6171875
+        "WorkingSet":  12.82421875
     },
     {
         "Name":  "slack",
-        "WorkingSet":  26.875
+        "WorkingSet":  12.84765625
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  12.95703125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  27.65625
+        "WorkingSet":  13.15234375
     },
     {
-        "Name":  "RuntimeBroker",
-        "WorkingSet":  27.8125
+        "Name":  "chrome",
+        "WorkingSet":  13.2265625
     },
     {
-        "Name":  "RuntimeBroker",
-        "WorkingSet":  28.3203125
-    },
-    {
-        "Name":  "msedgewebview2",
-        "WorkingSet":  28.5390625
-    },
-    {
-        "Name":  "cpptools-srv",
-        "WorkingSet":  29.7421875
-    },
-    {
-        "Name":  "YourPhone",
-        "WorkingSet":  30.0078125
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  30.484375
-    },
-    {
-        "Name":  "Widgets",
-        "WorkingSet":  31.01171875
+        "Name":  "chrome",
+        "WorkingSet":  13.37890625
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  31.88671875
+        "WorkingSet":  13.3828125
     },
     {
-        "Name":  "sihost",
-        "WorkingSet":  33.4140625
+        "Name":  "UniKeyNT",
+        "WorkingSet":  13.68359375
     },
     {
-        "Name":  "ShellExperienceHost",
-        "WorkingSet":  33.73828125
+        "Name":  "msedge",
+        "WorkingSet":  13.75390625
     },
     {
-        "Name":  "SearchIndexer",
-        "WorkingSet":  33.82421875
+        "Name":  "MoUsoCoreWorker",
+        "WorkingSet":  13.8125
     },
     {
-        "Name":  "utorrentie",
-        "WorkingSet":  33.82421875
-    },
-    {
-        "Name":  "ApplicationFrameHost",
-        "WorkingSet":  34.77734375
-    },
-    {
-        "Name":  "vsls-agent",
-        "WorkingSet":  36.60546875
-    },
-    {
-        "Name":  "Code",
-        "WorkingSet":  36.9453125
+        "Name":  "msedge",
+        "WorkingSet":  13.89453125
     },
     {
         "Name":  "svchost",
-        "WorkingSet":  39
+        "WorkingSet":  13.9296875
     },
     {
-        "Name":  "slack",
-        "WorkingSet":  39.22265625
+        "Name":  "svchost",
+        "WorkingSet":  14.01171875
     },
     {
-        "Name":  "msedge",
-        "WorkingSet":  40.70703125
-    },
-    {
-        "Name":  "powershell",
-        "WorkingSet":  44.2265625
+        "Name":  "msvsmon",
+        "WorkingSet":  14.03515625
     },
     {
         "Name":  "msedge",
-        "WorkingSet":  45.3828125
+        "WorkingSet":  14.62109375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  14.7265625
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  14.75390625
     },
     {
         "Name":  "msedge",
-        "WorkingSet":  45.43359375
+        "WorkingSet":  15.109375
     },
     {
-        "Name":  "msedgewebview2",
-        "WorkingSet":  49.75
-    },
-    {
-        "Name":  "Code",
-        "WorkingSet":  51.32421875
-    },
-    {
-        "Name":  "RuntimeBroker",
-        "WorkingSet":  52.19140625
-    },
-    {
-        "Name":  "OmniSharp",
-        "WorkingSet":  52.96484375
-    },
-    {
-        "Name":  "session-core",
-        "WorkingSet":  56.0546875
-    },
-    {
-        "Name":  "Cortana",
-        "WorkingSet":  57.359375
-    },
-    {
-        "Name":  "Code",
-        "WorkingSet":  58.203125
-    },
-    {
-        "Name":  "powershell",
-        "WorkingSet":  58.8046875
-    },
-    {
-        "Name":  "Registry",
-        "WorkingSet":  60
-    },
-    {
-        "Name":  "powershell",
-        "WorkingSet":  62.85546875
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  63.07421875
-    },
-    {
-        "Name":  "Code",
-        "WorkingSet":  63.328125
-    },
-    {
-        "Name":  "powershell",
-        "WorkingSet":  63.859375
-    },
-    {
-        "Name":  "powershell",
-        "WorkingSet":  63.890625
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  64.35546875
-    },
-    {
-        "Name":  "Code",
-        "WorkingSet":  68.3515625
-    },
-    {
-        "Name":  "StartMenuExperienceHost",
-        "WorkingSet":  68.734375
-    },
-    {
-        "Name":  "msedgewebview2",
-        "WorkingSet":  72.74609375
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  73.4453125
-    },
-    {
-        "Name":  "MsMpEngCP",
-        "WorkingSet":  73.49609375
-    },
-    {
-        "Name":  "SystemSettings",
-        "WorkingSet":  74.04296875
-    },
-    {
-        "Name":  "Code",
-        "WorkingSet":  74.7578125
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  75.60546875
-    },
-    {
-        "Name":  "slack",
-        "WorkingSet":  78.01953125
-    },
-    {
-        "Name":  "TextInputHost",
-        "WorkingSet":  78.390625
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  80.6796875
+        "Name":  "svchost",
+        "WorkingSet":  15.19921875
     },
     {
         "Name":  "dwm",
-        "WorkingSet":  82.1328125
+        "WorkingSet":  15.30859375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  15.49609375
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  15.53125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  15.55859375
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  15.55859375
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  15.578125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  15.58203125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  15.58984375
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  15.6015625
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  15.625
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  15.6328125
+    },
+    {
+        "Name":  "conhost",
+        "WorkingSet":  15.640625
     },
     {
         "Name":  "Code",
-        "WorkingSet":  82.703125
+        "WorkingSet":  16.23046875
     },
     {
-        "Name":  "Code",
-        "WorkingSet":  88.20703125
+        "Name":  "chrome",
+        "WorkingSet":  16.5
     },
     {
-        "Name":  "msedgewebview2",
-        "WorkingSet":  91.98828125
+        "Name":  "svchost",
+        "WorkingSet":  16.7109375
     },
     {
-        "Name":  "Code",
-        "WorkingSet":  92.84375
+        "Name":  "uTorrent",
+        "WorkingSet":  16.828125
     },
     {
-        "Name":  "slack",
-        "WorkingSet":  95.74609375
+        "Name":  "chrome",
+        "WorkingSet":  16.859375
     },
     {
-        "Name":  "MsMpEng",
-        "WorkingSet":  125.0703125
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  16.9375
     },
     {
-        "Name":  "Code",
-        "WorkingSet":  141.98046875
+        "Name":  "chrome",
+        "WorkingSet":  17.1875
     },
     {
-        "Name":  "slack",
-        "WorkingSet":  161.66796875
-    },
-    {
-        "Name":  "explorer",
-        "WorkingSet":  179.3359375
+        "Name":  "NVDisplay.Container",
+        "WorkingSet":  17.31640625
     },
     {
         "Name":  "msedge",
-        "WorkingSet":  186.484375
+        "WorkingSet":  17.53125
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  17.59375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  17.6171875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  17.71484375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  17.75390625
+    },
+    {
+        "Name":  "cpptools-srv",
+        "WorkingSet":  17.859375
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  18.23828125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  18.265625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  18.98046875
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  19.1796875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  19.2265625
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  19.26171875
+    },
+    {
+        "Name":  "Cloudflare WARP",
+        "WorkingSet":  19.5390625
+    },
+    {
+        "Name":  "smartscreen",
+        "WorkingSet":  19.72265625
+    },
+    {
+        "Name":  "sihost",
+        "WorkingSet":  20.09765625
     },
     {
         "Name":  "Code",
-        "WorkingSet":  188.28515625
+        "WorkingSet":  20.6328125
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  20.640625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  20.6640625
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  21.29296875
+    },
+    {
+        "Name":  "agent",
+        "WorkingSet":  21.63671875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  21.7421875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  21.82421875
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  22.234375
+    },
+    {
+        "Name":  "backgroundTaskHost",
+        "WorkingSet":  22.421875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  22.71484375
+    },
+    {
+        "Name":  "NVDisplay.Container",
+        "WorkingSet":  22.9296875
+    },
+    {
+        "Name":  "StartMenuExperienceHost",
+        "WorkingSet":  24.16796875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  24.98046875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  25.82421875
+    },
+    {
+        "Name":  "SearchIndexer",
+        "WorkingSet":  26.171875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  26.38671875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  27.74609375
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  28.7890625
+    },
+    {
+        "Name":  "StartMenuExperienceHost",
+        "WorkingSet":  28.875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  29.08984375
+    },
+    {
+        "Name":  "RuntimeBroker",
+        "WorkingSet":  29.65234375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  30.01953125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  31.16015625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  33.59375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  33.7109375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  34.23046875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  34.59375
+    },
+    {
+        "Name":  "GitHubDesktop",
+        "WorkingSet":  34.66015625
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  35.15234375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  35.40625
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  35.421875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  35.5234375
+    },
+    {
+        "Name":  "vsdbg",
+        "WorkingSet":  35.81640625
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  36.0625
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  36.109375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  36.14453125
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  36.1796875
+    },
+    {
+        "Name":  "ShellExperienceHost",
+        "WorkingSet":  36.33984375
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  36.38671875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  36.42578125
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  37.8203125
+    },
+    {
+        "Name":  "svchost",
+        "WorkingSet":  37.90234375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  37.9296875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  38.23046875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  38.6640625
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  38.9140625
+    },
+    {
+        "Name":  "vsls-agent",
+        "WorkingSet":  39.3203125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  39.55078125
+    },
+    {
+        "Name":  "Registry",
+        "WorkingSet":  39.875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  40.265625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  40.7734375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  41.61328125
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  43.77734375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  43.921875
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  45.59375
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  46.6171875
+    },
+    {
+        "Name":  "explorer",
+        "WorkingSet":  47.421875
+    },
+    {
+        "Name":  "slack",
+        "WorkingSet":  50.73828125
+    },
+    {
+        "Name":  "Taskmgr",
+        "WorkingSet":  51.03125
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  51.71484375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  52.19140625
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  52.296875
+    },
+    {
+        "Name":  "GitHubDesktop",
+        "WorkingSet":  55.02734375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  57.06640625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  59.37109375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  60.29296875
+    },
+    {
+        "Name":  "GitHubDesktop",
+        "WorkingSet":  60.609375
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  61.21484375
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  62.3515625
+    },
+    {
+        "Name":  "TextInputHost",
+        "WorkingSet":  62.5703125
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  63.56640625
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  64.1015625
     },
     {
         "Name":  "SearchHost",
-        "WorkingSet":  236.54296875
+        "WorkingSet":  64.28515625
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  64.94140625
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  65.31640625
+    },
+    {
+        "Name":  "powershell",
+        "WorkingSet":  65.4375
+    },
+    {
+        "Name":  "slack",
+        "WorkingSet":  65.8984375
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  68.15234375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  68.85546875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  69.484375
+    },
+    {
+        "Name":  "GitHubDesktop",
+        "WorkingSet":  71.04296875
+    },
+    {
+        "Name":  "dwm",
+        "WorkingSet":  71.1953125
     },
     {
         "Name":  "Code",
-        "WorkingSet":  318.5
+        "WorkingSet":  78.5078125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  83.34765625
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  83.92578125
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  84.6640625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  85.30859375
     },
     {
         "Name":  "Memory Compression",
-        "WorkingSet":  476.796875
+        "WorkingSet":  89.26953125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  106.41015625
+    },
+    {
+        "Name":  "cpptools",
+        "WorkingSet":  106.98046875
+    },
+    {
+        "Name":  "MsMpEngCP",
+        "WorkingSet":  119.07421875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  123.57421875
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  123.703125
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  135.953125
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  141.453125
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  144.08984375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  144.5859375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  154.95703125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  157.05078125
+    },
+    {
+        "Name":  "explorer",
+        "WorkingSet":  157.59375
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  161.67578125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  164.45703125
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  166.58203125
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  173.28125
+    },
+    {
+        "Name":  "chrome",
+        "WorkingSet":  176.2578125
+    },
+    {
+        "Name":  "MsMpEng",
+        "WorkingSet":  190.7890625
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  205.54296875
+    },
+    {
+        "Name":  "OmniSharp",
+        "WorkingSet":  223.07421875
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  233.171875
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  321.21875
     }
 ]

@@ -103,7 +103,12 @@ on_agent_message(AgentObject* agent,
 	GError* error = NULL;
 	JsonParser* parser =	json_parser_new();
 	Message* object = 		get_json_object_from_string(data,&error,parser);
-	if(!error == NULL || object == NULL || ! json_object_has_member(object,"Opcode")) {return;}
+	if(!error == NULL || object == NULL || ! json_object_has_member(object,"Opcode")) 
+	{
+		g_object_unref(parser);
+		g_free(data);
+		return;
+	}
 
 	gint	from = 			json_object_get_int_member(object, "From");
 	gint	to = 			json_object_get_int_member(object, "To");
@@ -139,7 +144,11 @@ on_agent_message(AgentObject* agent,
 		{		
 			JsonParser* in = json_parser_new();
 			Message* json_data = get_json_object_from_string(data_string,&error,in);
-			if(!error == NULL || json_data == NULL) {return;}
+			if(!error == NULL || json_data == NULL) 
+			{
+				g_object_unref(in);
+				return;
+			}
 
 			else if(opcode == CLIPBOARD_SERVICE){
 

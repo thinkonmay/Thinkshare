@@ -161,7 +161,11 @@ initialize_shell_session(AgentObject* agent,
     GError* error = NULL;
     JsonParser* parser = json_parser_new();
     Message* json_data = get_json_object_from_string(data_string,&error,parser);
-    if(!error == NULL) {return;}
+    if(!error == NULL)
+	{
+		g_object_unref(parser);
+		return;
+	}
 
     ChildProcess* process = get_available_child_process();
     gint process_id = get_child_process_id(process);

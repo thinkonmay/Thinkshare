@@ -117,7 +117,11 @@ setup_session(AgentObject* agent,
     GError* error = NULL;
     JsonParser* parser = json_parser_new();
     Message* json_data = get_json_object_from_string(data_string, &error, parser);
-    if(!error == NULL || json_data == NULL) {return;}
+    if(!error == NULL || json_data == NULL) 
+	{
+		g_object_unref(parser);
+		return;
+	}
 
     GFile* file = g_file_parse_name(SESSION_SLAVE_FILE);
     gchar* session_slave = get_string_from_json_object(json_data);

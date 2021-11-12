@@ -67,7 +67,11 @@ on_session_send_message_to_host(AgentObject* agent,
     GError* error = NULL;
     JsonParser* parser = json_parser_new();
     Message* object = get_json_object_from_string(message,&error,parser);
-	if(!error == NULL || object == NULL) {return;}
+	if(!error == NULL || object == NULL)
+	{
+		g_object_unref(parser);
+		return;
+	}
 
     json_object_set_int_member(object,
         DEVICE_ID, SlaveID);
