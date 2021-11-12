@@ -87,12 +87,11 @@ function onSuccess(Response) {
 			token: Response.Zb.id_token,
 			Validator: "authenticator"
 		}
-		var logout = getCookie("logout"); 
-		if(logout == "false" || logout == undefined)
-		{
+		var logout = getCookie("logout");
+		if (logout == "false" || logout == undefined) {
 			googleLoginUser(loginForm)
 		}
-	} catch (error){
+	} catch (error) {
 		console.log(error)
 	}
 }
@@ -115,13 +114,13 @@ const googleLoginUser = async (userForm) => {
 						}
 					} else Utils.responseErrorHandler(response)
 				})
-			
+
 		}
 	})
 }
-	
-	
-	
+
+
+
 
 
 // Sign-in failure callback
@@ -129,17 +128,23 @@ function onFailure(error) {
 	alert("Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại! ")
 }
 
+function loginCallback(result){
+	console.log(result)
+}
+
 
 $(document).ready(() => {
 
 	$('#gSignIn').click(() => {
-		gapi.signin2.render('gSignIn', {
-			'onsuccess': onSuccess,
-			'onfailure': onFailure
-		});
-		setCookie('logout', 'false', MINUTES59);
+		var myParams = {
+			'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
+			'cookiepolicy': 'single_host_origin',
+			'callback': 'loginCallback',
+			'approvalprompt': 'force',
+			'scope': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read'
+		};
+		gapi.auth.signIn(myParams);
 	})
-
 	$('#login').click(() => {
 		$("form").submit(event => {
 			event.preventDefault()
