@@ -72,27 +72,42 @@ function register(body, status) {
 	})
 }
 
-
+/*
 function renderButton() {
 	gapi.signin2.render('gSignIn', {
 		'onsuccess': onSuccess,
 		'onfailure': onFailure
 	});
+*/
+async function GoogleLogin() {
+	var myParams = {
+		'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
+		'cookiepolicy': 'none',
+		'callback': loginCallback,
+		'approvalprompt': 'force',
+		'scope': 'https://www.googleapis.com/auth/plus.login',
+	};
+
+	await gapi.auth.signIn(myParams)
 }
 
-// Sign-in success callback
-function onSuccess(Response) {
-	try {
-		const loginForm = {
-			token: Response.Zb.id_token,
-			Validator: "authenticator"
+function loginCallback(result) {
+	console.log(result)
+	if (result['status']['signed_in']) {
+		try {
+			const loginForm = {
+				token: result.id_token,
+				Validator: "authenticator"
+			}
+			var logout = getCookie("logout");
+			if (logout == "false" || logout == undefined || logout == "") {
+				googleLoginUser(loginForm)
+			}
+		} catch (error) {
+			console.log(error)
 		}
-		var logout = getCookie("logout");
-		if (logout == "false" || logout == undefined) {
-			googleLoginUser(loginForm)
-		}
-	} catch (error) {
-		console.log(error)
+	} else{
+		onFailure();
 	}
 }
 
@@ -119,32 +134,21 @@ const googleLoginUser = async (userForm) => {
 	})
 }
 
-
-
-
-
 // Sign-in failure callback
-function onFailure(error) {
+function onFailure() {
 	alert("Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại! ")
 }
-
-function loginCallback(result){
-	console.log(result)
-}
-
 
 $(document).ready(() => {
 
 	$('#gSignIn').click(() => {
-		var myParams = {
-			'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
-			'cookiepolicy': 'single_host_origin',
-			'callback': 'loginCallback',
-			'approvalprompt': 'force',
-			'scope': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read'
-		};
-		gapi.auth.signIn(myParams);
+		setCookie("logout", "false", 0)
+		GoogleLogin();
 	})
+	function loginCallback(result) {
+		console.log(result)
+	}
+
 	$('#login').click(() => {
 		$("form").submit(event => {
 			event.preventDefault()
