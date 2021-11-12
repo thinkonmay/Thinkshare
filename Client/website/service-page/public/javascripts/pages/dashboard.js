@@ -15,6 +15,8 @@ API.getInfor().then(async data => {
 $(document).ready(async () => {
 	$('#logout').click(() => {
 		setCookie("logout", "true")
+		setCookie("token", null, 1)
+
 		deleteCookie("token", "/", document.domain)
 
 		try {
