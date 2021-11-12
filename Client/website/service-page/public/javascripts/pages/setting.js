@@ -34,7 +34,6 @@ $(document).ready(() => {
             title: "Đang đăng kí",
             text: "Vui lòng chờ . . .",
             didOpen: () => {
-                Swal.showLoading()
                 API.setInfor(info.username)
                     .then(async data => {
                         if (data.status == 200) {
@@ -59,15 +58,24 @@ $(document).ready(() => {
         Setting.VideoCodec(display.video);
         Setting.mapVideoRes(display.resolution);
         Setting.Platform(display.platform);
+       Utils.newSwal.fire({
+            title: "Thành công!",
+            text: "Cấu hình của bạn đã được cập nhật",
+            icon: "success",
+        })
+        console.log('asdasd')
+
+ 
+
     });
 
 
     if (CheckDevice.isElectron()) {
-		$('#optionsVideo3').prob('enabled', true);
-		$('#optionsPlatform2').prob('enabled', true);
-	} else {
-		// website
-	}
+        $('#optionsVideo3').prob('enabled', true);
+        $('#optionsPlatform2').prob('enabled', true);
+    } else {
+        // website
+    }
 
 
 })
