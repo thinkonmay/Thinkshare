@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: landing-page
-        image: pigeatgarlic/landing-page:2021-11-10
+        image: pigeatgarlic/landing-page:2021-11-12
         imagePullPolicy: Always
         resources:
           requests:
