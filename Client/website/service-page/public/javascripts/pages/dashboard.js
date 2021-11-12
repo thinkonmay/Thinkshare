@@ -20,23 +20,12 @@ $(document).ready(async () => {
 		deleteCookie("token", "/", document.domain)
 
 		try {
-			var token = gapi.auth.getToken();
-			if (token) {
-			var accessToken = gapi.auth.getToken().access_token;
-			if (accessToken) {
-				print(accessToken)
-				// make http get request towards: 'https://accounts.google.com/o/oauth2/revoke?token=' + accessToken
-				// In angular you can do it like this:
-				// $http({
-				//   method: 'GET',
-				//   url: 'https://accounts.google.com/o/oauth2/revoke?token=' + accessToken
-				// });
-			}
-			}
-			gapi.auth.setToken(null);
-			gapi.auth.signOut();
+			var auth2 = gapi.auth2.getAuthInstance();
+			auth2.signOut().then(function () {
+				console.log('User signed out.');
+			});
 			window.location = "/login"
-		} catch{
+		} catch {
 			window.location = "/login"
 		}
 	})
