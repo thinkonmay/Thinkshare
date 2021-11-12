@@ -1,26 +1,34 @@
 ﻿[
     {
-        "FreeSpace":  59,
-        "Size":  238,
-        "DeviceType":  null,
-        "DeviceID":  "C:"
+        "InstanceName":  "idle",
+        "CPUpercentage":  81.11
     },
     {
-        "FreeSpace":  145,
-        "Size":  219,
-        "DeviceType":  null,
-        "DeviceID":  "R:"
+        "InstanceName":  "system",
+        "CPUpercentage":  1.29
     },
     {
-        "FreeSpace":  0,
-        "Size":  0,
-        "DeviceType":  null,
-        "DeviceID":  "Y:"
+        "InstanceName":  "explorer",
+        "CPUpercentage":  4.89
     },
     {
-        "FreeSpace":  0,
-        "Size":  0,
-        "DeviceType":  null,
-        "DeviceID":  "Z:"
+        "InstanceName":  "chrome",
+        "CPUpercentage":  3.86
+    },
+    {
+        "InstanceName":  "powershell",
+        "CPUpercentage":  4.63
+    },
+    {
+        "InstanceName":  "powershell",
+        "CPUpercentage":  1.03
+    },
+    {
+        "InstanceName":  "session-core",
+        "CPUpercentage":  4.12
+    },
+    {
+        "InstanceName":  "_total",
+        "CPUpercentage":  95.52
     }
 ]

@@ -72,20 +72,13 @@ function register(body, status) {
 	})
 }
 
-/*
-function renderButton() {
-	gapi.signin2.render('gSignIn', {
-		'onsuccess': onSuccess,
-		'onfailure': onFailure
-	});
-*/
 async function GoogleLogin() {
 	var myParams = {
 		'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
 		'cookiepolicy': 'none',
 		'callback': loginCallback,
 		'approvalprompt': 'force',
-		'scope': 'https://www.googleapis.com/auth/plus.login',
+		'scope': 'profile email openid',
 	};
 
 	await gapi.auth.signIn(myParams)
@@ -145,9 +138,6 @@ $(document).ready(() => {
 		setCookie("logout", "false", 0)
 		GoogleLogin();
 	})
-	function loginCallback(result) {
-		console.log(result)
-	}
 
 	$('#login').click(() => {
 		$("form").submit(event => {
