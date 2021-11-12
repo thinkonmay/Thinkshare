@@ -247,15 +247,19 @@ namespace Authenticator.Controllers
             }
             
             await _db.SaveChangesAsync();
-            var result = await _userManager.SetUserNameAsync(account, infor.UserName);
-            if (result.Succeeded)
+            if(infor.UserName != null)
             {
-                return Ok();
+                var result = await _userManager.SetUserNameAsync(account, infor.UserName);
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest(result.Errors.ToList());
+                }
             }
-            else
-            {
-                return BadRequest(result.Errors.ToList());
-            }
+            return Ok();
         }
 
 
