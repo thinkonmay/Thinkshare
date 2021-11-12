@@ -64,10 +64,6 @@ $(document).ready(async () => {
 		platform[item].onclick = (event) => Setting.Platform(event.target.innerHTML);
 	}
 
-	noti()
-	search()
-	inbox()
-	user()
 	tutorial()
 
 	if (CheckDevice.isElectron()) {
@@ -273,31 +269,6 @@ function serialize(obj, prefix) {
 		}
 	}
 	return str.join("&")
-}
-
-
-function search() {
-	document.getElementById('searchButton').addEventListener('click', function () {
-		Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
-	});
-}
-
-function noti() {
-	document.getElementById('notiButton').addEventListener('click', function () {
-		// Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
-	});
-}
-
-function inbox() {
-	document.getElementById('inboxButton').addEventListener('click', function () {
-		Utils.responseError("Error!!!", "This feature hasn't developed! \n Next version will be update.", "info")
-	});
-}
-
-function user() {
-	document.getElementById('userButton').addEventListener('click', function () {
-		// Developer set user info
-	});
 }
 
 function popUpTurorial(id, name_shortcut, excute_shortcut, src_shortcut) {
