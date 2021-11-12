@@ -202,7 +202,7 @@ namespace Authenticator.Controllers
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
-            return Ok(account);
+            return Ok(new UserInforModel(account));
         }
 
 
@@ -217,6 +217,36 @@ namespace Authenticator.Controllers
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
 
+            if(infor.Avatar != null)
+            {
+                account.Avatar = infor.Avatar;
+            }
+            if(infor.DateOfBirth != null)
+            {
+                account.DateOfBirth = infor.DateOfBirth;
+            }
+            if(infor.DefaultSetting != null)
+            {
+                account.DefaultSetting = infor.DefaultSetting;
+            }
+            if(infor.FullName != null)
+            {
+                account.FullName = infor.FullName;
+            }
+            if(infor.Gender != null)
+            {
+                account.Gender = infor.Gender;
+            }
+            if(infor.Jobs != null)
+            {
+                account.Jobs = infor.Jobs;
+            }
+            if(infor.PhoneNumber != null)
+            {
+                account.PhoneNumber = infor.Jobs;
+            }
+            
+            await _db.SaveChangesAsync();
             var result = await _userManager.SetUserNameAsync(account, infor.UserName);
             if (result.Succeeded)
             {
