@@ -75,11 +75,6 @@ function register(body, status) {
 
 function renderButton() {
 	gapi.signin2.render('gSignIn', {
-		'scope': 'profile email',
-		'width': 240,
-		'height': 50,
-		'longtitle': true,
-		'theme': 'dark',
 		'onsuccess': onSuccess,
 		'onfailure': onFailure
 	});
@@ -137,9 +132,11 @@ function onFailure(error) {
 
 $(document).ready(() => {
 
-	renderButton();
-
 	$('#gSignIn').click(() => {
+		gapi.signin2.render('gSignIn', {
+			'onsuccess': onSuccess,
+			'onfailure': onFailure
+		});
 		setCookie('logout', 'false', MINUTES59);
 	})
 

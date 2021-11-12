@@ -1,7 +1,7 @@
 import * as API from "../util/api.js"
 import * as RemotePage from "../util/remote-page-cookies.js"
 import * as Setting from "../util/setting.js"
-import { getCookie, setCookie } from "../util/cookie.js"
+import { getCookie, setCookie, deleteCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
 
@@ -15,7 +15,17 @@ API.getInfor().then(async data => {
 $(document).ready(async () => {
 	$('#logout').click(() => {
 		setCookie("logout", "true")
-		setCookie("token", null)
+		deleteCookie("token", "/", document.domain)
+
+		try {
+			var auth2 = gapi.auth2.getAuthInstance();
+			auth2.signOut().then(function () {
+			});
+			auth2.disconnect();
+			window.location = "/login"
+		} catch{
+			window.location = "/login"
+		}
 	})
 
 	var defaultDeviceCap = {
@@ -97,64 +107,57 @@ $(document).ready(async () => {
 	setDataForChart();
 
 	// using websocket to connect to systemhub
-	const Websocket = new WebSocket(`wss://host.thinkmay.net/Hub?token=${getCookie("token")}`)	
-    Websocket.addEventListener('open', onWebsocketOpen);
-    Websocket.addEventListener('message', onClientHubEvent);
-    Websocket.addEventListener('error', onWebsocketClose);
-    Websocket.addEventListener('close', onWebsocketClose);
+	const Websocket = new WebSocket(`wss://host.thinkmay.net/Hub?token=${getCookie("token")}`)
+	Websocket.addEventListener('open', onWebsocketOpen);
+	Websocket.addEventListener('message', onClientHubEvent);
+	Websocket.addEventListener('error', onWebsocketClose);
+	Websocket.addEventListener('close', onWebsocketClose);
 })
 
-function onClientHubEvent (event)
-{
-    try {
-        if(event.data === "ping"){
-            console.log("ping host successful")
-            return;
-        }
+function onClientHubEvent(event) {
+	try {
+		if (event.data === "ping") {
+			console.log("ping host successful")
+			return;
+		}
 		var message_json = JSON.parse(event.data);
-    } catch (e) {
+	} catch (e) {
 		console.log("Error parsing incoming JSON: " + event.data);
-        return;
-    }
+		return;
+	}
 
-	if(message_json.EventName === "ReportSessionDisconnected")  
-	{
+	if (message_json.EventName === "ReportSessionDisconnected") {
 		var slaveId = message_json.Message
 		setState("OFF_REMOTE", slaveId)
 	}
-	if(message_json.EventName === "ReportSessionReconnected")  
-	{
+	if (message_json.EventName === "ReportSessionReconnected") {
 		var slaveId = message_json.Message
 		setState("ON_SESSION", slaveId);
 	}
-	if(message_json.EventName === "ReportSessionTerminated")  
-	{
+	if (message_json.EventName === "ReportSessionTerminated") {
 		var slaveId = message_json.Message
 		var slave = document.getElementById(`slavesInUses${slaveId}`);
 		slave.remove()
 	}
-	if(message_json.EventName === "ReportSlaveObtained")  
-	{
+	if (message_json.EventName === "ReportSlaveObtained") {
 		var slaveId = message_json.Message
 		var slave = document.getElementById(`availableSlaves${slaveId}`);
 		slave.remove()
 	}
-	if(message_json.EventName === "ReportSessionInitialized")  
-	{
+	if (message_json.EventName === "ReportSessionInitialized") {
 		var device = JSON.parse(message_json.Message)
 		device.os = device.OS;
-		device.raMcapacity= device.RAMcapacity;
+		device.raMcapacity = device.RAMcapacity;
 		device.gpu = device.GPU;
 		device.id = device.ID;
 		device.cpu = device.CPU;
 		device.serviceState = "ON_SESSION";
 		createSlave(device, "slavesInUses")
 	}
-	if(message_json.EventName === "ReportNewSlaveAvailable")  
-	{
+	if (message_json.EventName === "ReportNewSlaveAvailable") {
 		var device = JSON.parse(message_json.Message)
 		device.os = device.OS;
-		device.raMcapacity= device.RAMcapacity;
+		device.raMcapacity = device.RAMcapacity;
 		device.gpu = device.GPU;
 		device.id = device.ID;
 		device.cpu = device.CPU;
@@ -162,12 +165,10 @@ function onClientHubEvent (event)
 	}
 }
 
-function onWebsocketOpen () 
-{
+function onWebsocketOpen() {
 	console.log("connected to client hub");
 }
-function onWebsocketClose(event) 
-{
+function onWebsocketClose(event) {
 	location.reload();
 };
 
@@ -299,7 +300,7 @@ function user() {
 	});
 }
 
-function popUpTurorial(id, name_shortcut, excute_shortcut, src_shortcut){
+function popUpTurorial(id, name_shortcut, excute_shortcut, src_shortcut) {
 	$(`${id}`).click(function (e) {
 		$("#name_shorcut").text(name_shortcut);
 		$("#excute_shortcut").text(excute_shortcut)
@@ -327,8 +328,8 @@ async function tutorial() {
 
 	await popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'Hidden_Mouse_x2.5')
 	await popUpTurorial('#fullScreen', 'Full Screen', 'Ctrl + Shift + F', 'Full_Screen_x2.5')
-	
-	
+
+
 	$('.popup-close').click(function (e) {
 		$('.popup-wrap').fadeOut(500);
 		$('.popup-box').removeClass('transform-in').addClass('transform-out');
