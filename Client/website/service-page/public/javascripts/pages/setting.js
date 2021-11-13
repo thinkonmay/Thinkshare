@@ -58,21 +58,21 @@ $(document).ready(() => {
         Setting.VideoCodec(display.video);
         Setting.mapVideoRes(display.resolution);
         Setting.Platform(display.platform);
-       Utils.newSwal.fire({
+        Utils.newSwal.fire({
             title: "Thành công!",
             text: "Cấu hình của bạn đã được cập nhật",
             icon: "success",
         })
         console.log('asdasd')
 
- 
+
 
     });
 
 
     if (CheckDevice.isElectron()) {
-        $('#optionsVideo3').prob('enabled', true);
-        $('#optionsPlatform2').prob('enabled', true);
+        $('#optionsVideo3').removeAttr('disabled');
+        $('#optionsPlatform2').removeAttr('disabled');
     } else {
         // website
     }
