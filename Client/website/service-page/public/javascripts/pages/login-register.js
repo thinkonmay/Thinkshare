@@ -25,7 +25,7 @@ function login(body) {
 							window.location.replace(API.Dashboard)
 						} else {
 							console.log(response.error);
-							Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
+							Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
 						}
 					} else Utils.responseErrorHandler(response)
 				})
@@ -41,7 +41,8 @@ function register(body, status) {
 		didOpen: () => {
 			Swal.showLoading()
 			var date = new Date(body.dob);
-			body.dob = date.toISOString(); //will return an ISO representation of the date
+			body.dob = body.dob ? date.toISOString(): "1990-01-01T00:00:00.000Z"; //will return an ISO representation of the date
+			body.jobs = body.jobs == null ? "nosetJobs": body.jobs,
 			API.register(body)
 				.then(async data => {
 					const response = await data.json()
@@ -59,8 +60,7 @@ function register(body, status) {
 								}
 							})
 						} else {
-							if (status)
-								Utils.responseError("Lỗi!", response.message, "error")
+								Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
 						}
 					} else {
 						if (status)

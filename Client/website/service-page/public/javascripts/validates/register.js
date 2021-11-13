@@ -13,7 +13,6 @@ export default {
 			maxlength: 50
 		},
 		dob: {
-			required: true
 		},
 		username: {
 			required: true,
@@ -27,7 +26,6 @@ export default {
 			maxlength: 15
 		},
 		jobs: {
-			required: true,
 			minlength: 5,
 			maxlength: 50
 		},
