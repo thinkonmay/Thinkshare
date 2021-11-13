@@ -183,6 +183,8 @@ initialize_shell_session(AgentObject* agent,
 
     write_to_script_file(agent, session);
     create_new_shell_process(agent, session);
+    g_object_unref(parser);
+    
 }
 
 static void

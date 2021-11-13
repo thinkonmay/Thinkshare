@@ -1,0 +1,18 @@
+﻿[
+    {
+        "Name":  "msedge",
+        "WorkingSet":  225.0703125
+    },
+    {
+        "Name":  "OmniSharp",
+        "WorkingSet":  299.76953125
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  443.67578125
+    },
+    {
+        "Name":  "devenv",
+        "WorkingSet":  702.31640625
+    }
+]

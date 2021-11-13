@@ -162,6 +162,7 @@ on_agent_message(AgentObject* agent,
 	g_object_unref(parser);
 	g_object_unref(object);
 	g_free(data);
+	g_free(data_string);
 }
 
 

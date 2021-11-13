@@ -1,22 +1,26 @@
 ﻿[
     {
-        "Name":  "msedge",
-        "WorkingSet":  215.00390625
+        "FreeSpace":  57,
+        "Size":  238,
+        "DeviceType":  null,
+        "DeviceID":  "C:"
     },
     {
-        "Name":  "OmniSharp",
-        "WorkingSet":  381.84375
+        "FreeSpace":  145,
+        "Size":  219,
+        "DeviceType":  null,
+        "DeviceID":  "R:"
     },
     {
-        "Name":  "Code",
-        "WorkingSet":  447.45703125
+        "FreeSpace":  0,
+        "Size":  0,
+        "DeviceType":  null,
+        "DeviceID":  "Y:"
     },
     {
-        "Name":  "ServiceHub.Host.CLR.x64",
-        "WorkingSet":  540.5546875
-    },
-    {
-        "Name":  "devenv",
-        "WorkingSet":  648.984375
+        "FreeSpace":  0,
+        "Size":  0,
+        "DeviceType":  null,
+        "DeviceID":  "Z:"
     }
 ]

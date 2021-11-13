@@ -51,9 +51,10 @@ open_state_send_message_to_host(AgentObject* agent,
     json_object_set_int_member(object,
         DEVICE_ID, SlaveID);
 
-    send_message_to_host(agent,
-        get_string_from_json_object(object));
+    gchar* string = get_string_from_json_object(object);
+    send_message_to_host(agent,string);
     g_object_unref(parser);
+    g_free(string);
 }
 
 static gchar*
