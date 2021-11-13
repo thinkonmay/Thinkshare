@@ -1,34 +1,22 @@
 ﻿[
     {
-        "InstanceName":  "idle",
-        "CPUpercentage":  81.11
+        "Name":  "msedge",
+        "WorkingSet":  215.00390625
     },
     {
-        "InstanceName":  "system",
-        "CPUpercentage":  1.29
+        "Name":  "OmniSharp",
+        "WorkingSet":  381.84375
     },
     {
-        "InstanceName":  "explorer",
-        "CPUpercentage":  4.89
+        "Name":  "Code",
+        "WorkingSet":  447.45703125
     },
     {
-        "InstanceName":  "chrome",
-        "CPUpercentage":  3.86
+        "Name":  "ServiceHub.Host.CLR.x64",
+        "WorkingSet":  540.5546875
     },
     {
-        "InstanceName":  "powershell",
-        "CPUpercentage":  4.63
-    },
-    {
-        "InstanceName":  "powershell",
-        "CPUpercentage":  1.03
-    },
-    {
-        "InstanceName":  "session-core",
-        "CPUpercentage":  4.12
-    },
-    {
-        "InstanceName":  "_total",
-        "CPUpercentage":  95.52
+        "Name":  "devenv",
+        "WorkingSet":  648.984375
     }
 ]

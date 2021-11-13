@@ -1,20 +1,22 @@
 ﻿[
     {
-        "FreeSpace":  50,
-        "Size":  238,
-        "DeviceType":  null,
-        "DeviceID":  "C:"
+        "Name":  "msedge",
+        "WorkingSet":  210.28515625
     },
     {
-        "FreeSpace":  466,
-        "Size":  466,
-        "DeviceType":  null,
-        "DeviceID":  "D:"
+        "Name":  "msedge",
+        "WorkingSet":  210.78515625
     },
     {
-        "FreeSpace":  205,
-        "Size":  466,
-        "DeviceType":  null,
-        "DeviceID":  "E:"
+        "Name":  "OmniSharp",
+        "WorkingSet":  268.68359375
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  498.4296875
+    },
+    {
+        "Name":  "msedge",
+        "WorkingSet":  558.8671875
     }
 ]

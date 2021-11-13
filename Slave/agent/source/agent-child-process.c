@@ -236,6 +236,7 @@ create_new_child_process(gchar* process_name,
         NULL,
         NULL,
         &startup_infor, &pi);
+    g_free(process);
 
     if(!output)
     {

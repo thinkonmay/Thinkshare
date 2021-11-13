@@ -24,26 +24,23 @@ send_message(AgentObject* self,
              Message* message)
 {
 	Module to = json_object_get_int_member(message, "To");
-
+	gchar* string = get_string_from_json_object(message);
 	switch (to)
 	{
 	case HOST_MODULE:
-	    agent_send_message_to_host(self, 
-			get_string_from_json_object(message));
+	    agent_send_message_to_host(self, string);
 		break;
 	case CORE_MODULE:
-		agent_send_message_to_session_core(self,
-			get_string_from_json_object(message));
+		agent_send_message_to_session_core(self, string);
 		break;
 	case LOADER_MODULE:
-		agent_send_message_to_session_loader(self,
-			get_string_from_json_object(message));
+		agent_send_message_to_session_loader(self, string);
 		break;
 	case CLIENT_MODULE:
-		agent_send_message_to_session_core(self,
-			get_string_from_json_object(message));
+		agent_send_message_to_session_core(self, string);
 		break;
 	}
+	g_free(string);
 }
 
 static void
@@ -163,6 +160,7 @@ on_agent_message(AgentObject* agent,
 		agent_send_message(agent, object);
 	}
 	g_object_unref(parser);
+	g_object_unref(object);
 	g_free(data);
 }
 

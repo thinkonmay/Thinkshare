@@ -102,10 +102,16 @@ namespace Authenticator.Controllers
                     UserName = model.UserName,
                     Email = model.Email,
                     FullName = model.FullName,
-                    DateOfBirth = model.DateOfBirth,
                     PhoneNumber = model.PhoneNumber,
-                    Jobs = model.Jobs
                 };
+                if(model.DateOfBirth != null)
+                {
+                    user.DateOfBirth = model.DateOfBirth;
+                }
+                if(model.Jobs != null)
+                {
+                    user.Jobs = model.Jobs;
+                }
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)

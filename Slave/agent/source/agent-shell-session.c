@@ -51,8 +51,10 @@ shell_session_get_output(gint process_id)
     gchar* shell_script;
     g_file_get_contents(shell_session_pool[process_id].output_file,
         &shell_script,NULL, &error);
-    if(error != NULL)
+    if(error)
+    {
         return NULL;
+    }
 
     return shell_script;
 }
@@ -137,6 +139,7 @@ create_new_shell_process(AgentObject* agent,
             childprocess_id, command,
             shell_output_handle,
             shell_process_handle, agent);
+    g_free(command);
 }
 
 static void 
@@ -226,4 +229,6 @@ report_shell_session(AgentObject* agent,
         END_SHELL_SESSION, shell);
 
     agent_send_message(agent, message);
+    g_free(script);
+    g_free(output);
 }

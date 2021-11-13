@@ -21,10 +21,8 @@ namespace SharedHost.Models.Auth
         [Required]
         public string FullName { get; set; }
 
-        [Required]
         public DateTime DateOfBirth { get; set; }
 
-        [Required]
         public string Jobs { get; set; }
 
         [Required]

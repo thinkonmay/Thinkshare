@@ -49,6 +49,17 @@
             "console": "externalTerminal"
         },
         {
+            "name": "Agent",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "C:\\Users\\huyho\\Desktop\\pcc\\personal-cloud-computing\\Deployment\\app-packetizer\\additional-resources\\ThinkMay\\bin\\agent.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "console": "externalTerminal"
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"

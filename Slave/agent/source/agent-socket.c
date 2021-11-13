@@ -80,6 +80,7 @@ on_server_error(SoupWebsocketConnection* conn,
 {
     gchar* text = error->message;
     write_to_log_file(AGENT_NETWORK_LOG,text);
+    
     /*close websocket connection*/
     Socket* socket = agent_get_socket(agent);
     socket_close(socket);

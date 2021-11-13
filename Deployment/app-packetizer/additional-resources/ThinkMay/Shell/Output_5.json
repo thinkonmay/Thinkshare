@@ -1,30 +1,26 @@
 ﻿[
     {
-        "Name":  "chrome",
-        "WorkingSet":  210.46484375
+        "FreeSpace":  59,
+        "Size":  238,
+        "DeviceType":  null,
+        "DeviceID":  "C:"
     },
     {
-        "Name":  "msedge",
-        "WorkingSet":  220.5234375
+        "FreeSpace":  145,
+        "Size":  219,
+        "DeviceType":  null,
+        "DeviceID":  "R:"
     },
     {
-        "Name":  "msedge",
-        "WorkingSet":  227.91015625
+        "FreeSpace":  0,
+        "Size":  0,
+        "DeviceType":  null,
+        "DeviceID":  "Y:"
     },
     {
-        "Name":  "Code",
-        "WorkingSet":  287.9453125
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  294.71875
-    },
-    {
-        "Name":  "chrome",
-        "WorkingSet":  329.203125
-    },
-    {
-        "Name":  "Memory Compression",
-        "WorkingSet":  459.51953125
+        "FreeSpace":  0,
+        "Size":  0,
+        "DeviceType":  null,
+        "DeviceID":  "Z:"
     }
 ]
