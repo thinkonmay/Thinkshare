@@ -46,7 +46,7 @@ function register(body, status) {
 				.then(async data => {
 					const response = await data.json()
 					if (data.status == 200) {
-						if (response.errorCode == 0) {
+						if (response.errors == null) {
 							setCookie("token", response.token, MINUTES59)
 							Utils.newSwal.fire({
 								title: "Thành công!",
