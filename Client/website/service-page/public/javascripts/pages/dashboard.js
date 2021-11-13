@@ -82,11 +82,7 @@ $(document).ready(async () => {
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
 		sessionInfor = await (await API.getSession()).json()
-		let reUserName = userinfor.userName;
-		if (reUserName[reUserName.length - 1] == "g" && reUserName[reUserName.length - 2] == "g") {
-			userinfor.userName = reUserName.slice(0, reUserName.length - 2);
-		}
-		document.getElementById("WelcomeUsername").innerHTML = userinfor.userName;
+		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
 
 		for (const slave of sessions) {
 			createSlave(slave, "slavesInUses");
