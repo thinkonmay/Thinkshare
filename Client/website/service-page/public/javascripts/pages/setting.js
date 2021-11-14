@@ -5,6 +5,15 @@ import * as CheckDevice from "../util/checkdevice.js"
 
 
 $(document).ready(() => {
+    API.getInfor().then(async data => {
+        let body = await data.json()
+        $("#usernameCtrler").attr("placeholder", body.userName)
+        $("#fullnameCtrler").attr("placeholder", body.fullName)
+        $("#jobsCtrler").attr("placeholder", body.jobs)     
+        $("#phonenumberCtrler").attr("placeholder", body.phoneNumber)
+        $("#genderCtrler").val(body.gender)
+        $("#dobCtrler").val((body.dateOfBirth).substring(0, 10))
+    })
 
     let display = new Object();
     let info = new Object();
@@ -30,6 +39,9 @@ $(document).ready(() => {
     });
 
     $('#submitChangeInfoCtrler').click(() => {
+        body = {
+            
+        }
         Utils.newSwal.fire({
             title: "Đang đăng kí",
             text: "Vui lòng chờ . . .",
