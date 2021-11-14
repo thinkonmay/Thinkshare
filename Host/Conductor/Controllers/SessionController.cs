@@ -67,10 +67,10 @@ namespace Conductor.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("Initialize")]
-        public async Task<IActionResult> Create(int ClientID)
+        public async Task<IActionResult> Create(int SlaveID)
         {
             var UserID = HttpContext.Items["UserID"];
-            var Query = await _slmsocket.GetSlaveState(request.SlaveId);
+            var Query = await _slmsocket.GetSlaveState(SlaveID);
 
             // search for availability of slave device
             if (Query.SlaveServiceState != SlaveServiceState.Open) { return BadRequest("Device Not Available"); }
@@ -85,7 +85,7 @@ namespace Conductor.Controllers
             var sess = new RemoteSession(sessionPair,Configuration)
             {
                 Client = await _userManager.FindByIdAsync(UserID.ToString()),
-                Slave = _db.Devices.Find(request.SlaveId)
+                Slave = _db.Devices.Find(SlaveID)
             };
 
             /*create session from client device capability*/

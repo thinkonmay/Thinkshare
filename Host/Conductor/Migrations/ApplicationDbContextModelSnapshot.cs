@@ -154,27 +154,27 @@ namespace Conductor.Migrations
 
             modelBuilder.Entity("SharedHost.Models.Device.DeviceCap", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int?>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("audioCodec")
+                    b.Property<int?>("audioCodec")
                         .HasColumnType("integer");
 
-                    b.Property<int>("device")
+                    b.Property<int?>("device")
                         .HasColumnType("integer");
 
-                    b.Property<int>("mode")
+                    b.Property<int?>("mode")
                         .HasColumnType("integer");
 
-                    b.Property<int>("screenHeight")
+                    b.Property<int?>("screenHeight")
                         .HasColumnType("integer");
 
-                    b.Property<int>("screenWidth")
+                    b.Property<int?>("screenWidth")
                         .HasColumnType("integer");
 
-                    b.Property<int>("videoCodec")
+                    b.Property<int?>("videoCodec")
                         .HasColumnType("integer");
 
                     b.HasKey("ID");
@@ -216,19 +216,19 @@ namespace Conductor.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("AudioCodec")
+                    b.Property<int?>("AudioCodec")
                         .HasColumnType("integer");
 
-                    b.Property<int>("QoEMode")
+                    b.Property<int?>("QoEMode")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ScreenHeight")
+                    b.Property<int?>("ScreenHeight")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ScreenWidth")
+                    b.Property<int?>("ScreenWidth")
                         .HasColumnType("integer");
 
-                    b.Property<int>("VideoCodec")
+                    b.Property<int?>("VideoCodec")
                         .HasColumnType("integer");
 
                     b.HasKey("ID");
