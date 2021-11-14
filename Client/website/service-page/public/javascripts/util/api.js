@@ -251,12 +251,27 @@ export const initializeSession = (SlaveID) => {
 }
 
 // User
-export const setInfor = (username) => {
+export const setInfor = (body) => {
 	return fetch(SetInfor, {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({
-			userName: username,
+			userName: body.username,
+			fullName: body.fullname,
+			jobs: body.jobs,
+			phoneNumber: body.phonenumber,
+			gender: body.gender,
+			dateOfBirth: body.dob,
+			avatar: body.avatar,
+			defaultSetting: {
+				"id": body.defaultSetting.id,
+				"device": body.defaultSetting.device,
+				"audioCodec": body.defaultSetting.audioCodec,
+				"videoCodec": body.defaultSetting.videoCodec,
+				"mode": body.defaultSetting.mode,
+				"screenWidth": body.defaultSetting.screenWidth,
+				"screenHeight": body.defaultSetting.screenHeight
+			}
 		})
 	})
 }
