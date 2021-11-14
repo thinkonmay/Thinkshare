@@ -156,24 +156,57 @@ write_to_script_file(AgentObject* agent, ShellSession* session)
     return;
 }
 
+
+typedef struct _ShellSessionModel
+{
+    gchar string_model[500];
+
+    gchar* script;
+
+    gint model_id;
+}ShellSessionModel;
+
+static ShellSessionModel model[10];
+
+
 void
 initialize_shell_session(AgentObject* agent,
                          gchar* data_string)
 {
-
+    ShellSession* session;
     GError* error = NULL;
+    return;
+
+    for(gint i = 0; i< 10;i++)
+    {
+        if(!g_strcmp0(data_string,model[i].string_model))
+        {
+            ChildProcess* process = get_available_child_process();
+            gint process_id = get_child_process_id(process);
+
+            session = get_shell_session(process_id);
+            session->script_file = GET_SHELL_SCRIPT_FILE(process_id);
+            session->output_file = GET_SHELL_OUTPUT_FILE(process_id);
+            session->model_id = model[i].model_id;
+            session->shell_script = model[i].script;
+            GRand* random = g_rand_new();
+            session->id = g_rand_int(random);
+            write_to_script_file(agent, session);
+            create_new_shell_process(agent, session);
+            return;
+        }
+    }
+
+
     JsonParser* parser = json_parser_new();
     Message* json_data = get_json_object_from_string(data_string,&error,parser);
-    if(!error == NULL)
-	{
-		g_object_unref(parser);
-		return;
-	}
+    if(!error == NULL) { g_object_unref(parser); return; }
+
 
     ChildProcess* process = get_available_child_process();
     gint process_id = get_child_process_id(process);
 
-    ShellSession* session = get_shell_session(process_id);
+    session = get_shell_session(process_id);
     session->script_file = GET_SHELL_SCRIPT_FILE(process_id);
     session->output_file = GET_SHELL_OUTPUT_FILE(process_id);
     session->shell_script = json_object_get_string_member(json_data,"Script");
@@ -181,10 +214,20 @@ initialize_shell_session(AgentObject* agent,
     session->id = json_object_get_int_member(json_data,"ID");
     session->process = process;
 
+    for(int i = 0; i< 10;i++)
+    {
+        if(!(model[i].string_model))
+        {
+            model[i].script=    session->shell_script;
+            model[i].model_id = session->model_id;
+            memcpy(model[i].string_model,data_string,strlen(data_string));
+        }
+    }
+
     write_to_script_file(agent, session);
     create_new_shell_process(agent, session);
-    g_object_unref(parser);
-    
+    g_object_unref(parser);    
+    return;
 }
 
 static void
@@ -200,17 +243,11 @@ void
 report_shell_session(AgentObject* agent,
                     gint process_id)
 {
-
-
     gchar* script = shell_session_get_script(process_id);
     gchar* output = shell_session_get_output(process_id);
     gint id =       shell_session_get_id(process_id);
     gint model =    shell_session_get_model(process_id);
-    if(script == NULL || output == NULL) 
-    {
-        agent_report_error(agent, "fail to get script output");
-        return;
-    }
+    if(script == NULL || output == NULL) { agent_report_error(agent, "fail to get script output"); return; }
 
     gchar* temp = malloc(strlen(output));
     memcpy(temp,output+3,strlen(output));
@@ -218,19 +255,39 @@ report_shell_session(AgentObject* agent,
     character_remover(&temp, "\n");
     character_remover(&temp, "\r");
 
-    Message* shell = json_object_new();
-    json_object_set_string_member(shell, "Output", temp);
-    json_object_set_string_member(shell, "Script", script);
-    json_object_set_int_member(shell, "ID", id);
-    json_object_set_int_member(shell, "ModelID", model);
+
+    guint status;
+    SoupMessage *msg;
+    const char * mycontent; //alloc and fill this with your data
+    static SoupSession* session;
+    const gchar* https_aliases[] = { "https", NULL };
+    Socket* socket = agent_get_socket(agent);
+
+    session = 
+        soup_session_new_with_options(
+            SOUP_SESSION_SSL_STRICT, FALSE,
+            SOUP_SESSION_SSL_USE_SYSTEM_CA_FILE, TRUE,
+            //SOUP_SESSION_SSL_CA_FILE, "/etc/ssl/certs/ca-bundle.crt",
+            SOUP_SESSION_HTTPS_ALIASES, https_aliases, NULL);
 
 
+    GString* uri = g_string_new(socket_get_host_url(socket));
+    g_string_append(uri,"?ModelID=");
+    gchar* buffer;
+    itoa(id,buffer,10);
+    g_string_append(uri,buffer);
+    g_string_append(uri,"&ID=");
 
-    Message* message = message_init(
-        AGENT_MODULE, HOST_MODULE,
-        END_SHELL_SESSION, shell);
+    msg = soup_message_new ("POST", "https://host.thinkmay.net/Account/Login?");
+    gchar* parammeter = "";
+    soup_message_set_request (msg, "application/json",
+            SOUP_MEMORY_COPY, script, strlen (script));
+        
 
-    agent_send_message(agent, message);
-    g_free(script);
-    g_free(output);
+    status = soup_session_send_message (session, msg);
+
+    if(status != 200)
+    {
+        agent_report_error(agent, "Unable to update script output");
+    }
 }

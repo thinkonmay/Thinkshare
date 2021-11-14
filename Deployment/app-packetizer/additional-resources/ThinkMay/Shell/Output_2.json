@@ -1,30 +1,20 @@
 ﻿[
     {
-        "InstanceName":  "idle",
-        "CPUpercentage":  84.34
+        "FreeSpace":  56,
+        "Size":  238,
+        "DeviceType":  null,
+        "DeviceID":  "C:"
     },
     {
-        "InstanceName":  "system",
-        "CPUpercentage":  1.29
+        "FreeSpace":  233,
+        "Size":  466,
+        "DeviceType":  null,
+        "DeviceID":  "Y:"
     },
     {
-        "InstanceName":  "dwm",
-        "CPUpercentage":  1.03
-    },
-    {
-        "InstanceName":  "explorer",
-        "CPUpercentage":  5.91
-    },
-    {
-        "InstanceName":  "devenv",
-        "CPUpercentage":  1.80
-    },
-    {
-        "InstanceName":  "webviewhost",
-        "CPUpercentage":  1.80
-    },
-    {
-        "InstanceName":  "_total",
-        "CPUpercentage":  94.63
+        "FreeSpace":  143,
+        "Size":  466,
+        "DeviceType":  null,
+        "DeviceID":  "Z:"
     }
 ]

@@ -10,9 +10,16 @@ namespace SharedHost.Models.Session
     public class QoE
     {
         public QoE() { }
-        public QoE(DeviceCap cap)
+        public QoE(DeviceCap? cap)
         {
-
+            if(cap == null)
+            {
+                ScreenWidth = 2560;
+                ScreenHeight = 1440;
+                VideoCodec = Codec.CODEC_H264;
+                AudioCodec = Codec.OPUS_ENC;
+                QoEMode = QoEMode.MEDIUM_CONST;
+            }
             ScreenHeight = cap.screenHeight;
             ScreenWidth = cap.screenWidth;
             VideoCodec = cap.videoCodec;

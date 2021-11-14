@@ -1,22 +1,30 @@
 ﻿[
     {
         "Name":  "msedge",
-        "WorkingSet":  210.28515625
-    },
-    {
-        "Name":  "msedge",
-        "WorkingSet":  210.78515625
-    },
-    {
-        "Name":  "OmniSharp",
-        "WorkingSet":  268.68359375
+        "WorkingSet":  234.33984375
     },
     {
         "Name":  "Code",
-        "WorkingSet":  498.4296875
+        "WorkingSet":  266.24609375
+    },
+    {
+        "Name":  "terraform-ls",
+        "WorkingSet":  272.09765625
     },
     {
         "Name":  "msedge",
-        "WorkingSet":  558.8671875
+        "WorkingSet":  290.46875
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  311.99609375
+    },
+    {
+        "Name":  "OmniSharp",
+        "WorkingSet":  334.93359375
+    },
+    {
+        "Name":  "Memory Compression",
+        "WorkingSet":  590.90234375
     }
 ]

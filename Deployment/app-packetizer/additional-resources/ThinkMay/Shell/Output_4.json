@@ -1,26 +1,30 @@
 ﻿[
     {
-        "FreeSpace":  57,
-        "Size":  238,
-        "DeviceType":  null,
-        "DeviceID":  "C:"
+        "Name":  "Code",
+        "WorkingSet":  217.0078125
     },
     {
-        "FreeSpace":  145,
-        "Size":  219,
-        "DeviceType":  null,
-        "DeviceID":  "R:"
+        "Name":  "msedge",
+        "WorkingSet":  239.50390625
     },
     {
-        "FreeSpace":  0,
-        "Size":  0,
-        "DeviceType":  null,
-        "DeviceID":  "Y:"
+        "Name":  "terraform-ls",
+        "WorkingSet":  272.109375
     },
     {
-        "FreeSpace":  0,
-        "Size":  0,
-        "DeviceType":  null,
-        "DeviceID":  "Z:"
+        "Name":  "msedge",
+        "WorkingSet":  290.98046875
+    },
+    {
+        "Name":  "Code",
+        "WorkingSet":  326.76953125
+    },
+    {
+        "Name":  "OmniSharp",
+        "WorkingSet":  334.11328125
+    },
+    {
+        "Name":  "Memory Compression",
+        "WorkingSet":  560.9609375
     }
 ]
