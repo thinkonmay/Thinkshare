@@ -5,18 +5,19 @@ import * as CheckDevice from "../util/checkdevice.js"
 
 
 $(document).ready(() => {
+    let idDisplay;
     API.getInfor().then(async data => {
         let body = await data.json()
+        idDisplay = body.defaultSetting['id'];
         $("#usernameCtrler").attr("placeholder", body.userName)
         $("#fullnameCtrler").attr("placeholder", body.fullName)
-        $("#jobsCtrler").attr("placeholder", body.jobs)     
+        $("#jobsCtrler").attr("placeholder", body.jobs)
         $("#phonenumberCtrler").attr("placeholder", body.phoneNumber)
         $("#genderCtrler").val(body.gender)
         $("#dobCtrler").val((body.dateOfBirth).substring(0, 10))
     })
 
-    let display = new Object();
-    let info = new Object();
+    let display = {};
     $('[name="resolutionOptions"]').click(function () {
         display.resolution = $(this).find("input").val()
     });
@@ -34,19 +35,27 @@ $(document).ready(() => {
         display.platform = $(this).find("input").val()
     });
 
-    $("#usernameCtrler").on("change", function () {
-        info.username = this.value;
-    });
 
     $('#submitChangeInfoCtrler').click(() => {
-        body = {
-            
-        }
         Utils.newSwal.fire({
             title: "Đang đăng kí",
             text: "Vui lòng chờ . . .",
             didOpen: () => {
-                API.setInfor(info.username)
+                let body = {}
+                body.username = $('#usernameCtrler').attr('placeholder')
+                body.fullname = $("#fullnameCtrler").attr("placeholder")
+                body.jobs = $("#jobsCtrler").attr("placeholder")
+                body.phonenumber = $("#phonenumberCtrler").attr("placeholder")
+                body.gender = $("#genderCtrler :selected").val()
+                body.dob = new Date($("#dobCtrler").val()).toISOString()
+                body.defaultSetting_id = 3;
+                body.defaultSetting_device = 0;
+                body.defaultSetting_audioCodec = 0;
+                body.defaultSetting_videoCodec = 0;
+                body.defaultSetting_mode = 0;
+                body.defaultSetting_screenWidth = 0;
+                body.defaultSetting_screenHeight = 0;
+                API.setInfor(body)
                     .then(async data => {
                         if (data.status == 200) {
                             Utils.newSwal.fire({
@@ -65,20 +74,44 @@ $(document).ready(() => {
     });
 
     $('#submitDisplayCtrler').click(() => {
-        Setting.Mode(display.bitrate);
-        Setting.AudioCodec(display.audio);
-        Setting.VideoCodec(display.video);
-        Setting.mapVideoRes(display.resolution);
-        Setting.Platform(display.platform);
         Utils.newSwal.fire({
-            title: "Thành công!",
-            text: "Cấu hình của bạn đã được cập nhật",
-            icon: "success",
+            title: "Đang đăng kí",
+            text: "Vui lòng chờ . . .",
+            didOpen: () => {
+                let body = {}
+                body.defaultSetting_id = parseInt(idDisplay);
+                body.defaultSetting_device = parseInt(display.platform);
+                body.defaultSetting_audioCodec = parseInt(display.audio);
+                body.defaultSetting_videoCodec = parseInt(display.video)
+                body.defaultSetting_mode = parseInt(display.bitrate)
+                switch (parseInt(display.resolution)) {
+                    case 0: body.defaultSetting_screenWidth = 1920;
+                        body.defaultSetting_screenHeight = 1080;
+                        break;
+                    case 1:
+                        body.defaultSetting_screenWidth = 2560;
+                        body.defaultSetting_screenHeight = 1440;
+                        break;
+                    case 2:
+                        body.defaultSetting_screenWidth = 3840;
+                        body.defaultSetting_screenHeight = 2160;
+                        break;
+                }
+                API.setInfor(body)
+                    .then(async data => {
+                        if (data.status == 200) {
+                            Utils.newSwal.fire({
+                                title: "Thành công!",
+                                text: "Thông tin của bạn đã được cập nhật",
+                                icon: "success",
+                            })
+                        } else {
+                            Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
+                        }
+                    })
+                    .catch(status ? Utils.fetchErrorHandler : "")
+            }
         })
-        console.log('asdasd')
-
-
-
     });
 
 
