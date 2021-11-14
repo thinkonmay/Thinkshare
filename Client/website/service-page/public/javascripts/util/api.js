@@ -9,7 +9,7 @@ let host;
 let currentURL = document.URL
 let subdomain = currentURL.slice(0, 28)
 // if (subdomain == 'https://service.thinkmay.net') {
-	host = "https://host.thinkmay.net"
+host = "https://host.thinkmay.net"
 // } else {
 // 	host = "http://hostdev.thinkmay.net"
 // }
@@ -264,13 +264,13 @@ export const setInfor = (body) => {
 			dateOfBirth: body.dob ? body.dob : null,
 			avatar: body.avatar ? body.avatar : null,
 			defaultSetting: {
-				"id": body.defaultSetting_id,
-				"device": body.defaultSetting_device,
-				"audioCodec": body.defaultSetting_audioCodec,
-				"videoCodec": body.defaultSetting_videoCodec,
-				"mode": body.defaultSetting_mode,
-				"screenWidth": body.defaultSetting_screenWidth,
-				"screenHeight": body.defaultSetting_screenHeight
+				id: body.defaultSetting_id,
+				device: body.defaultSetting_device ? body.defaultSetting_device : null,
+				audioCodec: body.defaultSetting_audioCodec ? body.defaultSetting_audioCodec : null,
+				videoCodec: body.defaultSetting_videoCodec ? body.defaultSetting_videoCodec : null,
+				mode: body.defaultSetting_mode ? body.defaultSetting_mode : null,
+				screenWidth: body.defaultSetting_screenWidth ? body.defaultSetting_screenWidth : null,
+				screenHeight: body.defaultSetting_screenHeight ? body.defaultSetting_screenHeight : null
 			}
 		})
 	})
