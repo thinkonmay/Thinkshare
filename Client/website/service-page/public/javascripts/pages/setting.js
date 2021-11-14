@@ -9,7 +9,7 @@ $(document).ready(() => {
         let body = await data.json()
         $("#usernameCtrler").attr("placeholder", body.userName)
         $("#fullnameCtrler").attr("placeholder", body.fullName)
-        $("#jobsCtrler").attr("placeholder", body.jobs)     
+        $("#jobsCtrler").attr("placeholder", body.jobs)
         $("#phonenumberCtrler").attr("placeholder", body.phoneNumber)
         $("#genderCtrler").val(body.gender)
         $("#dobCtrler").val((body.dateOfBirth).substring(0, 10))
@@ -39,14 +39,25 @@ $(document).ready(() => {
     });
 
     $('#submitChangeInfoCtrler').click(() => {
-        body = {
-            
-        }
         Utils.newSwal.fire({
             title: "Đang đăng kí",
             text: "Vui lòng chờ . . .",
             didOpen: () => {
-                API.setInfor(info.username)
+                let body = {}
+                body.username = $('#usernameCtrler').attr('placeholder')
+                body.fullname = $("#fullnameCtrler").attr("placeholder")
+                body.jobs = $("#jobsCtrler").attr("placeholder")
+                body.phonenumber = $("#phonenumberCtrler").attr("placeholder")
+                body.gender = $("#genderCtrler :selected").val()
+                body.dob = new Date($("#dobCtrler").val()).toISOString()
+                body.defaultSetting_id = 3;
+                body.defaultSetting_device = 1;
+                body.defaultSetting_audioCodec = 1;
+                body.defaultSetting_videoCodec = 1;
+                body.defaultSetting_mode = 1;
+                body.defaultSetting_screenWidth = 0;
+                body.defaultSetting_screenHeight = 0;
+                API.setInfor(body)
                     .then(async data => {
                         if (data.status == 200) {
                             Utils.newSwal.fire({

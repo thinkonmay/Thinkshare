@@ -256,21 +256,21 @@ export const setInfor = (body) => {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({
-			userName: body.username,
-			fullName: body.fullname,
-			jobs: body.jobs,
-			phoneNumber: body.phonenumber,
-			gender: body.gender,
-			dateOfBirth: body.dob,
-			avatar: body.avatar,
+			userName: body.username ? body.username : null,
+			fullName: body.fullname ? body.fullname : null,
+			jobs: body.jobs ? body.jobs : null,
+			phoneNumber: body.phonenumber ? body.phonenumber : null,
+			gender: body.gender ? body.gender : null,
+			dateOfBirth: body.dob ? body.dob : null,
+			avatar: body.avatar ? body.avatar : null,
 			defaultSetting: {
-				"id": body.defaultSetting.id,
-				"device": body.defaultSetting.device,
-				"audioCodec": body.defaultSetting.audioCodec,
-				"videoCodec": body.defaultSetting.videoCodec,
-				"mode": body.defaultSetting.mode,
-				"screenWidth": body.defaultSetting.screenWidth,
-				"screenHeight": body.defaultSetting.screenHeight
+				"id": body.defaultSetting_id,
+				"device": body.defaultSetting_device,
+				"audioCodec": body.defaultSetting_audioCodec,
+				"videoCodec": body.defaultSetting_videoCodec,
+				"mode": body.defaultSetting_mode,
+				"screenWidth": body.defaultSetting_screenWidth,
+				"screenHeight": body.defaultSetting_screenHeight
 			}
 		})
 	})
