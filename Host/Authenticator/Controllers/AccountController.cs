@@ -233,26 +233,23 @@ namespace Authenticator.Controllers
             }
             if(infor.DefaultSetting != null)
             {
-                if(infor.DefaultSetting['id'] != null){
-                    account.DefaultSetting['id'] = infor.DefaultSetting['id'];
-                }        
-                if(infor.DefaultSetting['device'] != null){
-                    account.DefaultSetting['device'] = infor.DefaultSetting['device'];
+                if(infor.DefaultSetting.device != null){
+                    account.DefaultSetting.device = infor.DefaultSetting.device;
                 }                
-                if(infor.DefaultSetting['audioCodec'] != null){
-                    account.DefaultSetting['audioCodec'] = infor.DefaultSetting['audioCodec'];
+                if(infor.DefaultSetting.audioCodec != null){
+                    account.DefaultSetting.audioCodec = infor.DefaultSetting.audioCodec;
                 }
-                if(infor.DefaultSetting['videoCodec'] != null){
-                    account.DefaultSetting['videoCodec'] = infor.DefaultSetting['videoCodec'];
+                if(infor.DefaultSetting.audioCodec != null){
+                    account.DefaultSetting.audioCodec = infor.DefaultSetting.audioCodec;
                 }
-                if(infor.DefaultSetting['mode'] != null){
-                    account.DefaultSetting['mode'] = infor.DefaultSetting['mode'];
+                if(infor.DefaultSetting.mode != null){
+                    account.DefaultSetting.mode = infor.DefaultSetting.mode;
                 }
-                if(infor.DefaultSetting['screenWidth'] != null){
-                    account.DefaultSetting['screenWidth'] = infor.DefaultSetting['screenWidth'];
+                if(infor.DefaultSetting.screenWidth != null){
+                    account.DefaultSetting.screenWidth = infor.DefaultSetting.screenWidth;
                 }
-                if(infor.DefaultSetting['screenHeight'] != null){
-                    account.DefaultSetting['screenHeight'] = infor.DefaultSetting['screenHeight'];
+                if(infor.DefaultSetting.screenHeight != null){
+                    account.DefaultSetting.screenHeight = infor.DefaultSetting.screenHeight;
                 }
 
             }
