@@ -61,19 +61,6 @@ namespace Authenticator.Controllers
                 if (result.Succeeded)
                 {
                     UserAccount user = await _userManager.FindByNameAsync(model.UserName);
-                    
-                    if(user.DefaultSetting == null)
-                    {
-                        user.DefaultSetting = new DeviceCap {
-                            device = DeviceType.WEBAPP,
-                            videoCodec = Codec.CODEC_H264,
-                            audioCodec = Codec.OPUS_ENC,
-                            mode = QoEMode.HIGH_CONST,
-                            screenHeight = 1920,
-                            screenWidth = 1080                         
-                        };
-                        await _userManager.UpdateAsync(user);
-                    }
                     string token = await _tokenGenerator.GenerateJwt(user);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
                 }
@@ -221,6 +208,18 @@ namespace Authenticator.Controllers
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
+            if(account.DefaultSetting == null)
+            {
+                account.DefaultSetting = new DeviceCap {
+                    device = DeviceType.WEBAPP,
+                    videoCodec = Codec.CODEC_H264,
+                    audioCodec = Codec.OPUS_ENC,
+                    mode = QoEMode.HIGH_CONST,
+                    screenHeight = 1920,
+                    screenWidth = 1080                         
+                };
+                await _userManager.UpdateAsync(account);
+            }
             return Ok(new UserInforModel(account));
         }
 
