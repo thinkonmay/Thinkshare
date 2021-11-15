@@ -3,7 +3,7 @@ import * as Setting from "./setting.js"
 import { Initialize, getInfor, setInfor } from "./api.js"
 import { reconnectSession } from "./api.js"
 import { initializeSession } from "./api.js"
-import { isElectron } from "./checkdevice"
+import { isElectron } from "./checkdevice.js"
 
 const coookies_expire = 100 * 1000
 
