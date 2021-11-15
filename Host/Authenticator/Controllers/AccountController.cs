@@ -233,7 +233,28 @@ namespace Authenticator.Controllers
             }
             if(infor.DefaultSetting != null)
             {
-                account.DefaultSetting = infor.DefaultSetting;
+                if(infor.DefaultSetting['id'] != null){
+                    account.DefaultSetting = infor.DefaultSetting['id']
+                }        
+                if(infor.DefaultSetting['device'] != null){
+                    account.DefaultSetting = infor.DefaultSetting['device']
+                }                
+                if(infor.DefaultSetting['audioCodec'] != null){
+                    account.DefaultSetting = infor.DefaultSetting['audioCodec']
+                }
+                if(infor.DefaultSetting['videoCodec'] != null){
+                    account.DefaultSetting = infor.DefaultSetting['videoCodec']
+                }
+                if(infor.DefaultSetting['mode'] != null){
+                    account.DefaultSetting = infor.DefaultSetting['mode']
+                }
+                if(infor.DefaultSetting['screenWidth'] != null){
+                    account.DefaultSetting = infor.DefaultSetting['screenWidth']
+                }
+                if(infor.DefaultSetting['screenHeight'] != null){
+                    account.DefaultSetting = infor.DefaultSetting['screenHeight']
+                }
+
             }
             if(infor.FullName != null)
             {
