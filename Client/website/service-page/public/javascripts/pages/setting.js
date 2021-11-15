@@ -1,4 +1,3 @@
-import * as Setting from "../util/setting.js"
 import * as API from "../util/api.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
