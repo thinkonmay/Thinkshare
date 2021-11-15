@@ -16,6 +16,29 @@ $(document).ready(() => {
         $("#genderCtrler").val(body.gender)
         $("#dobCtrler").val((body.dateOfBirth).substring(0, 10))
     })
+    let body = {}
+    $("#usernameCtrler").on("change", function () {
+        body.username = this.value;
+    });
+    $("#fullnameCtrler").on("change", function () {
+        body.fullname = this.value;
+    })
+    $("#jobsCtrler").on("change", function () {
+        body.jobs = this.value;
+    })
+    $("#phonenumberCtrler").on("change", function () {
+        body.phonenumber = this.value
+    })
+    $("#genderCtrler").on("change", function () {
+        body.gender = this.value
+    })
+    $("#dobCtrler").on("change", function () {
+        body.dob = (this.value)
+        body.dob = new Date(body.dob).toISOString().substring(0, 10)
+    })
+    $("#avatarCtrler").on("change", function() {
+        body.avatar = this.value
+    })
 
     let display = {};
     $('[name="resolutionOptions"]').click(function () {
@@ -41,13 +64,7 @@ $(document).ready(() => {
             title: "Đang đăng kí",
             text: "Vui lòng chờ . . .",
             didOpen: () => {
-                let body = {}
-                body.username = $('#usernameCtrler').attr('placeholder')
-                body.fullname = $("#fullnameCtrler").attr("placeholder")
-                body.jobs = $("#jobsCtrler").attr("placeholder")
-                body.phonenumber = $("#phonenumberCtrler").attr("placeholder")
-                body.gender = $("#genderCtrler :selected").val()
-                body.dob = new Date($("#dobCtrler").val()).toISOString()
+
                 body.defaultSetting_id = 3;
                 body.defaultSetting_device = 0;
                 body.defaultSetting_audioCodec = 0;
@@ -55,6 +72,7 @@ $(document).ready(() => {
                 body.defaultSetting_mode = 0;
                 body.defaultSetting_screenWidth = 0;
                 body.defaultSetting_screenHeight = 0;
+                console.log(body)
                 API.setInfor(body)
                     .then(async data => {
                         if (data.status == 200) {
