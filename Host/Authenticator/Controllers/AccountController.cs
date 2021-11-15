@@ -252,7 +252,7 @@ namespace Authenticator.Controllers
                 account.PhoneNumber = infor.Jobs;
             }
             
-            await _db.SaveChangesAsync();
+            await _userManager.UpdateAsync(account);
             if(infor.UserName != null)
             {
                 var result = await _userManager.SetUserNameAsync(account, infor.UserName);
