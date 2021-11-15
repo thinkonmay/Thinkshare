@@ -61,6 +61,18 @@ namespace Authenticator.Controllers
                 {
                     UserAccount user = await _userManager.FindByNameAsync(model.UserName);
                     
+                    if(user.DefaultSetting == null)
+                    {
+                        user.DefaultSetting = new DeviceCap {
+                            device = DeviceType.WEBAPP;
+                            videoCodec = Codec.CODEC_H264;
+                            audioCodec = Codec.OPUS_ENC;
+                            mode = QoEMode.HIGH_CONST;
+                            screenHeight = 1920;
+                            screenWidth = 1080;                          
+                        }
+                        await _userManager.UpdateAsync(user);
+                    }
                     string token = await _tokenGenerator.GenerateJwt(user);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
                 }
@@ -231,28 +243,7 @@ namespace Authenticator.Controllers
             {
                 account.DateOfBirth = infor.DateOfBirth;
             }
-            if(infor.DefaultSetting != null)
-            {
-                if(infor.DefaultSetting.device != null){
-                    account.DefaultSetting.device = infor.DefaultSetting.device;
-                }                
-                if(infor.DefaultSetting.audioCodec != null){
-                    account.DefaultSetting.audioCodec = infor.DefaultSetting.audioCodec;
-                }
-                if(infor.DefaultSetting.audioCodec != null){
-                    account.DefaultSetting.audioCodec = infor.DefaultSetting.audioCodec;
-                }
-                if(infor.DefaultSetting.mode != null){
-                    account.DefaultSetting.mode = infor.DefaultSetting.mode;
-                }
-                if(infor.DefaultSetting.screenWidth != null){
-                    account.DefaultSetting.screenWidth = infor.DefaultSetting.screenWidth;
-                }
-                if(infor.DefaultSetting.screenHeight != null){
-                    account.DefaultSetting.screenHeight = infor.DefaultSetting.screenHeight;
-                }
 
-            }
             if(infor.FullName != null)
             {
                 account.FullName = infor.FullName;
@@ -268,6 +259,27 @@ namespace Authenticator.Controllers
             if(infor.PhoneNumber != null)
             {
                 account.PhoneNumber = infor.Jobs;
+            }                        
+            if(infor.DefaultSetting != null)
+            {
+                if(infor.DefaultSetting.device != null){
+                    account.DefaultSetting.device = infor.DefaultSetting.device;
+                }                
+                if(infor.DefaultSetting.audioCodec != null){
+                    account.DefaultSetting.audioCodec = infor.DefaultSetting.audioCodec;
+                }
+                if(infor.DefaultSetting.videoCodec != null){
+                    account.DefaultSetting.videoCodec = infor.DefaultSetting.videoCodec;
+                }
+                if(infor.DefaultSetting.mode != null){
+                    account.DefaultSetting.mode = infor.DefaultSetting.mode;
+                }
+                if(infor.DefaultSetting.screenWidth != null){
+                    account.DefaultSetting.screenWidth = infor.DefaultSetting.screenWidth;
+                }
+                if(infor.DefaultSetting.screenHeight != null){
+                    account.DefaultSetting.screenHeight = infor.DefaultSetting.screenHeight;
+                }
             }
             
             await _userManager.UpdateAsync(account);
