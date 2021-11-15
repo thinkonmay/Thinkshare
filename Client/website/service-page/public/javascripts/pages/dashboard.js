@@ -27,15 +27,6 @@ $(document).ready(async () => {
 		}
 	})
 
-	var defaultDeviceCap = {
-		mode: 4,
-		videoCodec: 1,
-		audioCodec: 4,
-		screenWidth: 2560,
-		screenHeight: 1440
-	}
-
-	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
 	setCookie("platform", "chrome", 999999)
 
 	var bitrate = document.getElementsByName("bitrate-setting");

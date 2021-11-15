@@ -1,5 +1,4 @@
 import * as Cookies from "./cookie.js"
-import * as Setting from "./setting.js"
 import { Initialize, getInfor, setInfor } from "./api.js"
 import { reconnectSession } from "./api.js"
 import { initializeSession } from "./api.js"

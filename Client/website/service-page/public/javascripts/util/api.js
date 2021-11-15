@@ -231,16 +231,9 @@ export const reconnectSession = (SlaveID) => {
 
 
 export const initializeSession = (SlaveID) => {
-	var cap = getCookie("cap");
-
-	var body = {
-		SlaveID: SlaveID,
-		cap: JSON.parse(cap)
-	}
-	return fetch(InitializeSession, {
+	return fetch(InitializeSession+ "?SlaveID=" + SlaveID, {
 		method: "POST",
-		headers: genHeaders(),
-		body: JSON.stringify(body)
+		headers: genHeaders()
 	}, function (error) {
 		if (401 == error.response.status) {
 			window.location.replace(API.Login)
