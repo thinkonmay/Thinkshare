@@ -1,1 +1,1 @@
-gst-launch-1.0 d3d11desktopdupsrc ! video/x-raw(memory:D3D11Memory),frame-rate=120/1 ! queue ! d3d11convert ! queue ! mfh265enc bitrate=10000 ! queue ! rtph265pay ! queue ! udpsink host=localhost port=5430
+gst-launch-1.0 d3d11desktopdupsrc ! video/x-raw(memory:D3D11Memory),frame-rate=60/1 ! queue ! d3d11convert ! queue ! mfh265enc bitrate=10000 ! queue ! rtph265pay ! queue ! udpsink host=localhost port=5430
