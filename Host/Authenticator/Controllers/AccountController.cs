@@ -15,6 +15,7 @@ using SharedHost.Auth.ThinkmayAuthProtocol;
 using System.Linq;
 using DbSchema.SystemDb.Data;
 using SharedHost;
+using SharedHost.Models.Session;
 using SharedHost.Models.ResponseModel;
 using Google.Apis.Auth;
 using SharedHost.Auth;
@@ -64,13 +65,13 @@ namespace Authenticator.Controllers
                     if(user.DefaultSetting == null)
                     {
                         user.DefaultSetting = new DeviceCap {
-                            device = DeviceType.WEBAPP;
-                            videoCodec = Codec.CODEC_H264;
-                            audioCodec = Codec.OPUS_ENC;
-                            mode = QoEMode.HIGH_CONST;
-                            screenHeight = 1920;
-                            screenWidth = 1080;                          
-                        }
+                            device = DeviceType.WEBAPP,
+                            videoCodec = Codec.CODEC_H264,
+                            audioCodec = Codec.OPUS_ENC,
+                            mode = QoEMode.HIGH_CONST,
+                            screenHeight = 1920,
+                            screenWidth = 1080                         
+                        };
                         await _userManager.UpdateAsync(user);
                     }
                     string token = await _tokenGenerator.GenerateJwt(user);
