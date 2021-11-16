@@ -39,6 +39,13 @@ $(document).ready(() => {
         body.avatar = this.value
     })
 
+    $("#langVN").on("change", function() {
+        window.location = '/dashboard/vi'
+    })
+
+    $("#langEN").on("change", function() {
+        window.location = '/dashboard/en'
+    })
     let display = {};
     $('[name="resolutionOptions"]').click(function () {
         display.resolution = $(this).find("input").val()
