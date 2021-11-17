@@ -37,18 +37,18 @@ namespace SharedHost.Models.Device
 
     public class DeviceCap
     {
-        public int ID {get;set;}
+        public int? ID {get;set;}
         
-        public DeviceType device {get;set;}
+        public DeviceType? device {get;set;}
 
-        public Codec audioCodec { get; set; }
+        public Codec? audioCodec { get; set; }
 
-        public Codec videoCodec { get; set; }
+        public Codec? videoCodec { get; set; }
 
-        public QoEMode mode { get; set; }
+        public QoEMode? mode { get; set; }
 
-        public int screenWidth { get; set; }
+        public int? screenWidth { get; set; }
 
-        public int screenHeight { get; set; }
+        public int? screenHeight { get; set; }
     }
 }

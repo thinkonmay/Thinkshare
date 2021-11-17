@@ -30,7 +30,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\Session.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StorageBlock.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\ClientRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\ClientSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Device.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Message.cs" />

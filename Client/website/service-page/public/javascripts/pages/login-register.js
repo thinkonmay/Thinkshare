@@ -25,7 +25,7 @@ function login(body) {
 							window.location.replace(API.Dashboard)
 						} else {
 							console.log(response.error);
-							Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
+							Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
 						}
 					} else Utils.responseErrorHandler(response)
 				})
@@ -41,12 +41,13 @@ function register(body, status) {
 		didOpen: () => {
 			Swal.showLoading()
 			var date = new Date(body.dob);
-			body.dob = date.toISOString(); //will return an ISO representation of the date
+			body.dob = body.dob ? date.toISOString(): "1990-01-01T00:00:00.000Z"; //will return an ISO representation of the date
+			body.jobs = body.jobs == null ? "nosetJobs": body.jobs,
 			API.register(body)
 				.then(async data => {
 					const response = await data.json()
 					if (data.status == 200) {
-						if (response.errorCode == 0) {
+						if (response.errors == null) {
 							setCookie("token", response.token, MINUTES59)
 							Utils.newSwal.fire({
 								title: "Thành công!",
@@ -59,8 +60,7 @@ function register(body, status) {
 								}
 							})
 						} else {
-							if (status)
-								Utils.responseError("Lỗi!", response.message, "error")
+								Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
 						}
 					} else {
 						if (status)
@@ -72,28 +72,35 @@ function register(body, status) {
 	})
 }
 
+async function GoogleLogin() {
+	var myParams = {
+		'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
+		'cookiepolicy': 'none',
+		'callback': loginCallback,
+		'approvalprompt': 'force',
+		'scope': 'profile email openid',
+	};
 
-function renderButton() {
-	gapi.signin2.render('gSignIn', {
-		'onsuccess': onSuccess,
-		'onfailure': onFailure
-	});
+	await gapi.auth.signIn(myParams)
 }
 
-// Sign-in success callback
-function onSuccess(Response) {
-	try {
-		const loginForm = {
-			token: Response.Zb.id_token,
-			Validator: "authenticator"
+function loginCallback(result) {
+	console.log(result)
+	if (result['status']['signed_in']) {
+		try {
+			const loginForm = {
+				token: result.id_token,
+				Validator: "authenticator"
+			}
+			var logout = getCookie("logout");
+			if (logout == "false" || logout == undefined || logout == "") {
+				googleLoginUser(loginForm)
+			}
+		} catch (error) {
+			console.log(error)
 		}
-		var logout = getCookie("logout"); 
-		if(logout == "false" || logout == undefined)
-		{
-			googleLoginUser(loginForm)
-		}
-	} catch (error){
-		console.log(error)
+	} else{
+		onFailure();
 	}
 }
 
@@ -115,29 +122,21 @@ const googleLoginUser = async (userForm) => {
 						}
 					} else Utils.responseErrorHandler(response)
 				})
-			
+
 		}
 	})
 }
-	
-	
-	
-
 
 // Sign-in failure callback
-function onFailure(error) {
+function onFailure() {
 	alert("Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại! ")
 }
-
 
 $(document).ready(() => {
 
 	$('#gSignIn').click(() => {
-		gapi.signin2.render('gSignIn', {
-			'onsuccess': onSuccess,
-			'onfailure': onFailure
-		});
-		setCookie('logout', 'false', MINUTES59);
+		setCookie("logout", "false", 0)
+		GoogleLogin();
 	})
 
 	$('#login').click(() => {

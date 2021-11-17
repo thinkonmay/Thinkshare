@@ -15,6 +15,7 @@ using SharedHost.Auth.ThinkmayAuthProtocol;
 using System.Linq;
 using DbSchema.SystemDb.Data;
 using SharedHost;
+using SharedHost.Models.Session;
 using SharedHost.Models.ResponseModel;
 using Google.Apis.Auth;
 using SharedHost.Auth;
@@ -60,7 +61,6 @@ namespace Authenticator.Controllers
                 if (result.Succeeded)
                 {
                     UserAccount user = await _userManager.FindByNameAsync(model.UserName);
-                    
                     string token = await _tokenGenerator.GenerateJwt(user);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
                 }
@@ -102,10 +102,16 @@ namespace Authenticator.Controllers
                     UserName = model.UserName,
                     Email = model.Email,
                     FullName = model.FullName,
-                    DateOfBirth = model.DateOfBirth,
                     PhoneNumber = model.PhoneNumber,
-                    Jobs = model.Jobs
                 };
+                if(model.DateOfBirth != null)
+                {
+                    user.DateOfBirth = model.DateOfBirth;
+                }
+                if(model.Jobs != null)
+                {
+                    user.Jobs = model.Jobs;
+                }
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -202,7 +208,19 @@ namespace Authenticator.Controllers
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
-            return Ok(account);
+            if(account.DefaultSetting == null)
+            {
+                account.DefaultSetting = new DeviceCap {
+                    device = DeviceType.WEBAPP,
+                    videoCodec = Codec.CODEC_H264,
+                    audioCodec = Codec.OPUS_ENC,
+                    mode = QoEMode.HIGH_CONST,
+                    screenHeight = 1920,
+                    screenWidth = 1080                         
+                };
+                await _userManager.UpdateAsync(account);
+            }
+            return Ok(new UserInforModel(account));
         }
 
 
@@ -217,15 +235,67 @@ namespace Authenticator.Controllers
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
 
-            var result = await _userManager.SetUserNameAsync(account, infor.UserName);
-            if (result.Succeeded)
+            if(infor.Avatar != null)
             {
-                return Ok();
+                account.Avatar = infor.Avatar;
             }
-            else
+            if(infor.DateOfBirth != null)
             {
-                return BadRequest(result.Errors.ToList());
+                account.DateOfBirth = infor.DateOfBirth;
             }
+
+            if(infor.FullName != null)
+            {
+                account.FullName = infor.FullName;
+            }
+            if(infor.Gender != null)
+            {
+                account.Gender = infor.Gender;
+            }
+            if(infor.Jobs != null)
+            {
+                account.Jobs = infor.Jobs;
+            }
+            if(infor.PhoneNumber != null)
+            {
+                account.PhoneNumber = infor.Jobs;
+            }                        
+            if(infor.DefaultSetting != null)
+            {
+                if(infor.DefaultSetting.device != null){
+                    account.DefaultSetting.device = infor.DefaultSetting.device;
+                }                
+                if(infor.DefaultSetting.audioCodec != null){
+                    account.DefaultSetting.audioCodec = infor.DefaultSetting.audioCodec;
+                }
+                if(infor.DefaultSetting.videoCodec != null){
+                    account.DefaultSetting.videoCodec = infor.DefaultSetting.videoCodec;
+                }
+                if(infor.DefaultSetting.mode != null){
+                    account.DefaultSetting.mode = infor.DefaultSetting.mode;
+                }
+                if(infor.DefaultSetting.screenWidth != null){
+                    account.DefaultSetting.screenWidth = infor.DefaultSetting.screenWidth;
+                }
+                if(infor.DefaultSetting.screenHeight != null){
+                    account.DefaultSetting.screenHeight = infor.DefaultSetting.screenHeight;
+                }
+            }
+            
+            await _userManager.UpdateAsync(account);
+            if(infor.UserName != null)
+            {
+                var result = await _userManager.SetUserNameAsync(account, infor.UserName);
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest(result.Errors.ToList());
+                }
+            }
+            return Ok();
         }
 
 

@@ -9,7 +9,7 @@ let host;
 let currentURL = document.URL
 let subdomain = currentURL.slice(0, 28)
 // if (subdomain == 'https://service.thinkmay.net') {
-	host = "https://host.thinkmay.net"
+host = "https://host.thinkmay.net"
 // } else {
 // 	host = "http://hostdev.thinkmay.net"
 // }
@@ -231,16 +231,9 @@ export const reconnectSession = (SlaveID) => {
 
 
 export const initializeSession = (SlaveID) => {
-	var cap = getCookie("cap");
-
-	var body = {
-		SlaveID: SlaveID,
-		cap: JSON.parse(cap)
-	}
-	return fetch(InitializeSession, {
+	return fetch(InitializeSession + "?SlaveID=" + SlaveID, {
 		method: "POST",
-		headers: genHeaders(),
-		body: JSON.stringify(body)
+		headers: genHeaders()
 	}, function (error) {
 		if (401 == error.response.status) {
 			window.location.replace(API.Login)
@@ -251,12 +244,27 @@ export const initializeSession = (SlaveID) => {
 }
 
 // User
-export const setInfor = (username) => {
+export const setInfor = (body) => {
 	return fetch(SetInfor, {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({
-			userName: username,
+			userName: body.username ? body.username : null,
+			fullName: body.fullname ? body.fullname : null,
+			jobs: body.jobs ? body.jobs : null,
+			phoneNumber: body.phonenumber ? body.phonenumber : null,
+			gender: body.gender ? body.gender : null,
+			dateOfBirth: body.dob ? body.dob : null,
+			avatar: body.avatar ? body.avatar : null,
+			defaultSetting: {
+				id: body.defaultSetting_id != null ? body.defaultSetting_id : null,
+				device: body.defaultSetting_device != null ? body.defaultSetting_device : null,
+				audioCodec: body.defaultSetting_audioCodec != null ? body.defaultSetting_audioCodec : null,
+				videoCodec: body.defaultSetting_videoCodec != null ? body.defaultSetting_videoCodec : null,
+				mode: body.defaultSetting_mode != null ? body.defaultSetting_mode : null,
+				screenWidth: body.defaultSetting_screenWidth != null ? body.defaultSetting_screenWidth : null,
+				screenHeight: body.defaultSetting_screenHeight != null ? body.defaultSetting_screenHeight : null
+			}
 		})
 	})
 }

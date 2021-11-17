@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "webrtc_fwd.h": "c",
-        "glib.h": "c"
-    }
-}

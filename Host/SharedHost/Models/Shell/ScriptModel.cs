@@ -23,10 +23,20 @@ namespace SharedHost.Models.Shell
         "$Samples = (Get-Counter \"\\Process($Processname*)\\% Processor Time\").CounterSamples\n" +
         "$Samples | Select `\n" +
         "InstanceName,\n" +
-        "@{Name=\"CPUpercentage\";Expression={[Decimal]::Round(($_.CookedValue / $CpuCores), 2)}} | ConvertTo-Json";
-
+        "@{Name=\"CPUpercentage\";Expression={[Decimal]::Round(($_.CookedValue / $CpuCores), 2)}}\n"+
+        "$Final = @()\n"+
+        "foreach ( $item in $Output ){\n"+
+        "$Usage = $item.CPUpercentage \n"+
+        "if($Usage -lt 1){}else{ $Final += $item}}\n"+
+        "$Final | ConvertTo-Json\n";
+        
         public const string GetRamUsage =
-        "Get-Process | Sort-Object WorkingSet64 | Select-Object Name,@{Name='WorkingSet';Expression={($_.WorkingSet64/1MB)}} | ConvertTo-Json";
+        "Get-Process | Sort-Object WorkingSet64 | Select-Object Name,@{Name='WorkingSet';Expression={($_.WorkingSet64/1MB)}}\n" +
+        "$Final = @()\n" +
+        "foreach ( $item in $Output ){\n" +
+        "$Usage = $item.WorkingSet \n" +
+        "if($Usage -lt 200){}else{ $Final += $item}}\n" +
+        "$Final | ConvertTo-Json\n";
 
         public const string GetStorageState =
         "$storage = (get-wmiobject -class win32_logicaldisk)\n" +

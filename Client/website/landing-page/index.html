@@ -653,18 +653,8 @@
   <!--====== BACK TOP TOP PART ENDS ======-->
 
   <script>
-    var changeToVn = document.getElementById('vn');
-    changeToVn.addEventListener('click', function () {
-      for (key in vn)
-        document.getElementById(key).innerHTML = vn[key];
-    });
-    var changeToEn = document.getElementById('en');
-    changeToEn.addEventListener('click', function () {
-      for (key in en)
-        document.getElementById(key).innerHTML = en[key];
-    });
 
-    vn = 
+var vn = 
 {
   "nav_desc1":"Trang chủ",
   "nav_desc3":"Chúng tôi",
@@ -704,7 +694,7 @@
   "sub_locate2":"đa tốn, gia lâm, hà nội"
 }
 
-en = 
+var en = 
 {
   "nav_desc1": "Home",
   "nav_desc3": "About us",
@@ -742,7 +732,7 @@ en =
   "sub_title": "contact us",
   "sub_locate1": "vinhomes oceanpark,",
   "sub_locate2": "da ton, gia lam, ha noi"
-};
+}
 
 for (key in en)
 {
@@ -750,6 +740,16 @@ for (key in en)
     if(text != null)
       text.innerHTML = en[key];
 }
+    var changeToVn = document.getElementById('vn');
+    changeToVn.addEventListener('click', function () {
+      for (key in vn)
+        document.getElementById(key).innerHTML = vn[key];
+    });
+    var changeToEn = document.getElementById('en');
+    changeToEn.addEventListener('click', function () {
+      for (key in en)
+        document.getElementById(key).innerHTML = en[key];
+    });
   </script>
 
   <!--====== Javascript Files ======-->

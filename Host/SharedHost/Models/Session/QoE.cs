@@ -10,9 +10,16 @@ namespace SharedHost.Models.Session
     public class QoE
     {
         public QoE() { }
-        public QoE(DeviceCap cap)
+        public QoE(DeviceCap? cap)
         {
-
+            if(cap == null)
+            {
+                ScreenWidth = 2560;
+                ScreenHeight = 1440;
+                VideoCodec = Codec.CODEC_H264;
+                AudioCodec = Codec.OPUS_ENC;
+                QoEMode = (QoEMode?)3;
+            }
             ScreenHeight = cap.screenHeight;
             ScreenWidth = cap.screenWidth;
             VideoCodec = cap.videoCodec;
@@ -23,15 +30,15 @@ namespace SharedHost.Models.Session
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID {get;set;}
 
-        public int ScreenWidth { get; set; }
+        public int? ScreenWidth { get; set; }
 
-        public int ScreenHeight { get; set; }
+        public int? ScreenHeight { get; set; }
 
-        public Codec AudioCodec { get; set; }
+        public Codec? AudioCodec { get; set; }
 
-        public Codec VideoCodec { get; set; }
+        public Codec? VideoCodec { get; set; }
 
-        public QoEMode QoEMode { get; set; }
+        public QoEMode? QoEMode { get; set; }
     }
 
     public enum Codec

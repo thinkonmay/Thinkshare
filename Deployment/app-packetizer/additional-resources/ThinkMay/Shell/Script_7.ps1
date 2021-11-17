@@ -1,1 +1,0 @@
-Get-Process | Sort-Object WorkingSet64 | Select-Object Name,@{Name='WorkingSet';Expression={($_.WorkingSet64/1MB)}} | ConvertTo-Json

@@ -1,6 +1,5 @@
 import * as API from "../util/api.js"
 import * as RemotePage from "../util/remote-page-cookies.js"
-import * as Setting from "../util/setting.js"
 import { getCookie, setCookie, deleteCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
@@ -15,54 +14,17 @@ API.getInfor().then(async data => {
 $(document).ready(async () => {
 	$('#logout').click(() => {
 		setCookie("logout", "true")
+		setCookie("token", null, 1)
+
 		deleteCookie("token", "/", document.domain)
 
 		try {
-			var auth2 = gapi.auth2.getAuthInstance();
-			auth2.signOut().then(function () {
-			});
-			auth2.disconnect();
+			gapi.auth.signOut();
 			window.location = "/login"
-		} catch{
+		} catch {
 			window.location = "/login"
 		}
 	})
-
-	var defaultDeviceCap = {
-		mode: 4,
-		videoCodec: 1,
-		audioCodec: 4,
-		screenWidth: 2560,
-		screenHeight: 1440
-	}
-
-	setCookie("cap", JSON.stringify(defaultDeviceCap), 999999)
-	setCookie("platform", "chrome", 999999)
-
-	var bitrate = document.getElementsByName("bitrate-setting");
-	for (var item = 0; item < bitrate.length; item++) {
-		bitrate[item].onclick = (event) => Setting.Mode(event.target.innerHTML);
-	}
-
-	var audio_codec = document.getElementsByName("audiocodec-setting");
-	for (var item = 0; item < audio_codec.length; item++) {
-		audio_codec[item].onclick = (event) => Setting.AudioCodec(event.target.innerHTML);
-	}
-
-	var video_codec = document.getElementsByName("videocodec-setting");
-	for (var item = 0; item < video_codec.length; item++) {
-		video_codec[item].onclick = (event) => Setting.VideoCodec(event.target.innerHTML);
-	}
-
-	var resolution = document.getElementsByName("resolution-setting");
-	for (var item = 0; item < resolution.length; item++) {
-		resolution[item].onclick = (event) => Setting.mapVideoRes(event.target.innerHTML);
-	}
-
-	var platform = document.getElementsByName("platform-setting");
-	for (var item = 0; item < platform.length; item++) {
-		platform[item].onclick = (event) => Setting.Platform(event.target.innerHTML);
-	}
 
 	tutorial()
 
@@ -83,11 +45,7 @@ $(document).ready(async () => {
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
 		sessionInfor = await (await API.getSession()).json()
-		let reUserName = userinfor.userName;
-		if (reUserName[reUserName.length - 1] == "g" && reUserName[reUserName.length - 2] == "g") {
-			userinfor.userName = reUserName.slice(0, reUserName.length - 2);
-		}
-		document.getElementById("WelcomeUsername").innerHTML = userinfor.userName;
+		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
 
 		for (const slave of sessions) {
 			createSlave(slave, "slavesInUses");

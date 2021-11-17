@@ -13,14 +13,12 @@ namespace SharedHost.Models.Session
     { 
         public RemoteSession() { }
 
-        public RemoteSession(QoE qoe, 
-                             SessionPair pair, 
+        public RemoteSession(SessionPair pair, 
                              SystemConfig config)
         {
             SessionSlaveID = pair.SessionSlaveID;
             SessionClientID = pair.SessionClientID;
 
-            QoE = qoe;
             SignallingUrl = config.SignallingWs;
         }
 
