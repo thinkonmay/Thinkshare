@@ -70,14 +70,6 @@ $(document).ready(() => {
             title: "Đang đăng kí",
             text: "Vui lòng chờ . . .",
             didOpen: () => {
-
-                body.defaultSetting_id = 3;
-                body.defaultSetting_device = 0;
-                body.defaultSetting_audioCodec = 0;
-                body.defaultSetting_videoCodec = 0;
-                body.defaultSetting_mode = 0;
-                body.defaultSetting_screenWidth = 0;
-                body.defaultSetting_screenHeight = 0;
                 console.log(body)
                 API.setInfor(body)
                     .then(async data => {
@@ -103,8 +95,9 @@ $(document).ready(() => {
             text: "Vui lòng chờ . . .",
             didOpen: () => {
                 let body = {}
+                console.log(parseInt(display.platform)-1)
                 body.defaultSetting_id = parseInt(idDisplay);
-                body.defaultSetting_device = parseInt(display.platform);
+                body.defaultSetting_device = parseInt(display.platform)-1;
                 body.defaultSetting_audioCodec = parseInt(display.audio);
                 body.defaultSetting_videoCodec = parseInt(display.video)
                 body.defaultSetting_mode = parseInt(display.bitrate)

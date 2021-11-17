@@ -43,7 +43,7 @@ export const sessionInitialize = async (SlaveID) => {
                     var cookie = JSON.stringify(json);
                     Cookies.setCookie("sessionClient", cookie, coookies_expire)
                     getRemotePage()
-                } else if (platform === 'gstreamer') {
+                } else if (platform == 'gstreamer') {
                     window.location.assign('thinkmay://' +
                         'videocodec=' + json.qoE.videoCodec +
                         '.audiocodec=' + json.qoE.audioCodec +
@@ -72,7 +72,7 @@ export const sessionReconnect = async (SlaveID) => {
                     var cookie = JSON.stringify(json);
                     Cookies.setCookie("sessionClient", cookie, coookies_expire)
                     getRemotePage()
-                } else if (platform === 'gstreamer') {
+                } else if (platform == 'gstreamer') {
                     window.location.assign('thinkmay://' +
                         'videocodec=' + json.qoE.videoCodec +
                         '.audiocodec=' + json.qoE.audioCodec +
