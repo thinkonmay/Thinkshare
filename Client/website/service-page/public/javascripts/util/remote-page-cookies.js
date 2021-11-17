@@ -59,12 +59,12 @@ export const sessionReconnect = async (SlaveID) => {
     reconnectSession(parseInt(SlaveID)).then(async response => {
         if (response.status == 200) {
             var json = await response.json();
-            var platform
+            var platform = 1;
             getInfor().then(async _data => {
                 let _body = await _data.json();
-                if (_body.defaultSetting['device'] == 1) {
+                if (_body.defaultSetting['device'] == 2) {
                     platform = 'gstreamer';
-                } else if (_body.defaultSetting['device'] == 0) {
+                } else if (_body.defaultSetting['device'] == 1) {
                     platform = 'chrome'
                 }
                 console.log(platform)
@@ -80,8 +80,6 @@ export const sessionReconnect = async (SlaveID) => {
                 }
             })
         } else {
-
-
         }
     })
 }
