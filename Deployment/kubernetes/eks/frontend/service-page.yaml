@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: service-page
-        image: pigeatgarlic/service-page:2021-11-16
+        image: pigeatgarlic/service-page:2021-11-17
 
         imagePullPolicy: Always
         resources:
