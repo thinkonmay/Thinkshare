@@ -11,7 +11,7 @@ const coookies_expire = 100 * 1000
 export const sessionInitialize = async (SlaveID) => {
     let deviceCurrent;
     let dbDevice;
-    // 0: chrome, 1: gstreamer
+    // 1: chrome, 2: gstreamer
     if (isElectron() == true) {
         deviceCurrent = "gstreamer";
     } else {
@@ -20,22 +20,22 @@ export const sessionInitialize = async (SlaveID) => {
     getInfor().then(async data => {
         let body = await data.json();
         dbDevice = body.defaultSetting['device']
-        if (deviceCurrent == 'chrome' && dbDevice == 1) {
-            dbDevice = 0;
+        if (deviceCurrent == 'chrome' && dbDevice == 2) {
+            dbDevice = 1;
             let body = {};
-            body.defaultSetting_device = 0;
+            body.defaultSetting_device = 1;
             setInfor(body)
         }
     })
     initializeSession(parseInt(SlaveID)).then(async response => {
         if (response.status == 200) {
             var json = await response.json();
-            var platform
+            var platform = 1;
             getInfor().then(async _data => {
                 let _body = await _data.json();
-                if (_body.defaultSetting['device'] == 1) {
+                if (_body.defaultSetting['device'] == 2) {
                     platform = 'gstreamer';
-                } else if (_body.defaultSetting['device'] == 0) {
+                } else if (_body.defaultSetting['device'] == 1) {
                     platform = 'chrome'
                 }
                 console.log(platform)
