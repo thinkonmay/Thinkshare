@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace SlaveManager
+namespace WorkerManager
 {
     public class Program
     {

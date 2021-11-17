@@ -1,10 +1,10 @@
 ﻿using SharedHost.Models.Shell;
 using Newtonsoft.Json;
 using SharedHost.Models;
-using SlaveManager.Interfaces;
+using WorkerManager.Interfaces;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
-using SlaveManager.SlaveDevices.SlaveStates;
+using WorkerManager.SlaveDevices.SlaveStates;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -12,19 +12,20 @@ using System;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
 using SharedHost.Models.Error;
-using SlaveManager.Services;
+using WorkerManager.Services;
 using SharedHost;
-namespace SlaveManager.SlaveDevices
+using RestSharp;
+
+namespace WorkerManager.SlaveDevices
 {
-    public class SlaveDevice : ISlaveDevice
+    public class SlaveDevice 
     {
         public ISlaveState State { get; set; }
-        public WebSocket ws { get; set; }
+        public RestClient ws { get; set; }
         public ConductorSocket _conductor { get; set; }
         public SlaveDevice(SystemConfig config)
         {
             _conductor = new ConductorSocket(config);
-            ws = null;
             State = new DeviceDisconnected();
         }
 
@@ -33,32 +34,7 @@ namespace SlaveManager.SlaveDevices
 
         public async Task KeepReceiving(int SlaveID)
         {
-            WebSocketReceiveResult message;
-            try
-            {
-                do
-                {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        message = await ReceiveMessage(memoryStream);
-                        if (message.Count > 0)
-                        {
-                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                            var messageForm = JsonConvert.DeserializeObject<MessageWithID>(receivedMessage);
 
-                            if (messageForm.To == (int)Module.HOST_MODULE)
-                            {
-                                await OnHostMessage(messageForm);
-                            }
-                        }
-                    }
-                } while (ws.State == WebSocketState.Open);
-            } catch (Exception ex)
-            {
-                Serilog.Log.Information("Slave device disconnected due to {reason}.", ex.Message);                
-            }
-            await _conductor.ReportSlaveDisconnected(SlaveID);
-            State = new DeviceDisconnected();
         }
 
 
@@ -75,12 +51,11 @@ namespace SlaveManager.SlaveDevices
                             var error = JsonConvert.DeserializeObject<ReportedError>(messageForm.Data);
                             error.SlaveID = messageForm.SlaveID;
                             error.Module = (int)Module.AGENT_MODULE;
-                            System.Console.WriteLine(JsonConvert.SerializeObject(error));
                             break;
                         }
                         case (int)Opcode.SESSION_CORE_EXIT:
                         {
-                            await State.OnSessionCoreExit(this, messageForm.SlaveID);
+
                             break;
                         }
                         case (int)Opcode.END_SHELL_SESSION:
@@ -102,7 +77,6 @@ namespace SlaveManager.SlaveDevices
                             var errabs = JsonConvert.DeserializeObject<ReportedError>(messageForm.Data);
                             errabs.SlaveID = messageForm.SlaveID;
                             errabs.Module = (int)Module.CORE_MODULE;
-                            System.Console.WriteLine(JsonConvert.SerializeObject(errabs));
                             break;
                         }
                     }
@@ -116,23 +90,7 @@ namespace SlaveManager.SlaveDevices
 
         public async Task Send(string message)
         {
-            var bytes = Encoding.UTF8.GetBytes(message);
-            await ws.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), WebSocketMessageType.Text, true,
-                CancellationToken.None);
-        }
 
-        private async Task<WebSocketReceiveResult> ReceiveMessage(Stream memoryStream)
-        {
-            var readBuffer = new ArraySegment<byte>(new byte[4 * 1024]);
-            WebSocketReceiveResult result;
-            do
-            {
-                result = await ws.ReceiveAsync(readBuffer, CancellationToken.None);
-                await memoryStream.WriteAsync(readBuffer.Array, readBuffer.Offset, result.Count,
-                    CancellationToken.None);
-            } while (!result.EndOfMessage);
-
-            return result;
         }
 
 

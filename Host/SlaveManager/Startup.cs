@@ -4,12 +4,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using SharedHost;
-using SlaveManager.Interfaces;
-using SlaveManager.Services;
+using WorkerManager.Interfaces;
+using WorkerManager.Services;
 using System;
 using System.IO;
 using System.Reflection;
-namespace SlaveManager
+namespace WorkerManager
 {
     public class Startup
     {
@@ -47,7 +47,6 @@ namespace SlaveManager
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
             services.AddSingleton<ISlavePool, SlavePool>();
-            services.AddTransient<IWebSocketConnection, WebSocketConnection>();
             services.AddSingleton<IConductorSocket, ConductorSocket>();
             services.AddMvc();
         }

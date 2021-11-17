@@ -1,4 +1,4 @@
-﻿using SlaveManager.Interfaces;
+﻿using WorkerManager.Interfaces;
 using System;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using System.Threading;
 
-namespace SlaveManager.Services
+namespace WorkerManager.Services
 {
 
 

@@ -5,7 +5,7 @@ using SharedHost.Models.Error;
 using SharedHost.Models.Shell;
 using System.Collections.Generic;
 
-namespace SlaveManager.Interfaces
+namespace WorkerManager.Interfaces
 {
     /// <summary>
     /// Admin is an singleton object responsible for handle event related to system management 
@@ -42,7 +42,10 @@ namespace SlaveManager.Interfaces
         /// <returns></returns>
         Task ReportRemoteControlDisconnected(int SlaveID);
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         Task<List<ScriptModel>> GetDefaultModel();
     }
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedHost.Models.Device;
 using SharedHost.Models;
-using SlaveManager.Interfaces;
+using WorkerManager.Interfaces;
 using System.Threading.Tasks;
 using SharedHost.Models.Session;
 using SharedHost;
@@ -14,7 +14,7 @@ using System.Collections.Generic;
 
 // TODO: authentification
 
-namespace SlaveManager.Controllers
+namespace WorkerManager.Controllers
 {
     [Route("/Session")]
     [ApiController]

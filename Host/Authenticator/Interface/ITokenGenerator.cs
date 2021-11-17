@@ -1,4 +1,5 @@
-﻿using SharedHost.Models.User;
+﻿using SharedHost.Models.Session;
+using SharedHost.Models.User;
 using System.Threading.Tasks;
 
 namespace Authenticator.Interfaces
@@ -10,7 +11,7 @@ namespace Authenticator.Interfaces
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<string> GenerateJwt(UserAccount user);
+        Task<string> GenerateUserJwt(UserAccount user);
 
         /// <summary>
         /// 
@@ -18,6 +19,20 @@ namespace Authenticator.Interfaces
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<UserAccount?> ValidateToken(string token);
+        Task<UserAccount?> ValidateUserToken(string token);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        Task<string> GenerateUserSessionJwt(SessionAccession accession);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task<SessionAccession?> ValidateSessionToken(UserAccount user);
     }
 }

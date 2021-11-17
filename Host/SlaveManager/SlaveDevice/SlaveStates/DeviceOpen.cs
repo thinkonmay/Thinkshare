@@ -4,15 +4,15 @@ using SharedHost.Models;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
 using SharedHost.Models.Shell;
-using SlaveManager.Interfaces;
+using WorkerManager.Interfaces;
 using System;
 using System.Threading.Tasks;
 
-namespace SlaveManager.SlaveDevices.SlaveStates
+namespace WorkerManager.SlaveDevices.SlaveStates
 {
     public class DeviceOpen : ISlaveState
     {
-        public async Task SessionInitialize(ISlaveDevice slave, SlaveSession session)
+        public async Task SessionInitialize(SlaveDevice slave, SlaveSession session)
         {
             Message message = new Message();
 
@@ -28,22 +28,22 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             return;
         }
 
-        public async Task SessionTerminate(ISlaveDevice slave)
+        public async Task SessionTerminate(SlaveDevice slave)
         {
             return;
         }
 
-        public async Task RemoteControlDisconnect(ISlaveDevice slave)
+        public async Task RemoteControlDisconnect(SlaveDevice slave)
         {
             return;
         }
 
-        public async Task RemoteControlReconnect(ISlaveDevice slave)
+        public async Task RemoteControlReconnect(SlaveDevice slave)
         {
             return;
         }
 
-        public async Task InitializeShellSession(ISlaveDevice slave, ShellScript script)
+        public async Task InitializeShellSession(SlaveDevice slave, ShellScript script)
         {
             Message message = new Message();
 
@@ -55,7 +55,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             return;
         }
 
-        public async Task RejectSlave(ISlaveDevice slave)
+        public async Task RejectSlave(SlaveDevice slave)
         {
             Message msg = new Message();
             msg.From = Module.HOST_MODULE;
@@ -73,7 +73,7 @@ namespace SlaveManager.SlaveDevices.SlaveStates
             return SlaveServiceState.Open;
         }
 
-        public async Task OnSessionCoreExit(ISlaveDevice slave, int SlaveID)
+        public async Task OnSessionCoreExit(SlaveDevice slave, int SlaveID)
         {
             return;
         }

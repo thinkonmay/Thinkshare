@@ -42,8 +42,8 @@ namespace SystemHub.Services
                         _WebSocketHandler.SendMessage(socket.Value,"ping");
                     }
                 }
-                Thread.Sleep(30000);
-            }catch(Exception ex)
+                Thread.Sleep(30*1000);
+            }catch
             {
                 await ConnectionHeartBeat();
             }
@@ -61,7 +61,7 @@ namespace SystemHub.Services
                     }
                 }
                 Thread.Sleep(100);
-            }catch(Exception ex)
+            }catch
             {
                 await ConnectionStateCheck();
             }

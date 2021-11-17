@@ -1,19 +1,19 @@
 ﻿using SharedHost.Models;
-using SlaveManager.SlaveDevices;
-using SlaveManager.SlaveDevices.SlaveStates;
+using WorkerManager.SlaveDevices;
+using WorkerManager.SlaveDevices.SlaveStates;
 using System;
 using System.Threading;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using SlaveManager.Interfaces;
+using WorkerManager.Interfaces;
 using SharedHost.Models.Session;
 using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
 using SharedHost;
 
-namespace SlaveManager.Services
+namespace WorkerManager.Services
 {
     public class SlavePool : ISlavePool
     {

@@ -3,8 +3,9 @@ using SharedHost.Models.Device;
 using SharedHost.Models.Shell;
 using SharedHost.Models.Session;
 using System.Threading.Tasks;
+using WorkerManager.SlaveDevices;
 
-namespace SlaveManager.Interfaces
+namespace WorkerManager.Interfaces
 {
     public interface ISlaveState
     {
@@ -14,21 +15,21 @@ namespace SlaveManager.Interfaces
         /// <param name="slave"></param>
         /// <param name="session"></param>
         /// <returns></returns>
-        Task SessionInitialize(ISlaveDevice slave, SlaveSession session);
+        Task SessionInitialize(SlaveDevice slave, SlaveSession session);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="slave"></param>
         /// <returns></returns>
-        Task SessionTerminate(ISlaveDevice slave);
+        Task SessionTerminate(SlaveDevice slave);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="slave"></param>
         /// <returns></returns>
-        Task RemoteControlDisconnect(ISlaveDevice slave);
+        Task RemoteControlDisconnect(SlaveDevice slave);
 
         /// <summary>
         /// 
@@ -36,7 +37,7 @@ namespace SlaveManager.Interfaces
         /// </summary>
         /// <param name="slave"></param>
         /// <returns></returns>
-        Task RemoteControlReconnect(ISlaveDevice slave);
+        Task RemoteControlReconnect(SlaveDevice slave);
 
         /// <summary>
         /// 
@@ -44,14 +45,14 @@ namespace SlaveManager.Interfaces
         /// <param name="slave"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        Task InitializeShellSession(ISlaveDevice slave, ShellScript order);
+        Task InitializeShellSession(SlaveDevice slave, ShellScript order);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="slave"></param>
         /// <returns></returns>
-        Task RejectSlave(ISlaveDevice slave);
+        Task RejectSlave(SlaveDevice slave);
 
         /// <summary>
         /// 
@@ -59,7 +60,7 @@ namespace SlaveManager.Interfaces
         /// <param name="slave"></param>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
-        Task OnSessionCoreExit(ISlaveDevice slave, int SlaveID);
+        Task OnSessionCoreExit(SlaveDevice slave, int SlaveID);
         
         /// <summary>
         /// 

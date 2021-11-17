@@ -14,16 +14,11 @@ namespace SystemHub.Controllers
 
         private readonly IWebsocketPool _Pool;
 
-        private readonly SystemConfig _config;
-
         public EventController(IWebSocketHandler wsHandler,
-                            IWebsocketPool queue,
-                            IWebsocketPool pool,
-                            SystemConfig config)
+                            IWebsocketPool queue)
         {
             _wsHandler = wsHandler;
             _Pool = queue;
-            _config = config;
         }
 
         [HttpPost("Client")]

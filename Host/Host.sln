@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Signalling", "Signalling\Si
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedHost", "SharedHost\SharedHost.shproj", "{6E362B62-5B06-4A28-98AE-9FDC94495BB9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SlaveManager", "SlaveManager\SlaveManager.csproj", "{B8A9573E-234B-4387-B7BD-E7C46FA2111C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerManager", "SlaveManager\WorkerManager.csproj", "{B8A9573E-234B-4387-B7BD-E7C46FA2111C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conductor", "Conductor\Conductor.csproj", "{A972CF97-DE50-4CF3-A9AF-23A0815A3E29}"
 EndProject
@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authenticator", "Authentica
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DbSchema", "DbSchema\DbSchema.shproj", "{FDD0CFDC-C9C1-45BE-9D9F-EC71D1941930}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemHub", "SystemHub\SystemHub.csproj", "{8B733DAA-C5E9-4245-AF44-4BB42CDFEC79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemHub", "SystemHub\SystemHub.csproj", "{8B733DAA-C5E9-4245-AF44-4BB42CDFEC79}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

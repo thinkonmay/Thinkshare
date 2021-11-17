@@ -45,7 +45,7 @@ namespace Authenticator.Controllers
         {
             if (ModelState.IsValid)
             {
-                var account = await _tokenGenerator.ValidateToken(request.token);
+                var account = await _tokenGenerator.ValidateUserToken(request.token);
                 var resp = new AuthenticationResponse
                 { 
                     UserID = await _userManager.GetUserIdAsync(account),

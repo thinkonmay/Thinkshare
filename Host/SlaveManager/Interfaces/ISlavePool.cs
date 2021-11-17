@@ -1,11 +1,11 @@
 ﻿using SharedHost.Models.Device;
 using SharedHost.Models.Session;
-using SlaveManager.SlaveDevices;
+using WorkerManager.SlaveDevices;
 using System;
 using System.Collections.Generic;
 using SharedHost.Models.Shell;
 
-namespace SlaveManager.Interfaces
+namespace WorkerManager.Interfaces
 {
     public interface ISlavePool
     {
@@ -15,7 +15,6 @@ namespace SlaveManager.Interfaces
         /// slave id after add to slavepool will automatically set to disconnected state
         /// </summary>
         /// <param name="slaveid"></param>
-        /// <param name="slave"></param>
         /// <returns></returns>
         bool AddSlaveId(int slaveid);
 
@@ -74,17 +73,42 @@ namespace SlaveManager.Interfaces
         /// <param name="script"></param>
         /// <returns></returns>
         bool InitShellSession(ShellScript script);
-
+         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="script"></param>
+        /// <returns></returns>
         bool BroadcastShellScript(ShellScript script);
 
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="slaveid"></param>
+        /// <returns></returns>
         bool RemoteControlReconnect(int slaveid);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="slaveid"></param>
+        /// <returns></returns>
         bool RemoteControlDisconnect(int slaveid);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="slaveid"></param>
+        /// <param name="session"></param>
+        /// <returns></returns>
         bool SessionInitialize(int slaveid, SlaveSession session);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="slaveid"></param>
+        /// <returns></returns>
         bool SessionTerminate(int slaveid);
     }
 }

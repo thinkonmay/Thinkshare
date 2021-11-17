@@ -11,6 +11,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using SharedHost.Models.Session;
+using SharedHost.Models.Device;
 
 namespace Authenticator.Services
 {
@@ -28,7 +30,7 @@ namespace Authenticator.Services
             _userManager = userManager;
         }
 
-        public async Task<string> GenerateJwt(UserAccount user)
+        public async Task<string> GenerateUserJwt(UserAccount user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
@@ -60,7 +62,7 @@ namespace Authenticator.Services
     
 
 
-        public Task<UserAccount?> ValidateToken(string token)
+        public Task<UserAccount?> ValidateUserToken(string token)
         {
             try
             {
@@ -72,7 +74,6 @@ namespace Authenticator.Services
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
                 var jwtToken = (JwtSecurityToken)validatedToken;
@@ -82,6 +83,69 @@ namespace Authenticator.Services
                 return account;
             }
             catch 
+            {
+                return null;
+            }
+        }
+
+
+
+
+
+
+
+        public async Task<string> GenerateUserSessionJwt(SessionAccession accession)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwt.Key);
+
+
+            var claims = new List<Claim>();
+            claims.Add(new Claim("ClientID", accession.ClientID.ToString()));
+            claims.Add(new Claim("WorkerID", accession.WorkerID.ToString()));
+            claims.Add(new Claim("Module",   ((int) accession.Module).ToString()));
+
+
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("id", accession.ID.ToString()) }),
+                Expires = DateTime.Now.AddHours(10),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+                Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        public async Task<SessionAccession> ValidateSessionToken(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_jwt.Key);
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+                var jwtToken = (JwtSecurityToken)validatedToken;
+
+                var accession = new SessionAccession
+                {
+                    ID =       Int32.Parse(jwtToken.Claims.First(x => x.Type ==         "id").Value),
+                    ClientID = Int32.Parse(jwtToken.Claims.First(x => x.Type ==         "ClientID").Value),
+                    WorkerID = Int32.Parse(jwtToken.Claims.First(x => x.Type ==         "WorkerID").Value),
+                    Module = (Module)Int32.Parse(jwtToken.Claims.First(x => x.Type ==   "Module").Value),
+
+                };
+                return accession;
+            }
+            catch
             {
                 return null;
             }

@@ -10,15 +10,15 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildprod
 WORKDIR /src
 
-COPY ["SlaveManager/SlaveManager.csproj", "SlaveManager/"]
-COPY ["SharedHost/setting/prod/appsettings.json", "SlaveManager/"]
-RUN dotnet restore "SlaveManager/SlaveManager.csproj"
+COPY ["WorkerManager/WorkerManager.csproj", "WorkerManager/"]
+COPY ["SharedHost/setting/prod/appsettings.json", "WorkerManager/"]
+RUN dotnet restore "WorkerManager/WorkerManager.csproj"
 
 
 # copy setting from setting prod folder to workdir
 COPY . .
-WORKDIR "/src/SlaveManager"
-RUN dotnet build "SlaveManager.csproj" -c Release -o /app/build
+WORKDIR "/src/WorkerManager"
+RUN dotnet build "WorkerManager.csproj" -c Release -o /app/build
 
 
 
@@ -28,24 +28,24 @@ RUN dotnet build "SlaveManager.csproj" -c Release -o /app/build
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builddev
 WORKDIR /src
 
-COPY ["SlaveManager/SlaveManager.csproj", "SlaveManager/"]
-COPY ["SharedHost/setting/dev/appsettings.json", "SlaveManager/"]
-RUN dotnet restore "SlaveManager/SlaveManager.csproj"
+COPY ["WorkerManager/WorkerManager.csproj", "WorkerManager/"]
+COPY ["SharedHost/setting/dev/appsettings.json", "WorkerManager/"]
+RUN dotnet restore "WorkerManager/WorkerManager.csproj"
 
 
 # copy setting from setting dev folder to workdir
 COPY . .
-WORKDIR "/src/SlaveManager"
-RUN dotnet build "SlaveManager.csproj" -c Release -o /app/build
+WORKDIR "/src/WorkerManager"
+RUN dotnet build "WorkerManager.csproj" -c Release -o /app/build
 
 
 
 
 FROM builddev AS publishdev
-RUN dotnet publish "SlaveManager.csproj" -c Release -o /app/publish
+RUN dotnet publish "WorkerManager.csproj" -c Release -o /app/publish
 
 FROM buildprod AS publishprod
-RUN dotnet publish "SlaveManager.csproj" -c Release -o /app/publish
+RUN dotnet publish "WorkerManager.csproj" -c Release -o /app/publish
 
 
 
@@ -56,9 +56,9 @@ RUN dotnet publish "SlaveManager.csproj" -c Release -o /app/publish
 FROM base AS dev
 WORKDIR /app
 COPY --from=publishdev /app/publish .
-ENTRYPOINT ["dotnet", "SlaveManager.dll"]
+ENTRYPOINT ["dotnet", "WorkerManager.dll"]
 
 FROM base AS prod
 WORKDIR /app
 COPY --from=publishprod /app/publish .
-ENTRYPOINT ["dotnet", "SlaveManager.dll"]
+ENTRYPOINT ["dotnet", "WorkerManager.dll"]

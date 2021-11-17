@@ -21,33 +21,43 @@ namespace Signalling.Controllers
     [Produces("application/json")]
     public class SessionsController : ControllerBase
     {
-        private readonly IWebSocketHandler _wsHandler;
-
         private readonly ISessionQueue Queue;
 
-        public SessionsController(IWebSocketHandler wsHandler, ISessionQueue queue,SystemConfig cofig)
+        private readonly RestClient Authenticator;
+
+        public SessionsController(ISessionQueue queue,SystemConfig config)
         {
-            _wsHandler = wsHandler;
+            Authenticator = new RestClient(config.Authenticator + "/Token");
             Queue = queue;
         }
 
 
         [HttpGet("Handshake")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(string token)
         {
             var context = ControllerContext.HttpContext;
-
             if (context.WebSockets.IsWebSocketRequest)
             {
-                var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                await _wsHandler.Handle(webSocket);
-                await _wsHandler.Close(webSocket);
+                var request = new RestRequest("Session")
+                    .AddQueryParameter("token", token);
+                request.Method = Method.POST;
 
-                return new EmptyResult();
+                var result = await Authenticator.ExecuteAsync(request);
+                if (result.StatusCode == HttpStatusCode.OK)
+                {
+                    var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
+                    var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                    await Queue.Handle(accession, webSocket);
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
             else
             {
-                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
         }
     }

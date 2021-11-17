@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SharedHost;
 using SharedHost.Models.Device;
-using SlaveManager.Interfaces;
+using WorkerManager.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SlaveManager.Controllers
+namespace WorkerManager.Controllers
 {
     [Route("/Pool")]
     [ApiController]

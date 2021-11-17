@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
-using SlaveManager.Interfaces;
+using WorkerManager.Interfaces;
 using RestSharp;
-using SlaveManager.SlaveDevices;
+using WorkerManager.SlaveDevices;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
 using SharedHost.Models.Shell;
 using SharedHost;
 
-namespace SlaveManager.Controllers
+namespace WorkerManager.Controllers
 {
     [Route("/Shell")]
     [ApiController]

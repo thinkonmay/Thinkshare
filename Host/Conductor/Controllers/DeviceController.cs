@@ -47,7 +47,6 @@ namespace Conductor.Controllers
             var host_config = new HostConfiguration()
             {
                 SlaveID = slave.ID,
-                HostUrl = _config.SlaveManagerWs,
                 DisableSSL = true
             };
             return Ok(host_config);
