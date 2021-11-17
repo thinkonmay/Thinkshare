@@ -95,9 +95,8 @@ $(document).ready(() => {
             text: "Vui lòng chờ . . .",
             didOpen: () => {
                 let body = {}
-                console.log(parseInt(display.platform)-1)
                 body.defaultSetting_id = parseInt(idDisplay);
-                body.defaultSetting_device = parseInt(display.platform)-1;
+                body.defaultSetting_device = parseInt(display.platform);
                 body.defaultSetting_audioCodec = parseInt(display.audio);
                 body.defaultSetting_videoCodec = parseInt(display.video)
                 body.defaultSetting_mode = parseInt(display.bitrate)
