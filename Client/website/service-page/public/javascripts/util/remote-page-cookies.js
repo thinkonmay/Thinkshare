@@ -12,7 +12,7 @@ export const sessionInitialize = async (SlaveID) => {
     let deviceCurrent;
     let dbDevice;
     // 0: chrome, 1: gstreamer
-    if(isElectron() == true){
+    if (isElectron() == true) {
         deviceCurrent = "gstreamer";
     } else {
         deviceCurrent = "chrome";
@@ -20,51 +20,65 @@ export const sessionInitialize = async (SlaveID) => {
     getInfor().then(async data => {
         let body = await data.json();
         dbDevice = body.defaultSetting['device']
-        if(deviceCurrent == 'chrome' && dbDevice == 1){
+        if (deviceCurrent == 'chrome' && dbDevice == 1) {
             dbDevice = 0;
             let body = {};
-            body.defaultSetting_device = dbDevice;
+            body.defaultSetting_device = 0;
             setInfor(body)
         }
     })
     initializeSession(parseInt(SlaveID)).then(async response => {
-    if(response.status == 200){
-        var json = await response.json();
-        var platform = deviceCurrent
-        if(platform === 'chrome'){
-            var cookie = JSON.stringify(json);
-            Cookies.setCookie("sessionClient",cookie,coookies_expire)
-            getRemotePage()
-        }else if(platform === 'gstreamer'){
-            window.location.assign('thinkmay://'+
-                    'videocodec='+json.qoE.videoCodec+
-                    '.audiocodec='+json.qoE.audioCodec+
-                    '.sessionid='+json.sessionClientID);
+        if (response.status == 200) {
+            var json = await response.json();
+            var platform
+            getInfor().then(async _data => {
+                let _body = await _data.json();
+                if (_body.defaultSetting['device'] == 1) {
+                    platform = 'gstreamer';
+                } else if (_body.defaultSetting['device'] == 0) {
+                    platform = 'chrome'
+                }
+                console.log(platform)
+                if (platform == 'chrome') {
+                    var cookie = JSON.stringify(json);
+                    Cookies.setCookie("sessionClient", cookie, coookies_expire)
+                    getRemotePage()
+                } else if (platform === 'gstreamer') {
+                    window.location.assign('thinkmay://' +
+                        'videocodec=' + json.qoE.videoCodec +
+                        '.audiocodec=' + json.qoE.audioCodec +
+                        '.sessionid=' + json.sessionClientID);
+                }
+            })
+        } else {
         }
-    }else{
-
-    }})
-}   
+    })
+}
 
 export const sessionReconnect = async (SlaveID) => {
     reconnectSession(parseInt(SlaveID)).then(async response => {
-        if(response.status == 200){
+        if (response.status == 200) {
             var json = await response.json();
-            var platform = deviceCurrent
-            if(platform === 'chrome'){
+            var platform
+            getInfor().then(async data => {
+                let body = await data.json();
+                platform = body.defaultSetting['device']
+            })
+            if (platform === 'chrome') {
                 var cookie = JSON.stringify(json);
-                Cookies.setCookie("sessionClient",cookie,coookies_expire)
+                Cookies.setCookie("sessionClient", cookie, coookies_expire)
                 getRemotePage()
-            }else if(platform === 'gstreamer'){
-                window.location.assign('thinkmay://'+
-                     'videocodec='+json.qoE.videoCodec+
-                    '.audiocodec='+json.qoE.audioCodec+
-                    '.sessionid='+json.sessionClientID);
+            } else if (platform === 'gstreamer') {
+                window.location.assign('thinkmay://' +
+                    'videocodec=' + json.qoE.videoCodec +
+                    '.audiocodec=' + json.qoE.audioCodec +
+                    '.sessionid=' + json.sessionClientID);
             }
-        }else{
+        } else {
 
-            
-        }})
+
+        }
+    })
 }
 
 const getRemotePage = () => {

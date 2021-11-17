@@ -231,7 +231,7 @@ export const reconnectSession = (SlaveID) => {
 
 
 export const initializeSession = (SlaveID) => {
-	return fetch(InitializeSession+ "?SlaveID=" + SlaveID, {
+	return fetch(InitializeSession + "?SlaveID=" + SlaveID, {
 		method: "POST",
 		headers: genHeaders()
 	}, function (error) {
@@ -257,13 +257,13 @@ export const setInfor = (body) => {
 			dateOfBirth: body.dob ? body.dob : null,
 			avatar: body.avatar ? body.avatar : null,
 			defaultSetting: {
-				id: body.defaultSetting_id,
-				device: body.defaultSetting_device ? body.defaultSetting_device : null,
-				audioCodec: body.defaultSetting_audioCodec ? body.defaultSetting_audioCodec : null,
-				videoCodec: body.defaultSetting_videoCodec ? body.defaultSetting_videoCodec : null,
-				mode: body.defaultSetting_mode ? body.defaultSetting_mode : null,
-				screenWidth: body.defaultSetting_screenWidth ? body.defaultSetting_screenWidth : null,
-				screenHeight: body.defaultSetting_screenHeight ? body.defaultSetting_screenHeight : null
+				id: body.defaultSetting_id != null ? body.defaultSetting_id : null,
+				device: body.defaultSetting_device != null ? body.defaultSetting_device : null,
+				audioCodec: body.defaultSetting_audioCodec != null ? body.defaultSetting_audioCodec : null,
+				videoCodec: body.defaultSetting_videoCodec != null ? body.defaultSetting_videoCodec : null,
+				mode: body.defaultSetting_mode != null ? body.defaultSetting_mode : null,
+				screenWidth: body.defaultSetting_screenWidth != null ? body.defaultSetting_screenWidth : null,
+				screenHeight: body.defaultSetting_screenHeight != null ? body.defaultSetting_screenHeight : null
 			}
 		})
 	})
