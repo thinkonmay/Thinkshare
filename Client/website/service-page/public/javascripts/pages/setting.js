@@ -5,9 +5,10 @@ import * as CheckDevice from "../util/checkdevice.js"
 
 $(document).ready(() => {
     let idDisplay;
+    let remoteCore;
     API.getInfor().then(async data => {
         let body = await data.json()
-        idDisplay = body.defaultSetting['id'];
+        idDisplay = body.defaultSetting['id'];  
         $("#usernameCtrler").attr("placeholder", body.userName)
         $("#fullnameCtrler").attr("placeholder", body.fullName)
         $("#jobsCtrler").attr("placeholder", body.jobs)
@@ -60,9 +61,12 @@ $(document).ready(() => {
     $('[name="videoOptions"]').click(function () {
         display.video = $(this).find("input").val()
     });
-    $('[name="platformOptions"]').click(function () {
-        display.platform = $(this).find("input").val()
-    });
+    $('#remoteCoreOption1').on('change', function () {
+        remoteCore = 1
+    })
+    $('#remoteCoreOption2').on('change', function () {
+        remoteCore = 2
+    })
 
 
     $('#submitChangeInfoCtrler').click(() => {
@@ -96,7 +100,6 @@ $(document).ready(() => {
             didOpen: () => {
                 let body = {}
                 body.defaultSetting_id = parseInt(idDisplay);
-                body.defaultSetting_device = parseInt(display.platform);
                 body.defaultSetting_audioCodec = parseInt(display.audio);
                 body.defaultSetting_videoCodec = parseInt(display.video)
                 body.defaultSetting_mode = parseInt(display.bitrate)
@@ -131,9 +134,35 @@ $(document).ready(() => {
     });
 
 
+    $('#sumbitRemoteCoreCtrler').click(() => {
+        console.log(parseInt(remoteCore))
+        Utils.newSwal.fire({
+            title: "Đang đăng kí",
+            text: "Vui lòng chờ . . .",
+            didOpen: () => {
+                let body = {}
+                body.defaultSetting_device = parseInt(remoteCore)
+                API.setInfor(body)
+                    .then(async data => {
+                        if (data.status == 200) {
+                            Utils.newSwal.fire({
+                                title: "Thành công!",
+                                text: "Thông tin của bạn đã được cập nhật",
+                                icon: "success",
+                            })
+                        } else {
+                            Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
+                        }
+                    })
+                    .catch(status ? Utils.fetchErrorHandler : "")
+            }
+        })
+    });
+
+
     if (CheckDevice.isElectron()) {
         $('#optionsVideo3').removeAttr('disabled');
-        $('#optionsPlatform2').removeAttr('disabled');
+        $('#remoteGstreamCtrler').removeAttr('disabled');
     } else {
         // website
     }

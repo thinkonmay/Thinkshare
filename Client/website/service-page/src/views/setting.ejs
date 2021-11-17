@@ -64,6 +64,35 @@
                         <div class="col-md-6 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
+                                    <h4 class="card-title">Change Remote Core</h4>
+                                    <p class="card-description">
+                                        Change your remote core to enhance your experience
+                                    </p>
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Remote</label>
+                                        <div class="col-sm-4">
+                                            <div class="form-check" id="remoteCoreOption1">
+                                                <label class="form-check-label">
+                                                    <input name="optionsRemoteCore" type="radio"
+                                                        class="form-check-input" id='remoteCtrler1'>
+                                                    Chrome
+                                                    <i class="input-helper"></i></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <div class="form-check" id="remoteCoreOption2">
+                                                <label class="form-check-label">
+                                                    <input name="optionsRemoteCore" type="radio"
+                                                        class="form-check-input" id='remoteCtrler2'>
+                                                    Gstreamer
+                                                    <i class="input-helper"></i></label>
+                                                <p>(this feature just available on <a href="url">ThinkMay App</a>)
+
+                                            </div>
+                                        </div>
+                                        <button id="sumbitRemoteCoreCtrler" class="btn btn-primary me-2"
+                                            type="button">Submit</button>
+                                    </div>
                                     <h4 class="card-title">Display Controller</h4>
                                     <p class="card-description">
                                         Enhance your experience
@@ -75,7 +104,7 @@
                                                 screen</p>
                                             <div class="form-group">
                                                 <div class="form-check" name="resolutionOptions">
-                                                    <label for="optionsResolution" class="form-check-label">
+                                                    <label class="form-check-label">
                                                         <input type="radio" class="form-check-input"
                                                             name="optionsResolution" id="optionsResolution1"
                                                             value="1" />
@@ -191,29 +220,6 @@
                                                         <input type="radio" class="form-check-input" name="optionsVideo"
                                                             id="optionsVideo3" value="2" disabled>
                                                         h265
-                                                    </label>
-                                                    <p>(this feature just available on <a href="url">ThinkMay App</a>)
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label>Platform</label>
-                                            <p>Supported Platform for remote</p>
-                                            <div class="form-group">
-                                                <div class="form-check" name="platformOptions">
-                                                    <label class="form-check-label">
-                                                        <input type="radio" class="form-check-input"
-                                                            name="optionsPlatform" id="optionsPlatform1" value="1">
-                                                        chrome
-                                                    </label>
-                                                </div>
-                                                <div class="form-check" name="platformOptions">
-                                                    <label class="form-check-label">
-                                                        <input type="radio" class="form-check-input"
-                                                            name="optionsPlatform" id="optionsPlatform2" value="2"
-                                                            disabled>
-                                                        gstreamer
                                                     </label>
                                                     <p>(this feature just available on <a href="url">ThinkMay App</a>)
                                                     </p>
