@@ -60,20 +60,25 @@ export const sessionReconnect = async (SlaveID) => {
         if (response.status == 200) {
             var json = await response.json();
             var platform
-            getInfor().then(async data => {
-                let body = await data.json();
-                platform = body.defaultSetting['device']
+            getInfor().then(async _data => {
+                let _body = await _data.json();
+                if (_body.defaultSetting['device'] == 1) {
+                    platform = 'gstreamer';
+                } else if (_body.defaultSetting['device'] == 0) {
+                    platform = 'chrome'
+                }
+                console.log(platform)
+                if (platform == 'chrome') {
+                    var cookie = JSON.stringify(json);
+                    Cookies.setCookie("sessionClient", cookie, coookies_expire)
+                    getRemotePage()
+                } else if (platform === 'gstreamer') {
+                    window.location.assign('thinkmay://' +
+                        'videocodec=' + json.qoE.videoCodec +
+                        '.audiocodec=' + json.qoE.audioCodec +
+                        '.sessionid=' + json.sessionClientID);
+                }
             })
-            if (platform === 'chrome') {
-                var cookie = JSON.stringify(json);
-                Cookies.setCookie("sessionClient", cookie, coookies_expire)
-                getRemotePage()
-            } else if (platform === 'gstreamer') {
-                window.location.assign('thinkmay://' +
-                    'videocodec=' + json.qoE.videoCodec +
-                    '.audiocodec=' + json.qoE.audioCodec +
-                    '.sessionid=' + json.sessionClientID);
-            }
         } else {
 
 
