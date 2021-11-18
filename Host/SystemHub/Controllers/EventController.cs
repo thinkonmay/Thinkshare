@@ -12,10 +12,10 @@ namespace SystemHub.Controllers
     {
         private readonly IWebSocketHandler _wsHandler;
 
-        private readonly IWebsocketPool _Pool;
+        private readonly IUserSocketPool _Pool;
 
         public EventController(IWebSocketHandler wsHandler,
-                            IWebsocketPool queue)
+                            IUserSocketPool queue)
         {
             _wsHandler = wsHandler;
             _Pool = queue;

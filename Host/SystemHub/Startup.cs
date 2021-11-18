@@ -48,7 +48,7 @@ namespace SystemHub
             });
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
-            services.AddSingleton<IWebsocketPool, WebsocketPool>();
+            services.AddSingleton<IUserSocketPool, UserSocketPool>();
             services.AddTransient<IWebSocketHandler, WebSocketHandler>();
             services.AddMvc();
         }

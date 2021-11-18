@@ -218,11 +218,9 @@ namespace Conductor.Services
         }
 
 
-        public async Task ReportRemoteControlDisconnectedFromSignalling(SessionPair session)
+        public async Task ReportRemoteControlDisconnectedFromSignalling(SessionAccession session)
         {
-            var remoteSession = _db.RemoteSessions.Where(o => o.SessionClientID == session.SessionClientID &&
-                                                         o.SessionSlaveID == session.SessionSlaveID &&
-                                                        !o.EndTime.HasValue).FirstOrDefault();
+            var remoteSession = _db.RemoteSessions.Find(session.ID);
 
             await ReportRemoteControlDisconnected(remoteSession);
             var result = await _slavemanager.GetSlaveState(remoteSession.Slave.ID);

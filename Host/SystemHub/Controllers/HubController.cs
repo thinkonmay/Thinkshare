@@ -10,20 +10,21 @@ using Newtonsoft.Json;
 namespace SystemHub.Controllers
 {
     [ApiController]
+    [Route("/Hub")]
     [Produces("application/json")]
     public class HubController : ControllerBase
     {
         private readonly IWebSocketHandler _wsHandler;
 
-        private readonly IWebsocketPool _Pool;
+        private readonly IUserSocketPool _Pool;
 
         private readonly RestClient _client;
 
         private readonly SystemConfig _config;
 
         public HubController(IWebSocketHandler wsHandler, 
-                            IWebsocketPool queue,
-                            IWebsocketPool pool,
+                            IUserSocketPool queue,
+                            IUserSocketPool pool,
                             SystemConfig config)
         {
             _Pool = queue;
@@ -32,8 +33,8 @@ namespace SystemHub.Controllers
             _client = new RestClient(config.Authenticator+"/Token");
         }
 
-        [HttpGet("Hub")]
-        public async Task<IActionResult> Get(string token)
+        [HttpGet("User")]
+        public async Task<IActionResult> GetUser(string token)
         {
             var context = ControllerContext.HttpContext;
 
@@ -45,7 +46,7 @@ namespace SystemHub.Controllers
                     Validator = _config.Authenticator
                 };
 
-                var request = new RestRequest("Challange")
+                var request = new RestRequest("ChallangeUser")
                     .AddJsonBody(tokenRequest);
                 request.Method = Method.POST;
 
@@ -70,5 +71,45 @@ namespace SystemHub.Controllers
                 return new StatusCodeResult((int)HttpStatusCode.BadRequest);
             }
         }
+
+        [HttpGet("Worker")]
+        public async Task<IActionResult> GetWorker(string token)
+        {
+            var context = ControllerContext.HttpContext;
+
+            if (context.WebSockets.IsWebSocketRequest)
+            {
+                var tokenRequest = new AuthenticationRequest
+                {
+                    token = token,
+                    Validator = _config.Authenticator
+                };
+
+                var request = new RestRequest("ChallangeWorker")
+                    .AddJsonBody(tokenRequest);
+                request.Method = Method.POST;
+
+                var result = _client.Execute(request);
+                if (result.StatusCode == HttpStatusCode.OK)
+                {
+                    var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(result.Content);
+                    if (!claim.IsUser && !claim.IsManager & !claim.IsAdmin)
+                    {
+                        return NotFound();
+                    }
+                    var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+
+                    _Pool.AddtoPool(claim, webSocket);
+                    await _wsHandler.Handle(webSocket);
+                    await _wsHandler.Close(webSocket);
+                }
+                return new EmptyResult();
+            }
+            else
+            {
+                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
+            }
+        }
+
     }
 }

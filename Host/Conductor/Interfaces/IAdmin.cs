@@ -65,7 +65,7 @@ namespace Conductor.Interfaces
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        Task ReportRemoteControlDisconnectedFromSignalling(SessionPair session);
+        Task ReportRemoteControlDisconnectedFromSignalling(SessionAccession session);
 
         /// <summary>
         /// 
