@@ -9,25 +9,20 @@ using SharedHost.Auth;
 using SharedHost.Models.Hub;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
+using SharedHost.Models.Cluster;
+using System.IO;
+using System.Text;
 
 namespace SystemHub.Services
 {
-    public class UserSocketPool : IUserSocketPool
+    public class ClusterSocketPool : IClusterSocketPool
     {
-        private readonly ConcurrentDictionary<AuthenticationResponse, WebSocket> _UserSocketsPool;
-
-        private readonly ConcurrentDictionary<AuthenticationResponse, WebSocket> _ClusterSocketsPool;
-
-        private readonly IWebSocketHandler _WebSocketHandler;
-
+        private readonly ConcurrentDictionary<ClusterCredential, WebSocket> _ClusterSocketsPool;
+                
         
-        
-        public UserSocketPool(SystemConfig config,
-                             IWebSocketHandler wsHandler)
+        public ClusterSocketPool(SystemConfig config)
         {
-            _UserSocketsPool = new ConcurrentDictionary<AuthenticationResponse, WebSocket>();
-            _ClusterSocketsPool = new ConcurrentDictionary<AuthenticationResponse, WebSocket>();
-            _WebSocketHandler = wsHandler;
+            _ClusterSocketsPool = new ConcurrentDictionary<ClusterCredential, WebSocket>();
 
             Task.Run(() => ConnectionHeartBeat());
             Task.Run(() => ConnectionStateCheck());
@@ -38,19 +33,12 @@ namespace SystemHub.Services
         public async Task ConnectionHeartBeat()
         {
             try
-            {                
-                foreach (var socket in _UserSocketsPool)
-                {
-                    if(socket.Value.State == WebSocketState.Open)
-                    {
-                        _WebSocketHandler.SendMessage(socket.Value,"ping");
-                    }
-                }
+            {        
                 foreach (var socket in _ClusterSocketsPool)
                 {
                     if (socket.Value.State == WebSocketState.Open)
                     {
-                        _WebSocketHandler.SendMessage(socket.Value, "ping");
+                        SendMessage(socket.Value, "ping");
                     }
                 }
                 Thread.Sleep(30*1000);
@@ -64,18 +52,11 @@ namespace SystemHub.Services
         {
             try
             {                
-                foreach (var socket in _UserSocketsPool)
-                {
-                    if(socket.Value.State == WebSocketState.Closed) 
-                    {
-                        _UserSocketsPool.TryRemove(socket);
-                    }
-                }
                 foreach (var socket in _ClusterSocketsPool)
                 {
                     if (socket.Value.State == WebSocketState.Closed)
                     {
-                        _UserSocketsPool.TryRemove(socket);
+                        _ClusterSocketsPool.TryRemove(socket);
                     }
                 }
                 Thread.Sleep(100);
@@ -86,58 +67,86 @@ namespace SystemHub.Services
         }
 
 
-        public void AddtoPool(AuthenticationResponse resp,WebSocket session)
+        public async void AddtoPool(ClusterCredential resp,WebSocket session)
         {
-            _UserSocketsPool.TryAdd(resp,session);
+            foreach(var socket in _ClusterSocketsPool)
+            {
+                if(socket.Key.ID == resp.ID)
+                {
+                    return;
+                }
+            }
+            _ClusterSocketsPool.TryAdd(resp, session);
+            await Handle(resp, session);
         }
 
 
 
 
-        public void BroadcastClientEventById(int UserID, EventModel data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public async Task Handle(ClusterCredential cred, WebSocket ws)
         {
-            foreach (var item in _UserSocketsPool)
+            WebSocketReceiveResult message;
+            do
             {
-                if (item.Key.IsUser && item.Key.UserID == UserID.ToString())
+                using (var memoryStream = new MemoryStream())
                 {
-                    _WebSocketHandler.SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    message = await ReceiveMessage(ws, memoryStream);
+                    if (message.Count > 0)
+                    {
+                        var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                    }
                 }
-            }
+            } while (message.MessageType != WebSocketMessageType.Close && ws.State == WebSocketState.Open);
+            await Close(ws);
         }
 
 
-        public void BroadcastClientEvent(EventModel data)
+        private async Task<WebSocketReceiveResult> ReceiveMessage(WebSocket ws, Stream memoryStream)
         {
-            foreach (var item in _UserSocketsPool)
+            var readBuffer = new ArraySegment<byte>(new byte[4 * 1024]);
+            WebSocketReceiveResult result;
+            do
             {
-                if (item.Key.IsUser)
-                {
-                    _WebSocketHandler.SendMessage(item.Value, JsonConvert.SerializeObject(data));
-                }
-            }
+                result = await ws.ReceiveAsync(readBuffer, CancellationToken.None);
+                await memoryStream.WriteAsync(readBuffer.Array, readBuffer.Offset, result.Count, CancellationToken.None);
+            } while (!result.EndOfMessage);
+
+            return result;
+        }
+
+        public void SendMessage(WebSocket ws, string msg)
+        {
+            var bytes = Encoding.UTF8.GetBytes(msg);
+            var buffer = new ArraySegment<byte>(bytes);
+            ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
 
-        public void BroadcastManagerEventByID(int ManagerID, EventModel data)
+        public async Task Close(WebSocket ws)
         {
-            foreach (var item in _UserSocketsPool)
+            try
             {
-                if (item.Key.IsManager && item.Key.UserID == ManagerID.ToString())
-                {
-                    _WebSocketHandler.SendMessage(item.Value, JsonConvert.SerializeObject(data));
-                }
+                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
             }
-        }
-
-        public void BroadcastAdminEvent(EventModel data)
-        {
-            foreach(var item in _UserSocketsPool)
+            catch (Exception ex)
             {
-                if(item.Key.IsAdmin)
-                {
-                    _WebSocketHandler.SendMessage(item.Value, JsonConvert.SerializeObject(data));
-                }
+                Serilog.Log.Information("Connection closed due to {reason}.", ex.Message);
             }
+            return;
         }
     }
 }

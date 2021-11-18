@@ -1,18 +1,15 @@
 ﻿using Conductor.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using SharedHost.Models.Device;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using SharedHost.Models.Shell;
+using SharedHost.Auth.ThinkmayAuthProtocol;
 
 namespace Conductor.Controllers
 {
     /// <summary>
     /// Reserve for RESTful request
     /// </summary>
-    [Route("/ReportShell")]
+    [Route("/Shell")]
     [ApiController]
     public class ReportShellController : Controller
     {
@@ -23,8 +20,10 @@ namespace Conductor.Controllers
             _admin = admin;
         }
 
+
+        [Manager]
         [HttpPost("Output")]
-        public async Task<IActionResult> LogCommandline([FromBody] ShellOutput command)
+        public async Task<IActionResult> Shell([FromBody] ShellSession command)
         {
             await _admin.LogShellOutput(command);
             return Ok();

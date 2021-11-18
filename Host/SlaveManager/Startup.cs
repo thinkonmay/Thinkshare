@@ -9,6 +9,9 @@ using WorkerManager.Services;
 using System;
 using System.IO;
 using System.Reflection;
+using DbSchema.SystemDb.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace WorkerManager
 {
     public class Startup
@@ -28,7 +31,13 @@ namespace WorkerManager
                 options.AddPolicy("AllowAllOrigins",
                     builder => builder.AllowAnyOrigin());
             });
-            
+
+
+            services.AddDbContext<ClusterDbContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
+                ServiceLifetime.Transient
+            );
+
             services.AddControllers();            
             services.AddSwaggerGen(c =>
             {
@@ -46,7 +55,7 @@ namespace WorkerManager
             });
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
-            services.AddSingleton<ISlavePool, SlavePool>();
+            services.AddSingleton<IWorkerNodePool, WorkerNodePool>();
             services.AddSingleton<IConductorSocket, ConductorSocket>();
             services.AddMvc();
         }

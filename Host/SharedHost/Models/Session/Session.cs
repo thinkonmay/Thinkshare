@@ -40,7 +40,7 @@ namespace SharedHost.Models.Session
         public int SlaveID {get;set;}
 
         [ForeignKey("SlaveID")]
-        public virtual Slave Slave { get; set; }
+        public virtual WorkerNode Worker { get; set; }
 
         /// <summary>
         /// 

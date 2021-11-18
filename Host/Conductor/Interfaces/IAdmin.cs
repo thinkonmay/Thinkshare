@@ -1,9 +1,6 @@
 using System.Threading.Tasks;
-using Conductor.Models;
-using SharedHost.Models;
 using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
-using SharedHost.Models.Error;
 using SharedHost.Models.Session;
 
 namespace Conductor.Interfaces
@@ -20,7 +17,7 @@ namespace Conductor.Interfaces
         /// </summary>
         /// <param name="information"></param>
         /// <returns></returns>
-        Task<bool> ReportSlaveRegistered(SlaveDeviceInformation information);
+        Task<bool> ReportSlaveRegistered(WorkerNode information);
 
 
 
@@ -32,11 +29,6 @@ namespace Conductor.Interfaces
         Task EndAllRemoteSession(int SlaveID);
 
 
-        /// <summary>
-        /// Store slave command line return from agent into database and report to admin via signalR
-        /// </summary>
-        /// <returns></returns>
-        Task LogShellOutput(ShellOutput output);
 
         /// <summary>
         /// Report new session start, invoke from sesssions controller

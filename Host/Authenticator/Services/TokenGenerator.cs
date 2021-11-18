@@ -94,7 +94,7 @@ namespace Authenticator.Services
 
 
 
-        public async Task<string> GenerateUserSessionJwt(SessionAccession accession)
+        public async Task<string> GenerateSessionJwt(SessionAccession accession)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwt.Key);

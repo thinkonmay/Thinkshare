@@ -6,6 +6,7 @@ using SystemHub.Interfaces;
 using RestSharp;
 using SharedHost.Auth;
 using Newtonsoft.Json;
+using SharedHost.Models.Cluster;
 
 namespace SystemHub.Controllers
 {
@@ -14,22 +15,22 @@ namespace SystemHub.Controllers
     [Produces("application/json")]
     public class HubController : ControllerBase
     {
-        private readonly IWebSocketHandler _wsHandler;
 
-        private readonly IUserSocketPool _Pool;
+        private readonly IUserSocketPool _User;
+
+        private readonly IClusterSocketPool _Cluster;
 
         private readonly RestClient _client;
 
         private readonly SystemConfig _config;
 
-        public HubController(IWebSocketHandler wsHandler, 
-                            IUserSocketPool queue,
-                            IUserSocketPool pool,
+        public HubController(IClusterSocketPool cluster,
+                            IUserSocketPool user,
                             SystemConfig config)
         {
-            _Pool = queue;
+            _User = user;
+            _Cluster = cluster;
             _config = config;
-            _wsHandler = wsHandler;
             _client = new RestClient(config.Authenticator+"/Token");
         }
 
@@ -60,9 +61,7 @@ namespace SystemHub.Controllers
                     }
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                    _Pool.AddtoPool(claim, webSocket);
-                    await _wsHandler.Handle(webSocket);
-                    await _wsHandler.Close(webSocket);
+                    _User.AddtoPool(claim, webSocket);
                 }
                 return new EmptyResult();
             }
@@ -92,16 +91,10 @@ namespace SystemHub.Controllers
                 var result = _client.Execute(request);
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
-                    var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(result.Content);
-                    if (!claim.IsUser && !claim.IsManager & !claim.IsAdmin)
-                    {
-                        return NotFound();
-                    }
+                    var claim = JsonConvert.DeserializeObject<ClusterCredential>(result.Content);
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                    _Pool.AddtoPool(claim, webSocket);
-                    await _wsHandler.Handle(webSocket);
-                    await _wsHandler.Close(webSocket);
+                    _Cluster.AddtoPool(claim, webSocket);
                 }
                 return new EmptyResult();
             }

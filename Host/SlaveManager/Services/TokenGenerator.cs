@@ -11,42 +11,39 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using WorkerManager.SlaveDevices;
+using WorkerManager.Data;
 
 namespace WorkerManager.Services
 {
     public class TokenGenerator : ITokenGenerator
     {
+        private readonly ClusterDbContext _db;
 
         private readonly JwtOptions _jwt;
 
-        private readonly UserManager<UserAccount> _userManager;
-
-        public TokenGenerator(IOptions<JwtOptions> options, 
-                              UserManager<UserAccount> userManager)
+        public TokenGenerator(IOptions<JwtOptions> options, ClusterDbContext db)
         {
+            _db = db;
             _jwt = options.Value;
-            _userManager = userManager;
         }
 
-        public async Task<string> GenerateJwt(UserAccount user)
+        public async Task<string> GenerateJwt(ClusterWorkerNode node)
         {
-            var userClaims = await _userManager.GetClaimsAsync(user);
-            var roles = await _userManager.GetRolesAsync(user);
-            var roleClaims = new List<Claim>();
-            foreach (var role in roles)
-            {
-                roleClaims.Add(new Claim(ClaimTypes.Role, role));
-            }
+            var claims = new List<Claim>();
+            claims.Add(new Claim("CPU", node.CPU));
+            claims.Add(new Claim("GPU", node.GPU));
+            claims.Add(new Claim("OS", node.OS));
+            claims.Add(new Claim("RAMcapacity", node.RAMcapacity.ToString()));
 
-            // combine default claim with customized claim
-            var claims = userClaims.Union(roleClaims);
+
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwt.Key);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
+                Subject = new ClaimsIdentity(new[] { new Claim("ip", node.PrivateIP.ToString()) }),
                 Expires = DateTime.Now.AddHours(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
@@ -60,7 +57,7 @@ namespace WorkerManager.Services
     
 
 
-        public Task<UserAccount?> ValidateToken(string token)
+        public async Task<ClusterWorkerNode?> ValidateToken(string token)
         {
             try
             {
@@ -76,9 +73,9 @@ namespace WorkerManager.Services
                 }, out SecurityToken validatedToken);
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
-                var id = jwtToken.Claims.First(x => x.Type == "id").Value;
-                var account = _userManager.FindByIdAsync(id);
-                return account;
+                var ip = jwtToken.Claims.First(x => x.Type == "ip").Value;
+                var node = _db.Devices.Where(o => o.PrivateIP == ip).FirstOrDefault();
+                return node;
             }
             catch 
             {

@@ -12,10 +12,6 @@ namespace Conductor.Interfaces
     public interface ISlaveManagerSocket
     {
 
-        Task<SlaveQueryResult> GetSlaveState(int ID);
-
-        Task<List<SlaveQueryResult>> GetSystemSlaveState();
-
         Task<bool> SearchForSlaveID(int slave_id);
 
 
@@ -41,10 +37,6 @@ namespace Conductor.Interfaces
 
 
 
-        Task InitializeShellSession(ShellScript script);
-
-        Task BroadcastShellScript(ShellScript script);
-
 
 
 
@@ -57,7 +49,7 @@ namespace Conductor.Interfaces
 
         Task<bool> RemoteControlDisconnect(int slaveid);
 
-        Task<bool> SessionInitialize(SlaveSession session);
+        Task<bool> SessionInitialize(int ID, string token, SessionBase session);
 
         Task<bool> SessionTerminate(int slaveid);
     }

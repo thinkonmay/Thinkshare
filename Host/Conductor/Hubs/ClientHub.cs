@@ -22,7 +22,7 @@ namespace Conductor.Hubs
         /// </summary>
         /// <param name="device"></param>
         /// <returns></returns>
-        Task ReportNewSlaveAvailable(SlaveDeviceInformation device);
+        Task ReportNewSlaveAvailable(WorkerNode device);
 
         /// <summary>
         /// Disconnected by something wrong on server => report to user use this device
@@ -50,7 +50,7 @@ namespace Conductor.Hubs
         /// </summary>
         /// <param name="slaveID"></param>
         /// <returns></returns>
-        Task ReportSessionInitialized(SlaveDeviceInformation slaveID, int ID);
+        Task ReportSessionInitialized(WorkerNode slaveID, int ID);
     }
 
     public class ClientHub : IClientHub
@@ -79,7 +79,7 @@ namespace Conductor.Hubs
             await _NotificationHub.ExecuteAsync(request);
         }
 
-        public async Task ReportSessionInitialized(SlaveDeviceInformation slave, int ID)
+        public async Task ReportSessionInitialized(WorkerNode slave, int ID)
         {
             var data = new EventModel
             {
@@ -156,7 +156,7 @@ namespace Conductor.Hubs
             await _NotificationHub.ExecuteAsync(request);
         }
 
-        public async Task ReportNewSlaveAvailable(SlaveDeviceInformation device)
+        public async Task ReportNewSlaveAvailable(WorkerNode device)
         {
             var data = new EventModel
             {

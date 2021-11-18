@@ -16,10 +16,10 @@ namespace Conductor.Controllers
     /// Routes used by user to fetch information about the system
     /// </summary>
     [User]
-    [Route("/User")]
     [ApiController]
+    [Route("/Fetch")]
     [Produces("application/json")]
-    public class UserController : Controller
+    public class FetchController : Controller
     {
         private readonly UserManager<UserAccount> _userManager;
 
@@ -27,7 +27,7 @@ namespace Conductor.Controllers
 
         private readonly ISlaveManagerSocket _slmsocket;
 
-        public UserController(ApplicationDbContext db, 
+        public FetchController(ApplicationDbContext db, 
                             UserManager<UserAccount> userManager,
                             ISlaveManagerSocket slm)
         {
@@ -44,28 +44,11 @@ namespace Conductor.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
-        [HttpGet("FetchSlave")]
-        public async Task<IActionResult> UserGetCurrentAvailableDevice()
+        [HttpGet("Node")]
+        public async Task<IActionResult> FetchNode()
         {
-
-            List<SlaveDeviceInformation> resp = new List<SlaveDeviceInformation>();
-            var stateList = await _slmsocket.GetSystemSlaveState();
-
-            foreach (var i in stateList)
-            {
-                if (String.Equals(i.SlaveServiceState, SlaveServiceState.Open))
-                {
-                    // Add Device Information to open device Id list;
-                    var slave = _db.Devices.Find(i.SlaveID);
-
-                    var device_infor = new SlaveDeviceInformation(slave)
-                    {
-                        serviceState = SlaveServiceState.Open
-                    };
-                    resp.Add(device_infor);
-                }
-            }
-            return Ok(resp);
+            var available_node = _db.Devices.Where(o => o.WorkerState == WorkerState.Open);
+            return Ok(available_node);
         }
 
 
@@ -74,27 +57,18 @@ namespace Conductor.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
-        [HttpGet("FetchSession")]
+        [HttpGet("Session")]
         public async Task<IActionResult> UserGetCurrentSesssion()
         {
             var UserID = HttpContext.Items["UserID"];
             var session = _db.RemoteSessions.Where(s => s.ClientId == Int32.Parse(UserID.ToString()) &&
                                                   !s.EndTime.HasValue).ToList();
-            
-            var ret = new List<SlaveDeviceInformation>();
-
-            foreach (var i in session)
-            {
-                var device_infor = new SlaveDeviceInformation(i.Slave);
-
-                var Query = await _slmsocket.GetSlaveState(i.Slave.ID);
-                device_infor.SessionClientID = i.SessionClientID;
-                device_infor.serviceState = Query.SlaveServiceState;
-                ret.Add(device_infor);                
-            }
-
-            // search for remote session with client id and endtime equal null
-            return Ok(ret);
+            var IDlist = new List<int>();
+            session.ForEach(s => IDlist.Add(s.ID));
+            var device = _db.Devices.Where(d => IDlist.Contains(d.ID) &&  
+                                                d.WorkerState == WorkerState.OffRemote && 
+                                                d.WorkerState == WorkerState.OnSession);
+            return Ok(device);
         }
     }
 }

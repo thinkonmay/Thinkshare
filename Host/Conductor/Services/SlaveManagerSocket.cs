@@ -34,28 +34,6 @@ namespace Conductor.Services
             _shell =    new RestClient( "/Shell");
         }
 
-        public async Task<SlaveQueryResult> GetSlaveState(int SlaveID)
-        {
-            /*generate rest post to signalling server*/
-            var request = new RestRequest("Query")
-                .AddQueryParameter("SlaveID", SlaveID.ToString());
-            request.Method = Method.GET;
-
-            var result = await _pool.ExecuteAsync(request);
-            return JsonConvert.DeserializeObject<SlaveQueryResult>(result.Content);
-
-        }
-
-        public async Task<List<SlaveQueryResult>> GetSystemSlaveState()
-        {
-            /*generate rest post to signalling server*/
-            var request = new RestRequest("QueryAll");
-            request.Method = Method.GET;
-
-            var result = await _pool.ExecuteAsync(request);
-            return JsonConvert.DeserializeObject<List<SlaveQueryResult>>(result.Content);
-        }
-
 
         public async Task<bool> SearchForSlaveID(int SlaveID)
         {
@@ -106,28 +84,6 @@ namespace Conductor.Services
 
 
 
-        public async Task InitializeShellSession(ShellScript script)
-        {
-            /*generate rest post to signalling server*/
-            var request = new RestRequest("Initialize")
-                .AddJsonBody(script);
-            request.Method = Method.POST;
-
-            await _shell.ExecuteAsync(request);
-        }
-
-        public async Task BroadcastShellScript(ShellScript script)
-        {
-            var request = new RestRequest("Broadcast")
-                .AddJsonBody(script);
-            request.Method = Method.POST;
-
-            await _shell.ExecuteAsync(request);
-        }
-
-
-
-
 
 
 
@@ -170,7 +126,7 @@ namespace Conductor.Services
             }
         }
 
-        public async Task<bool> SessionInitialize(SlaveSession session)
+        public async Task<bool> SessionInitialize(int ID, string token, SessionBase session)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Initialize")

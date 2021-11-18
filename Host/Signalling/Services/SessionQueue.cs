@@ -19,14 +19,11 @@ namespace Signalling.Services
 {
     public class SessionQueue : ISessionQueue
     {
-        private readonly RestClient _conductor;
-
         private ConcurrentDictionary<SessionAccession, WebSocket> onlineList;
         
         public SessionQueue(SystemConfig config)
         {
             onlineList = new ConcurrentDictionary<SessionAccession, WebSocket>();
-            _conductor = new RestClient(config.Conductor + "/ReportSession");
 
             Task.Run(() => SystemHeartBeat());
             Task.Run(() => ConnectionStateCheck());

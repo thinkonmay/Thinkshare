@@ -26,7 +26,7 @@ namespace Authenticator.Interfaces
         /// </summary>
         /// <param name=""></param>
         /// <returns></returns>
-        Task<string> GenerateUserSessionJwt(SessionAccession accession);
+        Task<string> GenerateSessionJwt(SessionAccession accession);
 
         /// <summary>
         /// 

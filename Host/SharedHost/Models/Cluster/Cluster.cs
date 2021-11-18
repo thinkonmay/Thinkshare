@@ -1,5 +1,7 @@
 ﻿using SharedHost.Models.Device;
 using System.Collections.Generic;
+using SharedHost.Models.User;
+using System;
 
 namespace SharedHost.Models.Cluster
 {
@@ -15,9 +17,24 @@ namespace SharedHost.Models.Cluster
         public int ID { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public DateTime Register { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool Private { get;set; }
+
+        /// <summary>
         /// Each cluster will contain a certain number of Slave Device
         /// </summary>
-        public virtual ICollection<Slave> Slave { get; set; }
+        public virtual ICollection<WorkerNode> Slave { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual UserAccount ManagerAccount {get;set;}
     }
 }
 

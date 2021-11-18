@@ -16,14 +16,7 @@ namespace Conductor.Hubs
         /// </summary>
         /// <param name="information"></param>
         /// <returns></returns>
-        Task ReportSlaveRegistered(SlaveDeviceInformation information);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="output"></param>
-        /// <returns></returns>
-        Task LogShellOutput(ShellOutput output);
+        Task ReportSlaveRegistered(WorkerNode information);
     }
 
     public class AdminHub : IAdminHub
@@ -38,23 +31,7 @@ namespace Conductor.Hubs
             _NotificationHub = new RestClient(config.SystemHub + "/Event");
         }
 
-
-        public async Task LogShellOutput(ShellOutput output)
-        {
-            var data = new EventModel
-            {
-                EventName = "LogShellOutput",
-                Message = JsonConvert.SerializeObject(output)
-            };
-
-            /*generate rest post to signalling server*/
-            var request = new RestRequest("Client")
-                .AddJsonBody(data);
-            request.Method = Method.POST;
-            await _NotificationHub.ExecuteAsync(request);
-        }
-
-        public async Task ReportSlaveRegistered(SlaveDeviceInformation information)
+        public async Task ReportSlaveRegistered(WorkerNode information)
         {
             var data = new EventModel
             {

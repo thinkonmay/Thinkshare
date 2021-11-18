@@ -1,16 +1,20 @@
 ﻿using SharedHost.Auth;
 using SharedHost.Models.Hub;
 using System.Net.WebSockets;
+using System.Threading.Tasks;
 
 namespace SystemHub.Interfaces
 {
     public interface IUserSocketPool
     {
         void AddtoPool(AuthenticationResponse resp, WebSocket session);
-        void BroadcastClientEventById(int UserID, EventModel data);
-        void BroadcastClientEvent(EventModel data);
-        void BroadcastManagerEventByID(int ManagerID, EventModel data);
-        void BroadcastAdminEvent(EventModel data);
 
+        Task Handle(WebSocket ws);
+        void SendMessage(WebSocket ws, string msg);
+        Task Close(WebSocket ws);
+
+        void BroadcastClientEvent(EventModel data);
+        void BroadcastClientEventById(int iD, EventModel data);
+        void BroadcastAdminEvent(EventModel data);
     }
 }

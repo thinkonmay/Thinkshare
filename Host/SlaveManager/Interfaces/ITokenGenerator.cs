@@ -1,5 +1,6 @@
 ﻿using SharedHost.Models.User;
 using System.Threading.Tasks;
+using WorkerManager.SlaveDevices;
 
 namespace WorkerManager.Interfaces
 {
@@ -10,7 +11,7 @@ namespace WorkerManager.Interfaces
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<string> GenerateJwt(UserAccount user);
+        Task<string> GenerateJwt(ClusterWorkerNode user);
 
         /// <summary>
         /// 
@@ -18,6 +19,6 @@ namespace WorkerManager.Interfaces
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<UserAccount?> ValidateToken(string token);
+        Task<ClusterWorkerNode?> ValidateToken(string token);
     }
 }

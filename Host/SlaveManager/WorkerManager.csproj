@@ -70,4 +70,6 @@
 
   <Import Project="..\SharedHost\SharedHost.projitems" Label="Shared" />
 
+  <Import Project="..\DbSchema\DbSchema.projitems" Label="Shared" />
+
 </Project>

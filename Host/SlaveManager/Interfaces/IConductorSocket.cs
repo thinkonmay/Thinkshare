@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
-using SharedHost.Models;
 using SharedHost.Models.Device;
-using SharedHost.Models.Error;
 using SharedHost.Models.Shell;
 using System.Collections.Generic;
+using WorkerManager.SlaveDevices;
 
 namespace WorkerManager.Interfaces
 {
@@ -19,28 +18,15 @@ namespace WorkerManager.Interfaces
         /// </summary>
         /// <param name="information"></param>
         /// <returns></returns>
-        Task<bool> ReportSlaveRegistered(SlaveDeviceInformation information);
+        Task ReportWorkerRegistered(ClusterWorkerNode information);
+
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
-        Task ReportSlaveDisconnected(int SlaveID);
-
-        /// <summary>
-        /// Store slave command line return from agent into database and report to admin via signalR
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        Task LogShellOutput(ShellOutput result);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
-        Task ReportRemoteControlDisconnected(int SlaveID);
+        Task WorkerStateSyncing(int WorkerID, string WorkerState);
 
         /// <summary>
         /// 

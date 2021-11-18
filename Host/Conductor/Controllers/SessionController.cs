@@ -85,7 +85,7 @@ namespace Conductor.Controllers
             var sess = new RemoteSession(sessionPair,Configuration)
             {
                 Client = await _userManager.FindByIdAsync(UserID.ToString()),
-                Slave = _db.Devices.Find(SlaveID)
+                Worker = _db.Devices.Find(SlaveID)
             };
 
             /*create session from client device capability*/
@@ -133,7 +133,7 @@ namespace Conductor.Controllers
             var device = _db.Devices.Find(SlaveID);
 
             // get session information in database
-            var ses = _db.RemoteSessions.Where(s => s.Slave == device
+            var ses = _db.RemoteSessions.Where(s => s.Worker == device
                                                && s.Client == userAccount
                                               && !s.EndTime.HasValue).FirstOrDefault();
 
@@ -157,7 +157,7 @@ namespace Conductor.Controllers
                 return BadRequest(deletion_reply.Content.ToString());
             }
 
-            var Query = await _slmsocket.GetSlaveState(ses.Slave.ID);
+            var Query = await _slmsocket.GetSlaveState(ses.Worker.ID);
 
             /*slavepool send terminate session signal*/
             if(Query.SlaveServiceState == SlaveServiceState.OnSession
@@ -166,7 +166,7 @@ namespace Conductor.Controllers
                 // report to admmin in case termination return successfully 
                 await _admin.ReportSessionTermination(ses);
 
-                await _slmsocket.SessionTerminate(ses.Slave.ID);
+                await _slmsocket.SessionTerminate(ses.Worker.ID);
                 return Ok($"Session {ses.SessionClientID} termination done");
             }
             return BadRequest("Cannot send terminate session signal to slave");            
@@ -188,14 +188,14 @@ namespace Conductor.Controllers
             var device = _db.Devices.Find(SlaveID);
 
             // get session from database
-            var ses = _db.RemoteSessions.Where(s => s.Slave == device 
+            var ses = _db.RemoteSessions.Where(s => s.Worker == device 
                                                && s.Client == userAccount 
                                               && !s.EndTime.HasValue).FirstOrDefault();
 
             // return bad request if session is not found in database
             if (ses == null) return BadRequest();
 
-            var Query = await _slmsocket.GetSlaveState(ses.Slave.ID);
+            var Query = await _slmsocket.GetSlaveState(ses.Worker.ID);
 
             /*slavepool send terminate session signal*/
             if (Query.SlaveServiceState == SlaveServiceState.OnSession)
@@ -204,7 +204,7 @@ namespace Conductor.Controllers
                 await _admin.ReportRemoteControlDisconnected(ses);
 
                 // send disconnect signal to slave
-                await _slmsocket.RemoteControlDisconnect(ses.Slave.ID);
+                await _slmsocket.RemoteControlDisconnect(ses.Worker.ID);
                 return Ok();
             }
             return BadRequest("Device not in session");            
@@ -225,20 +225,20 @@ namespace Conductor.Controllers
             var device = _db.Devices.Find(SlaveID);
 
             // get session from database
-            var ses = _db.RemoteSessions.Where(s => s.Slave == device 
+            var ses = _db.RemoteSessions.Where(s => s.Worker == device 
                                                && s.Client == userAccount 
                                               && !s.EndTime.HasValue).FirstOrDefault();
 
             // return null if session is not found
             if (ses == null) return BadRequest();
 
-            var Query = await _slmsocket.GetSlaveState(ses.Slave.ID);
+            var Query = await _slmsocket.GetSlaveState(ses.Worker.ID);
 
             /*slavepool send terminate session signal*/
             if (Query.SlaveServiceState == SlaveServiceState.OffRemote)
             {
                 // reconect remote control
-                await _slmsocket.RemoteControlReconnect(ses.Slave.ID);   
+                await _slmsocket.RemoteControlReconnect(ses.Worker.ID);   
 
                 // report session reconnect to admin
                 await _admin.ReportRemoteControlReconnect(ses);
