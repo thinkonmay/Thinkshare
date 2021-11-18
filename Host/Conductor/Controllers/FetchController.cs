@@ -25,11 +25,11 @@ namespace Conductor.Controllers
 
         private readonly ApplicationDbContext _db;
 
-        private readonly ISlaveManagerSocket _slmsocket;
+        private readonly IWorkerCommnader _slmsocket;
 
         public FetchController(ApplicationDbContext db, 
                             UserManager<UserAccount> userManager,
-                            ISlaveManagerSocket slm)
+                            IWorkerCommnader slm)
         {
             _slmsocket = slm;
             _db = db;

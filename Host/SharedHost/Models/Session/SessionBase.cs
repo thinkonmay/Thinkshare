@@ -17,6 +17,7 @@ namespace SharedHost.Models.Session
         /// <summary>
         /// 
         /// </summary>
+        [NotMapped]
         public virtual QoE QoE { get; set; }
     }
 }

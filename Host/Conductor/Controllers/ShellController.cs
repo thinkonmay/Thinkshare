@@ -19,11 +19,11 @@ namespace Conductor.Controllers
     [ApiController]
     public class ShellController : Controller
     {
-        private readonly ISlaveManagerSocket _slmsocket;
+        private readonly IWorkerCommnader _slmsocket;
 
         private readonly ApplicationDbContext _db;
 
-        public ShellController(ISlaveManagerSocket slmSocket, ApplicationDbContext db)
+        public ShellController(IWorkerCommnader slmSocket, ApplicationDbContext db)
         {
             _slmsocket = slmSocket;
             _db = db;
@@ -41,6 +41,19 @@ namespace Conductor.Controllers
         {
             var model = _db.ScriptModels.ToList();
             return Ok(model);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Manager]
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update([FromBody] List<ShellSession> session)
+        {
+            _db.ShellSession.AddRange(session);
+            await _db.SaveChangesAsync();
+            return Ok();
         }
     }
 }

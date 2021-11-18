@@ -12,16 +12,24 @@ using System.Collections.Concurrent;
 using SharedHost.Models.Cluster;
 using System.IO;
 using System.Text;
+using SharedHost.Models.Device;
+using RestSharp;
 
 namespace SystemHub.Services
 {
     public class ClusterSocketPool : IClusterSocketPool
     {
         private readonly ConcurrentDictionary<ClusterCredential, WebSocket> _ClusterSocketsPool;
+
+        private readonly SystemConfig _config;
+
+        private readonly RestClient _conductor;
                 
         
         public ClusterSocketPool(SystemConfig config)
         {
+            _config = config;
+            _conductor = new RestClient(config.Conductor+"");
             _ClusterSocketsPool = new ConcurrentDictionary<ClusterCredential, WebSocket>();
 
             Task.Run(() => ConnectionHeartBeat());
@@ -99,21 +107,44 @@ namespace SystemHub.Services
 
         public async Task Handle(ClusterCredential cred, WebSocket ws)
         {
-            WebSocketReceiveResult message;
-            do
+            try
             {
-                using (var memoryStream = new MemoryStream())
+                WebSocketReceiveResult message;
+                do
                 {
-                    message = await ReceiveMessage(ws, memoryStream);
-                    if (message.Count > 0)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                        message = await ReceiveMessage(ws, memoryStream);
+                        if (message.Count > 0)
+                        {
+                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                            var WsMessage = JsonConvert.DeserializeObject<Message>(receivedMessage);
+                            switch (WsMessage.Opcode)
+                            {
+                                case Opcode.STATE_SYNCING:
+                                    await HandleWorkerSync(WsMessage);
+                                    break;
+                            }
+                        }
                     }
-                }
-            } while (message.MessageType != WebSocketMessageType.Close && ws.State == WebSocketState.Open);
-            await Close(ws);
+                } while (message.MessageType != WebSocketMessageType.Close && ws.State == WebSocketState.Open);
+                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            }
+            catch
+            {
+                return;
+            }
         }
 
+        async Task HandleWorkerSync(Message message)
+        {
+            var syncrequest = new RestRequest("WorkerState")
+                .AddQueryParameter("NewState", message.Data)
+                .AddQueryParameter("ID",message.WorkerID.ToString());
+            syncrequest.Method = Method.POST;
+
+            await _conductor.ExecuteAsync(syncrequest);
+        }
 
         private async Task<WebSocketReceiveResult> ReceiveMessage(WebSocket ws, Stream memoryStream)
         {
@@ -133,20 +164,6 @@ namespace SystemHub.Services
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
             ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-        }
-
-
-        public async Task Close(WebSocket ws)
-        {
-            try
-            {
-                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                Serilog.Log.Information("Connection closed due to {reason}.", ex.Message);
-            }
-            return;
         }
     }
 }

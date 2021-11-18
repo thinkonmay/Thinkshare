@@ -37,9 +37,9 @@ namespace SharedHost.Models.Session
         /// </summary>
         /// <value></value>
         [Required]
-        public int SlaveID {get;set;}
+        public int WorkerID {get;set;}
 
-        [ForeignKey("SlaveID")]
+        [ForeignKey("WorkerID")]
         public virtual WorkerNode Worker { get; set; }
 
         /// <summary>

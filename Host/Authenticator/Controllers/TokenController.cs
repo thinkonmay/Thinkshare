@@ -10,6 +10,7 @@ using System.Linq;
 using DbSchema.DbSeeding;
 using SharedHost;
 using System;
+using SharedHost.Models.Session;
 
 namespace Authenticator.Controllers
 {
@@ -41,7 +42,7 @@ namespace Authenticator.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("Challange")]
-        public async Task<IActionResult> Validate([FromBody] AuthenticationRequest request)
+        public async Task<IActionResult> Challene([FromBody] AuthenticationRequest request)
         {
             if (ModelState.IsValid)
             {
@@ -60,6 +61,46 @@ namespace Authenticator.Controllers
             else
             {
                 return BadRequest(); 
+            }
+        }
+
+
+        /// <summary>
+        /// login to server with email/username and password
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("GrantSession")]
+        public async Task<IActionResult> SessionGrant(SessionAccession access)
+        {
+            if (ModelState.IsValid)
+            {
+                return Ok(await _tokenGenerator.GenerateSessionJwt(access));
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// login to server with email/username and password
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("ChallengeSession")]
+        public async Task<IActionResult> SessionChallenge(string token)
+        {
+            if (ModelState.IsValid)
+            {
+                return Ok(await _tokenGenerator.ValidateSessionToken(token));
+            }
+            else
+            {
+                return BadRequest();
             }
         }
     }

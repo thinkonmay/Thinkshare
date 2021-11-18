@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 using DbSchema.SystemDb.Data;
 using Microsoft.EntityFrameworkCore;
+using WorkerManager.Data;
 
 namespace WorkerManager
 {

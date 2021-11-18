@@ -33,6 +33,6 @@ namespace Authenticator.Interfaces
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<SessionAccession?> ValidateSessionToken(UserAccount user);
+        Task<SessionAccession?> ValidateSessionToken(string user);
     }
 }
