@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SharedHost.Models.Session;
 using SharedHost.Models.Cluster;
-using DbSchema.SystemDb.Data;
 using WorkerManager.SlaveDevices;
 using SharedHost.Models.Shell;
 
@@ -12,7 +11,7 @@ namespace WorkerManager.Data
     /// </summary>
     public class ClusterDbContext : DbContext
     {
-        public ClusterDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public ClusterDbContext(DbContextOptions<ClusterDbContext> options) : base(options)
         {
         }
 
@@ -27,11 +26,11 @@ namespace WorkerManager.Data
             base.OnModelCreating(builder);
 
             builder.Entity<ClusterWorkerNode>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
-            builder.Entity<Cluster>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
+            builder.Entity<WorkerCluster>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
         }
 
 
-        public DbSet<Cluster> Clusters { get; set; }
+        public DbSet<WorkerCluster> Clusters { get; set; }
         public DbSet<ShellSession> CachedSession { get; set; }
         public DbSet<ClusterWorkerNode> Devices { get; set; }
         public DbSet<QoE> QoEs { get; set; }

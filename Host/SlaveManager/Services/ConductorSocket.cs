@@ -25,17 +25,15 @@ namespace WorkerManager.Services
     {
         private readonly ClientWebSocket _clientWebSocket;
 
-        private readonly SystemConfig _config;
-
         private readonly ClusterConfig clusterConfig;
 
         private readonly ClusterDbContext _db;
 
-        public ConductorSocket(SystemConfig config, ClusterConfig cluster, ClusterDbContext db)
+        public ConductorSocket(ClusterConfig cluster, 
+                               ClusterDbContext db)
         {
             _db = db;
             clusterConfig = cluster;
-            _config = config;
             _clientWebSocket = new ClientWebSocket();
             _clientWebSocket.ConnectAsync(new Uri("https://host.thinkmay.net/Hub/Cluster?token="+cluster.token), CancellationToken.None).Wait();
             if(_clientWebSocket.State != WebSocketState.Open) 
@@ -106,7 +104,7 @@ namespace WorkerManager.Services
         public async Task Initialize(int WorkerID, string token, SessionBase session)
         {
             var worker = _db.Devices.Find(WorkerID);
-            worker.RestoreWorkerNode(_config);
+            worker.RestoreWorkerNode();
 
             worker.RemoteToken = token;
             worker.QoE = session.QoE;
@@ -124,7 +122,7 @@ namespace WorkerManager.Services
         public async Task Terminate(int WorkerID)
         {
             var worker = _db.Devices.Find(WorkerID);
-            worker.RestoreWorkerNode(_config);
+            worker.RestoreWorkerNode();
 
             worker.RemoteToken = null;
             worker.SignallingUrl = null;
@@ -142,7 +140,7 @@ namespace WorkerManager.Services
         public async Task Disconnect(int WorkerID)
         {
             var worker = _db.Devices.Find(WorkerID);
-            worker.RestoreWorkerNode(_config);
+            worker.RestoreWorkerNode();
 
             await worker.SessionDisconnect();
             await _db.SaveChangesAsync();
@@ -156,7 +154,7 @@ namespace WorkerManager.Services
         public async Task Reconnect(int WorkerID, string token, SessionBase session)
         {
             var worker = _db.Devices.Find(WorkerID);
-            worker.RestoreWorkerNode(_config);
+            worker.RestoreWorkerNode();
 
             worker.RemoteToken = token;
             worker.QoE = session.QoE;
@@ -193,7 +191,7 @@ namespace WorkerManager.Services
 
         public async Task<List<ScriptModel>> GetDefaultModel()
         {
-            var _scriptmodel = new RestClient(_config.BaseUrl+"/Shell");
+            var _scriptmodel = new RestClient("https://host.thinkmay.net/Shell");
             var request = new RestRequest("AllModel")
                 .AddHeader("Authorization", "Bearer " + clusterConfig.token);
             request.Method = Method.GET;

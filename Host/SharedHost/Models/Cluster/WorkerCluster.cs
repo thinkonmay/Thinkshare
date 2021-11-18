@@ -9,7 +9,7 @@ namespace SharedHost.Models.Cluster
     /// When the PCC system scale up, slave device will be divided into different Cluster, 
     /// each cluster will have their own slave manager.
     /// </summary>
-    public class Cluster
+    public class WorkerCluster
     {
         /// <summary>
         /// Each Cluster have an unique ID

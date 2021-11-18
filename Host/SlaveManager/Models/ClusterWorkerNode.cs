@@ -6,7 +6,6 @@ using WorkerManager.Services;
 using SharedHost;
 using RestSharp;
 using SharedHost.Models.Shell;
-using DbSchema.SystemDb.Data;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SharedHost.Models.Session;
@@ -47,7 +46,7 @@ namespace WorkerManager.SlaveDevices
 
         public string? SignallingUrl { get; set; }
 
-        public QoE? QoE { get; set; }
+        public virtual QoE? QoE { get; set; }
 
         
 
@@ -58,7 +57,7 @@ namespace WorkerManager.SlaveDevices
         public RestClient _agentClient { get; set; }
         public int RAMCapacity { get; internal set; }
 
-        public void RestoreWorkerNode (SystemConfig config)
+        public void RestoreWorkerNode ()
         {
             _coreClient = new RestClient(coreUrl);
             _agentClient = new RestClient(agentUrl);

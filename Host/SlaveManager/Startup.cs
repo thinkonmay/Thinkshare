@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SharedHost;
 using WorkerManager.Interfaces;
@@ -9,8 +10,6 @@ using WorkerManager.Services;
 using System;
 using System.IO;
 using System.Reflection;
-using DbSchema.SystemDb.Data;
-using Microsoft.EntityFrameworkCore;
 using WorkerManager.Data;
 
 namespace WorkerManager
@@ -36,7 +35,7 @@ namespace WorkerManager
 
             services.AddDbContext<ClusterDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                ServiceLifetime.Transient
+                ServiceLifetime.Singleton
             );
 
             services.AddControllers();            
@@ -54,7 +53,7 @@ namespace WorkerManager
 
                 c.IncludeXmlComments(xmlFilePath);
             });
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
+            services.AddSingleton(Configuration.GetSection("ClusterConfig").Get<ClusterConfig>());
 
             services.AddSingleton<IWorkerNodePool, WorkerNodePool>();
             services.AddSingleton<IConductorSocket, ConductorSocket>();

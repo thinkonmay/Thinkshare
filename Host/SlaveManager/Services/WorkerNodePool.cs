@@ -14,18 +14,12 @@ namespace WorkerManager.Services
 {
     public class WorkerNodePool : IWorkerNodePool
     {
-        private readonly SystemConfig _config;
-
         private readonly IConductorSocket _socket;
-
-        private readonly ClusterDbContext _db;
 
         private List<ClusterWorkerNode> _systemSnapshot;
 
-        public WorkerNodePool(SystemConfig config, ClusterDbContext db, IConductorSocket socket)
+        public WorkerNodePool(IConductorSocket socket)
         {
-            _db = db;
-            _config = config;
             _socket = socket;
             Task.Run(() => SystemHeartBeat());
             Task.Run(() => StateSyncing());
@@ -40,7 +34,8 @@ namespace WorkerManager.Services
                 {
                     foreach(var i in model_list)
                     {
-                        var devices = _db.Devices.ToList();
+                        var devices = new List<ClusterWorkerNode>();
+                        // _db.Devices.ToList();
                         foreach(var device in devices)
                         {
                             // if a device is not exist on system snapshot, add it even globalID is null
@@ -50,7 +45,7 @@ namespace WorkerManager.Services
                                 continue;
                             }
 
-                            device.RestoreWorkerNode(_config);
+                            device.RestoreWorkerNode();
                             var session = new ShellSession { Script = i.Script };
                             var result = await device.PingWorker(session);
                             if(result != null)
@@ -59,7 +54,7 @@ namespace WorkerManager.Services
                                 session.ModelID = i.ID;
                                 session.WorkerID = device.PrivateID;
                                 session.Time = DateTime.Now;
-                                _db.CachedSession.Add(session);
+                                // _db.CachedSession.Add(session);
                             }
                             else
                             {
@@ -67,7 +62,7 @@ namespace WorkerManager.Services
                             }
                         }
                     }
-                    await _db.SaveChangesAsync();
+                    // await _db.SaveChangesAsync();
                     Thread.Sleep(10*1000);
                 }
             }catch
@@ -86,7 +81,8 @@ namespace WorkerManager.Services
                     foreach ( var unsyncedDevice in _systemSnapshot)
                     {
 
-                        var snapshotedDevice = _db.Devices.Find(unsyncedDevice.PrivateID);
+                        var snapshotedDevice = new ClusterWorkerNode();
+                        // _db.Devices.Find(unsyncedDevice.PrivateID);
 
                         // if device is not available in database, then remove it from system snapshoot
                         if(snapshotedDevice == null)
@@ -99,7 +95,7 @@ namespace WorkerManager.Services
                         {
                             await _socket.ReportWorkerRegistered(snapshotedDevice);
                             snapshotedDevice._workerState = WorkerState.Registering;
-                            await _db.SaveChangesAsync();
+                            // await _db.SaveChangesAsync();
                             continue;
                         }
 
