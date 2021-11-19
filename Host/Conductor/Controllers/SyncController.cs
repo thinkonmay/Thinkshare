@@ -35,7 +35,6 @@ namespace Conductor.Controllers
             _userManager = userManager;
         }
 
-        [Manager]
         [HttpPost("State")]
         public async Task<IActionResult> Update(int ID, string NewState)
         {
@@ -82,6 +81,31 @@ namespace Conductor.Controllers
 
             await _db.SaveChangesAsync();
             return Ok();
+        }
+
+
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register(int ClusterID,[FromBody] ClusterWorkerNode body)
+        {
+            var cluster = _db.Clusters.Find(ClusterID);
+            var current = DateTime.Now;
+
+            var newWorker = new WorkerNode
+            {
+                Register = current,
+                WorkerState = WorkerState.Registering,
+                CPU = body.CPU,
+                GPU = body.GPU,
+                RAMcapacity = body.RAMcapacity,
+                OS = body.OS
+            };
+
+            cluster.Slave.Add(newWorker);
+            await _db.SaveChangesAsync();
+
+            var device = _db.Clusters.Slave.Where(o => o.Register == current).First();
+
+            await _Cluster.AssignGlobalID(cluster.ID, device.ID, body.PrivateID);
         }
     }
 }

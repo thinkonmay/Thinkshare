@@ -67,5 +67,18 @@ namespace Conductor.Services
 
             await _Cluster.ExecuteAsync(request);
         }
+
+
+        public async Task AssignGlobalID(int ClusterID ,int GlobalID, int PrivateID)
+        {
+            var request = new RestRequest("GrantID")
+                .AddQueryParameter("ClusterID", ClusterID.ToString())
+                .AddQueryParameter("GlobalID", GlobalID.ToString())
+                .AddQueryParameter("PrivateID", PrivateID.ToString());
+            request.Method = Method.POST;
+
+            await _Cluster.ExecuteAsync(request);
+
+        }
     }
 }

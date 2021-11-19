@@ -25,8 +25,14 @@ namespace WorkerManager.Controllers
             _tokenGenerator = token;
         }
 
-        [HttpGet("Register")]
-        public async Task<IActionResult> Get(string agentip, int agentport, int coreport, string GPU, string CPU, int RAMCapacity, string OS)
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register(string agentip, 
+                                                    int agentport, 
+                                                    int coreport, 
+                                                    string GPU, 
+                                                    string CPU, 
+                                                    int RAMCapacity, 
+                                                    string OS)
         {
             var worker = new ClusterWorkerNode
             {
@@ -37,11 +43,37 @@ namespace WorkerManager.Controllers
                 PrivateIP = agentip,
                 GPU = GPU,
                 CPU = CPU,
-                RAMCapacity = RAMCapacity,
+                RAMcapacity = RAMCapacity,
                 OS = OS
             };
             _db.Devices.Add(worker);
             return Ok(await _tokenGenerator.GenerateJwt(worker));
+        }
+
+
+        [HttpGet("SessionToken")]
+        public async Task<IActionResult> GetSessionToken(string token)
+        {
+            var result = await _tokenGenerator.ValidateToken(token);
+            return Ok(result.RemoteToken);
+        }
+
+        [HttpGet("GetState")]
+        public async Task<IActionResult> GetState(string token)
+        {
+            var result = await _tokenGenerator.ValidateToken(token);
+            return Ok(result._workerState);
+        }
+
+
+        [HttpPost("SetState")]
+        public async Task<IActionResult> SetState(string token, string WorkerState)
+        {
+            var result = await _tokenGenerator.ValidateToken(token);
+            var device = _db.Devices.Find(result.PrivateID);
+            device._workerState = WorkerState;
+            await _db.SaveChangesAsync();
+            return Ok();
         }
     }
 }

@@ -11,6 +11,8 @@
         public string? Data { get; set; }
 
         public int? WorkerID { get; set; }
+
+        public string? token {get;set;}
     }
 
     public enum Opcode
@@ -20,17 +22,11 @@
         RECONNECT_REMOTE_CONTROL,
         DISCONNECT_REMOTE_CONTROL,
 
-        QOE_REPORT,
-        RESET_QOE,
-        SESSION_CORE_EXIT,
         ERROR_REPORT,
-
         SHELL_SESSION,
-
         STATE_SYNCING,
-
-        FILE_TRANSFER_SERVICE,
-        CLIPBOARD_SERVICE
+        REGISTER_NEW_WORKER,
+        ID_GRANT
     }
 
     public enum Module

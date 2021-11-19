@@ -1,4 +1,5 @@
 ﻿using WorkerManager.Interfaces;
+using SharedHost.Models.Cluster;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
@@ -57,16 +58,25 @@ namespace WorkerManager.Services
                     if (message.Count > 0)
                     {
                         var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                        if(receivedMessage == "ping"){continue;}
                         var WsMessage = JsonConvert.DeserializeObject<Message>(receivedMessage);
                         switch(WsMessage.Opcode)
                         {
+                            // execute session operation by public id 
                             case Opcode.SESSION_INITIALIZE:
+                                await Initialize((int)WsMessage.WorkerID,WsMessage.token,JsonConvert.DeserializeObject<SessionBase>(WsMessage.Data));
                                 break;
                             case Opcode.SESSION_TERMINATE:
+                                await Terminate((int)WsMessage.WorkerID);
                                 break;
                             case Opcode.RECONNECT_REMOTE_CONTROL:
+                                await Reconnect((int)WsMessage.WorkerID,JsonConvert.DeserializeObject<SessionBase>(WsMessage.Data));
                                 break;
                             case Opcode.DISCONNECT_REMOTE_CONTROL:
+                                await Disconnect((int)WsMessage.WorkerID);
+                                break;
+                            case Opcode.ID_GRANT:
+                                await Assignment(WsMessage);
                                 break;
                         }
                     }
@@ -96,14 +106,25 @@ namespace WorkerManager.Services
         }
 
 
+        async Task Assignment(Message message)
+        {
+            var assign = JsonConvert.DeserializeObject<IDAssign>(message.Data);
+            var worker = _db.Devices.Find(assign.PrivateID);
+
+            worker.GlobalID = assign.GlobalID;
+            worker._workerState = WorkerState.Open;
+            await _db.SaveChangesAsync();
+        }
+
+
         /// <summary>
         /// initialize session
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        public async Task Initialize(int WorkerID, string token, SessionBase session)
+        public async Task Initialize(int GlobalID, string token, SessionBase session)
         {
-            var worker = _db.Devices.Find(WorkerID);
+            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
             worker.RestoreWorkerNode();
 
             worker.RemoteToken = token;
@@ -119,9 +140,9 @@ namespace WorkerManager.Services
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
-        public async Task Terminate(int WorkerID)
+        public async Task Terminate(int GlobalID)
         {
-            var worker = _db.Devices.Find(WorkerID);
+            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
             worker.RestoreWorkerNode();
 
             worker.RemoteToken = null;
@@ -137,9 +158,9 @@ namespace WorkerManager.Services
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
-        public async Task Disconnect(int WorkerID)
+        public async Task Disconnect(int GlobalID)
         {
-            var worker = _db.Devices.Find(WorkerID);
+            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
             worker.RestoreWorkerNode();
 
             await worker.SessionDisconnect();
@@ -151,12 +172,11 @@ namespace WorkerManager.Services
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
-        public async Task Reconnect(int WorkerID, string token, SessionBase session)
+        public async Task Reconnect(int GlobalID, SessionBase session)
         {
-            var worker = _db.Devices.Find(WorkerID);
+            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
             worker.RestoreWorkerNode();
 
-            worker.RemoteToken = token;
             worker.QoE = session.QoE;
             worker.SignallingUrl = session.SignallingUrl;
             await worker.SessionReconnect();
@@ -185,7 +205,14 @@ namespace WorkerManager.Services
 
         public async Task ReportWorkerRegistered(ClusterWorkerNode information)
         {
-            await SendMessage(JsonConvert.SerializeObject(information));
+            var message = new Message
+            {
+                From = Module.CLUSTER_MODULE,
+                To = Module.HOST_MODULE,
+                Opcode = Opcode.REGISTER_NEW_WORKER,
+                Data = JsonConvert.SerializeObject(information)
+            };
+            await SendMessage(JsonConvert.SerializeObject(message));
         }
 
 

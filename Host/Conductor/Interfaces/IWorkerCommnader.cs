@@ -18,5 +18,7 @@ namespace Conductor.Interfaces
         Task SessionReconnect(int ID, SessionBase session);
         
         Task SessionInitialize(int ID, string token, SessionBase session);
+
+        Task AssignGlobalID(int ClusterID, int GlobalID, int PrivateID);
     }
 }

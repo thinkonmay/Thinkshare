@@ -91,6 +91,34 @@ namespace SystemHub.Services
 
 
 
+        public async Task SendToNode(Message message)
+        {
+            int NodeID = message.WorkerID;
+            foreach (var cluster in _ClusterSocketsPool)
+            {
+                foreach (var device in cluster.Devices)
+                {
+                    if(device.ID == NodeID)
+                    {
+                        SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
+                    }
+                }                
+            }
+        }
+
+        public async Task SendToCluster(int ClusterID, Message message)
+        {
+            int NodeID = message.WorkerID;
+            foreach (var cluster in _ClusterSocketsPool)
+            {
+                if(cluster.ID == ClusterID)
+                {
+                    SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
+                }
+            }
+        }
+
+
 
 
 
@@ -124,6 +152,9 @@ namespace SystemHub.Services
                                 case Opcode.STATE_SYNCING:
                                     await HandleWorkerSync(WsMessage);
                                     break;
+                                case Opcode.REGISTER_NEW_WORKER:
+                                    await HandleWorkerRegister(WsMessage,cred);
+                                    break;
                             }
                         }
                     }
@@ -141,6 +172,16 @@ namespace SystemHub.Services
             var syncrequest = new RestRequest("WorkerState")
                 .AddQueryParameter("NewState", message.Data)
                 .AddQueryParameter("ID",message.WorkerID.ToString());
+            syncrequest.Method = Method.POST;
+
+            await _conductor.ExecuteAsync(syncrequest);
+        }
+
+        async Task HandleWorkerRegister(Message message,ClusterCredential cred)
+        {
+            var syncrequest = new RestRequest("Register")
+                .AddQueryParameter("ClusterID",cred.ID)
+                .AddJsonBody(JsonConvert.DeserializeObject<ClusterWorkerNode>(message.Data));
             syncrequest.Method = Method.POST;
 
             await _conductor.ExecuteAsync(syncrequest);

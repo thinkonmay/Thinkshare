@@ -9,5 +9,9 @@ namespace SystemHub.Interfaces
     public interface IClusterSocketPool
     {
         void AddtoPool(ClusterCredential resp, WebSocket session);
+
+        void SendToNode(Message message);
+
+        void SendToCluster(int ClusterID, Message message);
     }
 }

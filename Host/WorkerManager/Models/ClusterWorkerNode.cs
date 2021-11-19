@@ -42,20 +42,24 @@ namespace WorkerManager.SlaveDevices
         [Required]
         public string coreUrl { get; set; }
 
+        [JsonIgnore]
         public string? RemoteToken { get; set; }
 
+        [JsonIgnore]
         public string? SignallingUrl { get; set; }
 
+        [JsonIgnore]
         public virtual QoE? QoE { get; set; }
 
         
 
         [NotMapped]
+        [JsonIgnore]
         public RestClient _coreClient { get; set; }
 
         [NotMapped]
+        [JsonIgnore]
         public RestClient _agentClient { get; set; }
-        public int RAMCapacity { get; internal set; }
 
         public void RestoreWorkerNode ()
         {
