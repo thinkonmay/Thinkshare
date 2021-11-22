@@ -20,17 +20,14 @@
         RECONNECT_REMOTE_CONTROL,
         DISCONNECT_REMOTE_CONTROL,
 
-        QOE_REPORT,
-        RESET_QOE,
-        SESSION_CORE_EXIT,
-        ERROR_REPORT,
 
         SHELL_SESSION,
+        ERROR_REPORT,
+
 
         STATE_SYNCING,
+        REGISTER_WORKER_NODE,
 
-        FILE_TRANSFER_SERVICE,
-        CLIPBOARD_SERVICE
     }
 
     public enum Module

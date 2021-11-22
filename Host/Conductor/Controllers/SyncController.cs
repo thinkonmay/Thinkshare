@@ -35,7 +35,6 @@ namespace Conductor.Controllers
             _userManager = userManager;
         }
 
-        [Manager]
         [HttpPost("State")]
         public async Task<IActionResult> Update(int ID, string NewState)
         {
@@ -83,5 +82,19 @@ namespace Conductor.Controllers
             await _db.SaveChangesAsync();
             return Ok();
         }
+
+
+        [HttpPost("NewWorker")]
+        public async Task<IActionResult> Register(int ClusterID, [FromBody] WorkerNode worker)
+        {
+            worker.Register = DateTime.Now;
+            var cluster = _db.Clusters.Find(ClusterID);
+            cluster.Slave.Add(worker);
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
+
+
+
     }
 }

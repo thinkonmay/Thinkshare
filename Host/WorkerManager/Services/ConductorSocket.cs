@@ -185,7 +185,19 @@ namespace WorkerManager.Services
 
         public async Task ReportWorkerRegistered(ClusterWorkerNode information)
         {
-            await SendMessage(JsonConvert.SerializeObject(information));
+            var WorkerNode = new WorkerNode{
+                OS = information.OS,
+                GPU = information.GPU,
+                CPU = information.CPU,
+                RAMcapacity = information.RAMcapacity,
+                WorkerState = information._workerState
+            };
+            await SendMessage(JsonConvert.SerializeObject(
+                new Message { WorkerID = WorkerID, 
+                            From = Module.CLUSTER_MODULE, 
+                            To= Module.HOST_MODULE, 
+                            Opcode=Opcode.REGISTER_WORKER_NODE,
+                            Data= JsonConvert.SerializeObject(WorkerNode)}));
         }
 
 
