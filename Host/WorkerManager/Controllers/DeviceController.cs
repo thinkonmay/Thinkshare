@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using System.Net;
 using System.Collections.Generic;
+using SharedHost.Models.Session;
 
 // TODO: authentification
 
@@ -19,17 +20,23 @@ namespace WorkerManager.Controllers
     [Route("/Device")]
     [ApiController]
     [Produces("application/json")]
-    public class DeviceController : Controller
+    public class SessionController: Controller
     {
 
         private readonly IWorkerNodePool _slavePool;
 
-        public DeviceController(SystemConfig config, 
+        public SessionController(SystemConfig config, 
                                   IWorkerNodePool slavePool)
         {
             _slavePool = slavePool;
         }
 
+        
+        [HttpPost("SessionMetric")]
+        public async Task<IActionResult> Post([FromBody]SessionMetric metric)
+        {
+            return Ok();
+        }
 
     }
 }

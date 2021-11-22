@@ -1,17 +1,15 @@
-﻿using RestSharp;
+﻿using Signalling.Models;
 using SharedHost;
 using System.Text;
 using SharedHost.Models.Session;
 using Signalling.Interfaces;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
-using Signalling.Models;
 using Newtonsoft.Json;
 using SharedHost.Models.Device;
 
@@ -71,6 +69,16 @@ namespace Signalling.Services
 
         public async Task Handle(SessionAccession accession, WebSocket ws)
         {
+            onlineList.TryAdd(accession,ws);
+            var core = onlineList.Where(o => o.Key.ID == accession.ID);
+            if(core.Count() == 2)
+            {
+                var sessionCore = core.Where(o => o.Key.Module == Module.CORE_MODULE).First();
+                SendMessage(sessionCore.Value,JsonConvert.SerializeObject(new WebSocketMessage{RequestType = WebSocketMessageResult.REQUEST_STREAM}));
+            }
+
+
+
             try
             {
                 do
@@ -140,16 +148,8 @@ namespace Signalling.Services
                             return;
                         }
                     }
-                    else
-                    {
-                        msg.Result = WebSocketMessageResult.RESULT_REJECTED;
-                        SendMessage(ws, JsonConvert.SerializeObject(msg));
-                        return;
-                    }
                 }
             }
-            msg.Result = WebSocketMessageResult.RESULT_REJECTED;
-            SendMessage(ws, JsonConvert.SerializeObject(msg));
         }
 
 

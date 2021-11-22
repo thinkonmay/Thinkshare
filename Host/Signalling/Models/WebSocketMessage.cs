@@ -10,15 +10,12 @@ namespace Signalling.Models
     {
         public string RequestType { get; set; }
         public string Content { get; set; }
-        public string Result { get; set; }
     }
 
     public class WebSocketMessageResult
     {
         public const string OFFER_SDP =  "OFFER_SDP";
         public const string OFFER_ICE =  "OFFER_ICE";
-
-        public const string RESULT_ACCEPTED = "SESSION_ACCEPTED";
-        public const string RESULT_REJECTED = "SESSION_REJECTED";
+        public const string REQUEST_STREAM = "REQUEST_STREAM";
     }
 }

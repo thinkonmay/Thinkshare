@@ -11,7 +11,7 @@ using WorkerManager.Data;
 namespace WorkerManager.Controllers
 {
     [ApiController]
-    [Route("/Agent")]
+    [Route("/agent")]
     [Produces("application/json")]
     public class WebSocketApiController : ControllerBase
     {
@@ -25,23 +25,26 @@ namespace WorkerManager.Controllers
             _tokenGenerator = token;
         }
 
-        [HttpGet("Register")]
-        public async Task<IActionResult> Get(string agentip, int agentport, int coreport, string GPU, string CPU, int RAMCapacity, string OS)
+        [HttpPost("Register")]
+        public async Task<IActionResult> PostInfor([FromBody]ClusterWorkerNode node)
         {
-            var worker = new ClusterWorkerNode
-            {
-                _workerState = WorkerState.Unregister,
-                Register = DateTime.Now,
-                agentUrl = "http://"+agentip+":"+agentport.ToString(),
-                coreUrl = "http://"+agentip+":"+coreport.ToString(),
-                PrivateIP = agentip,
-                GPU = GPU,
-                CPU = CPU,
-                RAMCapacity = RAMCapacity,
-                OS = OS
-            };
+            node._workerState = WorkerState.Unregister;
+            node.Register = DateTime.Now;
+
             _db.Devices.Add(worker);
             return Ok(await _tokenGenerator.GenerateJwt(worker));
+        }
+
+        [HttpPost("SessionCoreEnd")]
+        public async Task<IActionResult> Post(string token)
+        {
+            ClusterWorkerNode worker = _tokenGenerator.ValidateToken(token);
+            var device = _db.Devices.Find(worker.PrivateID);
+            if(device._workerState == WorkerState.OnSession)
+            {
+                device._workerState = WorkerState.OffRemote;
+            }
+            return Ok();
         }
     }
 }
