@@ -9,6 +9,6 @@ namespace SharedHost.Models.Cluster
     {
         public int ID { get; set; }
 
-        public List<WorkerNode> Devices { get;set; }
+        public ICollection<WorkerNode> Devices { get;set; }
     }
 }

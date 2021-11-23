@@ -1,23 +1,15 @@
-﻿using MersenneTwister;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SharedHost.Models.Device;
-using SharedHost.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using WorkerManager.Interfaces;
 using System.Threading.Tasks;
 using SharedHost.Models.Session;
 using SharedHost;
-using Newtonsoft.Json;
-using RestSharp;
-using System.Net;
-using System.Collections.Generic;
-using SharedHost.Models.Session;
+using WorkerManager.Middleware;
 
 // TODO: authentification
 
 namespace WorkerManager.Controllers
 {
-    [Route("/Device")]
+    [Route("/collect")]
     [ApiController]
     [Produces("application/json")]
     public class SessionController: Controller
@@ -31,12 +23,18 @@ namespace WorkerManager.Controllers
             _slavePool = slavePool;
         }
 
-        
-        [HttpPost("SessionMetric")]
-        public async Task<IActionResult> Post([FromBody]SessionMetric metric)
+        [Worker]
+        [HttpPost("session")]
+        public async Task<IActionResult> Session([FromBody]SessionMetric metric)
         {
             return Ok();
         }
 
+        [Worker]
+        [HttpPost("log")]
+        public async Task<IActionResult> Log([FromBody] SessionMetric metric)
+        {
+            return Ok();
+        }
     }
 }

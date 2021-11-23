@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using WorkerManager.SlaveDevices;
 using SharedHost.Models.Device;
 using WorkerManager.Data;
+using WorkerManager.Middleware;
+using System.Linq;
 
 namespace WorkerManager.Controllers
 {
@@ -25,21 +27,32 @@ namespace WorkerManager.Controllers
             _tokenGenerator = token;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="managerToken"></param>
+        /// <param name="token"></param>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        [Owner]
         [HttpPost("Register")]
         public async Task<IActionResult> PostInfor([FromBody]ClusterWorkerNode node)
         {
+            var current = DateTime.Now;
             node._workerState = WorkerState.Unregister;
-            node.Register = DateTime.Now;
+            node.Register = current; 
 
-            _db.Devices.Add(worker);
-            return Ok(await _tokenGenerator.GenerateJwt(worker));
+            _db.Devices.Add(node);
+            var device = _db.Devices.Where(o => o.Register == current && o._workerState == WorkerState.Unregister).First();
+            return Ok(await _tokenGenerator.GenerateWorkerToken(device));
         }
 
+        [Worker]
         [HttpPost("SessionCoreEnd")]
-        public async Task<IActionResult> Post(string token)
+        public async Task<IActionResult> Post()
         {
-            ClusterWorkerNode worker = _tokenGenerator.ValidateToken(token);
-            var device = _db.Devices.Find(worker.PrivateID);
+            var workerID = HttpContext.Items["PrivateID"];
+            var device = _db.Devices.Find(workerID);
             if(device._workerState == WorkerState.OnSession)
             {
                 device._workerState = WorkerState.OffRemote;

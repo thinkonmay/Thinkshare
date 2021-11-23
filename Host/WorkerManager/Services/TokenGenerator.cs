@@ -28,7 +28,7 @@ namespace WorkerManager.Services
             _jwt = options.Value;
         }
 
-        public async Task<string> GenerateJwt(ClusterWorkerNode node)
+        public async Task<string> GenerateWorkerToken(ClusterWorkerNode node)
         {
             var claims = new List<Claim>();
             claims.Add(new Claim("CPU", node.CPU));

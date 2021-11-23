@@ -167,7 +167,6 @@ namespace WorkerManager.Services
 
 
 
-
         /// <summary>
         /// Report session state change to user 
         /// </summary>
@@ -193,7 +192,7 @@ namespace WorkerManager.Services
                 WorkerState = information._workerState
             };
             await SendMessage(JsonConvert.SerializeObject(
-                new Message { WorkerID = WorkerID, 
+                new Message { WorkerID = information.PrivateID, 
                             From = Module.CLUSTER_MODULE, 
                             To= Module.HOST_MODULE, 
                             Opcode=Opcode.REGISTER_WORKER_NODE,

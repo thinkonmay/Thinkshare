@@ -35,7 +35,7 @@ namespace WorkerManager.Services
             {
                 while(true)
                 {
-                    var devices = _db.Devices.Where(o => o.WorkerState = WorkerState.OnSession).ToList(); 
+                    var devices = _db.Devices.Where(o => o._workerState == WorkerState.OnSession).ToList(); 
                     foreach (var item in devices)
                     {
                         item.RestoreWorkerNode();

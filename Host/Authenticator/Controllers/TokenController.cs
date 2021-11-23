@@ -11,6 +11,7 @@ using DbSchema.DbSeeding;
 using SharedHost;
 using System;
 using SharedHost.Models.Session;
+using SharedHost.Models.Cluster;
 
 namespace Authenticator.Controllers
 {
@@ -102,6 +103,32 @@ namespace Authenticator.Controllers
             {
                 return BadRequest();
             }
+        }
+
+
+        /// <summary>
+        /// login to server with email/username and password
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("GrantCluster")]
+        public async Task<IActionResult> ClusterGrant(GlobalCluster access)
+        {
+            return Ok(await _tokenGenerator.GenerateClusterJwt(access));
+        }
+
+        /// <summary>
+        /// login to server with email/username and password
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("ChallangeCluster")]
+        public async Task<IActionResult> ClusterChallange(string token)
+        {
+            return Ok(await _tokenGenerator.ValidateClusterToken(token));
         }
     }
 }

@@ -15,6 +15,6 @@ namespace SharedHost.Models.User
         public DateTime? Created { get; set; }
         public string? Avatar {get; set; }
         public virtual DeviceCap? DefaultSetting {get;set;}
-        public virtual ICollection<WorkerCluster>? ManagedCluster {get;set;}
+        public virtual ICollection<GlobalCluster>? ManagedCluster {get;set;}
     }
 }
