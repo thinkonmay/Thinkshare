@@ -106,17 +106,6 @@ namespace Authenticator.Controllers
         }
 
 
-        /// <summary>
-        /// login to server with email/username and password
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("GrantCluster")]
-        public async Task<IActionResult> ClusterGrant(GlobalCluster access)
-        {
-            return Ok(await _tokenGenerator.GenerateClusterJwt(access));
-        }
 
         /// <summary>
         /// login to server with email/username and password

@@ -101,10 +101,10 @@ namespace Conductor.Controllers
                 OS = body.OS
             };
 
-            cluster.Slave.Add(newWorker);
+            cluster.WorkerNode.Add(newWorker);
             await _db.SaveChangesAsync();
 
-            var device = _db.Clusters.Find(ClusterID).Slave.Where(o => o.Register == current).First();
+            var device = _db.Clusters.Find(ClusterID).WorkerNode.Where(o => o.Register == current).First();
 
             await _Cluster.AssignGlobalID(cluster.ID, device.ID, body.PrivateID);
             return Ok();
@@ -125,18 +125,47 @@ namespace Conductor.Controllers
             else
             {
                 account.ManagedCluster= new GlobalCluster();
-                _userManager.UpdateAsync(account);
+                await _userManager.UpdateAsync(account);
                 var updatedAccount = await _userManager.FindByIdAsync(UserID.ToString());
                 return Ok(updatedAccount.ManagedCluster.ID);
             }
         }
+
+
         [HttpPost("NewWorker")]
         public async Task<IActionResult> Register(int ClusterID, [FromBody] WorkerNode worker)
         {
             worker.Register = DateTime.Now;
             var cluster = _db.Clusters.Find(ClusterID);
-            cluster.Slave.Add(worker);
+            cluster.WorkerNode.Add(worker);
             await _db.SaveChangesAsync();
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// Get list of available slave device, contain device information
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("Connected")]
+        public async Task<IActionResult> Connected(int ClusterID)
+        {
+            var cluster = _db.Clusters.Find(ClusterID);
+            foreach (var worker in cluster.WorkerNode)
+            {
+                worker.WorkerState = WorkerState.Disconnected;
+                var Session = _db.RemoteSessions.Where(x => x.WorkerID == worker.ID && !x.EndTime.HasValue);
+                if (Session.Any())
+                {
+                    await _clientHubctx.ReportSessionDisconnected(Session.First().WorkerID, Session.First().ClientId);
+                    Session.First().EndTime = DateTime.Now;
+                }
+                else
+                {
+                    await _clientHubctx.ReportSlaveObtained(Session.First().WorkerID);
+                }
+                await _db.SaveChangesAsync();
+            }
             return Ok();
         }
     }

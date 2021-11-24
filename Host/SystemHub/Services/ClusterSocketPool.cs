@@ -135,6 +135,12 @@ namespace SystemHub.Services
 
         public async Task Handle(ClusterCredential cred, WebSocket ws)
         {
+            var request = new RestRequest("Connected")
+                .AddQueryParameter("ClusterID",cred.ID.ToString());
+            request.Method = Method.POST;
+
+            await _conductor.ExecuteAsync(request);
+
             try
             {
                 WebSocketReceiveResult message;

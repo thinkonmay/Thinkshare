@@ -69,10 +69,10 @@ namespace WorkerManager.Services
                             case Opcode.SESSION_TERMINATE:
                                 await Terminate((int)WsMessage.WorkerID);
                                 break;
-                            case Opcode.RECONNECT_REMOTE_CONTROL:
+                            case Opcode.SESSION_RECONNECT:
                                 await Reconnect((int)WsMessage.WorkerID,JsonConvert.DeserializeObject<SessionBase>(WsMessage.Data));
                                 break;
-                            case Opcode.DISCONNECT_REMOTE_CONTROL:
+                            case Opcode.SESSION_DISCONNECT:
                                 await Disconnect((int)WsMessage.WorkerID);
                                 break;
                             case Opcode.ID_GRANT:

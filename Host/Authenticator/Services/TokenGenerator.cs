@@ -64,10 +64,6 @@ namespace Authenticator.Services
             return tokenHandler.WriteToken(token);
         }
 
-
-    
-
-
         public Task<UserAccount?> ValidateUserToken(string token)
         {
             try
@@ -93,6 +89,24 @@ namespace Authenticator.Services
                 return null;
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -162,6 +176,24 @@ namespace Authenticator.Services
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public async Task<string> GenerateClusterJwt(GlobalCluster accession)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -202,7 +234,7 @@ namespace Authenticator.Services
                 var ret = new ClusterCredential
                 {
                     ID = ClusterID,
-                    Devices = Cluster.Slave
+                    Devices = Cluster.WorkerNode
                 };
                 return ret;
             }

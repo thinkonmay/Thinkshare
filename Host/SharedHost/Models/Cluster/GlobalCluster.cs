@@ -32,7 +32,7 @@ namespace SharedHost.Models.Cluster
         /// <summary>
         /// Each cluster will contain a certain number of Slave Device
         /// </summary>
-        public virtual ICollection<WorkerNode> Slave { get; set; }
+        public virtual ICollection<WorkerNode> WorkerNode { get; set; }
     }
 }
 

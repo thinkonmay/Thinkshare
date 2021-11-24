@@ -124,18 +124,23 @@ namespace SystemHub.Services
 
         public async Task Handle(WebSocket ws)
         {
-            WebSocketReceiveResult message;
-            do
-            {
-                using (var memoryStream = new MemoryStream())
+            try {
+                WebSocketReceiveResult message;
+                do
                 {
-                    message = await ReceiveMessage(ws, memoryStream);
-                    if (message.Count > 0)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                        message = await ReceiveMessage(ws, memoryStream);
+                        if (message.Count > 0)
+                        {
+                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                        }
                     }
-                }
-            } while (message.MessageType != WebSocketMessageType.Close && ws.State == WebSocketState.Open);
+                } while (message.MessageType != WebSocketMessageType.Close && ws.State == WebSocketState.Open);
+            } catch 
+            {
+                return;
+            }
         }
 
 

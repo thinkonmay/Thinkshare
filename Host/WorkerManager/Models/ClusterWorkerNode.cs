@@ -146,5 +146,7 @@ namespace WorkerManager.SlaveDevices
             if(result.StatusCode == HttpStatusCode.OK) { return result.Content; }
             else { return null; }
         }
+
+
     }
 }

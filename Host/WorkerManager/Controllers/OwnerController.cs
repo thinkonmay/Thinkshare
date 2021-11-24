@@ -62,7 +62,7 @@ namespace WorkerManager.Controllers
                 _db.Owner.Add(new OwnerCredential 
                 {   Name = jsonresult.UserName, 
                     Description = null, 
-                    token = jsonresult.Token 
+                    token = jsonresult.Token
                 });
                 await _db.SaveChangesAsync();
                 return Ok();

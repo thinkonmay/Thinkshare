@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DbSchema.SystemDb.Data;
-using Conductor.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -10,10 +7,11 @@ using SharedHost.Models.User;
 using SharedHost.Models.Device;
 using SharedHost.Auth.ThinkmayAuthProtocol;
 using SharedHost.Models.Cluster;
+using Authenticator.Interfaces;
 using SharedHost;
 using RestSharp;
 
-namespace Conductor.Controllers
+namespace Authenticator.Controllers
 {
     /// <summary>
     /// Routes used by user to fetch information about the system
@@ -28,19 +26,13 @@ namespace Conductor.Controllers
 
         private readonly ApplicationDbContext _db;
 
-        private readonly IWorkerCommnader _slmsocket;
-
-        private readonly RestClient _restClient;
+        private readonly ITokenGenerator _token;
 
         public ClusterController(ApplicationDbContext db,
-                            UserManager<UserAccount> userManager,
-                            IWorkerCommnader slm,
-                            SystemConfig config)
+                                 UserManager<UserAccount> userManager)
         {
-            _slmsocket = slm;
             _db = db;
             _userManager = userManager;
-            _restClient = new RestClient(config.Authenticator + "/Token");
         }
 
 
@@ -65,13 +57,11 @@ namespace Conductor.Controllers
             await _userManager.UpdateAsync(account);
             var updated_cluster = (await _userManager.FindByIdAsync((string)ManagerID)).ManagedCluster;
 
-            var request = new RestRequest("GrantCluster")
-                .AddJsonBody(updated_cluster);
-            request.Method = Method.POST;
-
-            var result = await _restClient.ExecuteAsync(request);
-            return Ok(result.Content);
+            var token = await _token.GenerateClusterJwt(updated_cluster);
+            return Ok(token);
         }
+
+
 
 
         /// <summary>
