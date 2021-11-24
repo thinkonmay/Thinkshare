@@ -1,35 +1,30 @@
-﻿using RestSharp;
+﻿using Signalling.Models;
 using SharedHost;
 using System.Text;
 using SharedHost.Models.Session;
 using Signalling.Interfaces;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
+using Newtonsoft.Json;
+using SharedHost.Models.Device;
 
 namespace Signalling.Services
 {
     public class SessionQueue : ISessionQueue
     {
-        private readonly RestClient _conductor;
-
-        private ConcurrentDictionary<int, WebSocket> onlineList;
-
-        private List<SessionPair> sessionPairs;
+        private ConcurrentDictionary<SessionAccession, WebSocket> onlineList;
         
         public SessionQueue(SystemConfig config)
         {
-            onlineList = new ConcurrentDictionary<int, WebSocket>();
-
-            sessionPairs = new List<SessionPair>();
-
-            _conductor = new RestClient(config.Conductor + "/ReportSession");
+            onlineList = new ConcurrentDictionary<SessionAccession, WebSocket>();
 
             Task.Run(() => SystemHeartBeat());
+            Task.Run(() => ConnectionStateCheck());
         }
 
         public async Task SystemHeartBeat()
@@ -42,174 +37,133 @@ namespace Signalling.Services
                     {
                         var bytes = Encoding.UTF8.GetBytes("ping");
                         var buffer = new ArraySegment<byte>(bytes);
-                        item.Value.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+                        await item.Value.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
                     }
                     Thread.Sleep(30000);
                 }
-            }catch(Exception ex)
+            }catch
             {
                 await SystemHeartBeat();
             }
         }
 
-
-        public bool AddSessionPair(SessionPair session)
+        public async Task ConnectionStateCheck()
         {
-            if(sessionPairs.Where(o => o == session).Count() > 0) { return false; }
-            sessionPairs.Add(session);
-            return true;
+            try
+            {
+                foreach (var socket in onlineList)
+                {
+                    if (socket.Value.State == WebSocketState.Closed)
+                    {
+                        onlineList.TryRemove(socket);
+                    }
+                }
+                Thread.Sleep(100);
+            }
+            catch
+            {
+                await ConnectionStateCheck();
+            }
         }
 
-        public bool RemoveIDPair(SessionPair session)
+
+        public async Task Handle(SessionAccession accession, WebSocket ws)
         {
-            WebSocket ws1, ws2;
-            foreach (var i in sessionPairs)
+            onlineList.TryAdd(accession,ws);
+            var core = onlineList.Where(o => o.Key.ID == accession.ID);
+            if(core.Count() == 2)
             {
-                if (i.SessionClientID == session.SessionClientID &&
-                    i.SessionSlaveID == session.SessionSlaveID)
+                var sessionCore = core.Where(o => o.Key.Module == Module.CORE_MODULE).First();
+                SendMessage(sessionCore.Value,JsonConvert.SerializeObject(new WebSocketMessage{RequestType = WebSocketMessageResult.REQUEST_STREAM}));
+            }
+
+
+
+            try
+            {
+                do
                 {
-                    sessionPairs.Remove(i);
-                    onlineList.TryRemove(session.SessionSlaveID, out ws2);
-                    onlineList.TryRemove(session.SessionClientID, out ws1);
-                    try
+                    using (var memoryStream = new MemoryStream())
                     {
-                        if (ws1 != null) { ws1.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
-                        if (ws2 != null) { ws2.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); }
+                        var message = ReceiveMessage(ws, memoryStream).Result;
+                        if (message.Count > 0)
+                        {
+                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                            var WebSocketMessage = JsonConvert.DeserializeObject<WebSocketMessage>(receivedMessage);
+
+                            _handleSdpIceOffer(accession, WebSocketMessage,ws);
+                        }
                     }
-                    catch (Exception) { }
-                    return true;
+                } while (ws.State == WebSocketState.Open);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Information("Connection closed due to {reason}.", ex.Message);
+            }
+            // Device goes offline
+            await Close(ws);
+        }
+
+        private async Task<WebSocketReceiveResult> ReceiveMessage(WebSocket ws, Stream memoryStream)
+        {
+            var readBuffer = new ArraySegment<byte>(new byte[4 * 1024]);
+            WebSocketReceiveResult result;
+            do
+            {
+                result = await ws.ReceiveAsync(readBuffer, CancellationToken.None);
+                await memoryStream.WriteAsync(readBuffer.Array, readBuffer.Offset, result.Count,
+                    CancellationToken.None);
+            } while (!result.EndOfMessage);
+
+            return result;
+        }
+
+        public void SendMessage(WebSocket ws, string msg)
+        {
+            var bytes = Encoding.UTF8.GetBytes(msg);
+            var buffer = new ArraySegment<byte>(bytes);
+            ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+
+
+        void _handleSdpIceOffer(SessionAccession accession, WebSocketMessage msg, WebSocket ws)
+        {
+            foreach(var item in onlineList)
+            {
+                if(item.Key.ID == accession.ID)
+                {
+                    if(accession.Module == Module.CLIENT_MODULE)
+                    {
+                        if(item.Key.WorkerID == accession.WorkerID)
+                        {
+                            SendMessage(item.Value, JsonConvert.SerializeObject(msg));
+                            return;
+                        }
+                    }
+                    else if (accession.Module == Module.CORE_MODULE)
+                    {
+                        if (item.Key.ClientID == accession.ClientID)
+                        {
+                            SendMessage(item.Value, JsonConvert.SerializeObject(msg));
+                            return;
+                        }
+                    }
                 }
             }
-            return false;
         }
 
-        public WebSocket GetSlaveSocket(int ClientID)
+
+        public async Task Close(WebSocket ws)
         {
-            var session = sessionPairs.Where(o => o.SessionClientID == ClientID).FirstOrDefault();
-            if (onlineList.Where(i => i.Key == session.SessionSlaveID).Count() == 1)
+            try
             {
-                return onlineList.Where(i => i.Key == session.SessionSlaveID).FirstOrDefault().Value;
+                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
             }
-            else
+            catch (Exception ex)
             {
-                return null;
+                Serilog.Log.Information("Connection closed due to {reason}.", ex.Message);
             }
-        }
-
-        public WebSocket GetClientSocket(int SlaveID)
-        {
-            var session = sessionPairs.Where(o => o.SessionSlaveID == SlaveID).FirstOrDefault();
-            if (onlineList.Where(i => i.Key == session.SessionClientID).Count() == 1)
-            {
-                return onlineList.Where(i => i.Key == session.SessionClientID).FirstOrDefault().Value;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public bool ClientInQueue(int ClientID)
-        {
-            if (sessionPairs.Where(o => o.SessionClientID == ClientID).Count() > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
-        }
-        public bool SlaveInQueue(int SlaveID)
-        {
-            if (sessionPairs.Where(o => o.SessionSlaveID == SlaveID).Count() > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool DeviceIsOnline(int ID)
-        {
-            if (onlineList.Where(o => o.Key == ID).Count() > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool SlaveIsOnline(int ClientID)
-        {
-            var SlaveID = sessionPairs
-                .Where(o => o.SessionClientID == ClientID).FirstOrDefault()
-                .SessionSlaveID;
-
-            return DeviceIsOnline(SlaveID);
-        }
-
-        public bool ClientIsOnline(int SlaveID)
-        {
-            var ClientID = sessionPairs
-                .Where(o => o.SessionSlaveID == SlaveID).FirstOrDefault()
-                .SessionClientID;
-
-            return DeviceIsOnline(ClientID);
-        }
-
-
-
-        public void DevieGoesOffline(int ID)
-        {
-            WebSocket mock;
-            onlineList.TryRemove(ID, out mock);
-            var session = sessionPairs
-                .Where(o => o.SessionClientID == ID || o.SessionSlaveID == ID).FirstOrDefault();
-
-            if(session == null) { return;  }
-            var request = new RestRequest("SignallingDisconnected")
-                .AddJsonBody(session);
-
-            _conductor.Post(request);
-        }
-
-        public void DeviceGoesOnline(int ID, WebSocket ws)
-        {
-            WebSocket value;
-            onlineList.TryRemove(ID, out value);
-            onlineList.TryAdd(ID, ws);
-        }
-
-        public bool IsClient(int ID)
-        {
-            return (sessionPairs.Where(session => session.SessionClientID == ID).Count() > 0) ? true : false;
-        }
-
-        public bool IsSlave(int ID)
-        {
-            return (sessionPairs.Where(session => session.SessionSlaveID == ID).Count() > 0) ? true : false;
-        }
-
-
-        public List<SessionPair> GetSessionPair()
-        {
-            return sessionPairs;
-        }
-
-        public List<int> GetOnlineList()
-        {
-            List<int> ret = new List<int>();
-            foreach (var i in onlineList)
-            {
-                ret.Add(i.Key);
-            }
-            return ret;
+            return;
         }
     }
 }

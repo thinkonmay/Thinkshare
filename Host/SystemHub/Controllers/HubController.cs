@@ -6,34 +6,36 @@ using SystemHub.Interfaces;
 using RestSharp;
 using SharedHost.Auth;
 using Newtonsoft.Json;
+using SharedHost.Models.Cluster;
 
 namespace SystemHub.Controllers
 {
     [ApiController]
+    [Route("/Hub")]
     [Produces("application/json")]
     public class HubController : ControllerBase
     {
-        private readonly IWebSocketHandler _wsHandler;
 
-        private readonly IWebsocketPool _Pool;
+        private readonly IUserSocketPool _User;
+
+        private readonly IClusterSocketPool _Cluster;
 
         private readonly RestClient _client;
 
         private readonly SystemConfig _config;
 
-        public HubController(IWebSocketHandler wsHandler, 
-                            IWebsocketPool queue,
-                            IWebsocketPool pool,
+        public HubController(IClusterSocketPool cluster,
+                            IUserSocketPool user,
                             SystemConfig config)
         {
-            _Pool = queue;
+            _User = user;
+            _Cluster = cluster;
             _config = config;
-            _wsHandler = wsHandler;
             _client = new RestClient(config.Authenticator+"/Token");
         }
 
-        [HttpGet("Hub")]
-        public async Task<IActionResult> Get(string token)
+        [HttpGet("User")]
+        public async Task<IActionResult> GetUser(string token)
         {
             var context = ControllerContext.HttpContext;
 
@@ -45,7 +47,7 @@ namespace SystemHub.Controllers
                     Validator = _config.Authenticator
                 };
 
-                var request = new RestRequest("Challange")
+                var request = new RestRequest("ChallangeUser")
                     .AddJsonBody(tokenRequest);
                 request.Method = Method.POST;
 
@@ -59,16 +61,48 @@ namespace SystemHub.Controllers
                     }
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                    _Pool.AddtoPool(claim, webSocket);
-                    await _wsHandler.Handle(webSocket);
-                    await _wsHandler.Close(webSocket);
+                    _User.AddtoPool(claim, webSocket);
                 }
-                return new EmptyResult();
+                return Ok();
             }
             else
             {
-                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
         }
+
+        [HttpGet("Worker")]
+        public async Task<IActionResult> GetWorker(string token)
+        {
+            var context = ControllerContext.HttpContext;
+
+            if (context.WebSockets.IsWebSocketRequest)
+            {
+                var tokenRequest = new AuthenticationRequest
+                {
+                    token = token,
+                    Validator = _config.Authenticator
+                };
+
+                var request = new RestRequest("ChallangeWorker")
+                    .AddJsonBody(tokenRequest);
+                request.Method = Method.POST;
+
+                var result = _client.Execute(request);
+                if (result.StatusCode == HttpStatusCode.OK)
+                {
+                    var claim = JsonConvert.DeserializeObject<ClusterCredential>(result.Content);
+                    var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+
+                    _Cluster.AddtoPool(claim, webSocket);
+                }
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
     }
 }

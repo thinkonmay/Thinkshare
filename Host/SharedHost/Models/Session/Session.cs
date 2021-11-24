@@ -13,12 +13,8 @@ namespace SharedHost.Models.Session
     { 
         public RemoteSession() { }
 
-        public RemoteSession(SessionPair pair, 
-                             SystemConfig config)
+        public RemoteSession(SystemConfig config)
         {
-            SessionSlaveID = pair.SessionSlaveID;
-            SessionClientID = pair.SessionClientID;
-
             SignallingUrl = config.SignallingWs;
         }
 
@@ -41,24 +37,17 @@ namespace SharedHost.Models.Session
         /// </summary>
         /// <value></value>
         [Required]
-        public int SlaveID {get;set;}
+        public int WorkerID {get;set;}
 
-        [ForeignKey("SlaveID")]
-        public virtual Slave Slave { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [Key, Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int SessionSlaveID { get; set; }
+        [ForeignKey("WorkerID")]
+        public virtual WorkerNode Worker { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        [Key, Column(Order = 2)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int SessionClientID { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
 
         /// <summary>
         /// 

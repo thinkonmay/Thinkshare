@@ -48,8 +48,8 @@ namespace SystemHub
             });
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
-            services.AddSingleton<IWebsocketPool, WebsocketPool>();
-            services.AddTransient<IWebSocketHandler, WebSocketHandler>();
+            services.AddSingleton<IClusterSocketPool, ClusterSocketPool>();
+            services.AddSingleton<IUserSocketPool, UserSocketPool>();
             services.AddMvc();
         }
 

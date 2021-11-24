@@ -10,6 +10,7 @@ namespace SharedHost.Models.Session
     public class QoE
     {
         public QoE() { }
+
         public QoE(DeviceCap? cap)
         {
             if(cap == null)

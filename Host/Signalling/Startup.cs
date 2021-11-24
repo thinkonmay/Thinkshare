@@ -65,7 +65,6 @@ namespace Signalling
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
             services.AddSingleton<ISessionQueue, SessionQueue>();
-            services.AddTransient<IWebSocketHandler, WebSocketHandler>();
             services.AddMvc();
         }
 

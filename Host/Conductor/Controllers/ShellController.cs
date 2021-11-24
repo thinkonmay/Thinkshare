@@ -8,6 +8,7 @@ using DbSchema.SystemDb.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SharedHost.Auth.ThinkmayAuthProtocol;
 
 namespace Conductor.Controllers
 {
@@ -18,11 +19,11 @@ namespace Conductor.Controllers
     [ApiController]
     public class ShellController : Controller
     {
-        private readonly ISlaveManagerSocket _slmsocket;
+        private readonly IWorkerCommnader _slmsocket;
 
         private readonly ApplicationDbContext _db;
 
-        public ShellController(ISlaveManagerSocket slmSocket, ApplicationDbContext db)
+        public ShellController(IWorkerCommnader slmSocket, ApplicationDbContext db)
         {
             _slmsocket = slmSocket;
             _db = db;
@@ -30,84 +31,29 @@ namespace Conductor.Controllers
 
 
 
-
-        /// <summary>
-        /// Send a command line to an specific process id of an specific slave device
-        /// </summary>
-        /// <param name="ModelID"></param>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
-        [HttpPost("Execute")]
-        public async Task<IActionResult> Shell(int ModelID, int SlaveID)
-        {
-            if((await _slmsocket.GetSlaveState(SlaveID)).SlaveServiceState == SlaveServiceState.Disconnected)
-            {
-                return BadRequest("Device not available");
-            }
-
-            var model = _db.ScriptModels.Find(ModelID);
-            var shell = new ShellScript(model, SlaveID);
-            await _slmsocket.InitializeShellSession(shell);
-            return Ok();
-        }
-
-
-        
-        /// <summary>
-        /// Send a command line to an specific process id of an specific slave device
-        /// </summary>
-        /// <param name="ModelID"></param>
-        /// <returns></returns>
-        [HttpPost("Broadcast")]
-        public async Task<IActionResult> Broadcast(int ModelID)
-        {
-            var model = _db.ScriptModels.Find(ModelID);
-            var shell = new ShellScript(model, 0);
-            await _slmsocket.InitializeShellSession(shell);
-            return Ok();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost("AddModel")]
-        public async Task<IActionResult> Model([FromBody] ScriptModel model)
-        {
-            try
-            {
-                _db.ScriptModels.Add(model);
-                await _db.SaveChangesAsync();
-            }
-            catch (Exception ex) { return BadRequest(ex.Message); }
-            return Ok();
-        }
-
-
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet("GetModelHistory")]
-        public IActionResult Model(int modelID, int SlaveID)
-        {
-            var session = _db.ShellSession
-                    .Where(o => o.Slave.ID == SlaveID && o.Model.ID == modelID)
-                    .ToList();
-            return Ok(session);
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("GetModel")]
+        [Manager]
+        [HttpGet("AllModel")]
         public IActionResult Model()
         {
             var model = _db.ScriptModels.ToList();
             return Ok(model);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [Manager]
+        [HttpPost("Update")]
+        public async Task<IActionResult> Update([FromBody] List<ShellSession> session)
+        {
+            _db.ShellSession.AddRange(session);
+            await _db.SaveChangesAsync();
+            return Ok();
         }
     }
 }

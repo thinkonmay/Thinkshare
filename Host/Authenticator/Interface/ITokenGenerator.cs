@@ -1,4 +1,6 @@
-﻿using SharedHost.Models.User;
+﻿using SharedHost.Models.Cluster;
+using SharedHost.Models.Session;
+using SharedHost.Models.User;
 using System.Threading.Tasks;
 
 namespace Authenticator.Interfaces
@@ -10,7 +12,7 @@ namespace Authenticator.Interfaces
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<string> GenerateJwt(UserAccount user);
+        Task<string> GenerateUserJwt(UserAccount user);
 
         /// <summary>
         /// 
@@ -18,6 +20,37 @@ namespace Authenticator.Interfaces
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<UserAccount?> ValidateToken(string token);
+        Task<UserAccount?> ValidateUserToken(string token);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        Task<string> GenerateSessionJwt(SessionAccession accession);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task<SessionAccession?> ValidateSessionToken(string user);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="accession"></param>
+        /// <returns></returns>
+        Task<string> GenerateClusterJwt(GlobalCluster accession);
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<ClusterCredential?> ValidateClusterToken(string token);
     }
 }

@@ -152,6 +152,31 @@ namespace Conductor.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("SharedHost.Models.Cluster.Cluster", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("ManagerAccountId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Private")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("Register")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("current_timestamp");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ManagerAccountId");
+
+                    b.ToTable("Clusters");
+                });
+
             modelBuilder.Entity("SharedHost.Models.Device.DeviceCap", b =>
                 {
                     b.Property<int?>("ID")
@@ -182,13 +207,16 @@ namespace Conductor.Migrations
                     b.ToTable("DefaultSettings");
                 });
 
-            modelBuilder.Entity("SharedHost.Models.Device.Slave", b =>
+            modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>
                 {
                     b.Property<int>("ID")
                         .HasColumnType("integer");
 
                     b.Property<string>("CPU")
                         .HasColumnType("text");
+
+                    b.Property<int?>("ClusterID")
+                        .HasColumnType("integer");
 
                     b.Property<string>("GPU")
                         .HasColumnType("text");
@@ -204,45 +232,22 @@ namespace Conductor.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
 
+                    b.Property<string>("WorkerState")
+                        .HasColumnType("text");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("ClusterID");
 
                     b.ToTable("Devices");
                 });
 
-            modelBuilder.Entity("SharedHost.Models.Session.QoE", b =>
+            modelBuilder.Entity("SharedHost.Models.Session.RemoteSession", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int?>("AudioCodec")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("QoEMode")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ScreenHeight")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ScreenWidth")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("VideoCodec")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("QoE");
-                });
-
-            modelBuilder.Entity("SharedHost.Models.Session.RemoteSession", b =>
-                {
-                    b.Property<int>("SessionSlaveID")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SessionClientID")
-                        .HasColumnType("integer");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("integer");
@@ -250,27 +255,22 @@ namespace Conductor.Migrations
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("QoEID")
-                        .HasColumnType("integer");
-
                     b.Property<string>("SignallingUrl")
                         .HasColumnType("text");
-
-                    b.Property<int>("SlaveID")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("StartTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
 
-                    b.HasKey("SessionSlaveID", "SessionClientID");
+                    b.Property<int>("WorkerID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("QoEID");
-
-                    b.HasIndex("SlaveID");
+                    b.HasIndex("WorkerID");
 
                     b.ToTable("RemoteSessions");
                 });
@@ -294,9 +294,11 @@ namespace Conductor.Migrations
             modelBuilder.Entity("SharedHost.Models.Shell.ShellSession", b =>
                 {
                     b.Property<int>("ID")
-                        .HasColumnType("integer");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int?>("ModelID")
+                    b.Property<int>("ModelID")
                         .HasColumnType("integer");
 
                     b.Property<string>("Output")
@@ -305,19 +307,19 @@ namespace Conductor.Migrations
                     b.Property<string>("Script")
                         .HasColumnType("text");
 
-                    b.Property<int?>("SlaveID")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("Time")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
 
+                    b.Property<int>("WorkerID")
+                        .HasColumnType("integer");
+
                     b.HasKey("ID");
 
                     b.HasIndex("ModelID");
 
-                    b.HasIndex("SlaveID");
+                    b.HasIndex("WorkerID");
 
                     b.ToTable("ShellSession");
                 });
@@ -464,6 +466,22 @@ namespace Conductor.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SharedHost.Models.Cluster.Cluster", b =>
+                {
+                    b.HasOne("SharedHost.Models.User.UserAccount", "ManagerAccount")
+                        .WithMany()
+                        .HasForeignKey("ManagerAccountId");
+
+                    b.Navigation("ManagerAccount");
+                });
+
+            modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>
+                {
+                    b.HasOne("SharedHost.Models.Cluster.Cluster", null)
+                        .WithMany("Slave")
+                        .HasForeignKey("ClusterID");
+                });
+
             modelBuilder.Entity("SharedHost.Models.Session.RemoteSession", b =>
                 {
                     b.HasOne("SharedHost.Models.User.UserAccount", "Client")
@@ -472,32 +490,30 @@ namespace Conductor.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharedHost.Models.Session.QoE", "QoE")
+                    b.HasOne("SharedHost.Models.Device.WorkerNode", "Worker")
                         .WithMany()
-                        .HasForeignKey("QoEID");
-
-                    b.HasOne("SharedHost.Models.Device.Slave", "Slave")
-                        .WithMany()
-                        .HasForeignKey("SlaveID")
+                        .HasForeignKey("WorkerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Client");
 
-                    b.Navigation("QoE");
-
-                    b.Navigation("Slave");
+                    b.Navigation("Worker");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Shell.ShellSession", b =>
                 {
                     b.HasOne("SharedHost.Models.Shell.ScriptModel", "Model")
                         .WithMany()
-                        .HasForeignKey("ModelID");
+                        .HasForeignKey("ModelID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("SharedHost.Models.Device.Slave", "Slave")
+                    b.HasOne("SharedHost.Models.Device.WorkerNode", "Slave")
                         .WithMany()
-                        .HasForeignKey("SlaveID");
+                        .HasForeignKey("WorkerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Model");
 
@@ -511,6 +527,11 @@ namespace Conductor.Migrations
                         .HasForeignKey("DefaultSettingID");
 
                     b.Navigation("DefaultSetting");
+                });
+
+            modelBuilder.Entity("SharedHost.Models.Cluster.Cluster", b =>
+                {
+                    b.Navigation("Slave");
                 });
 #pragma warning restore 612, 618
         }

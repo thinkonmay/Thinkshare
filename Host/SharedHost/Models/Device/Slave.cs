@@ -11,12 +11,12 @@ namespace SharedHost.Models.Device
     /// <summary>
     /// Slavedevice is the cloud computer device that allow user to access 
     /// </summary>
-    public class Slave
+    public class WorkerNode
     {
-        public Slave()
+        public WorkerNode()
         { }
 
-        public Slave(SlaveDeviceInformation information)
+        public WorkerNode(SlaveDeviceInformation information)
         {
             CPU = information.CPU;
             GPU = information.GPU;

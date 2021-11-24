@@ -1,18 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using SharedHost.Models.Device;
-using System.Collections.Generic;
+using SharedHost.Models.Cluster;
 
 namespace SharedHost.Models.User
 {
     public class UserAccount : IdentityUser<int>
     {
-        /// <summary>
-        /// each client can have a specific number of cloud storage at the same time
-        /// </summary>
-        //public virtual ICollection<StorageBlock> currentStorage { get; set; }
-
-
         public string FullName { get; set; }
         public string? Jobs { get; set; }
         public string? Gender {get;set;}
@@ -20,5 +14,6 @@ namespace SharedHost.Models.User
         public DateTime? Created { get; set; }
         public string? Avatar {get; set; }
         public virtual DeviceCap? DefaultSetting {get;set;}
+        public virtual GlobalCluster? ManagedCluster {get;set;}
     }
 }

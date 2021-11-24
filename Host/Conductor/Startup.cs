@@ -90,10 +90,8 @@ namespace Conductor
                 }); 
             });
             services.AddMvc();
-            services.AddTransient<IAdmin, Admin>();
-            services.AddTransient<IAdminHub,AdminHub>();
             services.AddTransient<IClientHub,ClientHub>();
-            services.AddSingleton<ISlaveManagerSocket,SlaveManagerSocket>();
+            services.AddSingleton<IWorkerCommnader,WorkerCommander>();
             services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
         }
 

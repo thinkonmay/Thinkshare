@@ -61,7 +61,7 @@ namespace Authenticator.Controllers
                 if (result.Succeeded)
                 {
                     UserAccount user = await _userManager.FindByNameAsync(model.UserName);
-                    string token = await _tokenGenerator.GenerateJwt(user);
+                    string token = await _tokenGenerator.GenerateUserJwt(user);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now.AddHours(1));
                 }
                 else
@@ -118,7 +118,7 @@ namespace Authenticator.Controllers
                 {
                     UserAccount u = await _userManager.FindByEmailAsync(model.Email);
                     await _userManager.AddToRoleAsync(u, RoleSeeding.USER);
-                    string token = await _tokenGenerator.GenerateJwt(u);
+                    string token = await _tokenGenerator.GenerateUserJwt(u);
                     return AuthResponse.GenerateSuccessful(model.UserName, token, DateTime.Now);
                 }
                 else
@@ -177,7 +177,7 @@ namespace Authenticator.Controllers
                 // Add a login (i.e insert a row for the user in AspNetUserLogins table)
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
-                string token = await _tokenGenerator.GenerateJwt(user);
+                string token = await _tokenGenerator.GenerateUserJwt(user);
                 var resp = new AuthenticationRequest
                 {
                     token = token,
