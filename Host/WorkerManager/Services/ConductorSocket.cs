@@ -187,7 +187,6 @@ namespace WorkerManager.Services
 
 
 
-
         /// <summary>
         /// Report session state change to user 
         /// </summary>
@@ -205,14 +204,19 @@ namespace WorkerManager.Services
 
         public async Task ReportWorkerRegistered(ClusterWorkerNode information)
         {
-            var message = new Message
-            {
-                From = Module.CLUSTER_MODULE,
-                To = Module.HOST_MODULE,
-                Opcode = Opcode.REGISTER_NEW_WORKER,
-                Data = JsonConvert.SerializeObject(information)
+            var WorkerNode = new WorkerNode{
+                OS = information.OS,
+                GPU = information.GPU,
+                CPU = information.CPU,
+                RAMcapacity = information.RAMcapacity,
+                WorkerState = information._workerState
             };
-            await SendMessage(JsonConvert.SerializeObject(message));
+            await SendMessage(JsonConvert.SerializeObject(
+                new Message { WorkerID = information.PrivateID, 
+                            From = Module.CLUSTER_MODULE, 
+                            To= Module.HOST_MODULE, 
+                            Opcode=Opcode.REGISTER_WORKER_NODE,
+                            Data= JsonConvert.SerializeObject(WorkerNode)}));
         }
 
 

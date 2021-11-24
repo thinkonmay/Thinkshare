@@ -11,7 +11,7 @@ namespace WorkerManager.Interfaces
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<string> GenerateJwt(ClusterWorkerNode user);
+        Task<string> GenerateWorkerToken(ClusterWorkerNode user);
 
         /// <summary>
         /// 

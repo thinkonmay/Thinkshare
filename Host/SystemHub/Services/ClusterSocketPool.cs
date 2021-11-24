@@ -169,7 +169,16 @@ namespace SystemHub.Services
 
         async Task HandleWorkerSync(Message message)
         {
-            var syncrequest = new RestRequest("WorkerState")
+            var syncrequest = new RestRequest("State")
+                .AddQueryParameter("NewState", message.Data)
+                .AddQueryParameter("ID",message.WorkerID.ToString());
+            syncrequest.Method = Method.POST;
+
+            await _conductor.ExecuteAsync(syncrequest);
+        }
+        async Task HandleWorkerRegister(Message message)
+        {
+            var syncrequest = new RestRequest("State")
                 .AddQueryParameter("NewState", message.Data)
                 .AddQueryParameter("ID",message.WorkerID.ToString());
             syncrequest.Method = Method.POST;

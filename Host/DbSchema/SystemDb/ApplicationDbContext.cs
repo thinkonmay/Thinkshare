@@ -32,11 +32,11 @@ namespace DbSchema.SystemDb.Data
             builder.Entity<RemoteSession>().Property(u => u.StartTime).HasDefaultValueSql("current_timestamp");
             builder.Entity<ShellSession>().Property(u => u.Time).HasDefaultValueSql("current_timestamp");
             builder.Entity<WorkerNode>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
-            builder.Entity<WorkerCluster>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
+            builder.Entity<GlobalCluster>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
         }
 
 
-        public DbSet<WorkerCluster> Clusters { get; set; }
+        public DbSet<GlobalCluster> Clusters { get; set; }
         public DbSet<WorkerNode> Devices { get; set; }
         public DbSet<RemoteSession> RemoteSessions { get; set; }
         public DbSet<ShellSession> ShellSession { get; set; }

@@ -63,11 +63,11 @@ namespace SystemHub.Controllers
 
                     _User.AddtoPool(claim, webSocket);
                 }
-                return new EmptyResult();
+                return Ok();
             }
             else
             {
-                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
         }
 
@@ -96,11 +96,11 @@ namespace SystemHub.Controllers
 
                     _Cluster.AddtoPool(claim, webSocket);
                 }
-                return new EmptyResult();
+                return Ok();
             }
             else
             {
-                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
+                return BadRequest();
             }
         }
 

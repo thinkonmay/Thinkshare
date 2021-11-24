@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 using WorkerManager.Data;
 using System.Threading.Tasks;
+using WorkerManager.Middleware;
 
 namespace WorkerManager
 {
@@ -75,6 +76,9 @@ namespace WorkerManager
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
+
+            app.UseMiddleware<JwtMiddleware>();
+            app.UseMiddleware<AuthorizeMiddleware>();
 
             app.UseRouting();
 

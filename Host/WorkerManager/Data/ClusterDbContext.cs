@@ -3,6 +3,7 @@ using SharedHost.Models.Session;
 using SharedHost.Models.Cluster;
 using WorkerManager.SlaveDevices;
 using SharedHost.Models.Shell;
+using WorkerManager.Models;
 
 namespace WorkerManager.Data
 {
@@ -26,11 +27,12 @@ namespace WorkerManager.Data
             base.OnModelCreating(builder);
 
             builder.Entity<ClusterWorkerNode>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
-            builder.Entity<WorkerCluster>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
+            builder.Entity<LocalCluster>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
         }
 
 
-        public DbSet<WorkerCluster> Clusters { get; set; }
+        public DbSet<OwnerCredential> Owner { get; set; }
+        public DbSet<LocalCluster> Clusters { get; set; }
         public DbSet<ShellSession> CachedSession { get; set; }
         public DbSet<ClusterWorkerNode> Devices { get; set; }
         public DbSet<QoE> QoEs { get; set; }

@@ -2,19 +2,27 @@
 using System.Collections.Generic;
 using SharedHost.Models.User;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedHost.Models.Cluster
 {
-    /// <summary>
-    /// When the PCC system scale up, slave device will be divided into different Cluster, 
-    /// each cluster will have their own slave manager.
-    /// </summary>
-    public class Cluster
+    public class LocalCluster
     {
         /// <summary>
         /// Each Cluster have an unique ID
         /// </summary>
+        [Key]
         public int ID { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? Token { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? TurnUrl { get; set; }
 
         /// <summary>
         /// 

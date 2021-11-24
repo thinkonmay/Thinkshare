@@ -13,6 +13,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SharedHost.Models.Session;
 using SharedHost.Models.Device;
+using SharedHost.Models.Cluster;
+using DbSchema.SystemDb.Data;
 
 namespace Authenticator.Services
 {
@@ -23,9 +25,13 @@ namespace Authenticator.Services
 
         private readonly UserManager<UserAccount> _userManager;
 
+        private readonly ApplicationDbContext _db;
+
         public TokenGenerator(IOptions<JwtOptions> options, 
-                              UserManager<UserAccount> userManager)
+                              UserManager<UserAccount> userManager,
+                              ApplicationDbContext db )
         {
+            _db = db;
             _jwt = options.Value;
             _userManager = userManager;
         }
@@ -144,6 +150,61 @@ namespace Authenticator.Services
 
                 };
                 return accession;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+
+
+
+
+        public async Task<string> GenerateClusterJwt(GlobalCluster accession)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_jwt.Key);
+
+
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[] { new Claim("ID", accession.ID.ToString()) }),
+                Expires = DateTime.Now.AddDays(30),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        public async Task<ClusterCredential?> ValidateClusterToken(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_jwt.Key);
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+                var jwtToken = (JwtSecurityToken)validatedToken;
+
+
+                var ClusterID = Int32.Parse(jwtToken.Claims.First(x => x.Type == "ID").Value);
+                var Cluster =  _db.Clusters.Find(ClusterID);
+                var ret = new ClusterCredential
+                {
+                    ID = ClusterID,
+                    Devices = Cluster.Slave
+                };
+                return ret;
             }
             catch
             {

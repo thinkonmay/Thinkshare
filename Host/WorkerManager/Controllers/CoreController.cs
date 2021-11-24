@@ -1,53 +1,100 @@
-
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WorkerManager.Interfaces;
-using System;
-using System.Net;
 using System.Threading.Tasks;
-using WorkerManager.SlaveDevices;
-using SharedHost.Models.Device;
+using SharedHost.Models.Session;
+using SharedHost;
+using WorkerManager.Middleware;
 using WorkerManager.Data;
+using SharedHost.Models.Device;
+
+// TODO: authentification
 
 namespace WorkerManager.Controllers
 {
+    [Route("/session")]
     [ApiController]
-    [Route("Session")]
     [Produces("application/json")]
-    public class CoreController : ControllerBase
+    public class CoreController : Controller
     {
-        private readonly ITokenGenerator _tokenGenerator;
+
+        private readonly IWorkerNodePool _slavePool;
 
         private readonly ClusterDbContext _db;
 
-        public CoreController(IWorkerNodePool slavePool, 
-                            ClusterDbContext db, 
-                            ITokenGenerator token)
+        public CoreController(SystemConfig config,
+                              IWorkerNodePool slavePool,
+                              ClusterDbContext db)
         {
             _db = db;
-            _tokenGenerator = token;
+            _slavePool = slavePool;
         }
 
-
-        [HttpGet("Token")]
-        public async Task<IActionResult> GetSessionToken(string token)
+        [Worker]
+        [HttpPost("token")]
+        public async Task<IActionResult> Session()
         {
-            var result = await _tokenGenerator.ValidateToken(token);
-            return Ok(result.RemoteToken);
+            var PrivateID = HttpContext.Items["PrivateID"];
+            var Node = _db.Devices.Find(PrivateID);
+            if (Node._workerState == WorkerState.OnSession ||
+               Node._workerState == WorkerState.OffRemote)
+            {
+                return Ok(Node.RemoteToken);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
-        [HttpGet("QoE")]
-        public async Task<IActionResult> GetSessionQoE(string token)
+        [Worker]
+        [HttpPost("signalling")]
+        public async Task<IActionResult> Signalling()
         {
-            var result = await _tokenGenerator.ValidateToken(token);
-            return Ok(result.QoE);
+            var PrivateID = HttpContext.Items["PrivateID"];
+            var Node = _db.Devices.Find(PrivateID);
+            if (Node._workerState == WorkerState.OnSession ||
+               Node._workerState == WorkerState.OffRemote)
+            {
+                return Ok(Node.RemoteToken);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
-        [HttpGet("Signalling")]
-        public async Task<IActionResult> GetSignalling(string token)
+        [Worker]
+        [HttpPost("turn")]
+        public async Task<IActionResult> Turn()
         {
-            var result = await _tokenGenerator.ValidateToken(token);
-            return Ok(result.SignallingUrl);
+            var PrivateID = HttpContext.Items["PrivateID"];
+            var Node = _db.Devices.Find(PrivateID);
+            if (Node._workerState == WorkerState.OnSession ||
+               Node._workerState == WorkerState.OffRemote)
+            {
+                return Ok(Node);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [Worker]
+        [HttpPost("qoe")]
+        public async Task<IActionResult> QoE()
+        {
+            var PrivateID = HttpContext.Items["PrivateID"];
+            var Node = _db.Devices.Find(PrivateID);
+            if (Node._workerState == WorkerState.OnSession ||
+               Node._workerState == WorkerState.OffRemote)
+            {
+                return Ok(Node.QoE);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

@@ -36,6 +36,10 @@ namespace WorkerManager.SlaveDevices
         [Required]
         public string _workerState { get; set; }
 
+        public int? agentFailedPing {get;set;}
+
+        public int? sessionFailedPing {get;set;}
+
         [Required]
         public string agentUrl { get; set; }
 
@@ -63,8 +67,8 @@ namespace WorkerManager.SlaveDevices
 
         public void RestoreWorkerNode ()
         {
-            _coreClient = new RestClient(coreUrl);
-            _agentClient = new RestClient(agentUrl);
+            _coreClient = new RestClient(coreUrl+"/cluster");
+            _agentClient = new RestClient(agentUrl+"/cluster");
         }
 
 
@@ -119,21 +123,28 @@ namespace WorkerManager.SlaveDevices
         }
 
 
+
+
+        public async Task<bool> PingSession()
+        {
+            var request = new RestRequest("ping");
+            request.Method = Method.POST;
+
+            var result = await _agentClient.ExecuteAsync(request);
+            if(result.StatusCode == HttpStatusCode.OK) { return true; }
+            else { return false; }
+        }
+
+
         public async Task<string?> PingWorker(ShellSession session)
         {
-            var request = new RestRequest("Shell")
+            var request = new RestRequest("ping")
                 .AddJsonBody(session.Script);
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);
-            if(result.StatusCode == HttpStatusCode.OK)
-            {
-                return result.Content;
-            }
-            else
-            {
-                return null;
-            }
+            if(result.StatusCode == HttpStatusCode.OK) { return result.Content; }
+            else { return null; }
         }
     }
 }

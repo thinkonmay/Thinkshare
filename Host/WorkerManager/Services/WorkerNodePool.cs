@@ -18,11 +18,49 @@ namespace WorkerManager.Services
 
         private List<ClusterWorkerNode> _systemSnapshot;
 
-        public WorkerNodePool(IConductorSocket socket)
+        private readonly ClusterDbContext _db;
+
+        public WorkerNodePool(IConductorSocket socket, ClusterDbContext db)
         {
+            _db = db;
             _socket = socket;
             Task.Run(() => SystemHeartBeat());
             Task.Run(() => StateSyncing());
+            Task.Run(() => SessionHeartBeat());
+        }
+
+        public async Task SessionHeartBeat()
+        {
+            try
+            {
+                while(true)
+                {
+                    var devices = _db.Devices.Where(o => o._workerState == WorkerState.OnSession).ToList(); 
+                    foreach (var item in devices)
+                    {
+                        item.RestoreWorkerNode();
+                        var result = await item.PingSession();
+                        if(result)
+                        {
+                           item.sessionFailedPing = 0; 
+                        }
+                        else
+                        {
+                            item.sessionFailedPing++;
+                        }
+
+                        if(item.sessionFailedPing > 5)
+                        {
+                            item._workerState = WorkerState.OffRemote;
+                        }
+                    }
+                    await _db.SaveChangesAsync();
+                    Thread.Sleep(10*1000);
+                }
+            }catch
+            {
+                await SessionHeartBeat();
+            }
         }
 
         public async Task SystemHeartBeat()
@@ -34,17 +72,9 @@ namespace WorkerManager.Services
                 {
                     foreach(var i in model_list)
                     {
-                        var devices = new List<ClusterWorkerNode>();
-                        // _db.Devices.ToList();
+                        var devices = _db.Devices.ToList();
                         foreach(var device in devices)
                         {
-                            // if a device is not exist on system snapshot, add it even globalID is null
-                            if (_systemSnapshot.Where(o => o.PrivateID == device.PrivateID).Count() == 0)
-                            {
-                                _systemSnapshot.Add(device);
-                                continue;
-                            }
-
                             device.RestoreWorkerNode();
                             var session = new ShellSession { Script = i.Script };
                             var result = await device.PingWorker(session);
@@ -54,16 +84,22 @@ namespace WorkerManager.Services
                                 session.ModelID = i.ID;
                                 session.WorkerID = device.PrivateID;
                                 session.Time = DateTime.Now;
-                                // _db.CachedSession.Add(session);
+                                device.agentFailedPing = 0;
                             }
                             else
                             {
+                                device.agentFailedPing++;
+                            }
+
+                            if(device.agentFailedPing > 5)
+                            {
                                 device._workerState = WorkerState.Disconnected;
                             }
+                            _db.CachedSession.Add(session);
                         }
                     }
-                    // await _db.SaveChangesAsync();
-                    Thread.Sleep(10*1000);
+                    await _db.SaveChangesAsync();
+                    Thread.Sleep(10 * 1000);
                 }
             }catch
             {
@@ -81,13 +117,13 @@ namespace WorkerManager.Services
                     foreach ( var unsyncedDevice in _systemSnapshot)
                     {
 
-                        var snapshotedDevice = new ClusterWorkerNode();
-                        // _db.Devices.Find(unsyncedDevice.PrivateID);
+                        var snapshotedDevice = _db.Devices.Find(unsyncedDevice.PrivateID);
 
                         // if device is not available in database, then remove it from system snapshoot
                         if(snapshotedDevice == null)
                         {
                             _systemSnapshot.Remove(unsyncedDevice);
+                            await _db.SaveChangesAsync();
                         }
 
                         // if device haven't been registered, register it
@@ -95,7 +131,7 @@ namespace WorkerManager.Services
                         {
                             await _socket.ReportWorkerRegistered(snapshotedDevice);
                             snapshotedDevice._workerState = WorkerState.Registering;
-                            // await _db.SaveChangesAsync();
+                            await _db.SaveChangesAsync();
                             continue;
                         }
 
@@ -109,6 +145,8 @@ namespace WorkerManager.Services
                         if (snapshotedDevice._workerState != unsyncedDevice._workerState)
                         {
                             await _socket.WorkerStateSyncing((int)snapshotedDevice.GlobalID, snapshotedDevice._workerState);
+                            _systemSnapshot.Remove(unsyncedDevice);
+                            _systemSnapshot.Add(snapshotedDevice);
                             continue;
                         }
                     }

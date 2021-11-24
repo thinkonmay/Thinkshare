@@ -22,11 +22,14 @@
         RECONNECT_REMOTE_CONTROL,
         DISCONNECT_REMOTE_CONTROL,
 
-        ERROR_REPORT,
+
         SHELL_SESSION,
+        ERROR_REPORT,
+
+
         STATE_SYNCING,
-        REGISTER_NEW_WORKER,
-        ID_GRANT
+        REGISTER_WORKER_NODE,
+
     }
 
     public enum Module
