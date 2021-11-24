@@ -56,14 +56,14 @@ namespace Conductor.Controllers
         {
             var ManagerID = HttpContext.Items["UserID"];
             UserAccount account =  await _userManager.FindByIdAsync((string)ManagerID);
-            account.ManagedCluster.Add(new GlobalCluster 
+            account.ManagedCluster = new GlobalCluster 
             { 
                 TURN = TURN,
                 Register = DateTime.Now, 
                 Private = Private 
-            });
+            };
             await _userManager.UpdateAsync(account);
-            var updated_cluster = (await _userManager.FindByIdAsync((string)ManagerID)).ManagedCluster.First();
+            var updated_cluster = (await _userManager.FindByIdAsync((string)ManagerID)).ManagedCluster;
 
             var request = new RestRequest("GrantCluster")
                 .AddJsonBody(updated_cluster);

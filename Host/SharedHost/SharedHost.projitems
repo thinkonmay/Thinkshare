@@ -14,9 +14,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\LoginModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserInforModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\WorkerCluster.cs" />
-    <Compile Include="..\SharedHost\Models\Cluster\LocalCluster.cs" />
-    <Compile Include="..\SharedHost\Models\Cluster\GlobalCluster.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\LocalCluster.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\GlobalCluster.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\ClusterCredential.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\IDAssign.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Hub\EventModel.cs" />

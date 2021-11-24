@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using SharedHost.Models.Device;
-using System.Collections.Generic;
 using SharedHost.Models.Cluster;
 
 namespace SharedHost.Models.User
@@ -15,6 +14,6 @@ namespace SharedHost.Models.User
         public DateTime? Created { get; set; }
         public string? Avatar {get; set; }
         public virtual DeviceCap? DefaultSetting {get;set;}
-        public virtual WorkerCluster? ManagedCluster {get;set;}
+        public virtual GlobalCluster? ManagedCluster {get;set;}
     }
 }

@@ -3,6 +3,7 @@ using SharedHost.Models.Cluster;
 using SharedHost.Models.Hub;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using SharedHost.Models.Device;
 
 namespace SystemHub.Interfaces
 {
@@ -10,8 +11,8 @@ namespace SystemHub.Interfaces
     {
         void AddtoPool(ClusterCredential resp, WebSocket session);
 
-        void SendToNode(Message message);
+        Task SendToNode(Message message);
 
-        void SendToCluster(int ClusterID, Message message);
+        Task SendToCluster(int ClusterID, Message message);
     }
 }

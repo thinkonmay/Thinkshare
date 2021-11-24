@@ -124,7 +124,7 @@ namespace Conductor.Controllers
             }
             else
             {
-                account.ManagedCluster= new WorkerCluster();
+                account.ManagedCluster= new GlobalCluster();
                 _userManager.UpdateAsync(account);
                 var updatedAccount = await _userManager.FindByIdAsync(UserID.ToString());
                 return Ok(updatedAccount.ManagedCluster.ID);

@@ -93,10 +93,10 @@ namespace SystemHub.Services
 
         public async Task SendToNode(Message message)
         {
-            int NodeID = message.WorkerID;
+            int NodeID = (int)message.WorkerID;
             foreach (var cluster in _ClusterSocketsPool)
             {
-                foreach (var device in cluster.Devices)
+                foreach (var device in cluster.Key.Devices)
                 {
                     if(device.ID == NodeID)
                     {
@@ -108,10 +108,10 @@ namespace SystemHub.Services
 
         public async Task SendToCluster(int ClusterID, Message message)
         {
-            int NodeID = message.WorkerID;
+            int NodeID = (int)message.WorkerID;
             foreach (var cluster in _ClusterSocketsPool)
             {
-                if(cluster.ID == ClusterID)
+                if(cluster.Key.ID == ClusterID)
                 {
                     SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
                 }
@@ -152,7 +152,7 @@ namespace SystemHub.Services
                                 case Opcode.STATE_SYNCING:
                                     await HandleWorkerSync(WsMessage);
                                     break;
-                                case Opcode.REGISTER_NEW_WORKER:
+                                case Opcode.REGISTER_WORKER_NODE:
                                     await HandleWorkerRegister(WsMessage,cred);
                                     break;
                             }
@@ -189,8 +189,8 @@ namespace SystemHub.Services
         async Task HandleWorkerRegister(Message message,ClusterCredential cred)
         {
             var syncrequest = new RestRequest("Register")
-                .AddQueryParameter("ClusterID",cred.ID)
-                .AddJsonBody(JsonConvert.DeserializeObject<ClusterWorkerNode>(message.Data));
+                .AddQueryParameter("ClusterID",cred.ID.ToString())
+                .AddJsonBody(JsonConvert.DeserializeObject<WorkerRegisterModel>(message.Data));
             syncrequest.Method = Method.POST;
 
             await _conductor.ExecuteAsync(syncrequest);

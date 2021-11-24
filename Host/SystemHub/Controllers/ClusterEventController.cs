@@ -2,6 +2,10 @@
 using SharedHost;
 using SystemHub.Interfaces;
 using SharedHost.Models.Hub;
+using SharedHost.Models.Session;
+using Newtonsoft.Json;
+using SharedHost.Models.Device;
+using SharedHost.Models.Cluster;
 
 namespace SystemHub.Controllers
 {
@@ -71,7 +75,7 @@ namespace SystemHub.Controllers
                 To = Module.CLUSTER_MODULE,
                 Opcode = Opcode.SESSION_RECONNECT,
                 WorkerID = WorkerID,
-                Data = JsonConvert.SerializeObject(session)
+                Data = JsonConvert.SerializeObject(data)
             };
             _Cluster.SendToNode(message);
             return Ok();

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using WorkerManager.Interfaces;
 using WorkerManager.Services;
+using WorkerManager.Data;
 
 namespace WorkerManager
 {
@@ -37,8 +38,10 @@ namespace WorkerManager
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+                var db = services.GetRequiredService<ClusterDbContext>();
+                var conductor = services.GetRequiredService<IConductorSocket>();
 
-                Task.Run(() =>{ new WorkerNodePool(services.GetRequiredService<IConductorSocket>());});
+                Task.Run(() =>{ new WorkerNodePool(conductor,db);});
             }
         }
     }
