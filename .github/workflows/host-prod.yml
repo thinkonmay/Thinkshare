@@ -42,7 +42,7 @@ jobs:
       env:
         SIGNALLING_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/signalling:${{ steps.date.outputs.date }}
 
-  build-slavemanager:
+  build-worker-cluster:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -58,16 +58,16 @@ jobs:
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
-    - name: SlaveManager
+    - name: WorkerManager 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host  
         target: prod
-        file: Host/SlaveManager/Dockerfile
+        file: Host/WorkerManager/Dockerfile
         push: true
-        tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
+        tags: ${{ env.WORKERMANAGER_IMAGE_FILE}}
       env:
-        SLAVEMANAGER_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/slavemanager:${{ steps.date.outputs.date }}
+        WORKERMANAGER_IMAGE_FILE: ${{ secrets.DOCKER_USERNAME }}/workermanager:${{ steps.date.outputs.date }}
 
   build-conductor:
     runs-on: ubuntu-latest
