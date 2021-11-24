@@ -11,6 +11,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using WorkerManager.Data;
+using System.Threading.Tasks;
 
 namespace WorkerManager
 {
@@ -55,9 +56,10 @@ namespace WorkerManager
             });
             services.AddSingleton(Configuration.GetSection("ClusterConfig").Get<ClusterConfig>());
 
-            services.AddSingleton<IWorkerNodePool, WorkerNodePool>();
             services.AddSingleton<IConductorSocket, ConductorSocket>();
+            services.AddTransient<ITokenGenerator,TokenGenerator>();
             services.AddMvc();
+        
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

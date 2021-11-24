@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
+using WorkerManager.Interfaces;
+using WorkerManager.Services;
 
 namespace WorkerManager
 {
@@ -9,6 +13,7 @@ namespace WorkerManager
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
+            InitWorkerPoolThread(host);
             host.Run();
         }
 
@@ -27,5 +32,14 @@ namespace WorkerManager
                 });
 
 
+        static void InitWorkerPoolThread(IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                Task.Run(() =>{ new WorkerNodePool(services.GetRequiredService<IConductorSocket>());});
+            }
+        }
     }
 }

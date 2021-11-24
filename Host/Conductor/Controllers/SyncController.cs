@@ -1,4 +1,5 @@
 ﻿using Conductor.Hubs;
+using SharedHost.Models.Cluster;
 using Conductor.Interfaces;
 using DbSchema.SystemDb.Data;
 using Microsoft.AspNetCore.Http;
@@ -85,7 +86,7 @@ namespace Conductor.Controllers
 
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(int ClusterID,[FromBody] ClusterWorkerNode body)
+        public async Task<IActionResult> Register(int ClusterID,[FromBody] WorkerRegisterModel body)
         {
             var cluster = _db.Clusters.Find(ClusterID);
             var current = DateTime.Now;
@@ -103,9 +104,31 @@ namespace Conductor.Controllers
             cluster.Slave.Add(newWorker);
             await _db.SaveChangesAsync();
 
-            var device = _db.Clusters.Slave.Where(o => o.Register == current).First();
+            var device = _db.Clusters.Find(ClusterID).Slave.Where(o => o.Register == current).First();
 
             await _Cluster.AssignGlobalID(cluster.ID, device.ID, body.PrivateID);
+            return Ok();
+        }
+
+
+        [Manager]
+        [HttpPost("Cluster")]
+        public async Task<IActionResult> RegisterCluster()
+        {
+            var UserID = HttpContext.Items["UserID"];
+            var account = await _userManager.FindByIdAsync(UserID.ToString());
+
+            if(account.ManagedCluster != null)
+            {
+                return Ok(account.ManagedCluster.ID);
+            }
+            else
+            {
+                account.ManagedCluster= new WorkerCluster();
+                _userManager.UpdateAsync(account);
+                var updatedAccount = await _userManager.FindByIdAsync(UserID.ToString());
+                return Ok(updatedAccount.ManagedCluster.ID);
+            }
         }
     }
 }

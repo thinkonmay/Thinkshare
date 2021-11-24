@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WorkerManager.Interfaces;
 using System;
 using System.Net;
@@ -13,13 +12,13 @@ namespace WorkerManager.Controllers
     [ApiController]
     [Route("/Agent")]
     [Produces("application/json")]
-    public class WebSocketApiController : ControllerBase
+    public class AgentController : ControllerBase
     {
         private readonly ITokenGenerator _tokenGenerator;
 
         private readonly ClusterDbContext _db;
 
-        public WebSocketApiController(IWorkerNodePool slavePool, ClusterDbContext db, ITokenGenerator token)
+        public AgentController(IWorkerNodePool slavePool, ClusterDbContext db, ITokenGenerator token)
         {
             _db = db;
             _tokenGenerator = token;
@@ -38,8 +37,8 @@ namespace WorkerManager.Controllers
             {
                 _workerState = WorkerState.Unregister,
                 Register = DateTime.Now,
-                agentUrl = "http://"+agentip+":"+agentport.ToString(),
-                coreUrl = "http://"+agentip+":"+coreport.ToString(),
+                agentUrl = "http://"+agentip+":"+agentport.ToString()+"/agent",
+                coreUrl = "http://"+agentip+":"+coreport.ToString()+"/core",
                 PrivateIP = agentip,
                 GPU = GPU,
                 CPU = CPU,
