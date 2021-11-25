@@ -36,6 +36,7 @@ export const ReconnectSession = `${host}/Session/Reconnect`
 
 // export const RejectDevice = `${host}/Device/Reject/`
 // export const DisconnectDevice = `${host}/Device/Disconnect`
+export const UserHub = `wss://host.thinkmay.net/Hub/User`
 
 // User API
 export const FetchSlave = `${host}/Fetch/Node`

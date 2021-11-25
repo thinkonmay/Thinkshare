@@ -1,4 +1,6 @@
 // alert message from https://sweetalert2.github.io/#icons
+// import Swal from 'sweetalert2/dist/sweetalert2.js'
+// import Swal from 'sweetalert2/dist/sweetalert2.'
 
 export const newSwal = Swal.mixin({
 	heightAuto: false,
