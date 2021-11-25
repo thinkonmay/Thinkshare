@@ -30,13 +30,17 @@ namespace WorkerManager.Services
 
         private readonly ClusterDbContext _db;
 
+        private readonly RestClient _scriptmodel;
+
         public ConductorSocket(ClusterConfig cluster, 
                                ClusterDbContext db)
         {
             _db = db;
             clusterConfig = cluster;
             _clientWebSocket = new ClientWebSocket();
-            _clientWebSocket.ConnectAsync(new Uri("wss://host.thinkmay.net/Hub/Cluster?token="+cluster.token), CancellationToken.None).Wait();
+            _scriptmodel = new RestClient("https://"+cluster.HostDomain+"/Shell");
+            var token = (string)_db.Clusters.First().Token;
+            _clientWebSocket.ConnectAsync(new Uri("wss://"+cluster.HostDomain+"/Hub/Cluster?token="+token), CancellationToken.None).Wait();
             if(_clientWebSocket.State != WebSocketState.Open) 
             {
                 Serilog.Log.Debug("Fail to connect to system hub");
@@ -222,7 +226,6 @@ namespace WorkerManager.Services
 
         public async Task<List<ScriptModel>> GetDefaultModel()
         {
-            var _scriptmodel = new RestClient("https://host.thinkmay.net/Shell");
             var request = new RestRequest("AllModel")
                 .AddHeader("Authorization", "Bearer " + clusterConfig.token);
             request.Method = Method.GET;

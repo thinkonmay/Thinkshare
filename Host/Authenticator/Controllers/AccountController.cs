@@ -181,7 +181,7 @@ namespace Authenticator.Controllers
                 var resp = new AuthenticationRequest
                 {
                     token = token,
-                    Validator = "https://host.thinkmay.net/"
+                    Validator = "host.thinkmay.net"
                 };
                 return Ok(resp);
             }

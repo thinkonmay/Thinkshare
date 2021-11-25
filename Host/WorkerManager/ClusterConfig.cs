@@ -4,7 +4,7 @@
     {
         public string ClusterOwnerUser {get;set;}
         
-        public string HostURL {get;set;}
+        public string HostDomain {get;set;}
 
         public string ClusterName { get; set; }
 

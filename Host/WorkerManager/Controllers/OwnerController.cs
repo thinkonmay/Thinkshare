@@ -34,13 +34,14 @@ namespace WorkerManager.Controllers
         public OwnerController(IWorkerNodePool slavePool, 
                                 ClusterDbContext db, 
                                 ITokenGenerator token, 
-                                IConductorSocket socket)
+                                IConductorSocket socket,
+                                ClusterConfig config)
         {
             _db = db;
             _socket = socket;
             _tokenGenerator = token;
-            _login = new RestClient("https://host.thinkmay.net/Account");
-            _cluster = new RestClient("https://host.thinkmay.net/Cluster");
+            _login = new RestClient("https://"+config.HostDomain + "/Account");
+            _cluster = new RestClient("https://"+config.HostDomain+ "/Cluster");
         }
 
         /// <summary>

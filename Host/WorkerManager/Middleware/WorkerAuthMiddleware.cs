@@ -25,13 +25,14 @@ namespace WorkerManager.Middleware
         private readonly RestClient _token;
 
         public JwtMiddleware(RequestDelegate next,
+                            ClusterConfig config,
                             ITokenGenerator generator,
                             ClusterDbContext db)
         {
             _db = db;
             _next = next;
             _generator = generator;
-            _token = new RestClient("https://host.thinkmay.net/Account");
+            _token = new RestClient("https://"+config.HostDomain+"/Account");
         }
 
         public async Task Invoke(HttpContext context)
@@ -69,7 +70,7 @@ namespace WorkerManager.Middleware
                             if(_db.Owner.Where(o => o.Name == jsonResult.UserName).Any())
                             {
                                 context.Items.Add("IsOwner", "true");
-                            }    
+                            }
                         }
                     }
 
