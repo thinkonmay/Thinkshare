@@ -46,22 +46,40 @@ namespace Authenticator.Controllers
         /// <returns></returns>
         [Manager]
         [HttpPost("Register")]
-        public async Task<IActionResult> NewCluster(bool Private , string TURN)
+        public async Task<IActionResult> NewCluster(string ClusterName, bool Private , string TURN)
         {
             var ManagerID = HttpContext.Items["UserID"];
             UserAccount account =  await _userManager.FindByIdAsync((string)ManagerID);
-            var now = DateTime.Now;
-            account.ManagedCluster.Add( new GlobalCluster 
-            { 
+            if(account.ManagedCluster.Where(x => x.Name == ClusterName).Any())
+            {
+                return BadRequest("Choose a different name");
+            }
+            var cluster = new GlobalCluster
+            {
+                Name = ClusterName,
                 TURN = TURN,
-                Register = now, 
-                Private = Private 
-            });
+                Register = DateTime.Now,
+                Private = Private
+            };
+            account.ManagedCluster.Add(cluster);
             await _userManager.UpdateAsync(account);
-            var updated_cluster = (await _userManager.FindByIdAsync((string)ManagerID))
-                .ManagedCluster.Where(x => x.Register == now).First();
 
-            var token = await _token.GenerateClusterJwt(updated_cluster);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Get list of available slave device, contain device information
+        /// </summary>
+        /// <returns></returns>
+        [Manager]
+        [HttpGet("Token")]
+        public async Task<IActionResult> GetToken(string ClusterName)
+        {
+            var ManagerID = HttpContext.Items["UserID"];
+            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
+            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
+
+            var token = await _token.GenerateClusterJwt(cluster);
             return Ok(token);
         }
 

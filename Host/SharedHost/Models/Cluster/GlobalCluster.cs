@@ -16,7 +16,16 @@ namespace SharedHost.Models.Cluster
         /// </summary>
         public int ID { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value></value>
+        public string Name {get;set;}
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value></value>
         public string TURN { get; set; }
 
         /// <summary>

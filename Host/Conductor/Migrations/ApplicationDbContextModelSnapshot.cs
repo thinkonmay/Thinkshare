@@ -159,6 +159,9 @@ namespace Authenticator.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.Property<bool>("Private")
                         .HasColumnType("boolean");
 
