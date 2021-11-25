@@ -111,25 +111,6 @@ namespace Conductor.Controllers
         }
 
 
-        [Manager]
-        [HttpPost("Cluster")]
-        public async Task<IActionResult> RegisterCluster()
-        {
-            var UserID = HttpContext.Items["UserID"];
-            var account = await _userManager.FindByIdAsync(UserID.ToString());
-
-            if(account.ManagedCluster != null)
-            {
-                return Ok(account.ManagedCluster.ID);
-            }
-            else
-            {
-                account.ManagedCluster= new GlobalCluster();
-                await _userManager.UpdateAsync(account);
-                var updatedAccount = await _userManager.FindByIdAsync(UserID.ToString());
-                return Ok(updatedAccount.ManagedCluster.ID);
-            }
-        }
 
 
         [HttpPost("NewWorker")]
@@ -147,8 +128,8 @@ namespace Conductor.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
-        [HttpPost("Connected")]
-        public async Task<IActionResult> Connected(int ClusterID)
+        [HttpPost("Disconnected")]
+        public async Task<IActionResult> Disconnected(int ClusterID)
         {
             var cluster = _db.Clusters.Find(ClusterID);
             foreach (var worker in cluster.WorkerNode)

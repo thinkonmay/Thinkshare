@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using System;
 using SharedHost.Models.Device;
-using WorkerManager.Services;
-using SharedHost;
 using RestSharp;
 using SharedHost.Models.Shell;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using SharedHost.Models.Session;
 using System.Net;
 
-namespace WorkerManager.SlaveDevices
+namespace WorkerManager.Models
 {
     public class ClusterWorkerNode 
     {

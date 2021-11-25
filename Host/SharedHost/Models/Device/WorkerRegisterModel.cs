@@ -26,5 +26,9 @@ namespace SharedHost.Models.Device
 
         [Required]
         public string? OS { get; set; }
+
+        public string? LocalIP {get;set;}
+
+
     }
 }

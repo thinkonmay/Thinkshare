@@ -4,10 +4,10 @@ using WorkerManager.Interfaces;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using WorkerManager.SlaveDevices;
 using SharedHost.Models.Device;
 using WorkerManager.Data;
 using WorkerManager.Middleware;
+using WorkerManager.Models;
 using System.Linq;
 
 namespace WorkerManager.Controllers
@@ -36,11 +36,19 @@ namespace WorkerManager.Controllers
         /// <returns></returns>
         [Owner]
         [HttpPost("Register")]
-        public async Task<IActionResult> PostInfor([FromBody]ClusterWorkerNode node)
+        public async Task<IActionResult> PostInfor([FromBody]WorkerRegisterModel agent_register)
         {
             var current = DateTime.Now;
-            node._workerState = WorkerState.Unregister;
-            node.Register = current; 
+            var node = new ClusterWorkerNode
+            {
+                Register = current,
+                _workerState = WorkerState.Unregister,
+                PrivateIP = agent_register.LocalIP,
+                CPU = agent_register.CPU,
+                GPU = agent_register.GPU,
+                RAMcapacity = (int)agent_register.RAMcapacity,
+                OS = agent_register.OS,
+            }; 
 
             _db.Devices.Add(node);
             var device = _db.Devices.Where(o => o.Register == current && o._workerState == WorkerState.Unregister).First();

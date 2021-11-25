@@ -7,7 +7,6 @@ using RestSharp;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
 using WorkerManager.Interfaces;
-using WorkerManager.SlaveDevices;
 using WorkerManager.Data;
 using SharedHost.Auth;
 using WorkerManager.Models;

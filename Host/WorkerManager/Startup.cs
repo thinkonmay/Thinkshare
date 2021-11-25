@@ -59,6 +59,7 @@ namespace WorkerManager
 
             services.AddSingleton<IConductorSocket, ConductorSocket>();
             services.AddTransient<ITokenGenerator,TokenGenerator>();
+            services.AddTransient<IWorkerNodePool,WorkerNodePool>();
             services.AddMvc();
         
         }

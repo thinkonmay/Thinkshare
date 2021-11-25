@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WorkerManager.Interfaces;
+using WorkerManager.Services;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using WorkerManager.SlaveDevices;
-using SharedHost.Models.Device;
 using WorkerManager.Data;
 using WorkerManager.Middleware;
 using System.Linq;
@@ -30,9 +29,15 @@ namespace WorkerManager.Controllers
 
         private readonly RestClient _cluster;
 
-        public OwnerController(IWorkerNodePool slavePool, ClusterDbContext db, ITokenGenerator token)
+        private IConductorSocket _socket;
+
+        public OwnerController(IWorkerNodePool slavePool, 
+                                ClusterDbContext db, 
+                                ITokenGenerator token, 
+                                IConductorSocket socket)
         {
             _db = db;
+            _socket = socket;
             _tokenGenerator = token;
             _login = new RestClient("https://host.thinkmay.net/Account");
             _cluster = new RestClient("https://host.thinkmay.net/Cluster");
@@ -125,5 +130,15 @@ namespace WorkerManager.Controllers
             await _db.SaveChangesAsync();
             return Ok();
         }
+
+
+        [Owner]
+        [HttpPost("Start")]
+        public async Task<IActionResult> Start()
+        {
+            new WorkerNodePool(_socket,_db);
+            return Ok();
+        }
+
     }
 }

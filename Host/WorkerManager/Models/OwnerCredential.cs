@@ -1,14 +1,17 @@
 ﻿using SharedHost.Models.Cluster;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace WorkerManager.Models
 {
     public class OwnerCredential
     {
+        [Key]
         public string Name {  get; set; }
         public string? Description { get; set; }
         public string token { get;set; }
-        public LocalCluster WorkerCluster { get; set; }
-        public DateTime ValidUntil { get; set; }
+        public virtual LocalCluster WorkerCluster { get; set; }
+        public virtual DateTime ValidUntil { get; set; }
     }
 }

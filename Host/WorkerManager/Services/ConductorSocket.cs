@@ -1,6 +1,7 @@
 ﻿using WorkerManager.Interfaces;
 using SharedHost.Models.Cluster;
 using System.Threading.Tasks;
+using WorkerManager.Models;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
 using SharedHost.Models.Shell;
@@ -16,7 +17,6 @@ using System.IO;
 using System.Text;
 using SharedHost.Models.Session;
 using WorkerManager.Data;
-using WorkerManager.SlaveDevices;
 
 namespace WorkerManager.Services
 {
@@ -36,7 +36,7 @@ namespace WorkerManager.Services
             _db = db;
             clusterConfig = cluster;
             _clientWebSocket = new ClientWebSocket();
-            _clientWebSocket.ConnectAsync(new Uri("https://host.thinkmay.net/Hub/Cluster?token="+cluster.token), CancellationToken.None).Wait();
+            _clientWebSocket.ConnectAsync(new Uri("wss://host.thinkmay.net/Hub/Cluster?token="+cluster.token), CancellationToken.None).Wait();
             if(_clientWebSocket.State != WebSocketState.Open) 
             {
                 Serilog.Log.Debug("Fail to connect to system hub");

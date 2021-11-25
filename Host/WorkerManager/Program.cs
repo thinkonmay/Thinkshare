@@ -14,7 +14,6 @@ namespace WorkerManager
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            InitWorkerPoolThread(host);
             host.Run();
         }
 
@@ -33,16 +32,5 @@ namespace WorkerManager
                 });
 
 
-        static void InitWorkerPoolThread(IHost host)
-        {
-            using (var scope = host.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-                var db = services.GetRequiredService<ClusterDbContext>();
-                var conductor = services.GetRequiredService<IConductorSocket>();
-
-                Task.Run(() =>{ new WorkerNodePool(conductor,db);});
-            }
-        }
     }
 }

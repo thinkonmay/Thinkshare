@@ -43,6 +43,7 @@ namespace Authenticator.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
+        [Manager]
         [HttpPost("Register")]
         public async Task<IActionResult> NewCluster(bool Private , string TURN)
         {

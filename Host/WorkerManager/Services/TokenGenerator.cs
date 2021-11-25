@@ -11,8 +11,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using WorkerManager.SlaveDevices;
 using WorkerManager.Data;
+using WorkerManager.Models;
 
 namespace WorkerManager.Services
 {

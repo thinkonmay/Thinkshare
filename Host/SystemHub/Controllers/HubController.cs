@@ -71,7 +71,7 @@ namespace SystemHub.Controllers
             }
         }
 
-        [HttpGet("Worker")]
+        [HttpGet("Cluster")]
         public async Task<IActionResult> GetWorker(string token)
         {
             var context = ControllerContext.HttpContext;

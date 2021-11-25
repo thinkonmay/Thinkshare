@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using SharedHost.Models.Shell;
 using System.Collections.Generic;
-using WorkerManager.SlaveDevices;
+using WorkerManager.Models;
 
 namespace WorkerManager.Interfaces
 {

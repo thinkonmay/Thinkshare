@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SharedHost.Models.Session;
 using SharedHost.Models.Cluster;
-using WorkerManager.SlaveDevices;
 using SharedHost.Models.Shell;
 using WorkerManager.Models;
 
@@ -36,6 +35,5 @@ namespace WorkerManager.Data
         public DbSet<ShellSession> CachedSession { get; set; }
         public DbSet<ClusterWorkerNode> Devices { get; set; }
         public DbSet<QoE> QoEs { get; set; }
-        public DbSet<ClusterConfig> Configs {get;set;}
     }
 }

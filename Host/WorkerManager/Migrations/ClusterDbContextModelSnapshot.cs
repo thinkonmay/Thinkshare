@@ -19,7 +19,7 @@ namespace WorkerManager.Migrations
                 .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            modelBuilder.Entity("SharedHost.Models.Cluster.WorkerCluster", b =>
+            modelBuilder.Entity("SharedHost.Models.Cluster.LocalCluster", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -33,6 +33,12 @@ namespace WorkerManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TurnUrl")
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -50,6 +56,9 @@ namespace WorkerManager.Migrations
                     b.Property<string>("GPU")
                         .HasColumnType("text");
 
+                    b.Property<int?>("LocalClusterID")
+                        .HasColumnType("integer");
+
                     b.Property<string>("OS")
                         .HasColumnType("text");
 
@@ -59,15 +68,12 @@ namespace WorkerManager.Migrations
                     b.Property<DateTime?>("Register")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("WorkerClusterID")
-                        .HasColumnType("integer");
-
                     b.Property<string>("WorkerState")
                         .HasColumnType("text");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("WorkerClusterID");
+                    b.HasIndex("LocalClusterID");
 
                     b.ToTable("WorkerNode");
                 });
@@ -146,6 +152,30 @@ namespace WorkerManager.Migrations
                     b.ToTable("CachedSession");
                 });
 
+            modelBuilder.Entity("WorkerManager.Models.OwnerCredential", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("WorkerClusterID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("token")
+                        .HasColumnType("text");
+
+                    b.HasKey("Name");
+
+                    b.HasIndex("WorkerClusterID");
+
+                    b.ToTable("Owner");
+                });
+
             modelBuilder.Entity("WorkerManager.SlaveDevices.ClusterWorkerNode", b =>
                 {
                     b.Property<int>("PrivateID")
@@ -171,9 +201,6 @@ namespace WorkerManager.Migrations
                     b.Property<int?>("QoEID")
                         .HasColumnType("integer");
 
-                    b.Property<int>("RAMCapacity")
-                        .HasColumnType("integer");
-
                     b.Property<int>("RAMcapacity")
                         .HasColumnType("integer");
 
@@ -192,6 +219,9 @@ namespace WorkerManager.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("agentFailedPing")
+                        .HasColumnType("integer");
+
                     b.Property<string>("agentUrl")
                         .IsRequired()
                         .HasColumnType("text");
@@ -199,6 +229,9 @@ namespace WorkerManager.Migrations
                     b.Property<string>("coreUrl")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("sessionFailedPing")
+                        .HasColumnType("integer");
 
                     b.HasKey("PrivateID");
 
@@ -209,9 +242,9 @@ namespace WorkerManager.Migrations
 
             modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>
                 {
-                    b.HasOne("SharedHost.Models.Cluster.WorkerCluster", null)
+                    b.HasOne("SharedHost.Models.Cluster.LocalCluster", null)
                         .WithMany("Slave")
-                        .HasForeignKey("WorkerClusterID");
+                        .HasForeignKey("LocalClusterID");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Shell.ShellSession", b =>
@@ -233,6 +266,15 @@ namespace WorkerManager.Migrations
                     b.Navigation("Slave");
                 });
 
+            modelBuilder.Entity("WorkerManager.Models.OwnerCredential", b =>
+                {
+                    b.HasOne("SharedHost.Models.Cluster.LocalCluster", "WorkerCluster")
+                        .WithMany()
+                        .HasForeignKey("WorkerClusterID");
+
+                    b.Navigation("WorkerCluster");
+                });
+
             modelBuilder.Entity("WorkerManager.SlaveDevices.ClusterWorkerNode", b =>
                 {
                     b.HasOne("SharedHost.Models.Session.QoE", "QoE")
@@ -242,7 +284,7 @@ namespace WorkerManager.Migrations
                     b.Navigation("QoE");
                 });
 
-            modelBuilder.Entity("SharedHost.Models.Cluster.WorkerCluster", b =>
+            modelBuilder.Entity("SharedHost.Models.Cluster.LocalCluster", b =>
                 {
                     b.Navigation("Slave");
                 });
