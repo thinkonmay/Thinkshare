@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using SharedHost.Models.Session;
 using System.Collections.Generic;
+using SharedHost.Models.Cluster;
 using SharedHost.Models.Device;
 
 namespace SharedHost.Models.User
@@ -20,6 +21,7 @@ namespace SharedHost.Models.User
             DateOfBirth = account.DateOfBirth;
             Avatar = account.Avatar;
             DefaultSetting = account.DefaultSetting;
+            Clusters = account.ManagedCluster;
         }
 
 
@@ -39,6 +41,6 @@ namespace SharedHost.Models.User
 
         public DeviceCap?  DefaultSetting {get;set;}
 
-
+        public ICollection<GlobalCluster>? Clusters {get;set;}
     }
 }

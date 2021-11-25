@@ -10,6 +10,7 @@ using SharedHost.Models.Cluster;
 using Authenticator.Interfaces;
 using SharedHost;
 using RestSharp;
+using System.Linq;
 
 namespace Authenticator.Controllers
 {
@@ -49,14 +50,16 @@ namespace Authenticator.Controllers
         {
             var ManagerID = HttpContext.Items["UserID"];
             UserAccount account =  await _userManager.FindByIdAsync((string)ManagerID);
-            account.ManagedCluster = new GlobalCluster 
+            var now = DateTime.Now;
+            account.ManagedCluster.Add( new GlobalCluster 
             { 
                 TURN = TURN,
-                Register = DateTime.Now, 
+                Register = now, 
                 Private = Private 
-            };
+            });
             await _userManager.UpdateAsync(account);
-            var updated_cluster = (await _userManager.FindByIdAsync((string)ManagerID)).ManagedCluster;
+            var updated_cluster = (await _userManager.FindByIdAsync((string)ManagerID))
+                .ManagedCluster.Where(x => x.Register == now).First();
 
             var token = await _token.GenerateClusterJwt(updated_cluster);
             return Ok(token);
