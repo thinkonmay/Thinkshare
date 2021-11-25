@@ -29,7 +29,7 @@ namespace SharedHost.Models.Shell
         public int WorkerID { get; set; }
 
         [ForeignKey("WorkerID")]
-        public virtual WorkerNode Slave { get; set; }
+        public virtual WorkerNode Worker { get; set; }
 
         [Required]
         public int ModelID { get; set; }

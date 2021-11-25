@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Conductor.Migrations
+namespace Authenticator.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -152,15 +152,12 @@ namespace Conductor.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("SharedHost.Models.Cluster.Cluster", b =>
+            modelBuilder.Entity("SharedHost.Models.Cluster.GlobalCluster", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int?>("ManagerAccountId")
-                        .HasColumnType("integer");
 
                     b.Property<bool>("Private")
                         .HasColumnType("boolean");
@@ -170,9 +167,10 @@ namespace Conductor.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
 
-                    b.HasKey("ID");
+                    b.Property<string>("TURN")
+                        .HasColumnType("text");
 
-                    b.HasIndex("ManagerAccountId");
+                    b.HasKey("ID");
 
                     b.ToTable("Clusters");
                 });
@@ -215,11 +213,11 @@ namespace Conductor.Migrations
                     b.Property<string>("CPU")
                         .HasColumnType("text");
 
-                    b.Property<int?>("ClusterID")
-                        .HasColumnType("integer");
-
                     b.Property<string>("GPU")
                         .HasColumnType("text");
+
+                    b.Property<int?>("GlobalClusterID")
+                        .HasColumnType("integer");
 
                     b.Property<string>("OS")
                         .HasColumnType("text");
@@ -237,7 +235,7 @@ namespace Conductor.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("ClusterID");
+                    b.HasIndex("GlobalClusterID");
 
                     b.ToTable("Devices");
                 });
@@ -374,6 +372,9 @@ namespace Conductor.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("ManagedClusterID")
+                        .HasColumnType("integer");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -404,6 +405,8 @@ namespace Conductor.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DefaultSettingID");
+
+                    b.HasIndex("ManagedClusterID");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -466,20 +469,11 @@ namespace Conductor.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SharedHost.Models.Cluster.Cluster", b =>
-                {
-                    b.HasOne("SharedHost.Models.User.UserAccount", "ManagerAccount")
-                        .WithMany()
-                        .HasForeignKey("ManagerAccountId");
-
-                    b.Navigation("ManagerAccount");
-                });
-
             modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>
                 {
-                    b.HasOne("SharedHost.Models.Cluster.Cluster", null)
-                        .WithMany("Slave")
-                        .HasForeignKey("ClusterID");
+                    b.HasOne("SharedHost.Models.Cluster.GlobalCluster", null)
+                        .WithMany("WorkerNode")
+                        .HasForeignKey("GlobalClusterID");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Session.RemoteSession", b =>
@@ -509,7 +503,7 @@ namespace Conductor.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharedHost.Models.Device.WorkerNode", "Slave")
+                    b.HasOne("SharedHost.Models.Device.WorkerNode", "Worker")
                         .WithMany()
                         .HasForeignKey("WorkerID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -517,7 +511,7 @@ namespace Conductor.Migrations
 
                     b.Navigation("Model");
 
-                    b.Navigation("Slave");
+                    b.Navigation("Worker");
                 });
 
             modelBuilder.Entity("SharedHost.Models.User.UserAccount", b =>
@@ -526,12 +520,18 @@ namespace Conductor.Migrations
                         .WithMany()
                         .HasForeignKey("DefaultSettingID");
 
+                    b.HasOne("SharedHost.Models.Cluster.GlobalCluster", "ManagedCluster")
+                        .WithMany()
+                        .HasForeignKey("ManagedClusterID");
+
                     b.Navigation("DefaultSetting");
+
+                    b.Navigation("ManagedCluster");
                 });
 
-            modelBuilder.Entity("SharedHost.Models.Cluster.Cluster", b =>
+            modelBuilder.Entity("SharedHost.Models.Cluster.GlobalCluster", b =>
                 {
-                    b.Navigation("Slave");
+                    b.Navigation("WorkerNode");
                 });
 #pragma warning restore 612, 618
         }
