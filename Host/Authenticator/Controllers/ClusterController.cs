@@ -30,9 +30,11 @@ namespace Authenticator.Controllers
         private readonly ITokenGenerator _token;
 
         public ClusterController(ApplicationDbContext db,
-                                 UserManager<UserAccount> userManager)
+                                 UserManager<UserAccount> userManager,
+                                 ITokenGenerator token)
         {
             _db = db;
+            _token = token;
             _userManager = userManager;
         }
 
@@ -78,6 +80,10 @@ namespace Authenticator.Controllers
             var ManagerID = HttpContext.Items["UserID"];
             UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
             var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
+            if(cluster == null)
+            {
+                return BadRequest();
+            }
 
             var token = await _token.GenerateClusterJwt(cluster);
             return Ok(token);
