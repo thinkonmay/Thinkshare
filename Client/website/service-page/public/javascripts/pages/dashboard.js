@@ -61,7 +61,7 @@ $(document).ready(async () => {
 	setDataForChart();
 
 	// using websocket to connect to systemhub
-	const Websocket = new WebSocket(`wss://host.thinkmay.net/Hub?token=${getCookie("token")}`)
+	const Websocket = new WebSocket(API.UserHub + `?token=${getCookie("token")}`)
 	Websocket.addEventListener('open', onWebsocketOpen);
 	Websocket.addEventListener('message', onClientHubEvent);
 	Websocket.addEventListener('error', onWebsocketClose);
