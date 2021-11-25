@@ -118,7 +118,7 @@ namespace WorkerManager.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("ScriptModel");
+                    b.ToTable("ScriptModels");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Shell.ShellSession", b =>
@@ -152,31 +152,7 @@ namespace WorkerManager.Migrations
                     b.ToTable("CachedSession");
                 });
 
-            modelBuilder.Entity("WorkerManager.Models.OwnerCredential", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ValidUntil")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int?>("WorkerClusterID")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("token")
-                        .HasColumnType("text");
-
-                    b.HasKey("Name");
-
-                    b.HasIndex("WorkerClusterID");
-
-                    b.ToTable("Owner");
-                });
-
-            modelBuilder.Entity("WorkerManager.SlaveDevices.ClusterWorkerNode", b =>
+            modelBuilder.Entity("WorkerManager.Models.ClusterWorkerNode", b =>
                 {
                     b.Property<int>("PrivateID")
                         .ValueGeneratedOnAdd()
@@ -240,6 +216,30 @@ namespace WorkerManager.Migrations
                     b.ToTable("Devices");
                 });
 
+            modelBuilder.Entity("WorkerManager.Models.OwnerCredential", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("WorkerClusterID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("token")
+                        .HasColumnType("text");
+
+                    b.HasKey("Name");
+
+                    b.HasIndex("WorkerClusterID");
+
+                    b.ToTable("Owner");
+                });
+
             modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>
                 {
                     b.HasOne("SharedHost.Models.Cluster.LocalCluster", null)
@@ -255,7 +255,7 @@ namespace WorkerManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharedHost.Models.Device.WorkerNode", "Slave")
+                    b.HasOne("SharedHost.Models.Device.WorkerNode", "Worker")
                         .WithMany()
                         .HasForeignKey("WorkerID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -263,7 +263,16 @@ namespace WorkerManager.Migrations
 
                     b.Navigation("Model");
 
-                    b.Navigation("Slave");
+                    b.Navigation("Worker");
+                });
+
+            modelBuilder.Entity("WorkerManager.Models.ClusterWorkerNode", b =>
+                {
+                    b.HasOne("SharedHost.Models.Session.QoE", "QoE")
+                        .WithMany()
+                        .HasForeignKey("QoEID");
+
+                    b.Navigation("QoE");
                 });
 
             modelBuilder.Entity("WorkerManager.Models.OwnerCredential", b =>
@@ -273,15 +282,6 @@ namespace WorkerManager.Migrations
                         .HasForeignKey("WorkerClusterID");
 
                     b.Navigation("WorkerCluster");
-                });
-
-            modelBuilder.Entity("WorkerManager.SlaveDevices.ClusterWorkerNode", b =>
-                {
-                    b.HasOne("SharedHost.Models.Session.QoE", "QoE")
-                        .WithMany()
-                        .HasForeignKey("QoEID");
-
-                    b.Navigation("QoE");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Cluster.LocalCluster", b =>

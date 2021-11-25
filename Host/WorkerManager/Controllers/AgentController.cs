@@ -21,7 +21,7 @@ namespace WorkerManager.Controllers
 
         private readonly ClusterDbContext _db;
 
-        public AgentController(IWorkerNodePool slavePool, ClusterDbContext db, ITokenGenerator token)
+        public AgentController( ClusterDbContext db, ITokenGenerator token)
         {
             _db = db;
             _tokenGenerator = token;

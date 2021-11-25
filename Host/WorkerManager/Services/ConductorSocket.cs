@@ -24,29 +24,45 @@ namespace WorkerManager.Services
 
     public class ConductorSocket : IConductorSocket
     {
-        private readonly ClientWebSocket _clientWebSocket;
-
         private readonly ClusterConfig clusterConfig;
 
         private readonly ClusterDbContext _db;
 
-        private readonly RestClient _scriptmodel;
+        private ClientWebSocket _clientWebSocket;
+
+        private RestClient _scriptmodel;
 
         public ConductorSocket(ClusterConfig cluster, 
                                ClusterDbContext db)
         {
             _db = db;
             clusterConfig = cluster;
-            _clientWebSocket = new ClientWebSocket();
-            _scriptmodel = new RestClient("https://"+cluster.HostDomain+"/Shell");
-            var token = (string)_db.Clusters.First().Token;
-            _clientWebSocket.ConnectAsync(new Uri("wss://"+cluster.HostDomain+"/Hub/Cluster?token="+token), CancellationToken.None).Wait();
-            if(_clientWebSocket.State != WebSocketState.Open) 
+            Task.Run(() => TokenLookup());
+        }
+
+
+        public async Task TokenLookup()
+        {
+            try
             {
-                Serilog.Log.Debug("Fail to connect to system hub");
-                Environment.Exit(0);
+                var token = (string)_db.Clusters.First().Token;
+                _scriptmodel = new RestClient("https://"+clusterConfig.HostDomain+"/Shell");
+                _clientWebSocket = new ClientWebSocket();
+                await _clientWebSocket.ConnectAsync(new Uri("wss://"+clusterConfig.HostDomain+"/Hub/Cluster?token="+token), CancellationToken.None);
+                if(_clientWebSocket.State == WebSocketState.Open)
+                {
+                    await Handle();
+                    return;
+                }
+                return;
             }
-            Task.Run(() => Handle());
+            catch (Exception ex)
+            {
+                Serilog.Log.Information("fail to connect to system hub due to "+ex.Message);
+                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
+                _clientWebSocket = null;
+                await TokenLookup();
+            }
         }
 
 
@@ -226,22 +242,32 @@ namespace WorkerManager.Services
 
         public async Task<List<ScriptModel>> GetDefaultModel()
         {
-            var request = new RestRequest("AllModel")
-                .AddHeader("Authorization", "Bearer " + clusterConfig.token);
-            request.Method = Method.GET;
-
-            var result = await _scriptmodel.ExecuteAsync(request);
-            if(result.StatusCode == HttpStatusCode.OK)
+            if(!_db.ScriptModels.Any())
             {
-                var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
-                return allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
+                var token = _db.Owner.First().token;
+                var request = new RestRequest("AllModel")
+                    .AddHeader("Authorization", "Bearer " + token);
+                request.Method = Method.GET;
+
+                var result = await _scriptmodel.ExecuteAsync(request);
+                if(result.StatusCode == HttpStatusCode.OK)
+                {
+                    var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
+                    var defaultModel = allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
+                    _db.ScriptModels.AddRange(defaultModel);
+                    return defaultModel;
+                }
+                else
+                {
+                    Serilog.Log.Information("Failed to get default script");
+                    return await GetDefaultModel();
+                }
             }
             else
             {
-                Serilog.Log.Information("Failed to get default script");
-                return await GetDefaultModel();
+                var allModel = _db.ScriptModels.ToList();
+                return allModel;
             }
         }
-
     }
 }

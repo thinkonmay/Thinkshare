@@ -23,6 +23,8 @@ namespace WorkerManager.Controllers
     {
         private readonly ITokenGenerator _tokenGenerator;
 
+        private readonly ClusterConfig _config;
+
         private readonly ClusterDbContext _db;
 
         private readonly RestClient _login;
@@ -31,14 +33,14 @@ namespace WorkerManager.Controllers
 
         private IConductorSocket _socket;
 
-        public OwnerController(IWorkerNodePool slavePool, 
-                                ClusterDbContext db, 
+        public OwnerController(ClusterDbContext db, 
                                 ITokenGenerator token, 
                                 IConductorSocket socket,
                                 ClusterConfig config)
         {
             _db = db;
             _socket = socket;
+            _config = config;
             _tokenGenerator = token;
             _login = new RestClient("https://"+config.HostDomain + "/Account");
             _cluster = new RestClient("https://"+config.HostDomain+ "/Cluster");
@@ -52,11 +54,6 @@ namespace WorkerManager.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            if(_db.Owner.Any())
-            {
-                return BadRequest("Owner already exist");
-            }
-
             var request = new RestRequest("Login")
                  .AddJsonBody(login);
             request.Method = Method.POST;
@@ -65,13 +62,24 @@ namespace WorkerManager.Controllers
             var jsonresult = JsonConvert.DeserializeObject<AuthResponse>(result.Content);
             if(jsonresult.Errors == null)
             {
+                if(_db.Owner.Any())
+                {
+                    if(_db.Owner.FirstOrDefault().Name == jsonresult.UserName)
+                    {
+                        return Ok(jsonresult.Token);
+                    }
+                    else
+                    {
+                        return BadRequest("Wrong user");
+                    }
+                }
                 _db.Owner.Add(new OwnerCredential 
                 {   Name = jsonresult.UserName, 
                     Description = null, 
                     token = jsonresult.Token
                 });
                 await _db.SaveChangesAsync();
-                return Ok();
+                return Ok(jsonresult.Token);
             }
             else
             {
@@ -91,8 +99,13 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> Register(bool isPrivate, string TURN)
         {
             var request = new RestRequest("Register")
+                .AddQueryParameter("ClusterName", _config.ClusterName)
                 .AddQueryParameter("Private", isPrivate.ToString())
                 .AddQueryParameter("TURN", TURN.ToString());
+
+            var token = _db.Owner.First().token;
+
+            request.AddHeader("Authorization","Bearer "+token);
             request.Method = Method.POST;
 
             var result = await _cluster.ExecuteAsync(request);
@@ -116,6 +129,40 @@ namespace WorkerManager.Controllers
                 return BadRequest();
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isPrivate"></param>
+        /// <param name="TURN"></param>
+        /// <returns></returns>
+        [Owner]
+        [HttpGet("GetToken")]
+        public async Task<IActionResult> Token()
+        {
+            var token = _db.Owner.First().token;
+            var request = new RestRequest("Token")
+                .AddQueryParameter("ClusterName", _config.ClusterName);
+
+            request.AddHeader("Authorization","Bearer "+token);
+            request.Method = Method.GET;
+
+            var result = await _cluster.ExecuteAsync(request);
+
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                var cluster = _db.Clusters.First();
+                cluster.Token = JsonConvert.DeserializeObject<string>(result.Content);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+
 
 
         /// <summary>

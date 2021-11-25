@@ -16,17 +16,12 @@ namespace WorkerManager.Controllers
     [Produces("application/json")]
     public class CoreController : Controller
     {
-
-        private readonly IWorkerNodePool _slavePool;
-
         private readonly ClusterDbContext _db;
 
         public CoreController(SystemConfig config,
-                              IWorkerNodePool slavePool,
                               ClusterDbContext db)
         {
             _db = db;
-            _slavePool = slavePool;
         }
 
         [Worker]

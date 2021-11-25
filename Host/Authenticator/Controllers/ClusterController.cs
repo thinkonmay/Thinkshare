@@ -79,27 +79,14 @@ namespace Authenticator.Controllers
         {
             var ManagerID = HttpContext.Items["UserID"];
             UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
-            if(cluster == null)
+            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
+            if(cluster.Any())
             {
                 return BadRequest();
             }
 
-            var token = await _token.GenerateClusterJwt(cluster);
-            return Ok(token);
-        }
-
-
-
-
-        /// <summary>
-        /// Get list of available slave device, contain device information
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("Infor")]
-        public IActionResult GetInfor(int ID)
-        {
-            return Ok(_db.Clusters.Find(ID));
+            var token = await _token.GenerateClusterJwt((string)ManagerID,ClusterName);
+            return Ok();
         }
     }
 }

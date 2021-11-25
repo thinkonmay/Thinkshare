@@ -12,11 +12,13 @@ using WorkerManager.Data;
 
 namespace WorkerManager.Services
 {
-    public class WorkerNodePool : IWorkerNodePool
+    public class WorkerNodePool 
     {
         private readonly IConductorSocket _socket;
 
         private List<ClusterWorkerNode> _systemSnapshot;
+
+        private List<ScriptModel> _model_list;
 
         private readonly ClusterDbContext _db;
 
@@ -24,6 +26,7 @@ namespace WorkerManager.Services
         {
             _db = db;
             _socket = socket;
+            _systemSnapshot = _db.Devices.ToList();
             Task.Run(() => SystemHeartBeat());
             Task.Run(() => StateSyncing());
             Task.Run(() => SessionHeartBeat());
@@ -35,7 +38,7 @@ namespace WorkerManager.Services
             {
                 while(true)
                 {
-                    var devices = _db.Devices.Where(o => o._workerState == WorkerState.OnSession).ToList(); 
+                    var devices = _systemSnapshot.Where(x => x._workerState == WorkerState.OnSession);
                     foreach (var item in devices)
                     {
                         item.RestoreWorkerNode();
@@ -52,28 +55,29 @@ namespace WorkerManager.Services
                         if(item.sessionFailedPing > 5)
                         {
                             item._workerState = WorkerState.OffRemote;
+                            await _db.SaveChangesAsync();
                         }
                     }
-                    await _db.SaveChangesAsync();
-                    Thread.Sleep(10*1000);
+                    Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
                 }
-            }catch
+            }
+            catch (Exception ex)
             {
+                Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
                 await SessionHeartBeat();
             }
         }
 
         public async Task SystemHeartBeat()
         {
+            _model_list = await _socket.GetDefaultModel();
             try
             {
-                var model_list = await _socket.GetDefaultModel();
                 while(true)
                 {
-                    foreach(var i in model_list)
+                    foreach(var i in _model_list)
                     {
-                        var devices = _db.Devices.ToList();
-                        foreach(var device in devices)
+                        foreach(var device in _systemSnapshot)
                         {
                             device.RestoreWorkerNode();
                             var session = new ShellSession { Script = i.Script };
@@ -95,14 +99,18 @@ namespace WorkerManager.Services
                             {
                                 device._workerState = WorkerState.Disconnected;
                             }
-                            _db.CachedSession.Add(session);
+                            if(session != null)
+                            {
+                                _db.CachedSession.Add(session);
+                                await _db.SaveChangesAsync();
+                            }
                         }
                     }
-                    await _db.SaveChangesAsync();
-                    Thread.Sleep(10 * 1000);
+                    Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 }
-            }catch
+            }catch (Exception ex)
             {
+                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 await SystemHeartBeat();
             }
         }
@@ -150,10 +158,12 @@ namespace WorkerManager.Services
                             continue;
                         }
                     }
+                Thread.Sleep(((int)TimeSpan.FromMilliseconds(100).TotalMilliseconds));
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
                 await StateSyncing();
             }
         }

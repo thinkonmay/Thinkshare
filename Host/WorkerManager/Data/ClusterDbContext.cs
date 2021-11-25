@@ -34,6 +34,7 @@ namespace WorkerManager.Data
         public DbSet<LocalCluster> Clusters { get; set; }
         public DbSet<ShellSession> CachedSession { get; set; }
         public DbSet<ClusterWorkerNode> Devices { get; set; }
+        public DbSet<ScriptModel> ScriptModels {get;set;}
         public DbSet<QoE> QoEs { get; set; }
     }
 }
