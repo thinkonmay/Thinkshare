@@ -42,7 +42,7 @@ namespace Authenticator.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("Challange")]
+        [Route("Challenge")]
         public async Task<IActionResult> Challene([FromBody] AuthenticationRequest request)
         {
             if (ModelState.IsValid)

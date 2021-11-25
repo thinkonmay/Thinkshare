@@ -128,6 +128,22 @@ namespace Conductor.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
+        [HttpPost("Connected")]
+        public async Task<IActionResult> Connected(int ClusterID)
+        {
+            var cluster = _db.Clusters.Find(ClusterID);
+            foreach (var worker in cluster.WorkerNode)
+            {
+                worker.WorkerState = WorkerState.Unregister;
+                await _db.SaveChangesAsync();
+            }
+            return Ok();
+        }
+
+        /// <summary>
+        /// Get list of available slave device, contain device information
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("Disconnected")]
         public async Task<IActionResult> Disconnected(int ClusterID)
         {

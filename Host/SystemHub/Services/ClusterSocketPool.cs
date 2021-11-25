@@ -29,7 +29,7 @@ namespace SystemHub.Services
         public ClusterSocketPool(SystemConfig config)
         {
             _config = config;
-            _conductor = new RestClient(config.Conductor+"");
+            _conductor = new RestClient(config.Conductor+"/Sync");
             _ClusterSocketsPool = new ConcurrentDictionary<ClusterCredential, WebSocket>();
 
             Task.Run(() => ConnectionHeartBeat());
@@ -135,12 +135,12 @@ namespace SystemHub.Services
 
         public async Task Handle(ClusterCredential cred, WebSocket ws)
         {
+
             var request = new RestRequest("Connected")
                 .AddQueryParameter("ClusterID",cred.ID.ToString());
             request.Method = Method.POST;
 
             await _conductor.ExecuteAsync(request);
-
             try
             {
                 WebSocketReceiveResult message;
@@ -167,8 +167,9 @@ namespace SystemHub.Services
                 } while (message.MessageType != WebSocketMessageType.Close && ws.State == WebSocketState.Open);
                 await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
             }
-            catch
+            catch (Exception ex)
             {
+                Serilog.Log.Information("Cluster connection closed due to "+ex.Message);
                 return;
             }
         }

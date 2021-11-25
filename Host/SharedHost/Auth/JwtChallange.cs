@@ -44,7 +44,7 @@ namespace SharedHost.Auth
                    token = token,
                    Validator = IssuerUrl
                 };
-                var request = new RestRequest("Challange")
+                var request = new RestRequest("Challenge")
                     .AddJsonBody(tokenRequest);
                 request.Method = Method.POST;
 
