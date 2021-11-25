@@ -86,7 +86,7 @@ namespace Authenticator.Controllers
             }
 
             var token = await _token.GenerateClusterJwt((string)ManagerID,ClusterName);
-            return Ok();
+            return Ok(token);
         }
     }
 }
