@@ -80,7 +80,7 @@ namespace Authenticator.Controllers
             var ManagerID = HttpContext.Items["UserID"];
             UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
             var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
-            if(cluster.Any())
+            if(!cluster.Any())
             {
                 return BadRequest();
             }
