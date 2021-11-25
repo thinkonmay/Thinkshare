@@ -39,15 +39,6 @@ namespace Authenticator.Services
         public async Task<string> GenerateUserJwt(UserAccount user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
-            var roles = await _userManager.GetRolesAsync(user);
-            var roleClaims = new List<Claim>();
-            foreach (var role in roles)
-            {
-                roleClaims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            // combine default claim with customized claim
-            var claims = userClaims.Union(roleClaims);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwt.Key);
@@ -57,7 +48,6 @@ namespace Authenticator.Services
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
                 Expires = DateTime.Now.AddHours(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
