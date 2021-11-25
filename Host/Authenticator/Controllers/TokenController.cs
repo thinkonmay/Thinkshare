@@ -114,7 +114,7 @@ namespace Authenticator.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("ChallangeCluster")]
+        [Route("ChallengeCluster")]
         public async Task<IActionResult> ClusterChallange(string token)
         {
             return Ok(await _tokenGenerator.ValidateClusterToken(token));

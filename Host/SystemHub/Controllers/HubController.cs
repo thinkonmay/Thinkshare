@@ -75,20 +75,13 @@ namespace SystemHub.Controllers
         public async Task<IActionResult> GetWorker(string token)
         {
             var context = ControllerContext.HttpContext;
-
             if (context.WebSockets.IsWebSocketRequest)
             {
-                var tokenRequest = new AuthenticationRequest
-                {
-                    token = token,
-                    Validator = _config.Authenticator
-                };
-
-                var request = new RestRequest("ChallangeWorker")
-                    .AddJsonBody(tokenRequest);
+                var request = new RestRequest("ChallengeCluster")
+                    .AddQueryParameter("token",token);
                 request.Method = Method.POST;
 
-                var result = _client.Execute(request);
+                var result = await _client.ExecuteAsync(request);
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
                     var claim = JsonConvert.DeserializeObject<ClusterCredential>(result.Content);
@@ -103,6 +96,5 @@ namespace SystemHub.Controllers
                 return BadRequest();
             }
         }
-
     }
 }
