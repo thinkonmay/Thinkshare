@@ -20,7 +20,8 @@
     "glob": "^7.2.0",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "sweetalert2": "^11.2.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0",

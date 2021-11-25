@@ -24,7 +24,6 @@ export const Reconnect = "/reconnect"
 export const Login = `${host}/Account/Login`
 export const Register = `${host}/Account/Register`
 export const Token = `${host}/Account/ExchangeToken`
-export const GrantRole = `${host}/Account/GrantRole`
 export const GetInfor = `${host}/Account/GetInfor`
 export const SetInfor = `${host}/Account/SetInfor`
 export const GetSession = `${host}/Account/GetSession`
@@ -39,10 +38,9 @@ export const ReconnectSession = `${host}/Session/Reconnect`
 // export const DisconnectDevice = `${host}/Device/Disconnect`
 
 // User API
-export const FetchSlave = `${host}/User/FetchSlave`
-export const FetchSession = `${host}/User/FetchSession`
+export const FetchSlave = `${host}/Fetch/Node`
+export const FetchSession = `${host}/Fetch/Session`
 
-export const QuerySession = `${host}/Query/Session`
 
 export const genHeaders = () => {
 	const token = getCookie("token")
@@ -150,45 +148,6 @@ export const getSession = () => {
 }
 
 
-
-export const querySession = SlaveID => {
-	return fetch(QuerySession + "?SlaveID=" + SlaveID, {
-		method: "GET",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
-export const rejectDevice = SlaveID => {
-	return fetch(RejectDevice + "?SlaveID=" + SlaveID, {
-		method: "DELETE",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
-export const disconnectDevice = SlaveID => {
-	return fetch(DisconnectDevice + "?SlaveID=" + SlaveID, {
-		method: "DELETE",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
 
 export const terminateSession = SlaveID => {
 	return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
