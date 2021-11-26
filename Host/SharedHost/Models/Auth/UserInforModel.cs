@@ -11,7 +11,7 @@ namespace SharedHost.Models.User
     {
         public UserInforModel(){}
 
-        public UserInforModel(UserAccount account)
+        public UserInforModel(UserAccount account, UserSetting setting)
         {
             UserName = account.UserName;
             FullName = account.FullName;
@@ -20,7 +20,7 @@ namespace SharedHost.Models.User
             Gender = account.Gender;
             DateOfBirth = account.DateOfBirth;
             Avatar = account.Avatar;
-            DefaultSetting = account.DefaultSetting;
+            DefaultSetting = setting;
             Clusters = account.ManagedCluster;
         }
 
@@ -39,7 +39,7 @@ namespace SharedHost.Models.User
 
         public string? Avatar {get; set; }
 
-        public DeviceCap?  DefaultSetting {get;set;}
+        public UserSetting?  DefaultSetting {get;set;}
 
         public ICollection<GlobalCluster>? Clusters {get;set;}
     }

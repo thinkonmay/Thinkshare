@@ -26,12 +26,11 @@ namespace Conductor.Services
 
 
 
-        public async Task SessionReconnect(int SlaveID,SessionBase session)
+        public async Task SessionReconnect(int SlaveID)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Reconnect")
-                .AddQueryParameter("SlaveID", SlaveID.ToString())
-                .AddJsonBody(session);
+                .AddQueryParameter("SlaveID", SlaveID.ToString());
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);
@@ -47,12 +46,11 @@ namespace Conductor.Services
             await _Cluster.ExecuteAsync(request);
         }
 
-        public async Task SessionInitialize(int ID, string token, SessionBase session)
+        public async Task SessionInitialize(int ID, string token)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Initialize")
-                .AddQueryParameter("token",token)
-                .AddJsonBody(session);
+                .AddQueryParameter("token", token);
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);

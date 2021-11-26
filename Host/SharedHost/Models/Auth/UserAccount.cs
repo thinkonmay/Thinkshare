@@ -3,6 +3,7 @@ using System;
 using SharedHost.Models.Device;
 using SharedHost.Models.Cluster;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SharedHost.Models.User
 {
@@ -14,7 +15,6 @@ namespace SharedHost.Models.User
         public DateTime? DateOfBirth { get; set; }
         public DateTime? Created { get; set; }
         public string? Avatar {get; set; }
-        public virtual DeviceCap? DefaultSetting {get;set;}
         public virtual ICollection<GlobalCluster>? ManagedCluster {get;set;}
     }
 }

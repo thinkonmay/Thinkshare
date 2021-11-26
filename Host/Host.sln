@@ -24,6 +24,7 @@ Global
 		SharedHost\SharedHost.projitems*{00c0924c-717c-42ee-b3d1-3b7970d5ed4b}*SharedItemsImports = 5
 		DbSchema\DbSchema.projitems*{1c21eeb7-04c7-4574-b276-c37b169b223f}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{1c21eeb7-04c7-4574-b276-c37b169b223f}*SharedItemsImports = 5
+		DbSchema\DbSchema.projitems*{2581b75b-1c79-4249-8cc7-d8ac7c6a6063}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{2581b75b-1c79-4249-8cc7-d8ac7c6a6063}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{4f9d3da4-1264-42eb-8804-f5b9822e7b0d}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{6e362b62-5b06-4a28-98ae-9fdc94495bb9}*SharedItemsImports = 13

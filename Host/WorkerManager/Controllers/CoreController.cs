@@ -6,6 +6,10 @@ using SharedHost;
 using WorkerManager.Middleware;
 using WorkerManager.Data;
 using SharedHost.Models.Device;
+using DbSchema.CachedState;
+using System;
+using RestSharp;
+using Newtonsoft.Json;
 
 // TODO: authentification
 
@@ -18,20 +22,28 @@ namespace WorkerManager.Controllers
     {
         private readonly ClusterDbContext _db;
 
-        public CoreController(SystemConfig config,
-                              ClusterDbContext db)
+        private readonly ILocalStateStore _cache;
+
+        private readonly RestClient _sessionClient;
+
+        public CoreController(ClusterConfig config,
+                              ClusterDbContext db,
+                              ILocalStateStore cache)
         {
             _db = db;
+            _sessionClient = new RestClient("https://"+config.HostDomain+"/Session");
         }
 
         [Worker]
         [HttpPost("token")]
         public async Task<IActionResult> Session()
         {
-            var PrivateID = HttpContext.Items["PrivateID"];
+            var PrivateID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
             var Node = _db.Devices.Find(PrivateID);
-            if (Node._workerState == WorkerState.OnSession ||
-               Node._workerState == WorkerState.OffRemote)
+            var State = await _cache.GetWorkerState(PrivateID);
+
+            if (State == WorkerState.OnSession ||
+                State == WorkerState.OffRemote)
             {
                 return Ok(Node.RemoteToken);
             }
@@ -41,54 +53,48 @@ namespace WorkerManager.Controllers
             }
         }
 
-        [Worker]
-        [HttpPost("signalling")]
-        public async Task<IActionResult> Signalling()
-        {
-            var PrivateID = HttpContext.Items["PrivateID"];
-            var Node = _db.Devices.Find(PrivateID);
-            if (Node._workerState == WorkerState.OnSession ||
-               Node._workerState == WorkerState.OffRemote)
-            {
-                return Ok(Node.RemoteToken);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
 
-        [Worker]
-        [HttpPost("turn")]
-        public async Task<IActionResult> Turn()
-        {
-            var PrivateID = HttpContext.Items["PrivateID"];
-            var Node = _db.Devices.Find(PrivateID);
-            if (Node._workerState == WorkerState.OnSession ||
-               Node._workerState == WorkerState.OffRemote)
-            {
-                return Ok(Node);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
+
+
+
+
+
+
+
+
+
+
+
+
 
         [Worker]
         [HttpPost("qoe")]
         public async Task<IActionResult> QoE()
         {
-            var PrivateID = HttpContext.Items["PrivateID"];
+            var PrivateID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
             var Node = _db.Devices.Find(PrivateID);
-            if (Node._workerState == WorkerState.OnSession ||
-               Node._workerState == WorkerState.OffRemote)
+            var State = await _cache.GetWorkerState(PrivateID);
+
+            if (State == WorkerState.OnSession ||
+                State == WorkerState.OffRemote)
             {
-                return Ok(Node.QoE);
+                var request = new RestRequest("Setting")
+                    .AddQueryParameter("token", Node.RemoteToken);
+                request.Method = Method.GET;
+
+                var result = await _sessionClient.ExecuteAsync(request);
+                if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var sessionWorker = JsonConvert.DeserializeObject<SessionWorker>(result.Content);
+                    return Ok(sessionWorker);
+                }
+                {
+                    return BadRequest("Broken session token");
+                }
             }
             else
             {
-                return BadRequest();
+                return BadRequest("receive request when device is not on session");
             }
         }
     }

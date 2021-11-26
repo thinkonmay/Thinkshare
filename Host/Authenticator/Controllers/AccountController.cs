@@ -19,6 +19,7 @@ using SharedHost.Models.Session;
 using SharedHost.Models.ResponseModel;
 using Google.Apis.Auth;
 using SharedHost.Auth;
+using DbSchema.CachedState;
 
 namespace Authenticator.Controllers
 {
@@ -29,16 +30,19 @@ namespace Authenticator.Controllers
         private readonly UserManager<UserAccount> _userManager;
         private readonly SignInManager<UserAccount> _signInManager;
         private readonly ITokenGenerator _tokenGenerator;
-        private readonly ApplicationDbContext _db;
+        private readonly IGlobalStateStore _cache;
+        private readonly GlobalDbContext _db;
         
         private readonly SystemConfig _config;
         public AccountController(
             UserManager<UserAccount> userManager,
             SignInManager<UserAccount> signInManager,
+            IGlobalStateStore cache,
             ITokenGenerator tokenGenerator,
-            ApplicationDbContext db,
+            GlobalDbContext db,
             SystemConfig config)
         {
+            _cache = cache;
             _config = config;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -208,19 +212,23 @@ namespace Authenticator.Controllers
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
-            if(account.DefaultSetting == null)
+
+            var DefaultSetting = await _cache.GetUserSetting(Int32.Parse((string)UserID));
+
+            if(DefaultSetting == null)
             {
-                account.DefaultSetting = new DeviceCap {
-                    device = DeviceType.WEBAPP,
+                DefaultSetting = new UserSetting {
+                    device = DeviceType.WEB_APP,
                     videoCodec = Codec.CODEC_H264,
                     audioCodec = Codec.OPUS_ENC,
                     mode = QoEMode.HIGH_CONST,
                     screenHeight = 1920,
                     screenWidth = 1080                         
                 };
-                await _userManager.UpdateAsync(account);
+                await _cache.SetUserSetting(Int32.Parse((string)UserID), DefaultSetting);
             }
-            return Ok(new UserInforModel(account));
+
+            return Ok(new UserInforModel(account,DefaultSetting));
         }
 
 
@@ -259,27 +267,6 @@ namespace Authenticator.Controllers
             if(infor.PhoneNumber != null)
             {
                 account.PhoneNumber = infor.Jobs;
-            }                        
-            if(infor.DefaultSetting != null)
-            {
-                if(infor.DefaultSetting.device != null){
-                    account.DefaultSetting.device = infor.DefaultSetting.device;
-                }                
-                if(infor.DefaultSetting.audioCodec != null){
-                    account.DefaultSetting.audioCodec = infor.DefaultSetting.audioCodec;
-                }
-                if(infor.DefaultSetting.videoCodec != null){
-                    account.DefaultSetting.videoCodec = infor.DefaultSetting.videoCodec;
-                }
-                if(infor.DefaultSetting.mode != null){
-                    account.DefaultSetting.mode = infor.DefaultSetting.mode;
-                }
-                if(infor.DefaultSetting.screenWidth != null){
-                    account.DefaultSetting.screenWidth = infor.DefaultSetting.screenWidth;
-                }
-                if(infor.DefaultSetting.screenHeight != null){
-                    account.DefaultSetting.screenHeight = infor.DefaultSetting.screenHeight;
-                }
             }
             
             await _userManager.UpdateAsync(account);

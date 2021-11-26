@@ -61,7 +61,7 @@ namespace SystemHub.Controllers
                     }
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                    _User.AddtoPool(claim, webSocket);
+                    await _User.AddtoPool(claim, webSocket);
                 }
                 return Ok();
             }
@@ -87,7 +87,7 @@ namespace SystemHub.Controllers
                     var claim = JsonConvert.DeserializeObject<ClusterCredential>(result.Content);
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                    _Cluster.AddtoPool(claim, webSocket);
+                    await _Cluster.AddtoPool(claim, webSocket);
                 }
                 return Ok();
             }

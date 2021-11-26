@@ -7,14 +7,14 @@ namespace SystemHub.Interfaces
 {
     public interface IUserSocketPool
     {
-        void AddtoPool(AuthenticationResponse resp, WebSocket session);
+        Task AddtoPool(AuthenticationResponse resp, WebSocket session);
 
         Task Handle(WebSocket ws);
-        void SendMessage(WebSocket ws, string msg);
+        Task SendMessage(WebSocket ws, string msg);
         Task Close(WebSocket ws);
 
-        void BroadcastClientEvent(EventModel data);
-        void BroadcastClientEventById(int iD, EventModel data);
-        void BroadcastAdminEvent(EventModel data);
+        Task BroadcastClientEvent(EventModel data);
+        Task BroadcastClientEventById(int iD, EventModel data);
+        Task BroadcastAdminEvent(EventModel data);
     }
 }

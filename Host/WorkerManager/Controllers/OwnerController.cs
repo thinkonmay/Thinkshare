@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WorkerManager.Interfaces;
 using WorkerManager.Services;
 using System;
@@ -11,8 +10,9 @@ using System.Linq;
 using SharedHost.Models.Auth;
 using RestSharp;
 using Newtonsoft.Json;
-using WorkerManager.Models;
 using SharedHost.Models.Cluster;
+using SharedHost.Models.Local;
+using DbSchema.CachedState;
 
 namespace WorkerManager.Controllers
 {
@@ -31,19 +31,22 @@ namespace WorkerManager.Controllers
 
         private readonly RestClient _cluster;
 
-        private IConductorSocket _socket;
+        private ILocalStateStore _cache;
 
         public OwnerController(ClusterDbContext db, 
-                                ITokenGenerator token, 
-                                IConductorSocket socket,
+                                ITokenGenerator token,
+                                ILocalStateStore cache,
                                 ClusterConfig config)
         {
             _db = db;
-            _socket = socket;
+            _cache = cache;
             _config = config;
             _tokenGenerator = token;
-            _login = new RestClient("https://"+config.HostDomain + "/Account");
-            _cluster = new RestClient("https://"+config.HostDomain+ "/Cluster");
+
+
+
+            _login = new RestClient("https://"+ config.HostDomain + "/Account");
+            _cluster = new RestClient("https://"+ config.HostDomain+ "/Cluster");
         }
 
         /// <summary>
@@ -96,12 +99,11 @@ namespace WorkerManager.Controllers
         /// <returns></returns>
         [Owner]
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(bool isPrivate, string TURN)
+        public async Task<IActionResult> Register(bool isPrivate)
         {
             var request = new RestRequest("Register")
                 .AddQueryParameter("ClusterName", _config.ClusterName)
-                .AddQueryParameter("Private", isPrivate.ToString())
-                .AddQueryParameter("TURN", TURN.ToString());
+                .AddQueryParameter("Private", isPrivate.ToString());
 
             var token = _db.Owner.First().token;
 
@@ -116,7 +118,6 @@ namespace WorkerManager.Controllers
                 {
                     Token = result.Content,
                     Private = isPrivate,
-                    TurnUrl = TURN,
                     Register = DateTime.Now
                 };
 
@@ -130,12 +131,10 @@ namespace WorkerManager.Controllers
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="isPrivate"></param>
-        /// <param name="TURN"></param>
-        /// <returns></returns>
+
+
+
+
         [Owner]
         [HttpGet("GetToken")]
         public async Task<IActionResult> Token()
@@ -153,6 +152,7 @@ namespace WorkerManager.Controllers
             {
                 var cluster = _db.Clusters.First();
                 cluster.Token = JsonConvert.DeserializeObject<string>(result.Content);
+                _db.Update(cluster);
                 await _db.SaveChangesAsync();
                 return Ok();
             }
@@ -172,9 +172,13 @@ namespace WorkerManager.Controllers
         /// <returns></returns>
         [Owner]
         [HttpPost("SetTURN")]
-        public async Task<IActionResult> setturn(string TURN)
+        public async Task<IActionResult> setturn(string IP, string user, string password)
         {
-            _db.Clusters.First().TurnUrl = TURN;
+            var cluster = _db.Clusters.First();
+            cluster.TurnIP = IP;
+            cluster.TurnUser = user;
+            cluster.TurnPassword = password;
+            _db.Update(cluster);
             await _db.SaveChangesAsync();
             return Ok();
         }
@@ -184,7 +188,8 @@ namespace WorkerManager.Controllers
         [HttpPost("Start")]
         public async Task<IActionResult> Start()
         {
-            new WorkerNodePool(_socket,_db);
+            var socket = new ConductorSocket(_config, _db,_cache);
+            new WorkerNodePool(socket,_cache,_db);
             return Ok();
         }
 

@@ -11,13 +11,13 @@ namespace Conductor.Interfaces
 {
     public interface IWorkerCommnader
     {
-        Task SessionTerminate(int slaveid);
+        Task SessionTerminate(int ID);
 
-        Task SessionDisconnect(int slaveid);
+        Task SessionDisconnect(int ID);
 
-        Task SessionReconnect(int ID, SessionBase session);
+        Task SessionReconnect(int ID);
         
-        Task SessionInitialize(int ID, string token, SessionBase session);
+        Task SessionInitialize(int ID, string token);
 
         Task AssignGlobalID(int ClusterID, int GlobalID, int PrivateID);
     }

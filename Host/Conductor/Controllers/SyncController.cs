@@ -12,6 +12,7 @@ using SharedHost.Models.User;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using DbSchema.CachedState;
 
 namespace Conductor.Controllers
 {
@@ -19,18 +20,22 @@ namespace Conductor.Controllers
     [ApiController]
     public class SyncController : ControllerBase
     {
-        private readonly ApplicationDbContext _db;
+        private readonly GlobalDbContext _db;
         private readonly IClientHub _clientHubctx;
         private readonly IWorkerCommnader _Cluster;
         private readonly UserManager<UserAccount> _userManager;
+        private readonly IGlobalStateStore _cache;
 
-        public SyncController(ApplicationDbContext db,
+
+        public SyncController(GlobalDbContext db,
                      IClientHub clientHub,
+                     IGlobalStateStore cache,
                      UserManager<UserAccount> userManager,
                      IWorkerCommnader SlaveManager,
                      SystemConfig config)
         {
             _db = db;
+            _cache = cache;
             _clientHubctx = clientHub;
             _Cluster = SlaveManager;
             _userManager = userManager;
@@ -39,17 +44,15 @@ namespace Conductor.Controllers
         [HttpPost("State")]
         public async Task<IActionResult> Update(int ID, string NewState)
         {
-            var device = _db.Devices.Find(ID);
-            device.WorkerState = NewState;
 
             var Session = _db.RemoteSessions.Where(o => o.WorkerID == ID && !o.EndTime.HasValue);
-
             // if device is already obtained by one user (dont have endtime)
             if (Session.Any())
             {
                 switch (NewState)
                 {
                     case WorkerState.Open:
+                        var device = _db.Devices.Find(ID);
                         await _clientHubctx.ReportNewSlaveAvailable(device);
                         Session.First().EndTime = DateTime.Now;
                         break;
@@ -71,6 +74,7 @@ namespace Conductor.Controllers
                 switch (NewState)
                 {
                     case WorkerState.Open:
+                        var device = _db.Devices.Find(ID);
                         await _clientHubctx.ReportNewSlaveAvailable(device);
                         break;
                     case WorkerState.Disconnected:
@@ -80,7 +84,7 @@ namespace Conductor.Controllers
 
             }
 
-            await _db.SaveChangesAsync();
+            await _cache.UpdateWorkerState(ID,NewState);
             return Ok();
         }
 
@@ -94,7 +98,6 @@ namespace Conductor.Controllers
             var newWorker = new WorkerNode
             {
                 Register = current,
-                WorkerState = WorkerState.Registering,
                 CPU = body.CPU,
                 GPU = body.GPU,
                 RAMcapacity = body.RAMcapacity,
@@ -112,33 +115,7 @@ namespace Conductor.Controllers
 
 
 
-
-        [HttpPost("NewWorker")]
-        public async Task<IActionResult> Register(int ClusterID, [FromBody] WorkerNode worker)
-        {
-            worker.Register = DateTime.Now;
-            var cluster = _db.Clusters.Find(ClusterID);
-            cluster.WorkerNode.Add(worker);
-            await _db.SaveChangesAsync();
-            return Ok();
-        }
-
-
-        /// <summary>
-        /// Get list of available slave device, contain device information
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("Connected")]
-        public async Task<IActionResult> Connected(int ClusterID)
-        {
-            var cluster = _db.Clusters.Find(ClusterID);
-            foreach (var worker in cluster.WorkerNode)
-            {
-                worker.WorkerState = WorkerState.Unregister;
-                await _db.SaveChangesAsync();
-            }
-            return Ok();
-        }
+        
 
         /// <summary>
         /// Get list of available slave device, contain device information
@@ -150,7 +127,7 @@ namespace Conductor.Controllers
             var cluster = _db.Clusters.Find(ClusterID);
             foreach (var worker in cluster.WorkerNode)
             {
-                worker.WorkerState = WorkerState.Disconnected;
+                await _cache.UpdateWorkerState(worker.ID,WorkerState.Disconnected);
                 var Session = _db.RemoteSessions.Where(x => x.WorkerID == worker.ID && !x.EndTime.HasValue);
                 if (Session.Any())
                 {
@@ -164,6 +141,19 @@ namespace Conductor.Controllers
                 await _db.SaveChangesAsync();
             }
             return Ok();
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ClusterID"></param>
+        /// <returns></returns>
+        [HttpGet("GetNode")]
+        public IActionResult GetClusterInfor(int ClusterID)
+        {
+            GlobalCluster cluster = _db.Clusters.Find(ClusterID);
+            return Ok(cluster.WorkerNode);
         }
     }
 }

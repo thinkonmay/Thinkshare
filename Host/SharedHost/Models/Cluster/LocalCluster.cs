@@ -22,7 +22,17 @@ namespace SharedHost.Models.Cluster
         /// <summary>
         /// 
         /// </summary>
-        public string? TurnUrl { get; set; }
+        public string? TurnIP { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? TurnUser { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? TurnPassword { get;set; }
 
         /// <summary>
         /// 
@@ -33,6 +43,11 @@ namespace SharedHost.Models.Cluster
         /// 
         /// </summary>
         public bool Private { get;set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool Enabled {  get; set; }
 
         /// <summary>
         /// Each cluster will contain a certain number of Slave Device

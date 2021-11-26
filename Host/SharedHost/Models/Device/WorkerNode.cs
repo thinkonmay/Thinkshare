@@ -13,12 +13,9 @@ namespace SharedHost.Models.Device
         /// Each slave device defined with an unique ID 
         /// </summary>
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
 
         public DateTime? Register { get; set; }
-
-        public string WorkerState { get; set; }
 
         public string? CPU { get; set; }
 

@@ -5,7 +5,7 @@ namespace SharedHost.Models.Device
 {
     public enum DeviceType
     {
-        WEBAPP,
+        WEB_APP,
         WINDOW_APP,
         LINUX_APP,
         MAC_OS_APP,
@@ -13,20 +13,52 @@ namespace SharedHost.Models.Device
         IOS_APP
     }
 
-    public class DeviceCap
+    public enum CoreEngine
     {
-        public int? ID {get;set;}
-        
-        public DeviceType? device {get;set;}
+        GSTREAMER,
+        CHROME,
+    }
 
-        public Codec? audioCodec { get; set; }
+    public enum Codec
+    {
+        CODEC_H265,
+        CODEC_H264,
+        CODEC_VP8,
+        CODEC_VP9,
 
-        public Codec? videoCodec { get; set; }
+        OPUS_ENC,
+        AAC_ENC
+    }
 
-        public QoEMode? mode { get; set; }
+    public enum QoEMode
+    {
+        ULTRA_LOW_CONST = 1,
+        LOW_CONST,
+        MEDIUM_CONST,
+        HIGH_CONST,
+        VERY_HIGH_CONST,
+        ULTRA_HIGH_CONST,
 
-        public int? screenWidth { get; set; }
+        SEGMENTED_ADAPTIVE_BITRATE,
+        NON_OVER_SAMPLING_ADAPTIVE_BITRATE,
+        OVER_SAMPLING_ADAPTIVE_BITRATE,
+        PREDICTIVE_ADAPTIVE_BITRATE
+    }
 
-        public int? screenHeight { get; set; }
+    public class UserSetting
+    {        
+        public DeviceType device {get;set;}
+
+        public CoreEngine engine {get;set;}
+
+        public Codec audioCodec { get; set; }
+
+        public Codec videoCodec { get; set; }
+
+        public QoEMode mode { get; set; }
+
+        public int screenWidth { get; set; }
+
+        public int screenHeight { get; set; }
     }
 }

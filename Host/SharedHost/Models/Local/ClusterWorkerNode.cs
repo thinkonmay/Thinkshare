@@ -9,52 +9,50 @@ using System.ComponentModel.DataAnnotations;
 using SharedHost.Models.Session;
 using System.Net;
 
-namespace WorkerManager.Models
+namespace SharedHost.Models.Local
 {
     public class ClusterWorkerNode 
     {
         [Key]
         public int PrivateID { get; set; }
 
-        public int? GlobalID { get;set; }
+        [Required]
+        public int GlobalID { get;set; }
 
+        [Required]
         public string PrivateIP { get; set; }
 
+        [Required]
         public string CPU { get; set; }
 
+        [Required]
         public string GPU { get; set; }
 
+        [Required]
         public int RAMcapacity { get; set; }
 
+        [Required]
         public string OS { get; set; }
 
         [Required]
         public DateTime Register { get;set; }
 
         [Required]
-        public string _workerState { get; set; }
-
-        public int? agentFailedPing {get;set;}
-
-        public int? sessionFailedPing {get;set;}
-
-        [Required]
         public string agentUrl { get; set; }
 
         [Required]
         public string coreUrl { get; set; }
-
-        [JsonIgnore]
+        
         public string? RemoteToken { get; set; }
 
-        [JsonIgnore]
-        public string? SignallingUrl { get; set; }
+        [NotMapped]
+        [Required]
+        public int agentFailedPing {get;set;}
 
-        [JsonIgnore]
-        public virtual QoE? QoE { get; set; }
-
+        [NotMapped]
+        [Required]
+        public int sessionFailedPing {get;set;}
         
-
         [NotMapped]
         [JsonIgnore]
         public RestClient _coreClient { get; set; }
@@ -72,52 +70,40 @@ namespace WorkerManager.Models
 
 
         /*state dependent method*/
-        public async Task SessionInitialize()
+        public async Task<bool> SessionInitialize()
         {
             var request = new RestRequest("Initialize");
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);
-            if (result.StatusCode == HttpStatusCode.OK)
-            {
-                _workerState = WorkerState.OnSession;
-            }
+            return (result.StatusCode == HttpStatusCode.OK);
         }
 
-        public async Task SessionTerminate()
+        public async Task<bool> SessionTerminate()
         {
             var request = new RestRequest("Terminate");
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);
-            if (result.StatusCode == HttpStatusCode.OK)
-            {
-                _workerState = WorkerState.Open;
-            }
+            return (result.StatusCode == HttpStatusCode.OK);
         }
 
-        public async Task SessionDisconnect()
+        public async Task<bool> SessionDisconnect()
         {
             var request = new RestRequest("Disconnect");
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);
-            if (result.StatusCode == HttpStatusCode.OK)
-            {
-                _workerState = WorkerState.OffRemote;
-            }
+            return (result.StatusCode == HttpStatusCode.OK);
         }
 
-        public async Task SessionReconnect()
+        public async Task<bool> SessionReconnect()
         {
             var request = new RestRequest("Reconnect");
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);
-            if (result.StatusCode == HttpStatusCode.OK)
-            {
-                _workerState = WorkerState.OnSession;
-            }
+            return (result.StatusCode == HttpStatusCode.OK);
         }
 
 

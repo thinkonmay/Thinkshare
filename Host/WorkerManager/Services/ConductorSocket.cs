@@ -1,13 +1,11 @@
 ﻿using WorkerManager.Interfaces;
 using SharedHost.Models.Cluster;
 using System.Threading.Tasks;
-using WorkerManager.Models;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
 using SharedHost.Models.Shell;
 using RestSharp;
 using System.Net;
-using SharedHost;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Net.WebSockets;
@@ -17,12 +15,14 @@ using System.IO;
 using System.Text;
 using SharedHost.Models.Session;
 using WorkerManager.Data;
+using SharedHost.Models.Local;
+using DbSchema.CachedState;
 
 namespace WorkerManager.Services
 {
 
 
-    public class ConductorSocket : IConductorSocket
+    public class ConductorSocket 
     {
         private readonly ClusterConfig clusterConfig;
 
@@ -32,10 +32,14 @@ namespace WorkerManager.Services
 
         private RestClient _scriptmodel;
 
+        private ILocalStateStore _cache;
+
         public ConductorSocket(ClusterConfig cluster, 
-                               ClusterDbContext db)
+                               ClusterDbContext db,
+                               ILocalStateStore cache)
         {
             _db = db;
+            _cache = cache;
             clusterConfig = cluster;
             Task.Run(() => TokenLookup());
         }
@@ -84,13 +88,13 @@ namespace WorkerManager.Services
                         {
                             // execute session operation by public id 
                             case Opcode.SESSION_INITIALIZE:
-                                await Initialize((int)WsMessage.WorkerID,WsMessage.token,JsonConvert.DeserializeObject<SessionBase>(WsMessage.Data));
+                                await Initialize((int)WsMessage.WorkerID,WsMessage.token);
                                 break;
                             case Opcode.SESSION_TERMINATE:
                                 await Terminate((int)WsMessage.WorkerID);
                                 break;
                             case Opcode.SESSION_RECONNECT:
-                                await Reconnect((int)WsMessage.WorkerID,JsonConvert.DeserializeObject<SessionBase>(WsMessage.Data));
+                                await Reconnect((int)WsMessage.WorkerID);
                                 break;
                             case Opcode.SESSION_DISCONNECT:
                                 await Disconnect((int)WsMessage.WorkerID);
@@ -132,7 +136,6 @@ namespace WorkerManager.Services
             var worker = _db.Devices.Find(assign.PrivateID);
 
             worker.GlobalID = assign.GlobalID;
-            worker._workerState = WorkerState.Open;
             await _db.SaveChangesAsync();
         }
 
@@ -142,14 +145,12 @@ namespace WorkerManager.Services
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        public async Task Initialize(int GlobalID, string token, SessionBase session)
+        public async Task Initialize(int GlobalID, string token)
         {
             var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
             worker.RestoreWorkerNode();
 
             worker.RemoteToken = token;
-            worker.QoE = session.QoE;
-            worker.SignallingUrl = session.SignallingUrl;
             await worker.SessionInitialize();
             await _db.SaveChangesAsync();
         }
@@ -166,8 +167,6 @@ namespace WorkerManager.Services
             worker.RestoreWorkerNode();
 
             worker.RemoteToken = null;
-            worker.SignallingUrl = null;
-            worker.QoE = null;
             await worker.SessionTerminate();
             await _db.SaveChangesAsync();
         }
@@ -183,7 +182,11 @@ namespace WorkerManager.Services
             var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
             worker.RestoreWorkerNode();
 
-            await worker.SessionDisconnect();
+            bool success = await worker.SessionDisconnect();
+            if (success)
+            {
+                await _cache.SetWorkerState(worker.PrivateID,WorkerState.Disconnected);
+            }
             await _db.SaveChangesAsync();
         }
 
@@ -192,13 +195,11 @@ namespace WorkerManager.Services
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
-        public async Task Reconnect(int GlobalID, SessionBase session)
+        public async Task Reconnect(int GlobalID)
         {
             var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
             worker.RestoreWorkerNode();
 
-            worker.QoE = session.QoE;
-            worker.SignallingUrl = session.SignallingUrl;
             await worker.SessionReconnect();
             await _db.SaveChangesAsync();
         }
@@ -222,14 +223,14 @@ namespace WorkerManager.Services
         }
 
 
+
         public async Task ReportWorkerRegistered(ClusterWorkerNode information)
         {
             var WorkerNode = new WorkerNode{
                 OS = information.OS,
                 GPU = information.GPU,
                 CPU = information.CPU,
-                RAMcapacity = information.RAMcapacity,
-                WorkerState = information._workerState
+                RAMcapacity = information.RAMcapacity
             };
             await SendMessage(JsonConvert.SerializeObject(
                 new Message { WorkerID = information.PrivateID, 

@@ -15,6 +15,7 @@ using SharedHost.Auth.ThinkmayAuthProtocol;
 using System.Linq;
 using DbSchema.SystemDb.Data;
 using SharedHost.Models.ResponseModel;
+using DbSchema.CachedState;
 
 namespace Authenticator.Controllers
 {
@@ -23,11 +24,17 @@ namespace Authenticator.Controllers
     public class SettingController : ControllerBase
     {
         private readonly UserManager<UserAccount> _userManager;
-        private readonly ApplicationDbContext _db;
+
+        private readonly GlobalDbContext _db;
+
+        private readonly IGlobalStateStore _cache;
+
         public SettingController(
             UserManager<UserAccount> userManager,
-            ApplicationDbContext db)
+            IGlobalStateStore cache,
+            GlobalDbContext db)
         {
+            _cache = cache;
             _userManager = userManager;
             _db = db;
         }
@@ -43,21 +50,19 @@ namespace Authenticator.Controllers
         public async Task<IActionResult> GetDefaultSetting()
         {
             var UserID = HttpContext.Items["UserID"];
-            var account = await _userManager.FindByIdAsync(UserID.ToString());
 
-            return Ok(account.DefaultSetting);
+            return Ok(await _cache.GetUserSetting(Int32.Parse((string)UserID)));
         }
 
 
         
         [User]
         [HttpPost("Set")]
-        public async Task<IActionResult> SetDefaultSetting([FromBody] DeviceCap capability)
+        public async Task<IActionResult> SetDefaultSetting([FromBody] UserSetting capability)
         {
             var UserID = HttpContext.Items["UserID"];
-            var account = await _userManager.FindByIdAsync(UserID.ToString());
 
-            account.DefaultSetting = capability;
+            await _cache.SetUserSetting(Int32.Parse((string)UserID), capability);
             await _db.SaveChangesAsync();
             return Ok();
         }

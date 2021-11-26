@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using WorkerManager.Data;
 using WorkerManager.Middleware;
-using WorkerManager.Models;
 using System.Linq;
+using DbSchema.CachedState;
+using SharedHost.Models.Local;
+using MersenneTwister;
 
 namespace WorkerManager.Controllers
 {
@@ -21,8 +23,13 @@ namespace WorkerManager.Controllers
 
         private readonly ClusterDbContext _db;
 
-        public AgentController( ClusterDbContext db, ITokenGenerator token)
+        private readonly LocalStateStore _cache;
+
+        public AgentController( ClusterDbContext db, 
+                                ITokenGenerator token,
+                                LocalStateStore cache)
         {
+            _cache = cache;
             _db = db;
             _tokenGenerator = token;
         }
@@ -30,9 +37,7 @@ namespace WorkerManager.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="managerToken"></param>
-        /// <param name="token"></param>
-        /// <param name="node"></param>
+        /// <param name="agent_register"></param>
         /// <returns></returns>
         [Owner]
         [HttpPost("Register")]
@@ -42,28 +47,29 @@ namespace WorkerManager.Controllers
             var node = new ClusterWorkerNode
             {
                 Register = current,
-                _workerState = WorkerState.Unregister,
                 PrivateIP = agent_register.LocalIP,
                 CPU = agent_register.CPU,
                 GPU = agent_register.GPU,
                 RAMcapacity = (int)agent_register.RAMcapacity,
                 OS = agent_register.OS,
-            }; 
+            };
 
             _db.Devices.Add(node);
-            var device = _db.Devices.Where(o => o.Register == current && o._workerState == WorkerState.Unregister).First();
-            return Ok(await _tokenGenerator.GenerateWorkerToken(device));
+            await _db.SaveChangesAsync();
+
+            await _cache.SetWorkerState(node.PrivateID, WorkerState.Unregister);
+            return Ok(await _tokenGenerator.GenerateWorkerToken(node));
         }
 
         [Worker]
-        [HttpPost("SessionCoreEnd")]
+        [HttpPost("EndRemote")]
         public async Task<IActionResult> Post()
         {
-            var workerID = HttpContext.Items["PrivateID"];
-            var device = _db.Devices.Find(workerID);
-            if(device._workerState == WorkerState.OnSession)
+            var workerID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
+            var state = await _cache.GetWorkerState(workerID);
+            if(state == WorkerState.OnSession)
             {
-                device._workerState = WorkerState.OffRemote;
+                await _cache.SetWorkerState(workerID, WorkerState.OffRemote);
             }
             return Ok();
         }

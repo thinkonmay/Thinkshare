@@ -26,8 +26,17 @@ namespace SharedHost.Models.Cluster
         /// 
         /// </summary>
         /// <value></value>
-        public string TURN { get; set; }
+        public string turnIP { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string turnUSER { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string turnPASSWORD { get;set;}
         /// <summary>
         /// 
         /// </summary>
