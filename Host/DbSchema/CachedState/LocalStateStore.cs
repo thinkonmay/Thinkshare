@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using SharedHost;
 using SharedHost.Models.Device;
 using SharedHost.Models.Local;
 using System;
@@ -25,7 +26,8 @@ namespace DbSchema.CachedState
     {
         private IDistributedCache _cache;
 
-        public LocalStateStore(IDistributedCache cache)
+        public LocalStateStore(IDistributedCache cache,
+                               ClusterConfig config)
         {
             _cache = cache;
         }

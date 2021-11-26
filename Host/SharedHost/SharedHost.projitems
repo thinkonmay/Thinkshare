@@ -9,6 +9,7 @@
     <Import_RootNamespace>SharedHost</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ClusterConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\AuthResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\JwtOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\LoginModel.cs" />

@@ -8,6 +8,7 @@ using WorkerManager.Interfaces;
 using WorkerManager.Data;
 using SharedHost.Models.User;
 using SharedHost.Models.Local;
+using SharedHost;
 
 namespace WorkerManager.Middleware
 {

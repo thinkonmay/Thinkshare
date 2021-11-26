@@ -12,7 +12,7 @@ using SharedHost.Models.Local;
 
 namespace WorkerManager.Services
 {
-    public class WorkerNodePool 
+    public class WorkerNodePool : IWorkerNodePool
     {
         private readonly ConductorSocket _socket;
 
@@ -20,13 +20,21 @@ namespace WorkerManager.Services
 
         private readonly ClusterDbContext _db;
 
+        public bool Initialized { get; set; }
+
         public WorkerNodePool(ConductorSocket socket, 
                               ILocalStateStore cache,
                               ClusterDbContext db)
         {
             _cache = cache;
             _socket = socket;
+            Initialized = false;
             _db = db;
+        }
+
+        public void Start()
+        {
+            Initialized = true;
             Task.Run(() => SystemHeartBeat());
             Task.Run(() => StateSyncing());
             Task.Run(() => SessionHeartBeat());
@@ -126,7 +134,7 @@ namespace WorkerManager.Services
                             }
                             if(session != null)
                             {
-                                _db.CachedSession.Add(session);
+                                await _db.CachedSession.AddAsync(session);
                                 await _db.SaveChangesAsync();
                             }
                         }

@@ -68,7 +68,7 @@ namespace WorkerManager.Controllers
 
 
         [Worker]
-        [HttpPost("qoe")]
+        [HttpPost("infor")]
         public async Task<IActionResult> QoE()
         {
             var PrivateID = Int32.Parse((string)HttpContext.Items["PrivateID"]);

@@ -130,7 +130,5 @@ namespace SharedHost.Models.Local
             if(result.StatusCode == HttpStatusCode.OK) { return result.Content; }
             else { return null; }
         }
-
-
     }
 }

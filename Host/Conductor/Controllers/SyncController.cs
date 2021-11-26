@@ -107,9 +107,7 @@ namespace Conductor.Controllers
             cluster.WorkerNode.Add(newWorker);
             await _db.SaveChangesAsync();
 
-            var device = _db.Clusters.Find(ClusterID).WorkerNode.Where(o => o.Register == current).First();
-
-            await _Cluster.AssignGlobalID(cluster.ID, device.ID, body.PrivateID);
+            await _Cluster.AssignGlobalID(cluster.ID, newWorker.ID, body.PrivateID);
             return Ok();
         }
 

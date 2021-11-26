@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
 using SharedHost.Models.Local;
 using DbSchema.CachedState;
+using SharedHost;
 
 namespace WorkerManager.Controllers
 {
@@ -21,7 +22,6 @@ namespace WorkerManager.Controllers
     [Produces("application/json")]
     public class OwnerController : ControllerBase
     {
-        private readonly ITokenGenerator _tokenGenerator;
 
         private readonly ClusterConfig _config;
 
@@ -31,20 +31,23 @@ namespace WorkerManager.Controllers
 
         private readonly RestClient _cluster;
 
+        private readonly IConductorSocket _conductor;
+
+        private readonly IWorkerNodePool _workerNodePool;
+
         private ILocalStateStore _cache;
 
         public OwnerController(ClusterDbContext db, 
-                                ITokenGenerator token,
                                 ILocalStateStore cache,
+                                IConductorSocket socket,
+                                IWorkerNodePool workerPool,
                                 ClusterConfig config)
         {
             _db = db;
             _cache = cache;
+            _conductor = socket;
+            _workerNodePool = workerPool;
             _config = config;
-            _tokenGenerator = token;
-
-
-
             _login = new RestClient("https://"+ config.HostDomain + "/Account");
             _cluster = new RestClient("https://"+ config.HostDomain+ "/Cluster");
         }
@@ -63,6 +66,7 @@ namespace WorkerManager.Controllers
 
             var result = await _login.ExecuteAsync(request);
             var jsonresult = JsonConvert.DeserializeObject<AuthResponse>(result.Content);
+
             if(jsonresult.Errors == null)
             {
                 if(_db.Owner.Any())
@@ -78,7 +82,7 @@ namespace WorkerManager.Controllers
                 }
                 _db.Owner.Add(new OwnerCredential 
                 {   Name = jsonresult.UserName, 
-                    Description = null, 
+                    Description = "Primary owner of the cluster", 
                     token = jsonresult.Token
                 });
                 await _db.SaveChangesAsync();
@@ -95,7 +99,6 @@ namespace WorkerManager.Controllers
         /// 
         /// </summary>
         /// <param name="isPrivate"></param>
-        /// <param name="TURN"></param>
         /// <returns></returns>
         [Owner]
         [HttpPost("Register")]
@@ -188,9 +191,20 @@ namespace WorkerManager.Controllers
         [HttpPost("Start")]
         public async Task<IActionResult> Start()
         {
-            var socket = new ConductorSocket(_config, _db,_cache);
-            new WorkerNodePool(socket,_cache,_db);
-            return Ok();
+            if(!_conductor.Initialized && !_workerNodePool.Initialized)
+            {
+                if(await _conductor.Start())
+                {
+                    _workerNodePool.Start();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("Fail to connect to system hub");
+
+                }
+            }
+            return BadRequest("Cluster has already been initialized");
         }
 
     }
