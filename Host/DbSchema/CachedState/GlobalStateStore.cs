@@ -14,12 +14,12 @@ namespace DbSchema.CachedState
     {
         Task SetWorkerState(Dictionary<int, string> node);
         Task<Dictionary<int, string>> GetWorkerState();
+        Task<string> GetWorkerStateWithID(int ID);
         Task SetUserSetting(int SettingID, UserSetting defaultSetting);
         Task<UserSetting> GetUserSetting(int WorkerID);
         Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, GlobalCluster cluster);
         Task<SessionWorker> GetClientSessionSetting(SessionAccession accession);
         Task<SessionClient> GetWorkerSessionSetting(SessionAccession accession);
-        Task<string> GetWorkerStateWithID(int ID);
         Task UpdateWorkerState(int ID, string NewState);
     }
 

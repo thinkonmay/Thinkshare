@@ -183,6 +183,10 @@ namespace WorkerManager.Controllers
             cluster.TurnPassword = password;
             _db.Update(cluster);
             await _db.SaveChangesAsync();
+
+
+
+
             return Ok();
         }
 

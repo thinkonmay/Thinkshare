@@ -12,6 +12,7 @@ using SharedHost;
 using System;
 using SharedHost.Models.Session;
 using SharedHost.Models.Cluster;
+using Microsoft.Extensions.Options;
 
 namespace Authenticator.Controllers
 {
@@ -28,12 +29,12 @@ namespace Authenticator.Controllers
             UserManager<UserAccount> userManager,
             SignInManager<UserAccount> signInManager,
             ITokenGenerator tokenGenerator,
-            SystemConfig config)
+            IOptions<SystemConfig> config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenGenerator = tokenGenerator;
-            _config = config;
+            _config = config.Value;
         }
 
         /// <summary>

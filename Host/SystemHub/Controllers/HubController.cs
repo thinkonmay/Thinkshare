@@ -7,6 +7,7 @@ using RestSharp;
 using SharedHost.Auth;
 using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
+using Microsoft.Extensions.Options;
 
 namespace SystemHub.Controllers
 {
@@ -26,12 +27,12 @@ namespace SystemHub.Controllers
 
         public HubController(IClusterSocketPool cluster,
                             IUserSocketPool user,
-                            SystemConfig config)
+                            IOptions<SystemConfig> config)
         {
             _User = user;
             _Cluster = cluster;
-            _config = config;
-            _client = new RestClient(config.Authenticator+"/Token");
+            _config = config.Value;
+            _client = new RestClient(_config.Authenticator+"/Token");
         }
 
         [HttpGet("User")]

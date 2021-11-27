@@ -12,6 +12,7 @@ using System.Net;
 using Conductor.Interfaces;
 using SharedHost;
 using DbSchema.SystemDb.Data;
+using Microsoft.Extensions.Options;
 
 namespace Conductor.Services
 {
@@ -19,9 +20,9 @@ namespace Conductor.Services
     {
         private readonly RestClient _Cluster;
 
-        public WorkerCommander(SystemConfig config)
+        public WorkerCommander(IOptions<SystemConfig> config)
         {
-            _Cluster =  new RestClient(config.SystemHub + "/Cluster");
+            _Cluster =  new RestClient(config.Value.SystemHub + "/Cluster");
         }
 
 

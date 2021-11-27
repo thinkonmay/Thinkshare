@@ -14,6 +14,7 @@ using DbSchema.CachedState;
 using System;
 using System.Net;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Options;
 
 namespace Conductor.Controllers
 {
@@ -39,7 +40,7 @@ namespace Conductor.Controllers
         private readonly IGlobalStateStore _cache;
 
         public SessionController(GlobalDbContext db,
-                                SystemConfig config,
+                                IOptions<SystemConfig> config,
                                 IWorkerCommnader slmsocket,
                                 IGlobalStateStore cache,
                                 UserManager<UserAccount> userManager)
@@ -48,7 +49,7 @@ namespace Conductor.Controllers
             _cache = cache;
             _Cluster = slmsocket;
             _userManager = userManager;
-            _config = config;
+            _config = config.Value;
             _sessionToken = new RestClient(_config.Authenticator+"/Token");
         }
 
@@ -240,7 +241,7 @@ namespace Conductor.Controllers
             {
                 // reconect remote control
                 await _Cluster.SessionReconnect(ses.First().WorkerID);
-
+                
                 // return view to client 
                 return Ok(clientToken);
             }
@@ -249,7 +250,7 @@ namespace Conductor.Controllers
 
 
 
-
+        
         [HttpGet("Setting")]
         public async Task<IActionResult> GetSetting(string token)
         {

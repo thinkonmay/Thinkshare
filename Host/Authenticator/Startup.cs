@@ -96,6 +96,7 @@ namespace Authenticator
             });
 
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
+            services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -104,8 +105,6 @@ namespace Authenticator
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
             });
-
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
 
             services.AddTransient<ITokenGenerator, TokenGenerator>();

@@ -14,6 +14,7 @@ using System.IO;
 using System.Text;
 using SharedHost.Models.Device;
 using RestSharp;
+using Microsoft.Extensions.Options;
 
 namespace SystemHub.Services
 {
@@ -26,10 +27,10 @@ namespace SystemHub.Services
         private readonly RestClient _conductor;
                 
         
-        public ClusterSocketPool(SystemConfig config)
+        public ClusterSocketPool(IOptions<SystemConfig> config)
         {
-            _config = config;
-            _conductor = new RestClient(config.Conductor+"/Sync");
+            _config = config.Value;
+            _conductor = new RestClient(_config.Conductor+"/Sync");
             _ClusterSocketsPool = new ConcurrentDictionary<ClusterCredential, WebSocket>();
 
             Task.Run(() => ConnectionHeartBeat());

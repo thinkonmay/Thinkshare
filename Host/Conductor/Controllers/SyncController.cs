@@ -13,6 +13,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DbSchema.CachedState;
+using Microsoft.Extensions.Options;
 
 namespace Conductor.Controllers
 {
@@ -31,13 +32,12 @@ namespace Conductor.Controllers
                      IClientHub clientHub,
                      IGlobalStateStore cache,
                      UserManager<UserAccount> userManager,
-                     IWorkerCommnader SlaveManager,
-                     SystemConfig config)
+                     IWorkerCommnader SlaveManager)
         {
             _db = db;
             _cache = cache;
-            _clientHubctx = clientHub;
             _Cluster = SlaveManager;
+            _clientHubctx = clientHub;
             _userManager = userManager;
         }
 

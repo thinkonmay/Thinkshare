@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Authenticator.Services;
@@ -44,11 +45,11 @@ namespace Authenticator
                 var db = services.GetRequiredService<GlobalDbContext>();
                 var userManager = services.GetRequiredService<UserManager<UserAccount>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
-                var systemconfig = services.GetRequiredService<SystemConfig>();
+                var systemconfig = services.GetRequiredService<IOptions<SystemConfig>>();
 
                 
                 AccountSeeder.SeedRoles(roleManager);
-                AccountSeeder.SeedAdminUsers(userManager,systemconfig);
+                AccountSeeder.SeedAdminUsers(userManager,systemconfig.Value);
                 AccountSeeder.SeedUserRole(userManager);
             }
         }

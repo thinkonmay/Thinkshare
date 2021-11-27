@@ -20,6 +20,7 @@ using SharedHost.Models.ResponseModel;
 using Google.Apis.Auth;
 using SharedHost.Auth;
 using DbSchema.CachedState;
+using Microsoft.Extensions.Options;
 
 namespace Authenticator.Controllers
 {
@@ -32,18 +33,18 @@ namespace Authenticator.Controllers
         private readonly ITokenGenerator _tokenGenerator;
         private readonly IGlobalStateStore _cache;
         private readonly GlobalDbContext _db;
-        
         private readonly SystemConfig _config;
+
         public AccountController(
             UserManager<UserAccount> userManager,
             SignInManager<UserAccount> signInManager,
             IGlobalStateStore cache,
             ITokenGenerator tokenGenerator,
             GlobalDbContext db,
-            SystemConfig config)
+            IOptions<SystemConfig> config)
         {
             _cache = cache;
-            _config = config;
+            _config = config.Value;
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenGenerator = tokenGenerator;

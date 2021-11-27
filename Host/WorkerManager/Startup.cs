@@ -12,6 +12,7 @@ using System.Reflection;
 using WorkerManager.Data;
 using WorkerManager.Middleware;
 using DbSchema.CachedState;
+using SharedHost;
 
 namespace WorkerManager
 {

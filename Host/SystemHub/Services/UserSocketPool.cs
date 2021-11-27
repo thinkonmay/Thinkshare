@@ -11,6 +11,7 @@ using SharedHost.Models.Hub;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace SystemHub.Services
 {
@@ -18,7 +19,7 @@ namespace SystemHub.Services
     {
         private readonly List<KeyValuePair<AuthenticationResponse, WebSocket>> _UserSocketsPool;        
         
-        public UserSocketPool(SystemConfig config)
+        public UserSocketPool(IOptions<SystemConfig> config)
         {
             _UserSocketsPool =    new List<KeyValuePair<AuthenticationResponse, WebSocket>>();
 
