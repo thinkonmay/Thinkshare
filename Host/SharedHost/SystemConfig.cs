@@ -13,6 +13,9 @@ namespace SharedHost
         public string MetricCollector {get;set;}
         public string SystemHub {get;set;}
         public string GoogleOauthID {get;set;}
+        public string UserTokenValidator {get;set;}
+        public string ClusterTokenValidator {get;set;}
+        public string SessionTokenValidator {get;set;}
         public LoginModel AdminLogin { get; set; }
         public List<string> STUNlist { get; set; }
     }

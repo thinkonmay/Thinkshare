@@ -77,17 +77,6 @@ module "eks" {
   map_roles                            = var.map_roles 
 }
 
-resource "aws_ebs_volume" "logging-block" {
-  availability_zone = "ap-southeast-1b"
-  size              = 30
-  type              = "gp2"
-
-  tags = {
-    Name = "Logging volume"
-  }
-}
-
-
 
 
 
@@ -116,7 +105,3 @@ output "config_map_aws_auth" {
   value       = module.eks.config_map_aws_auth
 }
 
-output "logging_volume_id" {
-  description = "volume id of ebs volume"
-  value       = aws_ebs_volume.logging-block.id
-}
