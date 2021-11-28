@@ -2,12 +2,8 @@
 using SharedHost.Models.User;
 using System.Linq;
 using SharedHost;
-using DbSchema.SystemDb.Data;
-using SharedHost.Models.Shell;
-using System.Collections.Generic;
-using DbSchema.DbSeeding;
 
-namespace Authenticator.Services
+namespace DbSchema.DbSeeding
 {
     public class AccountSeeder
     {

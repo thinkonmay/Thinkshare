@@ -1,5 +1,4 @@
-﻿using WorkerManager.Models;
-using System;
+﻿using System;
 using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,26 +6,35 @@ using WorkerManager.Interfaces;
 using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
-using SharedHost;
+using DbSchema.CachedState;
 using WorkerManager.Data;
+using SharedHost.Models.Local;
 
 namespace WorkerManager.Services
 {
-    public class WorkerNodePool 
+    public class WorkerNodePool : IWorkerNodePool
     {
-        private readonly IConductorSocket _socket;
+        private readonly ConductorSocket _socket;
 
-        private List<ClusterWorkerNode> _systemSnapshot;
-
-        private List<ScriptModel> _model_list;
+        private readonly ILocalStateStore _cache;
 
         private readonly ClusterDbContext _db;
 
-        public WorkerNodePool(IConductorSocket socket, ClusterDbContext db)
+        public bool Initialized { get; set; }
+
+        public WorkerNodePool(ConductorSocket socket, 
+                              ILocalStateStore cache,
+                              ClusterDbContext db)
         {
-            _db = db;
+            _cache = cache;
             _socket = socket;
-            _systemSnapshot = _db.Devices.ToList();
+            Initialized = false;
+            _db = db;
+        }
+
+        public void Start()
+        {
+            Initialized = true;
             Task.Run(() => SystemHeartBeat());
             Task.Run(() => StateSyncing());
             Task.Run(() => SessionHeartBeat());
@@ -38,24 +46,40 @@ namespace WorkerManager.Services
             {
                 while(true)
                 {
-                    var devices = _systemSnapshot.Where(x => x._workerState == WorkerState.OnSession);
-                    foreach (var item in devices)
+                    var worker_list = await _cache.GetClusterState();
+                    foreach (var item in worker_list)
                     {
-                        item.RestoreWorkerNode();
-                        var result = await item.PingSession();
+                        if(item.Value != WorkerState.OnSession)
+                        {
+                            continue;
+                        }
+
+                        // find is cache first, the find in sqldb if not present on redis
+                        ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
+                        if (worker == null)
+                        {
+                            worker = _db.Devices.Find(item.Key);
+                            await _cache.CacheWorkerInfor(worker);
+                        }
+
+                        worker.RestoreWorkerNode();
+                        var result = await worker.PingSession();
                         if(result)
                         {
-                           item.sessionFailedPing = 0; 
+                            worker.sessionFailedPing = 0;
+                            continue;
                         }
                         else
                         {
-                            item.sessionFailedPing++;
+                            worker.sessionFailedPing++;
                         }
 
-                        if(item.sessionFailedPing > 5)
+                        if(worker.sessionFailedPing > 5)
                         {
-                            item._workerState = WorkerState.OffRemote;
-                            await _db.SaveChangesAsync();
+                            if (item.Value == WorkerState.OnSession)
+                            {
+                                await _cache.SetWorkerState(item.Key, WorkerState.OffRemote);
+                            }
                         }
                     }
                     Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
@@ -63,6 +87,7 @@ namespace WorkerManager.Services
             }
             catch (Exception ex)
             {
+                Serilog.Log.Information("ping session failed due to " + ex.Message);
                 Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
                 await SessionHeartBeat();
             }
@@ -70,38 +95,46 @@ namespace WorkerManager.Services
 
         public async Task SystemHeartBeat()
         {
-            _model_list = await _socket.GetDefaultModel();
+            var _model_list = await _socket.GetDefaultModel();
             try
             {
                 while(true)
                 {
-                    foreach(var i in _model_list)
+                    var worker_list = await _cache.GetClusterState();
+                    foreach (var i in _model_list)
                     {
-                        foreach(var device in _systemSnapshot)
+                        foreach (var keyValue in worker_list)
                         {
-                            device.RestoreWorkerNode();
+                            ClusterWorkerNode worker = await _cache.GetWorkerInfor(keyValue.Key);
+
+                            if(worker == null)
+                            {
+                                worker = _db.Devices.Find(keyValue.Key);
+                                await _cache.CacheWorkerInfor(worker);
+                            }
+                            worker.RestoreWorkerNode();
                             var session = new ShellSession { Script = i.Script };
-                            var result = await device.PingWorker(session);
+                            var result = await worker.PingWorker(session);
                             if(result != null)
                             {
                                 session.Output = result;
                                 session.ModelID = i.ID;
-                                session.WorkerID = device.PrivateID;
+                                session.WorkerID = worker.GlobalID;
                                 session.Time = DateTime.Now;
-                                device.agentFailedPing = 0;
+                                worker.agentFailedPing = 0;
                             }
                             else
                             {
-                                device.agentFailedPing++;
+                                worker.agentFailedPing++;
                             }
 
-                            if(device.agentFailedPing > 5)
+                            if(worker.agentFailedPing > 5)
                             {
-                                device._workerState = WorkerState.Disconnected;
+                                await _cache.SetWorkerState(keyValue.Key, WorkerState.OffRemote);
                             }
                             if(session != null)
                             {
-                                _db.CachedSession.Add(session);
+                                await _db.CachedSession.AddAsync(session);
                                 await _db.SaveChangesAsync();
                             }
                         }
@@ -110,6 +143,7 @@ namespace WorkerManager.Services
                 }
             }catch (Exception ex)
             {
+                Serilog.Log.Information("ping worker failed due to " + ex.Message);
                 Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 await SystemHeartBeat();
             }
@@ -121,48 +155,17 @@ namespace WorkerManager.Services
             {
                 while (true)
                 {
-
-                    foreach ( var unsyncedDevice in _systemSnapshot)
+                    var worker_list = await _cache.GetClusterState();
+                    foreach ( var unsyncedDevice in worker_list)
                     {
-
-                        var snapshotedDevice = _db.Devices.Find(unsyncedDevice.PrivateID);
-
-                        // if device is not available in database, then remove it from system snapshoot
-                        if(snapshotedDevice == null)
-                        {
-                            _systemSnapshot.Remove(unsyncedDevice);
-                            await _db.SaveChangesAsync();
-                        }
-
-                        // if device haven't been registered, register it
-                        if (snapshotedDevice._workerState == WorkerState.Unregister)
-                        {
-                            await _socket.ReportWorkerRegistered(snapshotedDevice);
-                            snapshotedDevice._workerState = WorkerState.Registering;
-                            await _db.SaveChangesAsync();
-                            continue;
-                        }
-
-                        // if device is registering, continue
-                        if (snapshotedDevice._workerState == WorkerState.Registering)
-                        {
-                            continue;
-                        }
-
-                        // otherwise, sync its state 
-                        if (snapshotedDevice._workerState != unsyncedDevice._workerState)
-                        {
-                            await _socket.WorkerStateSyncing((int)snapshotedDevice.GlobalID, snapshotedDevice._workerState);
-                            _systemSnapshot.Remove(unsyncedDevice);
-                            _systemSnapshot.Add(snapshotedDevice);
-                            continue;
-                        }
+                        await _socket.WorkerStateSyncing(unsyncedDevice.Key, unsyncedDevice.Value);
                     }
-                Thread.Sleep(((int)TimeSpan.FromMilliseconds(100).TotalMilliseconds));
+                    Thread.Sleep(((int)TimeSpan.FromMilliseconds(100).TotalMilliseconds));
                 }
             }
             catch (Exception ex)
             {
+                Serilog.Log.Information("state syncing failed due to " + ex.Message);
                 Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
                 await StateSyncing();
             }

@@ -1,4 +1,4 @@
-﻿namespace WorkerManager
+﻿namespace SharedHost
 {
     public class ClusterConfig
     {

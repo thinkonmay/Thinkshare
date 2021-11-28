@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using SharedHost.Models.User;
 using SharedHost.Models.Device;
+using Microsoft.Extensions.Caching.Distributed;
 using SharedHost.Auth.ThinkmayAuthProtocol;
+using DbSchema.CachedState;
+using System.Linq;
 
 namespace Conductor.Controllers
 {
@@ -23,14 +26,18 @@ namespace Conductor.Controllers
     {
         private readonly UserManager<UserAccount> _userManager;
 
-        private readonly ApplicationDbContext _db;
+        private readonly GlobalDbContext _db;
 
         private readonly IWorkerCommnader _slmsocket;
 
-        public FetchController(ApplicationDbContext db, 
+        private readonly GlobalStateStore _cache;
+
+        public FetchController(GlobalDbContext db, 
                             UserManager<UserAccount> userManager,
-                            IWorkerCommnader slm)
+                            IWorkerCommnader slm,
+                            GlobalStateStore cache)
         {
+            _cache = cache;
             _slmsocket = slm;
             _db = db;
             _userManager = userManager;
@@ -47,8 +54,9 @@ namespace Conductor.Controllers
         [HttpGet("Node")]
         public async Task<IActionResult> FetchNode()
         {
-            var available_node = _db.Devices.Where(o => o.WorkerState == WorkerState.Open);
-            return Ok(available_node);
+            var available_node = await _cache.GetWorkerState();
+            var systemState = available_node.Where(x => x.Value == WorkerState.Open);
+            return Ok();
         }
 
 
@@ -64,10 +72,11 @@ namespace Conductor.Controllers
             var session = _db.RemoteSessions.Where(s => s.ClientId == Int32.Parse(UserID.ToString()) &&
                                                   !s.EndTime.HasValue).ToList();
             var IDlist = new List<int>();
-            session.ForEach(s => IDlist.Add(s.ID));
-            var device = _db.Devices.Where(d => IDlist.Contains(d.ID) &&  
-                                                d.WorkerState == WorkerState.OffRemote && 
-                                                d.WorkerState == WorkerState.OnSession);
+            session.ForEach(s => IDlist.Add(s.WorkerID));
+            var device = (await _cache.GetWorkerState()).Where(d => IDlist.Contains(d.Key) &&  
+                                                d.Value == WorkerState.OffRemote && 
+                                                d.Value == WorkerState.OnSession);
+            
             return Ok(device);
         }
     }

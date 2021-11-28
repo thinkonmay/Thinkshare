@@ -44,7 +44,7 @@ namespace Authenticator
             });
 
             //for postgresql
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<GlobalDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
                 ServiceLifetime.Transient
             );
@@ -52,7 +52,7 @@ namespace Authenticator
 
             services.AddDefaultIdentity<UserAccount>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole<int>>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<GlobalDbContext>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

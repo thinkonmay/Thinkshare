@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using RestSharp;
@@ -8,9 +6,9 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
 using WorkerManager.Interfaces;
 using WorkerManager.Data;
-using SharedHost.Auth;
-using WorkerManager.Models;
 using SharedHost.Models.User;
+using SharedHost.Models.Local;
+using SharedHost;
 
 namespace WorkerManager.Middleware
 {

@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace WorkerManager.Models
+namespace SharedHost.Models.Local
 {
     public class OwnerCredential
     {

@@ -10,6 +10,10 @@ using SharedHost.Models.Device;
 using SharedHost.Models.Session;
 using SharedHost;
 using SharedHost.Auth.ThinkmayAuthProtocol;
+using DbSchema.CachedState;
+using System;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace Conductor.Controllers
 {
@@ -19,10 +23,10 @@ namespace Conductor.Controllers
     [User]
     [ApiController]
     [Route("/Session")]
-    [Produces("application/json")]
+    [Produces("application/text")]
     public class SessionController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly GlobalDbContext _db;
 
         private readonly SystemConfig _config;
 
@@ -32,15 +36,18 @@ namespace Conductor.Controllers
 
         private readonly UserManager<UserAccount> _userManager;
 
-        public SessionController(ApplicationDbContext db,
+        private readonly IGlobalStateStore _cache;
+
+        public SessionController(GlobalDbContext db,
                                 SystemConfig config,
                                 IWorkerCommnader slmsocket,
+                                IGlobalStateStore cache,
                                 UserManager<UserAccount> userManager)
         {
             _db = db;
+            _cache = cache;
             _Cluster = slmsocket;
             _userManager = userManager;
-            
             _config = config;
             _sessionToken = new RestClient(_config.Authenticator+"/Token");
         }
@@ -48,26 +55,24 @@ namespace Conductor.Controllers
         /// <summary>
         /// initialize session
         /// </summary>
+        /// <param name="SlaveID"></param>
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("Initialize")]
         public async Task<IActionResult> Create(int SlaveID)
         {
             var UserID = HttpContext.Items["UserID"];
-            var Query = _db.Devices.Find(SlaveID).WorkerState;
-
+            var workerState = (await _cache.GetWorkerState()).Where(x => x.Key == SlaveID).FirstOrDefault().Value;
             // search for availability of slave device
-            if (Query != WorkerState.Open) { return BadRequest("Device Not Available"); }
+            if (workerState != WorkerState.Open) { return BadRequest("Device Not Available"); }
 
             /*create new session with gevin session request from user*/
-            var sess = new RemoteSession(_config)
+            var sess = new RemoteSession()
             {
                 Client = await _userManager.FindByIdAsync(UserID.ToString()),
                 Worker = _db.Devices.Find(SlaveID)
             };
 
-            /*create session from client device capability*/
-            sess.QoE = new QoE(sess.Client.DefaultSetting);
 
 
             /*generate rest post to signalling server*/
@@ -94,13 +99,16 @@ namespace Conductor.Controllers
             var workerToken = _sessionToken.Post(workerTokenRequest).Content;
 
 
+            _db.RemoteSessions.Add(sess);
+            await _db.SaveChangesAsync();
+
+
+            /*create session from client device capability*/
+            var userSetting = await _cache.GetUserSetting(Int32.Parse((string)UserID));
+            var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(sess.Worker)).First();
+            await _cache.SetSessionSetting(sess.ID,userSetting,_config, globalCluster);
             // invoke session initialization in slave pool
-            await _Cluster.SessionInitialize(SlaveID, workerToken ,
-                new SessionBase 
-                { 
-                    SignallingUrl = _config.SignallingWs,
-                    QoE = sess.QoE 
-                });
+            await _Cluster.SessionInitialize(SlaveID, workerToken);
 
             // return view for user
             return Ok(clientToken);
@@ -121,8 +129,9 @@ namespace Conductor.Controllers
             var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
 
             var device = _db.Devices.Find(SlaveID);
-            var State = device.WorkerState;
 
+            string Query;
+            (await _cache.GetWorkerState()).TryGetValue(SlaveID, out Query);
             // get session information in database
             var ses = _db.RemoteSessions.Where(s => s.Worker == device && 
                                                s.Client == userAccount && 
@@ -133,8 +142,8 @@ namespace Conductor.Controllers
 
 
             /*slavepool send terminate session signal*/
-            if(State == WorkerState.OnSession
-            || State == WorkerState.OffRemote)
+            if(Query == WorkerState.OnSession
+            || Query == WorkerState.OffRemote)
             {
                 //
                 await _Cluster.SessionTerminate(ses.First().WorkerID);
@@ -163,10 +172,13 @@ namespace Conductor.Controllers
                                                && s.Client == userAccount 
                                               && !s.EndTime.HasValue).FirstOrDefault();
 
+
+
             // return bad request if session is not found in database
             if (ses == null) return BadRequest();
 
-            var Query = (await _db.Devices.FindAsync(ses.Worker.ID)).WorkerState;
+            string Query;
+            (await _cache.GetWorkerState()).TryGetValue(SlaveID,out Query);
 
             /*slavepool send terminate session signal*/
             if (Query == WorkerState.OnSession)
@@ -199,6 +211,12 @@ namespace Conductor.Controllers
             if (!ses.Any()) { return BadRequest(); }
 
 
+            var userSetting = await _cache.GetUserSetting(Int32.Parse((string)UserID));
+
+
+            _db.Update(ses.First());
+            await _db.SaveChangesAsync();
+
             var clientTokenRequest = new RestRequest("GrantSession")
                 .AddJsonBody(new SessionAccession
                 {
@@ -214,18 +232,51 @@ namespace Conductor.Controllers
             // return null if session is not found
             if (ses == null) return BadRequest();
 
-            var Query = _db.Devices.Find(SlaveID).WorkerState;
+            string Query;
+            (await _cache.GetWorkerState()).TryGetValue(SlaveID, out Query);
 
             /*slavepool send terminate session signal*/
             if (Query == WorkerState.OffRemote)
             {
                 // reconect remote control
-                await _Cluster.SessionReconnect(ses.First().WorkerID,new SessionBase());
+                await _Cluster.SessionReconnect(ses.First().WorkerID);
 
                 // return view to client 
                 return Ok(clientToken);
             }
             return BadRequest("Device not in off remote");            
+        }
+
+
+
+
+        [HttpGet("Setting")]
+        public async Task<IActionResult> GetSetting(string token)
+        {
+
+            var request = new RestRequest("Session")
+                .AddQueryParameter("token", token);
+            request.Method = Method.POST;
+
+            var result = await _sessionToken.ExecuteAsync(request);
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
+                if(accession.Module == Module.CLIENT_MODULE)
+                {
+                    var clientSession = await _cache.GetClientSessionSetting(accession);
+                    return Ok(clientSession);
+                }
+                else
+                {
+                    var workerSession = await _cache.GetWorkerSessionSetting(accession);
+                    return Ok(workerSession);
+                }
+            }
+            else
+            {
+                return BadRequest("Token is invalid");
+            }
         }
     }
 }

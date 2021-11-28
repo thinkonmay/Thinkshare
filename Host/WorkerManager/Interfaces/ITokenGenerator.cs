@@ -1,6 +1,6 @@
-﻿using SharedHost.Models.User;
+﻿using SharedHost.Models.Local;
+using SharedHost.Models.User;
 using System.Threading.Tasks;
-using WorkerManager.Models;
 
 namespace WorkerManager.Interfaces
 {

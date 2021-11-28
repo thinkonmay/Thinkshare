@@ -9,6 +9,7 @@
     <Import_RootNamespace>SharedHost</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ClusterConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\AuthResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\JwtOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\LoginModel.cs" />
@@ -19,19 +20,20 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\ClusterCredential.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\IDAssign.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Hub\EventModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Local\ClusterWorkerNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Local\OwnerCredential.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ResponseModel\GetSessionResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\ScriptModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\ShellSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\WorkerNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\WorkerRegisterModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\WorkerState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionPair.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\Session.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionMetric.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionAccession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\RemoteSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StorageBlock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Device.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Message.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\QoE.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionConstant.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SystemConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthAttribute.cs" />

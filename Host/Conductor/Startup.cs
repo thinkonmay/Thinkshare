@@ -37,7 +37,7 @@ namespace Conductor
             });
 
             //for postgresql
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<GlobalDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
                 ServiceLifetime.Transient
             );
@@ -46,8 +46,12 @@ namespace Conductor
 
             services.AddDefaultIdentity<UserAccount>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole<int>>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
+                .AddEntityFrameworkStores<GlobalDbContext>();
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = "RedisDemo_";
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

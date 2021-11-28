@@ -9,14 +9,14 @@ namespace SharedHost.Models.Session
     /// <summary>
     /// 
     /// </summary>
-    public class RemoteSession : SessionBase
+    public class RemoteSession
     { 
-        public RemoteSession() { }
-
-        public RemoteSession(SystemConfig config)
-        {
-            SignallingUrl = config.SignallingWs;
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
 
         /// <summary>
         /// preserved for database insert,
@@ -42,12 +42,6 @@ namespace SharedHost.Models.Session
         [ForeignKey("WorkerID")]
         public virtual WorkerNode Worker { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
 
         /// <summary>
         /// 

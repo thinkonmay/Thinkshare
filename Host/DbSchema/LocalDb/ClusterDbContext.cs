@@ -2,7 +2,7 @@
 using SharedHost.Models.Session;
 using SharedHost.Models.Cluster;
 using SharedHost.Models.Shell;
-using WorkerManager.Models;
+using SharedHost.Models.Local;
 
 namespace WorkerManager.Data
 {
@@ -35,6 +35,5 @@ namespace WorkerManager.Data
         public DbSet<ShellSession> CachedSession { get; set; }
         public DbSet<ClusterWorkerNode> Devices { get; set; }
         public DbSet<ScriptModel> ScriptModels {get;set;}
-        public DbSet<QoE> QoEs { get; set; }
     }
 }

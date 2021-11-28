@@ -8,6 +8,7 @@ using Conductor.Services;
 using DbSchema.SystemDb.Data;
 using SharedHost;
 using Serilog;
+using DbSchema.DbSeeding;
 
 namespace Conductor
 {
@@ -40,7 +41,7 @@ namespace Conductor
             {
                 var services = scope.ServiceProvider;
 
-                var db = services.GetRequiredService<ApplicationDbContext>();
+                var db = services.GetRequiredService<GlobalDbContext>();
 
                 ScriptModelSeeder.SeedScriptModel(db);
             }

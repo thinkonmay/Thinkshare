@@ -4,15 +4,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using SharedHost;
 using WorkerManager.Interfaces;
 using WorkerManager.Services;
 using System;
 using System.IO;
 using System.Reflection;
 using WorkerManager.Data;
-using System.Threading.Tasks;
 using WorkerManager.Middleware;
+using DbSchema.CachedState;
 
 namespace WorkerManager
 {
@@ -39,7 +38,11 @@ namespace WorkerManager
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
                 ServiceLifetime.Singleton
             );
-
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = "Cluster";
+            });
             services.AddControllers();            
             services.AddSwaggerGen(c =>
             {
@@ -81,8 +84,7 @@ namespace WorkerManager
                 }); 
             });
             services.AddSingleton(Configuration.GetSection("ClusterConfig").Get<ClusterConfig>());
-
-            services.AddSingleton<IConductorSocket, ConductorSocket>();
+            services.AddSingleton<ILocalStateStore, LocalStateStore>();
             services.AddTransient<ITokenGenerator,TokenGenerator>();
             services.AddMvc();
         

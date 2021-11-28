@@ -1,4 +1,5 @@
 ﻿using SharedHost.Models.Auth;
+using System.Collections.Generic;
 
 namespace SharedHost
 {
@@ -16,6 +17,7 @@ namespace SharedHost
         public string ClusterTokenValidator {get;set;}
         public string SessionTokenValidator {get;set;}
         public LoginModel AdminLogin { get; set; }
+        public List<string> STUNlist { get; set; }
     }
 
     public class TurnServer

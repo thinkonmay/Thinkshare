@@ -12,9 +12,9 @@ namespace DbSchema.SystemDb.Data
     /// <summary>
     /// Database context in ef framework, readmore at https://www.entityframeworktutorial.net/efcore/entity-framework-core-dbcontext.aspx
     /// </summary>
-    public class ApplicationDbContext : IdentityDbContext<UserAccount, IdentityRole<int>, int>
+    public class GlobalDbContext : IdentityDbContext<UserAccount, IdentityRole<int>, int>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public GlobalDbContext(DbContextOptions<GlobalDbContext> options) : base(options)
         {
         }
 
@@ -41,6 +41,6 @@ namespace DbSchema.SystemDb.Data
         public DbSet<RemoteSession> RemoteSessions { get; set; }
         public DbSet<ShellSession> ShellSession { get; set; }
         public DbSet<ScriptModel> ScriptModels { get; set; }
-        public DbSet<DeviceCap> DefaultSettings { get; set; }
+        public DbSet<UserSetting> DefaultSettings { get; set; }
     }
 }

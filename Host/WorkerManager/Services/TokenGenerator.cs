@@ -12,7 +12,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using WorkerManager.Data;
-using WorkerManager.Models;
+using SharedHost.Models.Local;
 
 namespace WorkerManager.Services
 {

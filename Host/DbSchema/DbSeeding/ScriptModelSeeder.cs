@@ -3,12 +3,12 @@ using SharedHost.Models.Shell;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Conductor.Services
+namespace DbSchema.DbSeeding
 {
     public class ScriptModelSeeder
     {
 
-        public static void SeedScriptModel(ApplicationDbContext dbContext)
+        public static void SeedScriptModel(GlobalDbContext dbContext)
         {
             var default_model = new List<ScriptModel>();
 

@@ -46,7 +46,7 @@ namespace SystemHub.Services
                 {
                     if (socket.Value.State == WebSocketState.Open)
                     {
-                        SendMessage(socket.Value, "ping");
+                        await SendMessage(socket.Value, "ping");
                     }
                 }
                 Thread.Sleep(30*1000);
@@ -75,7 +75,7 @@ namespace SystemHub.Services
         }
 
 
-        public async void AddtoPool(ClusterCredential resp,WebSocket session)
+        public async Task AddtoPool(ClusterCredential resp,WebSocket session)
         {
             foreach(var socket in _ClusterSocketsPool)
             {
@@ -86,6 +86,7 @@ namespace SystemHub.Services
             }
             _ClusterSocketsPool.TryAdd(resp, session);
             await Handle(resp, session);
+            _ClusterSocketsPool.Remove(resp, out session);
         }
 
 
@@ -96,11 +97,20 @@ namespace SystemHub.Services
             int NodeID = (int)message.WorkerID;
             foreach (var cluster in _ClusterSocketsPool)
             {
-                foreach (var device in cluster.Key.Devices)
+                var request = new RestRequest("GetNode")
+                    .AddQueryParameter("ClusterID",cluster.Key.ID.ToString());
+                var result = _conductor.Execute(request);
+
+                if (result.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    continue;
+                }
+                var devices = JsonConvert.DeserializeObject<List<WorkerNode>>(result.Content);
+                foreach (var device in devices)
                 {
                     if(device.ID == NodeID)
                     {
-                        SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
+                        await SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
                     }
                 }                
             }
@@ -113,7 +123,7 @@ namespace SystemHub.Services
             {
                 if(cluster.Key.ID == ClusterID)
                 {
-                    SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
+                    await SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
                 }
             }
         }
@@ -135,12 +145,6 @@ namespace SystemHub.Services
 
         public async Task Handle(ClusterCredential cred, WebSocket ws)
         {
-
-            var request = new RestRequest("Connected")
-                .AddQueryParameter("ClusterID",cred.ID.ToString());
-            request.Method = Method.POST;
-
-            await _conductor.ExecuteAsync(request);
             try
             {
                 WebSocketReceiveResult message;
@@ -183,15 +187,6 @@ namespace SystemHub.Services
 
             await _conductor.ExecuteAsync(syncrequest);
         }
-        async Task HandleWorkerRegister(Message message)
-        {
-            var syncrequest = new RestRequest("State")
-                .AddQueryParameter("NewState", message.Data)
-                .AddQueryParameter("ID",message.WorkerID.ToString());
-            syncrequest.Method = Method.POST;
-
-            await _conductor.ExecuteAsync(syncrequest);
-        }
 
         async Task HandleWorkerRegister(Message message,ClusterCredential cred)
         {
@@ -216,11 +211,11 @@ namespace SystemHub.Services
             return result;
         }
 
-        public void SendMessage(WebSocket ws, string msg)
+        public async Task SendMessage(WebSocket ws, string msg)
         {
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
-            ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
         }
     }
 }

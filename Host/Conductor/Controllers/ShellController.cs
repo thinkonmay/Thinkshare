@@ -21,9 +21,9 @@ namespace Conductor.Controllers
     {
         private readonly IWorkerCommnader _slmsocket;
 
-        private readonly ApplicationDbContext _db;
+        private readonly GlobalDbContext _db;
 
-        public ShellController(IWorkerCommnader slmSocket, ApplicationDbContext db)
+        public ShellController(IWorkerCommnader slmSocket, GlobalDbContext db)
         {
             _slmsocket = slmSocket;
             _db = db;

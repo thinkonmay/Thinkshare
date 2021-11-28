@@ -25,11 +25,11 @@ namespace Authenticator.Services
 
         private readonly UserManager<UserAccount> _userManager;
 
-        private readonly ApplicationDbContext _db;
+        private readonly GlobalDbContext _db;
 
         public TokenGenerator(IOptions<JwtOptions> options, 
                               UserManager<UserAccount> userManager,
-                              ApplicationDbContext db )
+                              GlobalDbContext db )
         {
             _db = db;
             _jwt = options.Value;
@@ -227,8 +227,7 @@ namespace Authenticator.Services
                 var Cluster  = account.ManagedCluster.Where(x => x.Name == jwtToken.Claims.First(x => x.Type == "Name").Value).First();
                 var ret = new ClusterCredential
                 {
-                    ID = Cluster.ID,
-                    Devices = Cluster.WorkerNode
+                    ID = Cluster.ID
                 };
                 return ret;
             }

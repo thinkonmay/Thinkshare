@@ -23,10 +23,10 @@ namespace Authenticator.Controllers
     public class AdminController : ControllerBase
     {
         private readonly UserManager<UserAccount> _userManager;
-        private readonly ApplicationDbContext _db;
+        private readonly GlobalDbContext _db;
         public AdminController(
             UserManager<UserAccount> userManager,
-            ApplicationDbContext db)
+            GlobalDbContext db)
         {
             _userManager = userManager;
             _db = db;
@@ -48,6 +48,5 @@ namespace Authenticator.Controllers
             await _userManager.AddToRoleAsync(account, Role);
             return Ok();
         }
-
     }
 }

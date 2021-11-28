@@ -1,13 +1,11 @@
 ﻿using WorkerManager.Interfaces;
 using SharedHost.Models.Cluster;
 using System.Threading.Tasks;
-using WorkerManager.Models;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
 using SharedHost.Models.Shell;
 using RestSharp;
 using System.Net;
-using SharedHost;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Net.WebSockets;
@@ -17,6 +15,9 @@ using System.IO;
 using System.Text;
 using SharedHost.Models.Session;
 using WorkerManager.Data;
+using SharedHost.Models.Local;
+using DbSchema.CachedState;
+using SharedHost;
 
 namespace WorkerManager.Services
 {
@@ -32,77 +33,97 @@ namespace WorkerManager.Services
 
         private RestClient _scriptmodel;
 
+        private ILocalStateStore _cache;
+
+        public bool Initialized { get; set; }
+
         public ConductorSocket(ClusterConfig cluster, 
-                               ClusterDbContext db)
+                               ClusterDbContext db,
+                               ILocalStateStore cache)
         {
             _db = db;
+            _cache = cache;
+            Initialized = false;
             clusterConfig = cluster;
-            Task.Run(() => TokenLookup());
         }
 
-
-        public async Task TokenLookup()
+        public async Task<bool> Start()
         {
+            Initialized = true;
             try
             {
                 var token = (string)_db.Clusters.First().Token;
-                _scriptmodel = new RestClient("https://"+clusterConfig.HostDomain+"/Shell");
+                _scriptmodel = new RestClient("https://" + clusterConfig.HostDomain + "/Shell");
                 _clientWebSocket = new ClientWebSocket();
-                await _clientWebSocket.ConnectAsync(new Uri("wss://"+clusterConfig.HostDomain+"/Hub/Cluster?token="+token), CancellationToken.None);
-                if(_clientWebSocket.State == WebSocketState.Open)
+                await _clientWebSocket.ConnectAsync(new Uri("wss://" + clusterConfig.HostDomain + "/Hub/Cluster?token=" + token), CancellationToken.None);
+                if (_clientWebSocket.State == WebSocketState.Open)
                 {
-                    await Handle();
-                    return;
+                    Handle();
+                    return true;
                 }
-                return;
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception ex)
-            {
-                Serilog.Log.Information("fail to connect to system hub due to "+ex.Message);
+            { 
+                Serilog.Log.Information("fail to connect to system hub due to " + ex.Message);
                 Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 _clientWebSocket = null;
-                await TokenLookup();
+                return false;
             }
         }
+
 
 
 
         public async Task Handle()
         {
-            WebSocketReceiveResult message;
-            do
+            try
             {
-                using (var memoryStream = new MemoryStream())
+                WebSocketReceiveResult message;
+                do
                 {
-                    message = await ReceiveMessage(_clientWebSocket, memoryStream);
-                    if (message.Count > 0)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                        if(receivedMessage == "ping"){continue;}
-                        var WsMessage = JsonConvert.DeserializeObject<Message>(receivedMessage);
-                        switch(WsMessage.Opcode)
+                        message = await ReceiveMessage(_clientWebSocket, memoryStream);
+                        if (message.Count > 0)
                         {
-                            // execute session operation by public id 
-                            case Opcode.SESSION_INITIALIZE:
-                                await Initialize((int)WsMessage.WorkerID,WsMessage.token,JsonConvert.DeserializeObject<SessionBase>(WsMessage.Data));
-                                break;
-                            case Opcode.SESSION_TERMINATE:
-                                await Terminate((int)WsMessage.WorkerID);
-                                break;
-                            case Opcode.SESSION_RECONNECT:
-                                await Reconnect((int)WsMessage.WorkerID,JsonConvert.DeserializeObject<SessionBase>(WsMessage.Data));
-                                break;
-                            case Opcode.SESSION_DISCONNECT:
-                                await Disconnect((int)WsMessage.WorkerID);
-                                break;
-                            case Opcode.ID_GRANT:
-                                await Assignment(WsMessage);
-                                break;
+                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                            if (receivedMessage == "ping") { continue; }
+                            var WsMessage = JsonConvert.DeserializeObject<Message>(receivedMessage);
+                            switch (WsMessage.Opcode)
+                            {
+                                // execute session operation by public id 
+                                case Opcode.SESSION_INITIALIZE:
+                                    await Initialize((int)WsMessage.WorkerID, WsMessage.token);
+                                    break;
+                                case Opcode.SESSION_TERMINATE:
+                                    await Terminate((int)WsMessage.WorkerID);
+                                    break;
+                                case Opcode.SESSION_RECONNECT:
+                                    await Reconnect((int)WsMessage.WorkerID);
+                                    break;
+                                case Opcode.SESSION_DISCONNECT:
+                                    await Disconnect((int)WsMessage.WorkerID);
+                                    break;
+                                case Opcode.ID_GRANT:
+                                    await Assignment(WsMessage);
+                                    break;
+                            }
                         }
                     }
-                }
-            } while (message.MessageType != WebSocketMessageType.Close && _clientWebSocket.State == WebSocketState.Open);
-            await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                } while (message.MessageType != WebSocketMessageType.Close && _clientWebSocket.State == WebSocketState.Open);
+                await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Information("fail to connect to system hub due to " + ex.Message);
+                Serilog.Log.Information("Retry after 10s");
+                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
+                Start();
+            }
         }
 
 
@@ -129,11 +150,17 @@ namespace WorkerManager.Services
         async Task Assignment(Message message)
         {
             var assign = JsonConvert.DeserializeObject<IDAssign>(message.Data);
-            var worker = _db.Devices.Find(assign.PrivateID);
+            
+            var currentState = await _cache.GetWorkerState(assign.PrivateID);
+            if(currentState == WorkerState.Registering)
+            {
+                var worker = _db.Devices.Find(assign.PrivateID);
 
-            worker.GlobalID = assign.GlobalID;
-            worker._workerState = WorkerState.Open;
-            await _db.SaveChangesAsync();
+                worker.GlobalID = assign.GlobalID;
+                _db.Update(worker);
+                await _db.SaveChangesAsync();
+                await _cache.SetWorkerState(assign.PrivateID, WorkerState.Open);
+            }            
         }
 
 
@@ -142,16 +169,20 @@ namespace WorkerManager.Services
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        public async Task Initialize(int GlobalID, string token, SessionBase session)
+        public async Task Initialize(int GlobalID, string token)
         {
             var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
             worker.RestoreWorkerNode();
 
             worker.RemoteToken = token;
-            worker.QoE = session.QoE;
-            worker.SignallingUrl = session.SignallingUrl;
-            await worker.SessionInitialize();
-            await _db.SaveChangesAsync();
+            if (await worker.SessionInitialize())
+            {
+                await _cache.SetWorkerState(worker.PrivateID, WorkerState.OnSession);
+            }
+            else 
+            {
+                await _cache.SetWorkerState(worker.PrivateID, WorkerState.OffRemote);
+            }
         }
 
 
@@ -166,9 +197,10 @@ namespace WorkerManager.Services
             worker.RestoreWorkerNode();
 
             worker.RemoteToken = null;
-            worker.SignallingUrl = null;
-            worker.QoE = null;
-            await worker.SessionTerminate();
+            if(await worker.SessionTerminate())
+            {
+                await _cache.SetWorkerState(worker.PrivateID, WorkerState.Open);
+            }
             await _db.SaveChangesAsync();
         }
 
@@ -183,7 +215,10 @@ namespace WorkerManager.Services
             var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
             worker.RestoreWorkerNode();
 
-            await worker.SessionDisconnect();
+            if (await worker.SessionDisconnect())
+            {
+                await _cache.SetWorkerState(worker.PrivateID,WorkerState.OffRemote);
+            }
             await _db.SaveChangesAsync();
         }
 
@@ -192,15 +227,15 @@ namespace WorkerManager.Services
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
-        public async Task Reconnect(int GlobalID, SessionBase session)
+        public async Task Reconnect(int GlobalID)
         {
             var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
             worker.RestoreWorkerNode();
 
-            worker.QoE = session.QoE;
-            worker.SignallingUrl = session.SignallingUrl;
-            await worker.SessionReconnect();
-            await _db.SaveChangesAsync();
+            if (await worker.SessionReconnect())
+            {
+                await _cache.SetWorkerState(worker.PrivateID, WorkerState.OnSession);
+            }
         }
 
 
@@ -222,14 +257,14 @@ namespace WorkerManager.Services
         }
 
 
+
         public async Task ReportWorkerRegistered(ClusterWorkerNode information)
         {
             var WorkerNode = new WorkerNode{
                 OS = information.OS,
                 GPU = information.GPU,
                 CPU = information.CPU,
-                RAMcapacity = information.RAMcapacity,
-                WorkerState = information._workerState
+                RAMcapacity = information.RAMcapacity
             };
             await SendMessage(JsonConvert.SerializeObject(
                 new Message { WorkerID = information.PrivateID, 
