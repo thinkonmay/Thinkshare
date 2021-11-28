@@ -22,6 +22,7 @@ using System.Text;
 using SharedHost;
 using System.Collections.Generic;
 using SharedHost.Auth;
+using DbSchema.CachedState;
 
 namespace Authenticator
 {
@@ -41,6 +42,12 @@ namespace Authenticator
             {
                 options.AddPolicy("AllowAllOrigins",
                     builder => builder.AllowAnyOrigin());
+            });
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = "SystemCaching";
             });
 
             //for postgresql
@@ -106,7 +113,7 @@ namespace Authenticator
                 options.Password.RequireUppercase = false;
             });
 
-
+            services.AddSingleton<IGlobalStateStore, GlobalStateStore>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
             services.AddMvc();
         }

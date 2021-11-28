@@ -21,8 +21,8 @@ namespace SharedHost.Auth
         public JwtMiddleware(RequestDelegate next)
         {
             _next = next;
-            IssuerUrl = "http://authenticator/Token";
-            _TokenIssuer = new RestClient("http://authenticator/Token");
+            IssuerUrl = "https://host.thinkmay.net/Token";
+            _TokenIssuer = new RestClient("https://host.thinkmay.net/Token");
         }
 
         public async Task Invoke(HttpContext context)
