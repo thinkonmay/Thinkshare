@@ -71,6 +71,36 @@ spec:
             name: authenticator
             port:
               number: 80
+
+
+
+
+
+
+
+
+
+      - path: /Token/Challenge
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+      - path: /Token/ChallengeCluster
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+      - path: /Token/ChallengeSession
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
               
 
 
@@ -85,7 +115,6 @@ spec:
             port:
               number: 80
 
-
       - path: /Hub/*
         pathType: Prefix
         backend:
@@ -95,15 +124,4 @@ spec:
               number: 80
 
 
-
-
-
-
-      - path: /Metric/*
-        pathType: Prefix
-        backend:
-          service:
-            name: metric-collector
-            port:
-              number: 80
               
