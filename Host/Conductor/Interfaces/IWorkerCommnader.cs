@@ -20,5 +20,7 @@ namespace Conductor.Interfaces
         Task SessionInitialize(int ID, string token);
 
         Task AssignGlobalID(int ClusterID, int GlobalID, int PrivateID);
+
+        Task<string> GetWorkerState(int WorkerID);
     }
 }

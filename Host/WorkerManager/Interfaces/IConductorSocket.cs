@@ -8,9 +8,9 @@ namespace WorkerManager.Interfaces
     {
         Task<bool> Start();
 
+        Task<bool> Stop();
+
         Task<List<ScriptModel>> GetDefaultModel();
 
-        Task WorkerStateSyncing(int WorkerID, string WorkerState);
-        bool Initialized { get; set; }
     }
 }

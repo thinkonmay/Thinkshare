@@ -10,9 +10,6 @@
 
         public const string Disconnected = "DEVICE_DISCONNECTED";
 
-        // registering state, only available in worker manager db
-        public const string Registering = "DEVICE_REGISTERING";
-
         // unregister state, only available in worker manager db
         public const string Unregister = "DEVICE_REGISTERING";
     }

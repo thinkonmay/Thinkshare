@@ -13,6 +13,7 @@ using Conductor.Interfaces;
 using SharedHost;
 using DbSchema.SystemDb.Data;
 using Microsoft.Extensions.Options;
+using DbSchema.CachedState;
 
 namespace Conductor.Services
 {
@@ -20,12 +21,37 @@ namespace Conductor.Services
     {
         private readonly RestClient _Cluster;
 
-        public WorkerCommander(IOptions<SystemConfig> config)
+        private readonly GlobalDbContext _db;
+
+
+        private readonly IGlobalStateStore _cache;
+
+        public WorkerCommander(IOptions<SystemConfig> config, GlobalDbContext dbContext, IGlobalStateStore cache)
         {
+            _db = dbContext;
+            _cache = cache;
             _Cluster =  new RestClient(config.Value.SystemHub + "/Cluster");
         }
 
 
+        public async Task<string> GetWorkerState(int WorkerID)
+        {
+            var publicCluster = _db.Clusters.ToList();
+
+            foreach (var cluster in publicCluster)
+            {
+                var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
+                foreach (var state in snapshoot)
+                {
+                    if (state.Key == WorkerID)
+                    {
+                        return state.Value;
+                    }
+                }
+            }
+
+            return null;
+        }
 
         public async Task SessionReconnect(int SlaveID)
         {

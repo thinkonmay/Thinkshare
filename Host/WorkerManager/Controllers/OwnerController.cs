@@ -210,17 +210,11 @@ namespace WorkerManager.Controllers
         [HttpPost("Start")]
         public async Task<IActionResult> Start()
         {
-            if(!_conductor.Initialized)
+            if(await _conductor.Start())
             {
-                if(await _conductor.Start())
+                if(_workerNodePool.Start())
                 {
-                    _workerNodePool.Start();
                     return Ok();
-                }
-                else
-                {
-                    return BadRequest("Fail to connect to system hub");
-
                 }
             }
             return BadRequest("Cluster has already been initialized");
@@ -231,17 +225,11 @@ namespace WorkerManager.Controllers
         [HttpPost("Stop")]
         public async Task<IActionResult> Stop()
         {
-            if(_conductor.Initialized)
+            if(await _conductor.Stop())
             {
-                if(await _conductor.Start())
+                if(_workerNodePool.Stop())
                 {
-                    _workerNodePool.Start();
                     return Ok();
-                }
-                else
-                {
-                    return BadRequest("Fail to connect to system hub");
-
                 }
             }
             return BadRequest("Cluster has already been initialized");

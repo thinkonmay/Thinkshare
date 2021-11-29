@@ -83,8 +83,6 @@ namespace Conductor.Controllers
                 }
 
             }
-
-            await _cache.UpdateWorkerState(ID,NewState);
             return Ok();
         }
 
@@ -125,7 +123,6 @@ namespace Conductor.Controllers
             var cluster = _db.Clusters.Find(ClusterID);
             foreach (var worker in cluster.WorkerNode)
             {
-                await _cache.UpdateWorkerState(worker.ID,WorkerState.Disconnected);
                 var Session = _db.RemoteSessions.Where(x => x.WorkerID == worker.ID && !x.EndTime.HasValue);
                 if (Session.Any())
                 {

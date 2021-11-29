@@ -22,15 +22,11 @@
         SESSION_DISCONNECT,
         SESSION_RECONNECT,
 
-
-        SHELL_SESSION,
-        ERROR_REPORT,
-
-
         STATE_SYNCING,
+
+        WORKER_INFOR_REQUEST,
         REGISTER_WORKER_NODE,
         ID_GRANT
-
     }
 
     public enum Module

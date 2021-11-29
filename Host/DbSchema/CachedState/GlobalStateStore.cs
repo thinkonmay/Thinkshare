@@ -12,15 +12,19 @@ namespace DbSchema.CachedState
 {
     public interface IGlobalStateStore
     {
-        Task SetWorkerState(Dictionary<int, string> node);
-        Task<Dictionary<int, string>> GetWorkerState();
-        Task<string> GetWorkerStateWithID(int ID);
+        Task SetClusterSnapshot(int ClusterID, Dictionary<int, string> snapshoot);
+        Task<Dictionary<int, string>> GetClusterSnapshot(int ClusterID);
+
+
+        Task CacheWorkerInfor(WorkerNode node);
+        Task<WorkerNode?> GetWorkerInfor(int WorkerID);
+
         Task SetUserSetting(int SettingID, UserSetting defaultSetting);
         Task<UserSetting> GetUserSetting(int WorkerID);
+
         Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, GlobalCluster cluster);
         Task<SessionWorker> GetClientSessionSetting(SessionAccession accession);
         Task<SessionClient> GetWorkerSessionSetting(SessionAccession accession);
-        Task UpdateWorkerState(int ID, string NewState);
     }
 
 
@@ -35,31 +39,31 @@ namespace DbSchema.CachedState
         }
 
 
+        public async Task SetClusterSnapshot(int ClusterID, Dictionary<int, string> snapshoot)
+        {
+            await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString(), snapshoot,TimeSpan.MaxValue,TimeSpan.MaxValue);
+
+        }
+        public async Task<Dictionary<int, string>> GetClusterSnapshot(int ClusterID)
+        {
+            return await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString());
+        }
 
 
 
 
-        public async Task SetWorkerState(Dictionary<int,string> node)
+        public async Task CacheWorkerInfor(WorkerNode node)
         {
-            await _cache.SetRecordAsync<Dictionary<int, string>>("GlobalState", node,TimeSpan.MaxValue,TimeSpan.MaxValue);
+            await _cache.SetRecordAsync<WorkerNode>("WorkerInfor_"+node.ID.ToString(), node,TimeSpan.MaxValue,TimeSpan.MaxValue);
         }
-        public async Task<Dictionary<int, string>> GetWorkerState ()
+        public async Task<WorkerNode?> GetWorkerInfor(int WorkerID)
         {
-            return await _cache.GetRecordAsync<Dictionary<int, string>>("GlobalState");
+            return await _cache.GetRecordAsync<WorkerNode>("WorkerInfor_"+WorkerID.ToString());
         }
-        public async Task UpdateWorkerState(int ID, string NewState)
-        {
-            var workerState = await GetWorkerState();
-            workerState.Remove(ID);
-            workerState.TryAdd(ID, NewState);
-            await SetWorkerState(workerState);
-        }
-        public async Task<string> GetWorkerStateWithID(int ID)
-        {
-            var workerState = await GetWorkerState();
-            workerState.TryGetValue(ID, out var result);
-            return result;
-        }
+
+
+
+
 
 
 

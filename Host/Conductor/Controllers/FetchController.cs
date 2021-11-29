@@ -54,9 +54,27 @@ namespace Conductor.Controllers
         [HttpGet("Node")]
         public async Task<IActionResult> FetchNode()
         {
-            var available_node = await _cache.GetWorkerState();
-            var systemState = available_node.Where(x => x.Value == WorkerState.Open);
-            return Ok();
+            var publicCluster = _db.Clusters.Where(x => x.Private == false);
+
+            var result = new List<WorkerNode>();
+            foreach (var cluster in publicCluster)
+            {
+                var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
+                foreach (var state in snapshoot)
+                {
+                    if (state.Value == WorkerState.Open)
+                    {
+                        var node = await _cache.GetWorkerInfor(state.Key);
+                        if(node == null)
+                        {
+                            node = _db.Devices.Find(state.Key);
+                            await _cache.CacheWorkerInfor(node);
+                        }
+                        result.Add(node);
+                    }
+                }
+            }
+            return Ok(result);
         }
 
 
@@ -69,15 +87,38 @@ namespace Conductor.Controllers
         public async Task<IActionResult> UserGetCurrentSesssion()
         {
             var UserID = HttpContext.Items["UserID"];
+            var nodeList = new List<int>();
             var session = _db.RemoteSessions.Where(s => s.ClientId == Int32.Parse(UserID.ToString()) &&
                                                   !s.EndTime.HasValue).ToList();
-            var IDlist = new List<int>();
-            session.ForEach(s => IDlist.Add(s.WorkerID));
-            var device = (await _cache.GetWorkerState()).Where(d => IDlist.Contains(d.Key) &&  
-                                                d.Value == WorkerState.OffRemote && 
-                                                d.Value == WorkerState.OnSession);
             
-            return Ok(device);
+            session.ForEach(x => nodeList.Add(x.ClientId));
+            var result = new List<WorkerNode>();
+
+            var publicCluster = _db.Clusters.Where(x => x.Private == false);
+
+            foreach (var cluster in publicCluster)
+            {
+                var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
+                foreach (var state in snapshoot)
+                {
+                    if (state.Value == WorkerState.OffRemote &&
+                        state.Value == WorkerState.OnSession &&
+                        nodeList.Contains(state.Key))
+                    {
+                        var node = await _cache.GetWorkerInfor(state.Key);
+                        if(node == null)
+                        {
+                            node = _db.Devices.Find(state.Key);
+                            await _cache.CacheWorkerInfor(node);
+                        }
+                        node.WorkerState = state.Value;
+                        result.Add(node);
+                    }
+                }
+            }
+
+            
+            return Ok(result);
         }
     }
 }

@@ -8,6 +8,7 @@ using SharedHost.Models.Device;
 using System.Threading.Tasks;
 using DbSchema.CachedState;
 using WorkerManager.Data;
+using Newtonsoft.Json;
 using SharedHost.Models.Local;
 
 namespace WorkerManager.Services
@@ -19,8 +20,14 @@ namespace WorkerManager.Services
         private readonly ILocalStateStore _cache;
 
         private readonly ClusterDbContext _db;
+        
+        private Task _stateStyncing;
+        
+        private Task _systemHeartBeat;
 
-        public bool Initialized { get; set; }
+        private Task _sessionHeartBeat;
+
+        private bool isRunning;
 
         public WorkerNodePool(IConductorSocket socket, 
                               ILocalStateStore cache,
@@ -28,17 +35,41 @@ namespace WorkerManager.Services
         {
             _cache = cache;
             _socket = socket;
-            Initialized = false;
+            isRunning = false;
             _db = db;
         }
 
-        public void Start()
+        public bool Start()
         {
-            Initialized = true;
-            Task.Run(() => SystemHeartBeat());
-            Task.Run(() => StateSyncing());
-            Task.Run(() => SessionHeartBeat());
+            if(!isRunning)
+            {
+                isRunning = true;
+                _systemHeartBeat =  Task.Run(() => SystemHeartBeat());
+                _sessionHeartBeat = Task.Run(() => SessionHeartBeat());
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
+
+        public bool Stop()
+        {
+            if(isRunning)
+            {
+                isRunning = false;
+                _systemHeartBeat.Wait();
+                _stateStyncing.Wait();
+                _sessionHeartBeat.Wait();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 
         public async Task SessionHeartBeat()
         {
@@ -46,6 +77,11 @@ namespace WorkerManager.Services
             {
                 while(true)
                 {
+                    if(!isRunning)
+                    {
+                        return;
+                    }
+                    
                     var worker_list = await _cache.GetClusterState();
                     if(worker_list == null)
                     {
@@ -107,6 +143,11 @@ namespace WorkerManager.Services
             {
                 while(true)
                 {
+                    if(!isRunning)
+                    {
+                        return;
+                    }
+
                     var worker_list = await _cache.GetClusterState();
                     if(worker_list == null)
                     {
@@ -119,12 +160,12 @@ namespace WorkerManager.Services
                         foreach (var keyValue in worker_list)
                         {
                             ClusterWorkerNode worker = await _cache.GetWorkerInfor(keyValue.Key);
-
                             if(worker == null)
                             {
                                 worker = _db.Devices.Find(keyValue.Key);
                                 await _cache.CacheWorkerInfor(worker);
                             }
+
                             worker.RestoreWorkerNode();
                             var session = new ShellSession { Script = i.Script };
                             var result = await worker.PingWorker(session);
@@ -162,32 +203,5 @@ namespace WorkerManager.Services
             }
         }
 
-        public async Task StateSyncing()
-        {
-            try
-            {
-                while (true)
-                {
-                    var worker_list = await _cache.GetClusterState();
-                    if(worker_list == null)
-                    {
-                        Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
-                        continue;
-
-                    }
-                    foreach ( var unsyncedDevice in worker_list)
-                    {
-                        await _socket.WorkerStateSyncing(unsyncedDevice.Key, unsyncedDevice.Value);
-                    }
-                    Thread.Sleep(((int)TimeSpan.FromMilliseconds(100).TotalMilliseconds));
-                }
-            }
-            catch (Exception ex)
-            {
-                Serilog.Log.Information("state syncing failed due to " + ex.Message);
-                Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
-                await StateSyncing();
-            }
-        }
     }
 }

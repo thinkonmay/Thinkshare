@@ -56,7 +56,7 @@ namespace WorkerManager.Controllers
 
             _db.Devices.Add(node);
             await _db.SaveChangesAsync();
-
+            await _cache.CacheWorkerInfor(node);
             await _cache.SetWorkerState(node.PrivateID, WorkerState.Unregister);
             return Ok(await _tokenGenerator.GenerateWorkerToken(node));
         }

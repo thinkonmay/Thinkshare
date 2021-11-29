@@ -1,9 +1,11 @@
-﻿namespace WorkerManager.Interfaces
+﻿using System.Threading.Tasks;
+using SharedHost.Models.Device;
+
+namespace WorkerManager.Interfaces
 {
     public interface IWorkerNodePool
     {
-        public void Start();
-
-        bool Initialized { get; set; }
+        bool Start();
+        bool Stop();
     }
 }

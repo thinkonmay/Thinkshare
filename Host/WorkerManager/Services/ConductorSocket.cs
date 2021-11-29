@@ -37,8 +37,6 @@ namespace WorkerManager.Services
 
         private readonly ClusterConfig _config;
 
-        public bool Initialized { get; set; }
-
         public ConductorSocket(ClusterConfig cluster, 
                                ClusterDbContext db,
                                ILocalStateStore cache)
@@ -46,26 +44,32 @@ namespace WorkerManager.Services
             _db = db;
             _cache = cache;
             _config = cluster;
-            Initialized = false;
             clusterConfig = cluster;
+            _scriptmodel = new RestClient();
         }
 
         public async Task<bool> Start()
         {
-            Initialized = true;
             try
             {
                 var token = (string)_db.Clusters.First().Token;
-                _scriptmodel = new RestClient();
                 _clientWebSocket = new ClientWebSocket();
-
                 await _clientWebSocket.ConnectAsync(
                     new Uri(clusterConfig.ClusterHub+"?token=" + token), 
                     CancellationToken.None);
 
                 if (_clientWebSocket.State == WebSocketState.Open)
                 {
-                    Handle();
+                    Task.Run(() => Handle());
+                    var currentState = _cache.GetClusterState();
+                    var request = new Message
+                    {
+                        Opcode = Opcode.STATE_SYNCING,
+                        From = Module.CLUSTER_MODULE,
+                        To = Module.HOST_MODULE,
+                        Data = JsonConvert.SerializeObject(currentState)
+                    };
+                    await SendMessage(JsonConvert.SerializeObject(request));
                     return true;
                 }
                 else
@@ -81,6 +85,20 @@ namespace WorkerManager.Services
                 return false;
             }
         }
+
+        public async Task<bool> Stop()
+        {
+            if(_clientWebSocket.State == WebSocketState.Open)
+            {
+                await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 
 
 
@@ -115,8 +133,14 @@ namespace WorkerManager.Services
                                 case Opcode.SESSION_DISCONNECT:
                                     await Disconnect((int)WsMessage.WorkerID);
                                     break;
+                                case Opcode.STATE_SYNCING:
+                                    await StateSyncing(WsMessage); 
+                                    break;
                                 case Opcode.ID_GRANT:
                                     await Assignment(WsMessage);
+                                    break;
+                                case Opcode.WORKER_INFOR_REQUEST:
+                                    await GetWorkerInfor(WsMessage);
                                     break;
                             }
                         }
@@ -129,7 +153,7 @@ namespace WorkerManager.Services
                 Serilog.Log.Information("fail to connect to system hub due to " + ex.Message);
                 Serilog.Log.Information("Retry after 10s");
                 Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
-                Start();
+                await Start();
             }
         }
 
@@ -154,21 +178,100 @@ namespace WorkerManager.Services
         }
 
 
+
+
+
+
+
+
+
+        async Task StateSyncing(Message message)
+        {
+            Dictionary<int, string> syncedState = JsonConvert.DeserializeObject<Dictionary<int,string>>(message.Data); 
+
+            try
+            {
+                while (true)
+                {
+                    var unsyncedState = await _cache.GetClusterState();
+                    foreach ( var item in unsyncedState)
+                    {
+                        bool success = syncedState.TryGetValue(item.Key,out var output);
+                        if(!success)
+                        {
+                            var request = new Message
+                            {
+                                Opcode = Opcode.STATE_SYNCING,
+                                From = Module.CLUSTER_MODULE,
+                                To = Module.HOST_MODULE,
+                                Data = JsonConvert.SerializeObject(syncedState)
+                            };
+                            await SendMessage(JsonConvert.SerializeObject(request));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Information("state syncing failed due to " + ex.Message);
+                await StateSyncing(message);
+            }
+        }
+
+
+
+
+        async Task GetWorkerInfor(Message message)
+        {
+            var worker = _db.Devices.Find(message.WorkerID);
+            var registration = new WorkerRegisterModel
+            {
+                PrivateID = worker.PrivateID,
+                CPU = worker.CPU,
+                GPU = worker.GPU,
+                RAMcapacity = worker.RAMcapacity,
+                OS = worker.OS,
+            };
+
+            var reply = new Message
+            {
+                From = Module.CLUSTER_MODULE,
+                To = Module.HOST_MODULE,
+                Opcode = Opcode.REGISTER_WORKER_NODE,
+                Data = JsonConvert.SerializeObject(registration)
+            };
+            await SendMessage(JsonConvert.SerializeObject(reply));
+        }
+
+
+
         async Task Assignment(Message message)
         {
             var assign = JsonConvert.DeserializeObject<IDAssign>(message.Data);
             
-            var currentState = await _cache.GetWorkerState(assign.PrivateID);
-            if(currentState == WorkerState.Registering)
-            {
-                var worker = _db.Devices.Find(assign.PrivateID);
 
-                worker.GlobalID = assign.GlobalID;
-                _db.Update(worker);
-                await _db.SaveChangesAsync();
-                await _cache.SetWorkerState(assign.PrivateID, WorkerState.Open);
-            }            
+            var worker = _db.Devices.Find(assign.PrivateID);
+            worker.GlobalID = assign.GlobalID;
+            _db.Update(worker);
+            await _db.SaveChangesAsync();
+            await _cache.SetWorkerState(assign.PrivateID, WorkerState.Open);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         /// <summary>
@@ -249,37 +352,7 @@ namespace WorkerManager.Services
 
 
 
-        /// <summary>
-        /// Report session state change to user 
-        /// </summary>
-        public async Task WorkerStateSyncing(int WorkerID, string WorkerState)
-        {
-            await SendMessage(JsonConvert.SerializeObject( 
-                new Message { WorkerID = WorkerID, 
-                            From = Module.CLUSTER_MODULE, 
-                            To= Module.HOST_MODULE, 
-                            Opcode=Opcode.STATE_SYNCING,
-                            Data= WorkerState}));
-            return;
-        }
 
-
-
-        public async Task ReportWorkerRegistered(ClusterWorkerNode information)
-        {
-            var WorkerNode = new WorkerNode{
-                OS = information.OS,
-                GPU = information.GPU,
-                CPU = information.CPU,
-                RAMcapacity = information.RAMcapacity
-            };
-            await SendMessage(JsonConvert.SerializeObject(
-                new Message { WorkerID = information.PrivateID, 
-                            From = Module.CLUSTER_MODULE, 
-                            To= Module.HOST_MODULE, 
-                            Opcode=Opcode.REGISTER_WORKER_NODE,
-                            Data= JsonConvert.SerializeObject(WorkerNode)}));
-        }
 
 
         public async Task<List<ScriptModel>> GetDefaultModel()

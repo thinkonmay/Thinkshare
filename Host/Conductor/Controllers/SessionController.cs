@@ -63,7 +63,8 @@ namespace Conductor.Controllers
         public async Task<IActionResult> Create(int SlaveID)
         {
             var UserID = HttpContext.Items["UserID"];
-            var workerState = (await _cache.GetWorkerState()).Where(x => x.Key == SlaveID).FirstOrDefault().Value;
+            var worker = _db.Devices.Where(x => x.ID == SlaveID).FirstOrDefault();
+            var workerState = await _Cluster.GetWorkerState(SlaveID);
             // search for availability of slave device
             if (workerState != WorkerState.Open) { return BadRequest("Device Not Available"); }
 
@@ -131,8 +132,7 @@ namespace Conductor.Controllers
 
             var device = _db.Devices.Find(SlaveID);
 
-            string Query;
-            (await _cache.GetWorkerState()).TryGetValue(SlaveID, out Query);
+            string workerState = await _Cluster.GetWorkerState(SlaveID);
             // get session information in database
             var ses = _db.RemoteSessions.Where(s => s.Worker == device && 
                                                s.Client == userAccount && 
@@ -143,8 +143,8 @@ namespace Conductor.Controllers
 
 
             /*slavepool send terminate session signal*/
-            if(Query == WorkerState.OnSession
-            || Query == WorkerState.OffRemote)
+            if(workerState == WorkerState.OnSession
+            || workerState == WorkerState.OffRemote)
             {
                 //
                 await _Cluster.SessionTerminate(ses.First().WorkerID);
@@ -166,10 +166,9 @@ namespace Conductor.Controllers
             var UserID = HttpContext.Items["UserID"];
             var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
 
-            var device = _db.Devices.Find(SlaveID);
 
             // get session from database
-            var ses = _db.RemoteSessions.Where(s => s.Worker == device 
+            var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID  
                                                && s.Client == userAccount 
                                               && !s.EndTime.HasValue).FirstOrDefault();
 
@@ -177,12 +176,10 @@ namespace Conductor.Controllers
 
             // return bad request if session is not found in database
             if (ses == null) return BadRequest();
-
-            string Query;
-            (await _cache.GetWorkerState()).TryGetValue(SlaveID,out Query);
+            var workerState = await _Cluster.GetWorkerState(ses.WorkerID);
 
             /*slavepool send terminate session signal*/
-            if (Query == WorkerState.OnSession)
+            if (workerState == WorkerState.OnSession)
             {
                 // send disconnect signal to slave
                 await _Cluster.SessionDisconnect(ses.Worker.ID);
@@ -233,11 +230,10 @@ namespace Conductor.Controllers
             // return null if session is not found
             if (ses == null) return BadRequest();
 
-            string Query;
-            (await _cache.GetWorkerState()).TryGetValue(SlaveID, out Query);
+            string workerState = await _Cluster.GetWorkerState(ses.First().WorkerID);
 
             /*slavepool send terminate session signal*/
-            if (Query == WorkerState.OffRemote)
+            if (workerState == WorkerState.OffRemote)
             {
                 // reconect remote control
                 await _Cluster.SessionReconnect(ses.First().WorkerID);

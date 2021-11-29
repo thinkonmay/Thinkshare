@@ -15,6 +15,7 @@ using System.Text;
 using SharedHost.Models.Device;
 using RestSharp;
 using Microsoft.Extensions.Options;
+using DbSchema.CachedState;
 
 namespace SystemHub.Services
 {
@@ -25,11 +26,14 @@ namespace SystemHub.Services
         private readonly SystemConfig _config;
 
         private readonly RestClient _conductor;
+
+        private readonly IGlobalStateStore _cache;
                 
         
-        public ClusterSocketPool(IOptions<SystemConfig> config)
+        public ClusterSocketPool(IOptions<SystemConfig> config, IGlobalStateStore cache)
         {
             _config = config.Value;
+            _cache = cache;
             _conductor = new RestClient(_config.Conductor+"/Sync");
             _ClusterSocketsPool = new ConcurrentDictionary<ClusterCredential, WebSocket>();
 
@@ -78,14 +82,11 @@ namespace SystemHub.Services
 
         public async Task AddtoPool(ClusterCredential resp,WebSocket session)
         {
-            foreach(var socket in _ClusterSocketsPool)
+            bool result = _ClusterSocketsPool.TryAdd(resp, session);
+            if(!result)
             {
-                if(socket.Key.ID == resp.ID)
-                {
-                    return;
-                }
+                return;
             }
-            _ClusterSocketsPool.TryAdd(resp, session);
             await Handle(resp, session);
             _ClusterSocketsPool.Remove(resp, out session);
         }
@@ -161,7 +162,7 @@ namespace SystemHub.Services
                             switch (WsMessage.Opcode)
                             {
                                 case Opcode.STATE_SYNCING:
-                                    await HandleWorkerSync(WsMessage);
+                                    await onClusterSnapshoot(WsMessage,cred);
                                     break;
                                 case Opcode.REGISTER_WORKER_NODE:
                                     await HandleWorkerRegister(WsMessage,cred);
@@ -179,15 +180,65 @@ namespace SystemHub.Services
             }
         }
 
-        async Task HandleWorkerSync(Message message)
+        async Task onClusterSnapshoot(Message message, ClusterCredential cred)
         {
-            var syncrequest = new RestRequest("State")
-                .AddQueryParameter("NewState", message.Data)
-                .AddQueryParameter("ID",message.WorkerID.ToString());
-            syncrequest.Method = Method.POST;
+            Dictionary<int, string> clusterSnapshoot = JsonConvert.DeserializeObject<Dictionary<int, string>>(message.Data);
+            Dictionary<int, string> unsyncedSnapshoot = await _cache.GetClusterSnapshot(cred.ID);
+            var syncedSnapshoot = new Dictionary<int, string>();
 
-            await _conductor.ExecuteAsync(syncrequest);
+            foreach (var unsyncedItem in unsyncedSnapshoot)
+            {
+                bool success = clusterSnapshoot.TryGetValue(unsyncedItem.Key,out var syncedState );
+                if(success)
+                {
+                    if(syncedState != unsyncedItem.Value)
+                    {
+                        await _cache.SetClusterSnapshot(cred.ID,syncedSnapshoot);
+
+                        var syncrequest = new RestRequest("State")
+                            .AddQueryParameter("NewState", syncedState)
+                            .AddQueryParameter("ID",unsyncedItem.Key.ToString());
+                        syncrequest.Method = Method.POST;
+
+                        await _conductor.ExecuteAsync(syncrequest);
+                    }
+                    syncedSnapshoot.Add(unsyncedItem.Key,syncedState);
+                }
+            }
+
+            // find any item that has not been synced yet => unregistered 
+            foreach (var item in clusterSnapshoot)
+            {
+                bool success = syncedSnapshoot.ContainsKey(item.Key);
+                if (!success)
+                {
+                    if(item.Value == WorkerState.Unregister)
+                    {
+                        var request = new Message
+                        {
+                            Opcode = Opcode.WORKER_INFOR_REQUEST,
+                            WorkerID = item.Key,
+                            From = Module.HOST_MODULE,
+                            To = Module.CLUSTER_MODULE
+                        };
+                        await SendToNode(request);
+                    }
+                    // otherwise just ignore
+                    syncedSnapshoot.Add(item.Key,WorkerState.Unregister);
+                }
+            }
+
+            var reply = new Message
+            {
+                From = Module.HOST_MODULE,
+                To = Module.CLUSTER_MODULE,
+                Opcode = Opcode.STATE_SYNCING,
+                Data = JsonConvert.SerializeObject(syncedSnapshoot)
+            };
+            await _cache.SetClusterSnapshot(cred.ID,syncedSnapshoot);
+            await SendToCluster(cred.ID,reply);
         }
+
 
         async Task HandleWorkerRegister(Message message,ClusterCredential cred)
         {
@@ -196,7 +247,20 @@ namespace SystemHub.Services
                 .AddJsonBody(JsonConvert.DeserializeObject<WorkerRegisterModel>(message.Data));
             syncrequest.Method = Method.POST;
 
-            await _conductor.ExecuteAsync(syncrequest);
+            var result = await _conductor.ExecuteAsync(syncrequest);
+            if(result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                // send id assignment result to cluster incase registration is sucessful
+                IDAssign assign = JsonConvert.DeserializeObject<IDAssign>(result.Content);
+                var reply = new Message
+                {
+                    From = Module.HOST_MODULE,
+                    To = Module.CLUSTER_MODULE,
+                    Opcode = Opcode.STATE_SYNCING,
+                    Data = JsonConvert.SerializeObject(assign)
+                };
+                await SendToCluster(cred.ID,reply);
+            }
         }
 
         private async Task<WebSocketReceiveResult> ReceiveMessage(WebSocket ws, Stream memoryStream)
