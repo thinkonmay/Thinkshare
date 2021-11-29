@@ -43,7 +43,7 @@ namespace SharedHost.Auth
                 var tokenRequest = new AuthenticationRequest
                 {
                    token = token,
-                   Validator = IssuerUrl
+                   Validator = _config.UserTokenValidator
                 };
                 var request = new HttpRequestMessage(HttpMethod.Post,_config.UserTokenValidator);
                 request.Content = new StringContent(

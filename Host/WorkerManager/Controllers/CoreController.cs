@@ -31,7 +31,6 @@ namespace WorkerManager.Controllers
                               ILocalStateStore cache)
         {
             _db = db;
-            _sessionClient = new RestClient("https://"+config.HostDomain+"/Session");
         }
 
         [Worker]

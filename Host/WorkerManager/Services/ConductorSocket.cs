@@ -35,6 +35,8 @@ namespace WorkerManager.Services
 
         private ILocalStateStore _cache;
 
+        private readonly ClusterConfig _config;
+
         public bool Initialized { get; set; }
 
         public ConductorSocket(ClusterConfig cluster, 
@@ -43,6 +45,7 @@ namespace WorkerManager.Services
         {
             _db = db;
             _cache = cache;
+            _config = cluster;
             Initialized = false;
             clusterConfig = cluster;
         }
@@ -53,9 +56,13 @@ namespace WorkerManager.Services
             try
             {
                 var token = (string)_db.Clusters.First().Token;
-                _scriptmodel = new RestClient("https://" + clusterConfig.HostDomain + "/Shell");
+                _scriptmodel = new RestClient();
                 _clientWebSocket = new ClientWebSocket();
-                await _clientWebSocket.ConnectAsync(new Uri("wss://" + clusterConfig.HostDomain + "/Hub/Cluster?token=" + token), CancellationToken.None);
+
+                await _clientWebSocket.ConnectAsync(
+                    new Uri(clusterConfig.ClusterHub+"?token=" + token), 
+                    CancellationToken.None);
+
                 if (_clientWebSocket.State == WebSocketState.Open)
                 {
                     Handle();

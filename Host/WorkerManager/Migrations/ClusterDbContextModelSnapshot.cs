@@ -26,6 +26,9 @@ namespace WorkerManager.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("Private")
                         .HasColumnType("boolean");
 
@@ -37,7 +40,13 @@ namespace WorkerManager.Migrations
                     b.Property<string>("Token")
                         .HasColumnType("text");
 
-                    b.Property<string>("TurnUrl")
+                    b.Property<string>("TurnIP")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TurnPassword")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TurnUser")
                         .HasColumnType("text");
 
                     b.HasKey("ID");
@@ -48,7 +57,9 @@ namespace WorkerManager.Migrations
             modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>
                 {
                     b.Property<int>("ID")
-                        .HasColumnType("integer");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("CPU")
                         .HasColumnType("text");
@@ -68,9 +79,6 @@ namespace WorkerManager.Migrations
                     b.Property<DateTime?>("Register")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("WorkerState")
-                        .HasColumnType("text");
-
                     b.HasKey("ID");
 
                     b.HasIndex("LocalClusterID");
@@ -78,31 +86,78 @@ namespace WorkerManager.Migrations
                     b.ToTable("WorkerNode");
                 });
 
-            modelBuilder.Entity("SharedHost.Models.Session.QoE", b =>
+            modelBuilder.Entity("SharedHost.Models.Local.ClusterWorkerNode", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("PrivateID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int?>("AudioCodec")
+                    b.Property<string>("CPU")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("GPU")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("GlobalID")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("QoEMode")
+                    b.Property<string>("OS")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrivateIP")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("RAMcapacity")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ScreenHeight")
+                    b.Property<DateTime>("Register")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("current_timestamp");
+
+                    b.Property<string>("RemoteToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("agentUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("coreUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("PrivateID");
+
+                    b.ToTable("Devices");
+                });
+
+            modelBuilder.Entity("SharedHost.Models.Local.OwnerCredential", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("WorkerClusterID")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ScreenWidth")
-                        .HasColumnType("integer");
+                    b.Property<string>("token")
+                        .HasColumnType("text");
 
-                    b.Property<int?>("VideoCodec")
-                        .HasColumnType("integer");
+                    b.HasKey("Name");
 
-                    b.HasKey("ID");
+                    b.HasIndex("WorkerClusterID");
 
-                    b.ToTable("QoEs");
+                    b.ToTable("Owner");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Shell.ScriptModel", b =>
@@ -152,99 +207,20 @@ namespace WorkerManager.Migrations
                     b.ToTable("CachedSession");
                 });
 
-            modelBuilder.Entity("WorkerManager.Models.ClusterWorkerNode", b =>
-                {
-                    b.Property<int>("PrivateID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("CPU")
-                        .HasColumnType("text");
-
-                    b.Property<string>("GPU")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("GlobalID")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("OS")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PrivateIP")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("QoEID")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RAMcapacity")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("Register")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp without time zone")
-                        .HasDefaultValueSql("current_timestamp");
-
-                    b.Property<string>("RemoteToken")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SignallingUrl")
-                        .HasColumnType("text");
-
-                    b.Property<string>("_workerState")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int?>("agentFailedPing")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("agentUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("coreUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int?>("sessionFailedPing")
-                        .HasColumnType("integer");
-
-                    b.HasKey("PrivateID");
-
-                    b.HasIndex("QoEID");
-
-                    b.ToTable("Devices");
-                });
-
-            modelBuilder.Entity("WorkerManager.Models.OwnerCredential", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ValidUntil")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int?>("WorkerClusterID")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("token")
-                        .HasColumnType("text");
-
-                    b.HasKey("Name");
-
-                    b.HasIndex("WorkerClusterID");
-
-                    b.ToTable("Owner");
-                });
-
             modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>
                 {
                     b.HasOne("SharedHost.Models.Cluster.LocalCluster", null)
                         .WithMany("Slave")
                         .HasForeignKey("LocalClusterID");
+                });
+
+            modelBuilder.Entity("SharedHost.Models.Local.OwnerCredential", b =>
+                {
+                    b.HasOne("SharedHost.Models.Cluster.LocalCluster", "WorkerCluster")
+                        .WithMany()
+                        .HasForeignKey("WorkerClusterID");
+
+                    b.Navigation("WorkerCluster");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Shell.ShellSession", b =>
@@ -264,24 +240,6 @@ namespace WorkerManager.Migrations
                     b.Navigation("Model");
 
                     b.Navigation("Worker");
-                });
-
-            modelBuilder.Entity("WorkerManager.Models.ClusterWorkerNode", b =>
-                {
-                    b.HasOne("SharedHost.Models.Session.QoE", "QoE")
-                        .WithMany()
-                        .HasForeignKey("QoEID");
-
-                    b.Navigation("QoE");
-                });
-
-            modelBuilder.Entity("WorkerManager.Models.OwnerCredential", b =>
-                {
-                    b.HasOne("SharedHost.Models.Cluster.LocalCluster", "WorkerCluster")
-                        .WithMany()
-                        .HasForeignKey("WorkerClusterID");
-
-                    b.Navigation("WorkerCluster");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Cluster.LocalCluster", b =>

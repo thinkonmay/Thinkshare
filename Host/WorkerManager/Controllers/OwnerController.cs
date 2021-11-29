@@ -27,9 +27,7 @@ namespace WorkerManager.Controllers
 
         private readonly ClusterDbContext _db;
 
-        private readonly RestClient _login;
-
-        private readonly RestClient _cluster;
+        private readonly RestClient _client;
 
         private readonly IConductorSocket _conductor;
 
@@ -48,8 +46,7 @@ namespace WorkerManager.Controllers
             _conductor = socket;
             _workerNodePool = workerPool;
             _config = config;
-            _login = new RestClient("https://"+ config.HostDomain + "/Account");
-            _cluster = new RestClient("https://"+ config.HostDomain+ "/Cluster");
+            _client = new RestClient();
         }
 
         /// <summary>
@@ -60,18 +57,19 @@ namespace WorkerManager.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var request = new RestRequest("Login")
+            var request = new RestRequest( new Uri(_config.OwnerAccountUrl+"/Login"))
                  .AddJsonBody(login);
             request.Method = Method.POST;
 
-            var result = await _login.ExecuteAsync(request);
+            var result = await _client.ExecuteAsync(request);
             var jsonresult = JsonConvert.DeserializeObject<AuthResponse>(result.Content);
 
             if(jsonresult.Errors == null)
             {
                 if(_db.Owner.Any())
                 {
-                    if(_db.Owner.FirstOrDefault().Name == jsonresult.UserName)
+                    var ownerName = _db.Owner.First().Name;
+                    if(ownerName == jsonresult.UserName)
                     {
                         return Ok(jsonresult.Token);
                     }
@@ -80,13 +78,16 @@ namespace WorkerManager.Controllers
                         return BadRequest("Wrong user");
                     }
                 }
-                _db.Owner.Add(new OwnerCredential 
-                {   Name = jsonresult.UserName, 
-                    Description = "Primary owner of the cluster", 
-                    token = jsonresult.Token
-                });
-                await _db.SaveChangesAsync();
-                return Ok(jsonresult.Token);
+                else
+                {
+                    _db.Owner.Add(new OwnerCredential 
+                    {   Name = jsonresult.UserName, 
+                        Description = "Primary owner of the cluster", 
+                        token = jsonresult.Token
+                    });
+                    await _db.SaveChangesAsync();
+                    return Ok(jsonresult.Token);
+                }
             }
             else
             {
@@ -104,16 +105,16 @@ namespace WorkerManager.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(bool isPrivate)
         {
-            var request = new RestRequest("Register")
+            var token = _db.Owner.First().token;
+            var request = new RestRequest(_config.ClusterInforUrl+"/Register")
+                .AddHeader("Authorization","Bearer "+token)
                 .AddQueryParameter("ClusterName", _config.ClusterName)
                 .AddQueryParameter("Private", isPrivate.ToString());
 
-            var token = _db.Owner.First().token;
 
-            request.AddHeader("Authorization","Bearer "+token);
             request.Method = Method.POST;
 
-            var result = await _cluster.ExecuteAsync(request);
+            var result = await _client.ExecuteAsync(request);
 
             if (result.StatusCode == HttpStatusCode.OK)
             {
@@ -143,20 +144,34 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> Token()
         {
             var token = _db.Owner.First().token;
-            var request = new RestRequest("Token")
+            var request = new RestRequest(_config.ClusterInforUrl+"/Token")
+                .AddHeader("Authorization","Bearer "+token)
                 .AddQueryParameter("ClusterName", _config.ClusterName);
-
-            request.AddHeader("Authorization","Bearer "+token);
             request.Method = Method.GET;
 
-            var result = await _cluster.ExecuteAsync(request);
+            var result = await _client.ExecuteAsync(request);
 
             if (result.StatusCode == HttpStatusCode.OK)
             {
-                var cluster = _db.Clusters.First();
-                cluster.Token = JsonConvert.DeserializeObject<string>(result.Content);
-                _db.Update(cluster);
-                await _db.SaveChangesAsync();
+                if(_db.Clusters.Any())
+                {
+                    var cluster = _db.Clusters.First();
+                    cluster.Token = JsonConvert.DeserializeObject<string>(result.Content);
+                    _db.Update(cluster);
+                    await _db.SaveChangesAsync();
+                }
+                else
+                {
+                    var cluster = new LocalCluster
+                    {
+                        Token = JsonConvert.DeserializeObject<string>(result.Content),
+                        Private = true,
+                        Enabled = false,
+                        Register = DateTime.Now,
+                    };
+                    _db.Clusters.Add(cluster);
+                    await _db.SaveChangesAsync();
+                }
                 return Ok();
             }
             else
@@ -195,7 +210,28 @@ namespace WorkerManager.Controllers
         [HttpPost("Start")]
         public async Task<IActionResult> Start()
         {
-            if(!_conductor.Initialized && !_workerNodePool.Initialized)
+            if(!_conductor.Initialized)
+            {
+                if(await _conductor.Start())
+                {
+                    _workerNodePool.Start();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("Fail to connect to system hub");
+
+                }
+            }
+            return BadRequest("Cluster has already been initialized");
+        }
+
+
+        [Owner]
+        [HttpPost("Stop")]
+        public async Task<IActionResult> Stop()
+        {
+            if(_conductor.Initialized)
             {
                 if(await _conductor.Start())
                 {

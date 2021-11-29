@@ -86,6 +86,8 @@ namespace WorkerManager
             });
             services.AddSingleton(Configuration.GetSection("ClusterConfig").Get<ClusterConfig>());
             services.AddSingleton<ILocalStateStore, LocalStateStore>();
+            services.AddSingleton<IConductorSocket,ConductorSocket>();
+            services.AddSingleton<IWorkerNodePool,WorkerNodePool>();
             services.AddTransient<ITokenGenerator,TokenGenerator>();
             services.AddMvc();
         

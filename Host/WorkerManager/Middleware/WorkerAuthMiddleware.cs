@@ -30,7 +30,7 @@ namespace WorkerManager.Middleware
             _db = db;
             _next = next;
             _generator = generator;
-            _token = new RestClient("https://"+config.HostDomain+"/Account");
+            _token = new RestClient(config.OwnerAccountUrl);
         }
 
         public async Task Invoke(HttpContext context)

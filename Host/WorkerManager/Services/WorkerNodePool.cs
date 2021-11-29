@@ -14,7 +14,7 @@ namespace WorkerManager.Services
 {
     public class WorkerNodePool : IWorkerNodePool
     {
-        private readonly ConductorSocket _socket;
+        private readonly IConductorSocket _socket;
 
         private readonly ILocalStateStore _cache;
 
@@ -22,7 +22,7 @@ namespace WorkerManager.Services
 
         public bool Initialized { get; set; }
 
-        public WorkerNodePool(ConductorSocket socket, 
+        public WorkerNodePool(IConductorSocket socket, 
                               ILocalStateStore cache,
                               ClusterDbContext db)
         {
@@ -47,6 +47,13 @@ namespace WorkerManager.Services
                 while(true)
                 {
                     var worker_list = await _cache.GetClusterState();
+                    if(worker_list == null)
+                    {
+                        Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
+                        continue;
+
+                    }
+
                     foreach (var item in worker_list)
                     {
                         if(item.Value != WorkerState.OnSession)
@@ -101,6 +108,12 @@ namespace WorkerManager.Services
                 while(true)
                 {
                     var worker_list = await _cache.GetClusterState();
+                    if(worker_list == null)
+                    {
+                        Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
+                        continue;
+
+                    }
                     foreach (var i in _model_list)
                     {
                         foreach (var keyValue in worker_list)
@@ -156,6 +169,12 @@ namespace WorkerManager.Services
                 while (true)
                 {
                     var worker_list = await _cache.GetClusterState();
+                    if(worker_list == null)
+                    {
+                        Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
+                        continue;
+
+                    }
                     foreach ( var unsyncedDevice in worker_list)
                     {
                         await _socket.WorkerStateSyncing(unsyncedDevice.Key, unsyncedDevice.Value);

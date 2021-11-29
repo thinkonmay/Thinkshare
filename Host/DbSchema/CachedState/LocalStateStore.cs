@@ -14,9 +14,9 @@ namespace DbSchema.CachedState
     {
         Task SetWorkerState(int WorkerID, string node);
 
-        Task<string> GetWorkerState(int WorkerID);
+        Task<string?> GetWorkerState(int WorkerID);
 
-        Task<Dictionary<int, string>> GetClusterState();
+        Task<Dictionary<int, string>?> GetClusterState();
 
         Task<ClusterWorkerNode?> GetWorkerInfor(int PrivateID);
 
@@ -40,13 +40,13 @@ namespace DbSchema.CachedState
             await _cache.SetRecordAsync<string>("ClusterWorkerCache", node, TimeSpan.MaxValue, TimeSpan.MaxValue);
             return;
         }
-        public async Task<string> GetWorkerState(int WorkerID)
+        public async Task<string?> GetWorkerState(int WorkerID)
         {
             var cachedValue = await _cache.GetRecordAsync<string>("ClusterWorkerCache");
             JsonConvert.DeserializeObject<Dictionary<int, string>>(cachedValue).TryGetValue(WorkerID, out var result);
             return result;
         }
-        public async Task<Dictionary<int, string>> GetClusterState()
+        public async Task<Dictionary<int, string>?> GetClusterState()
         {
             var cachedValue = await _cache.GetRecordAsync<string>("ClusterWorkerCache");
             var result = JsonConvert.DeserializeObject<Dictionary<int, string>>(cachedValue); ;
