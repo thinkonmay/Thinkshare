@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SharedHost.Models.User;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedHost.Models.Cluster
 {
@@ -14,6 +15,7 @@ namespace SharedHost.Models.Cluster
         /// <summary>
         /// Each Cluster have an unique ID
         /// </summary>
+        [Key]
         public int ID { get; set; }
 
         /// <summary>

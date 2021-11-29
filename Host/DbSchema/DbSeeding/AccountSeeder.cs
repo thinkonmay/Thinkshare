@@ -2,6 +2,8 @@
 using SharedHost.Models.User;
 using System.Linq;
 using SharedHost;
+using SharedHost.Models.Cluster;
+using DbSchema.SystemDb.Data;
 
 namespace DbSchema.DbSeeding
 {
@@ -20,7 +22,7 @@ namespace DbSchema.DbSeeding
 
 
 
-        public static void SeedAdminUsers(UserManager<UserAccount> userManager,SystemConfig config)
+        public static void SeedAdminUsers(UserManager<UserAccount> userManager,GlobalDbContext db, SystemConfig config)
         {
             var admins = userManager.GetUsersInRoleAsync(RoleSeeding.ADMIN).GetAwaiter().GetResult();
             if (admins.Count == 0)
@@ -34,15 +36,30 @@ namespace DbSchema.DbSeeding
                 };
 
                 string defaultPassword = config.AdminLogin.Password;
-
                 if (userManager.FindByNameAsync(admin.UserName).GetAwaiter().GetResult() == null)
                 {
                     var result = userManager.CreateAsync(admin, defaultPassword).GetAwaiter().GetResult();
                     if (result.Succeeded)
                     {
+                        
                         userManager.AddToRoleAsync(admin, RoleSeeding.ADMIN).Wait();
+                        userManager.AddToRoleAsync(admin, RoleSeeding.MOD).Wait();
+                        userManager.AddToRoleAsync(admin, RoleSeeding.USER).Wait();
                     }
                 }
+            }
+
+            if(!admins.First().ManagedCluster.Any())
+            {
+                var DefaultCluster = new GlobalCluster 
+                {
+                    Name = RoleSeeding.TEST_CLUSTER, 
+                    Private = true,
+                    Register = System.DateTime.Now,
+                };
+                admins.First().ManagedCluster.Add(DefaultCluster);
+                userManager.UpdateAsync(admins.First()).Wait();
+
             }
         }
 

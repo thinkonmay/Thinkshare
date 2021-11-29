@@ -49,8 +49,8 @@ namespace Authenticator
 
                 
                 AccountSeeder.SeedRoles(roleManager);
-                AccountSeeder.SeedAdminUsers(userManager,systemconfig.Value);
                 AccountSeeder.SeedUserRole(userManager);
+                AccountSeeder.SeedAdminUsers(userManager,db,systemconfig.Value);
             }
         }
     }

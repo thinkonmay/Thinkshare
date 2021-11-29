@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Host\Authenticator\Authenticator.csproj" />
     <ProjectReference Include="..\..\Host\SystemHub\SystemHub.csproj" />
   </ItemGroup>
 
