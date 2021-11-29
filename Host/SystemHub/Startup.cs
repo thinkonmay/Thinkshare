@@ -46,8 +46,8 @@ namespace SystemHub
 
                 c.IncludeXmlComments(xmlFilePath);
             });
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
+            services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
             services.AddSingleton<IClusterSocketPool, ClusterSocketPool>();
             services.AddSingleton<IUserSocketPool, UserSocketPool>();
             services.AddMvc();

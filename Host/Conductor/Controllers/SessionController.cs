@@ -50,7 +50,7 @@ namespace Conductor.Controllers
             _Cluster = slmsocket;
             _userManager = userManager;
             _config = config.Value;
-            _sessionToken = new RestClient(_config.Authenticator+"/Token");
+            _sessionToken = new RestClient();
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Conductor.Controllers
 
 
             /*generate rest post to signalling server*/
-            var workerTokenRequest = new RestRequest("GrantSession")
+            var workerTokenRequest = new RestRequest(new Uri(_config.SessionTokenValidator))
                 .AddJsonBody(new SessionAccession
                 {
                     ClientID = (int)UserID,
@@ -86,7 +86,7 @@ namespace Conductor.Controllers
                     Module = Module.CORE_MODULE
                 });
 
-            var clientTokenRequest = new RestRequest("GrantSession")
+            var clientTokenRequest = new RestRequest(new Uri(_config.SessionTokenValidator))
                 .AddJsonBody(new SessionAccession
                 {
                     ClientID = (int)UserID,

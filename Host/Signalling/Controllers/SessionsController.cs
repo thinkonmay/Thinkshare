@@ -13,6 +13,7 @@ using System.Net;
 using SharedHost;
 using Newtonsoft.Json;
 using SharedHost.Models.Session;
+using Microsoft.Extensions.Options;
 using RestSharp;
 
 namespace Signalling.Controllers
@@ -25,10 +26,13 @@ namespace Signalling.Controllers
 
         private readonly RestClient Authenticator;
 
-        public SessionsController(ISessionQueue queue,SystemConfig config)
+        private readonly SystemConfig  _config;
+
+        public SessionsController(ISessionQueue queue,IOptions<SystemConfig> config)
         {
-            Authenticator = new RestClient(config.Authenticator + "/Token");
+            Authenticator = new RestClient();
             Queue = queue;
+            _config = config.Value;
         }
 
 
@@ -38,7 +42,7 @@ namespace Signalling.Controllers
             var context = ControllerContext.HttpContext;
             if (context.WebSockets.IsWebSocketRequest)
             {
-                var request = new RestRequest("Session")
+                var request = new RestRequest(new Uri(_config.SessionTokenValidator))
                     .AddQueryParameter("token", token);
                 request.Method = Method.POST;
 

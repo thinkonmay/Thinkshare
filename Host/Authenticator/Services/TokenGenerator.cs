@@ -184,19 +184,20 @@ namespace Authenticator.Services
 
 
 
-        public async Task<string> GenerateClusterJwt(string UserID, string ClusterName)
+        public async Task<string> GenerateClusterJwt(string UserID, string ClusterName, int ID)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwt.Key);
             var claims = new List<Claim>();
 
             claims.Add(new Claim("UserID",UserID.ToString()));
+            claims.Add(new Claim("ClusterName",ClusterName.ToString()));
 
 
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("Name", ClusterName.ToString()) }),
+                Subject = new ClaimsIdentity(new[] { new Claim("ID", ID.ToString()) }),
                 Expires = DateTime.Now.AddDays(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
@@ -223,11 +224,16 @@ namespace Authenticator.Services
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
 
-                var account = (await _userManager.FindByIdAsync(jwtToken.Claims.First(x => x.Type == "UserID").Value));
-                var Cluster  = account.ManagedCluster.Where(x => x.Name == jwtToken.Claims.First(x => x.Type == "Name").Value).First();
+                var UserID = jwtToken.Claims.First(x => x.Type == "UserID").Value;
+                var Cluster  = jwtToken.Claims.First(x => x.Type == "ClusterName").Value;
+                var ID = jwtToken.Claims.First(x => x.Type == "ID").Value;
+
+
                 var ret = new ClusterCredential
                 {
-                    ID = Cluster.ID
+                    ID = Int32.Parse(ID),
+                    ClusterName = Cluster,
+                    OwnerID = Int32.Parse(UserID)
                 };
                 return ret;
             }

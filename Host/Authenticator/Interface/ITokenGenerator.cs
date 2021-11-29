@@ -42,7 +42,7 @@ namespace Authenticator.Interfaces
         /// </summary>
         /// <param name="accession"></param>
         /// <returns></returns>
-        Task<string> GenerateClusterJwt(string UserID, string ClusterName);
+        Task<string> GenerateClusterJwt(string UserID, string ClusterName, int ClusterID);
 
 
 

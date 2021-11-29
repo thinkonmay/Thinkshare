@@ -96,7 +96,7 @@ namespace Conductor
             services.AddMvc();
             services.AddTransient<IClientHub,ClientHub>();
             services.AddSingleton<IWorkerCommnader,WorkerCommander>();
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
+            services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

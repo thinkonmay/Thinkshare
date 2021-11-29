@@ -4,6 +4,7 @@ using System.Net;
 using SharedHost;
 using SystemHub.Interfaces;
 using RestSharp;
+using System;
 using SharedHost.Auth;
 using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
@@ -18,11 +19,8 @@ namespace SystemHub.Controllers
     {
 
         private readonly IUserSocketPool _User;
-
         private readonly IClusterSocketPool _Cluster;
-
-        private readonly RestClient _client;
-
+        private readonly RestClient _TokenValidator;
         private readonly SystemConfig _config;
 
         public HubController(IClusterSocketPool cluster,
@@ -32,7 +30,7 @@ namespace SystemHub.Controllers
             _User = user;
             _Cluster = cluster;
             _config = config.Value;
-            _client = new RestClient(_config.Authenticator+"/Token");
+            _TokenValidator = new RestClient();
         }
 
         [HttpGet("User")]
@@ -45,14 +43,14 @@ namespace SystemHub.Controllers
                 var tokenRequest = new AuthenticationRequest
                 {
                     token = token,
-                    Validator = _config.Authenticator
+                    Validator = _config.UserTokenValidator
                 };
 
-                var request = new RestRequest("Challenge")
+                var request = new RestRequest(new Uri(_config.UserTokenValidator))
                     .AddJsonBody(tokenRequest);
                 request.Method = Method.POST;
 
-                var result = await _client.ExecuteAsync(request);
+                var result = await _TokenValidator.ExecuteAsync(request);
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
                     var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(result.Content);
@@ -78,11 +76,11 @@ namespace SystemHub.Controllers
             var context = ControllerContext.HttpContext;
             if (context.WebSockets.IsWebSocketRequest)
             {
-                var request = new RestRequest("ChallengeCluster")
+                var request = new RestRequest(_config.ClusterTokenValidator)
                     .AddQueryParameter("token",token);
                 request.Method = Method.POST;
 
-                var result = await _client.ExecuteAsync(request);
+                var result = await _TokenValidator.ExecuteAsync(request);
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
                     var claim = JsonConvert.DeserializeObject<ClusterCredential>(result.Content);

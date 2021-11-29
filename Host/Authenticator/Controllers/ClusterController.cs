@@ -84,7 +84,7 @@ namespace Authenticator.Controllers
                 return BadRequest("Cluster not found");
             }
 
-            var token = await _token.GenerateClusterJwt((string)ManagerID,ClusterName);
+            var token = await _token.GenerateClusterJwt((string)ManagerID,ClusterName,cluster.First().ID);
             return Ok(token);
         }
 

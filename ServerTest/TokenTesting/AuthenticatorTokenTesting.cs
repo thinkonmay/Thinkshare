@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using SharedHost.Models.Cluster;
 using Microsoft.AspNetCore.TestHost;
 using SharedHost.Models.Device;
 using NUnit.Framework;
@@ -17,6 +18,7 @@ using SharedHost.Models.Auth;
 using SharedHost.Models.User;
 using SharedHost.Auth;
 using SharedHost.Models.Session;
+
 
 namespace TokenTesting
 {
@@ -38,6 +40,10 @@ namespace TokenTesting
             _server = new TestServer(new WebHostBuilder()
                 .UseConfiguration(_configuration)
                .UseStartup<Startup>());
+            
+
+            var config = _server.Services.GetService<IOptions<SystemConfig>>();
+            
             _client = _server.CreateClient();
 
             _config = _configuration.GetSection("SystemConfig").Get<SystemConfig>();
@@ -86,7 +92,7 @@ namespace TokenTesting
 
 
         [Test]
-        [Order(2)]
+        [Order(1)]
         public async Task TestSessionToken()
         {
             Console.WriteLine("Setting session token");
@@ -119,6 +125,43 @@ namespace TokenTesting
             Assert.AreEqual(responseAccession.WorkerID,accession.WorkerID);
             Assert.AreEqual(responseAccession.ID,accession.ID);
             Assert.AreEqual(responseAccession.Module,accession.Module);
+        }
+
+
+        [Test]
+        [Order(2)]
+        public async Task TestClusterToken()
+        {
+            Console.WriteLine("Setting session token");
+
+            var UserID = 123;
+            var ClusterName = "TestCluster";
+            var ClusterID = 456;
+
+
+            var getToken = new HttpRequestMessage(HttpMethod.Post,
+                "/Token/GrantCluster?UserID="+UserID.ToString()+
+                "&ClusterName="+ClusterName+
+                "&ClusterID="+ClusterID.ToString());
+
+            var ClusterToken = await _client.SendAsync(getToken);
+
+
+            Assert.AreEqual(ClusterToken.StatusCode, HttpStatusCode.OK);
+            var clusterToken = await ClusterToken.Content.ReadAsStringAsync();
+
+            var challengeToken = new HttpRequestMessage(HttpMethod.Post,"/Token/ChallengeCluster?token="+clusterToken);
+            var result = await _client.SendAsync(challengeToken);
+
+
+            var token = await result.Content.ReadAsStringAsync();
+            ClusterCredential cred = JsonConvert.DeserializeObject<ClusterCredential>(token);
+
+            Assert.AreEqual(result.StatusCode, HttpStatusCode.OK);
+
+            Assert.AreEqual(cred.ID , ClusterID);
+            Assert.AreEqual(cred.ClusterName , ClusterName);
+            Assert.AreEqual(cred.OwnerID , UserID);
         }
     }
 }

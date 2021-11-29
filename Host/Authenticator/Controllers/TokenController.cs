@@ -108,17 +108,18 @@ namespace Authenticator.Controllers
 
 
 
-        /// <summary>
-        /// login to server with email/username and password
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="request"></param>
-        /// <returns></returns>
         [HttpPost]
         [Route("ChallengeCluster")]
         public async Task<IActionResult> ClusterChallange(string token)
         {
             return Ok(await _tokenGenerator.ValidateClusterToken(token));
+        }
+
+        [HttpPost]
+        [Route("GrantCluster")]
+        public async Task<IActionResult> GrantCluster(string UserID, string ClusterName, int ClusterID)
+        {
+            return Ok(await _tokenGenerator.GenerateClusterJwt(UserID,ClusterName,ClusterID));
         }
     }
 }

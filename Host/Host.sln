@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerManager", "WorkerMana
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokenTesting", "..\ServerTest\TokenTesting\TokenTesting.csproj", "{5DE0DAE9-0034-44A9-A52A-05F646A5A80B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebsocketTesting", "..\ServerTest\WebsocketTesting\WebsocketTesting.csproj", "{8DE8AD05-78B4-46B8-8A7B-1C7C15C6984F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedHost\SharedHost.projitems*{00c0924c-717c-42ee-b3d1-3b7970d5ed4b}*SharedItemsImports = 5
@@ -32,6 +34,7 @@ Global
 		SharedHost\SharedHost.projitems*{5de0dae9-0034-44a9-a52a-05f646a5a80b}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{6e362b62-5b06-4a28-98ae-9fdc94495bb9}*SharedItemsImports = 13
 		SharedHost\SharedHost.projitems*{8b733daa-c5e9-4245-af44-4bb42cdfec79}*SharedItemsImports = 5
+		SharedHost\SharedHost.projitems*{8de8ad05-78b4-46b8-8a7b-1c7c15c6984f}*SharedItemsImports = 5
 		DbSchema\DbSchema.projitems*{a972cf97-de50-4cf3-a9af-23a0815a3e29}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{a972cf97-de50-4cf3-a9af-23a0815a3e29}*SharedItemsImports = 5
 		DbSchema\DbSchema.projitems*{fdd0cfdc-c9c1-45be-9d9f-ec71d1941930}*SharedItemsImports = 13
@@ -69,6 +72,10 @@ Global
 		{5DE0DAE9-0034-44A9-A52A-05F646A5A80B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DE0DAE9-0034-44A9-A52A-05F646A5A80B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DE0DAE9-0034-44A9-A52A-05F646A5A80B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DE8AD05-78B4-46B8-8A7B-1C7C15C6984F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DE8AD05-78B4-46B8-8A7B-1C7C15C6984F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DE8AD05-78B4-46B8-8A7B-1C7C15C6984F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DE8AD05-78B4-46B8-8A7B-1C7C15C6984F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
