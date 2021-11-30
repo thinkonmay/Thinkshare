@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using WorkerManager.Interfaces;
 using System.Threading.Tasks;
 using SharedHost.Models.Session;
@@ -26,7 +27,7 @@ namespace WorkerManager.Controllers
 
         private readonly RestClient _sessionClient;
 
-        public CoreController(ClusterConfig config,
+        public CoreController(IOptions<ClusterConfig> config,
                               ClusterDbContext db,
                               ILocalStateStore cache)
         {

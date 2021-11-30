@@ -34,7 +34,7 @@ namespace SystemHub.Controllers
         }
 
         [HttpGet("User")]
-        public async Task<IActionResult> GetUser(string token)
+        public async Task GetUser(string token)
         {
             var context = ControllerContext.HttpContext;
 
@@ -56,22 +56,17 @@ namespace SystemHub.Controllers
                     var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(result.Content);
                     if(!claim.IsUser && !claim.IsManager & !claim.IsAdmin)
                     {
-                        return NotFound();
+                        return;
                     }
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
                     await _User.AddtoPool(claim, webSocket);
                 }
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
             }
         }
 
         [HttpGet("Cluster")]
-        public async Task<IActionResult> GetWorker(string token)
+        public async Task GetWorker(string token)
         {
             var context = ControllerContext.HttpContext;
             if (context.WebSockets.IsWebSocketRequest)
@@ -88,11 +83,6 @@ namespace SystemHub.Controllers
 
                     await _Cluster.AddtoPool(claim, webSocket);
                 }
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
             }
         }
     }

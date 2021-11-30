@@ -35,40 +35,39 @@ namespace DbSchema.CachedState
             var nodes = db.Devices.ToList();
             var initState = new Dictionary<int,string>();
             nodes.ForEach(x => initState.Add(x.ID,WorkerState.Open));
-            _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", initState, TimeSpan.MaxValue, TimeSpan.MaxValue).Wait();
+            _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", initState, null,null).Wait();
         }
+
         public async Task SetWorkerState(int WorkerID, string node)
         {
-            var cachedValue = await _cache.GetRecordAsync<string>("ClusterWorkerCache");
-            var dictionary = JsonConvert.DeserializeObject<Dictionary<int, string>>(cachedValue);
-            dictionary.Remove(WorkerID);
-            dictionary.Add(WorkerID, node);
-            await _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", dictionary, TimeSpan.MaxValue, TimeSpan.MaxValue);
+            var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterWorkerCache");
+            cachedValue.Remove(WorkerID);
+            cachedValue.Add(WorkerID, node);
+            await _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", cachedValue, null,null);
             return;
         }
         public async Task<string?> GetWorkerState(int WorkerID)
         {
-            var cachedValue = await _cache.GetRecordAsync<string>("ClusterWorkerCache");
-            JsonConvert.DeserializeObject<Dictionary<int, string>>(cachedValue).TryGetValue(WorkerID, out var result);
-            return result;
+            var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterWorkerCache");
+            bool success = cachedValue.TryGetValue(WorkerID, out var result);
+            return success ? result : null;
         }
         public async Task<Dictionary<int, string>?> GetClusterState()
         {
-            var cachedValue = await _cache.GetRecordAsync<string>("ClusterWorkerCache");
-            var result = JsonConvert.DeserializeObject<Dictionary<int, string>>(cachedValue); ;
-            return result;
+            var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterWorkerCache");
+            return cachedValue;
         }
 
         public async Task CacheWorkerInfor(ClusterWorkerNode Worker)
         {
-            await _cache.SetRecordAsync<ClusterWorkerNode>("Worker_" + Worker.ID.ToString(), Worker, TimeSpan.FromDays(1), TimeSpan.FromDays(1));
+            await _cache.SetRecordAsync<ClusterWorkerNode>("Worker_" + Worker.ID.ToString(), Worker, null,null);
         }
         public async Task<ClusterWorkerNode?> GetWorkerInfor(int PrivateID)
         {
-            var cachedValue = await _cache.GetRecordAsync<string>("Worker_" + PrivateID.ToString());
+            var cachedValue = await _cache.GetRecordAsync<ClusterWorkerNode?>("Worker_" + PrivateID.ToString());
             if (cachedValue != null)
             {
-                return JsonConvert.DeserializeObject<ClusterWorkerNode>(cachedValue);
+                return cachedValue;
             }
             else
             {

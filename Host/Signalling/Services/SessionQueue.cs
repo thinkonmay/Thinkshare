@@ -98,7 +98,7 @@ namespace Signalling.Services
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("Connection closed due to {reason}.", ex.Message);
+                Serilog.Log.Information("Connection closed");
             }
             // Device goes offline
             await Close(ws);
@@ -161,7 +161,9 @@ namespace Signalling.Services
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("Connection closed due to {reason}.", ex.Message);
+                Serilog.Log.Information("Connection closed ");
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
             }
             return;
         }

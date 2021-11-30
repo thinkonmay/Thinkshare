@@ -38,7 +38,6 @@ namespace SystemHub.Services
             _ClusterSocketsPool = new ConcurrentDictionary<ClusterCredential, WebSocket>();
 
             Task.Run(() => ConnectionHeartBeat());
-            Task.Run(() => ConnectionStateCheck());
         }
 
 
@@ -47,61 +46,56 @@ namespace SystemHub.Services
         {
             try
             {        
-                foreach (var socket in _ClusterSocketsPool)
+                while (true)
                 {
-                    if (socket.Value.State == WebSocketState.Open)
+                    foreach (var socket in _ClusterSocketsPool)
                     {
-                        await SendMessage(socket.Value, "ping");
+                        SendMessage(socket.Value, "ping");
                     }
+                    Thread.Sleep((int)TimeSpan.FromSeconds(4).TotalMilliseconds);
                 }
-                Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
-            }catch
+            }catch (Exception ex)
             {
+                Serilog.Log.Information("Fail to ping client: " + ex.Message + "\n" + ex.StackTrace );
                 await ConnectionHeartBeat();
             }
         }
 
-        public async Task ConnectionStateCheck()
-        {
-            try
-            {                
-                foreach (var socket in _ClusterSocketsPool)
-                {
-                    if (socket.Value.State != WebSocketState.Open)
-                    {
-                        var request = new RestRequest("Disconnected")
-                             .AddQueryParameter("ClusterID",socket.Key.ID.ToString());
-                        request.Method = Method.POST;
-                        var result = _conductor.Execute(request);
-                        if(result.StatusCode == System.Net.HttpStatusCode.OK)
-                        {
-                            var snapshoot = await _cache.GetClusterSnapshot(socket.Key.ID);
-                            var newsnapshoot = new Dictionary<int, string>();
-                            foreach (var Item in snapshoot)
-                            {
-                                newsnapshoot.Add(Item.Key,WorkerState.Disconnected);
-                            }
-                            await _cache.SetClusterSnapshot(socket.Key.ID,newsnapshoot);
-                            _ClusterSocketsPool.TryRemove(socket);
-                        }
-                    }
-                }
-                Thread.Sleep(100);
-            }catch
-            {
-                await ConnectionStateCheck();
-            }
-        }
 
 
         public async Task AddtoPool(ClusterCredential resp,WebSocket session)
         {
             bool result = _ClusterSocketsPool.TryAdd(resp, session);
+            var snapshoot = await _cache.GetClusterSnapshot(resp.ID);
+            if(snapshoot == null)
+            {
+                await _cache.SetClusterSnapshot(resp.ID,new Dictionary<int, string>());
+            }
             if(!result)
             {
                 return;
             }
+
             await Handle(resp, session);
+
+            /// report to conductor
+            var request = new RestRequest("Disconnected")
+                .AddQueryParameter("ClusterID",resp.ID.ToString());
+            request.Method = Method.POST;
+
+            await _conductor.ExecuteAsync(request);
+
+            // set all devices state to disconnected
+            snapshoot = await _cache.GetClusterSnapshot(resp.ID);
+            var newsnapshoot = new Dictionary<int, string>();
+            foreach (var Item in snapshoot)
+            {
+                newsnapshoot.Add(Item.Key,WorkerState.Disconnected);
+            }
+            await _cache.SetClusterSnapshot(resp.ID,newsnapshoot);
+
+            // remove from 
+            var done = _ClusterSocketsPool.TryRemove(resp,out var output);
         }
 
 
@@ -122,7 +116,6 @@ namespace SystemHub.Services
 
         public async Task SendToCluster(int ClusterID, Message message)
         {
-            int NodeID = (int)message.WorkerID;
             foreach (var cluster in _ClusterSocketsPool)
             {
                 if(cluster.Key.ID == ClusterID)
@@ -161,11 +154,20 @@ namespace SystemHub.Services
                         {
                             var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
                             var WsMessage = JsonConvert.DeserializeObject<Message>(receivedMessage);
-                            switch (WsMessage.Opcode)
+                            try
                             {
-                                case Opcode.STATE_SYNCING:
-                                    await onClusterSnapshoot(WsMessage,cred);
-                                    break;
+                                switch (WsMessage.Opcode)
+                                {
+                                    case Opcode.STATE_SYNCING:
+                                        onClusterSnapshoot(WsMessage,cred);
+                                        break;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Serilog.Log.Information("Fail to parse cluster message");
+                                Serilog.Log.Information(ex.Message);
+                                Serilog.Log.Information(ex.StackTrace);
                             }
                         }
                     }
@@ -174,7 +176,9 @@ namespace SystemHub.Services
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("Cluster connection closed due to "+ex.Message);
+                Serilog.Log.Information("Cluster connection closed");
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
                 return;
             }
         }
@@ -182,7 +186,7 @@ namespace SystemHub.Services
         async Task onClusterSnapshoot(Message message, ClusterCredential cred)
         {
             Dictionary<int, string> clusterSnapshoot = JsonConvert.DeserializeObject<Dictionary<int, string>>(message.Data);
-            Dictionary<int, string> unsyncedSnapshoot = await _cache.GetClusterSnapshot(cred.ID);
+            Dictionary<int, string>? unsyncedSnapshoot = await _cache.GetClusterSnapshot(cred.ID);
             var syncedSnapshoot = new Dictionary<int, string>();
 
             foreach (var unsyncedItem in unsyncedSnapshoot)

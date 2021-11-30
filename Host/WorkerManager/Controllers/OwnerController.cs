@@ -11,6 +11,7 @@ using SharedHost.Models.Auth;
 using RestSharp;
 using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
+using Microsoft.Extensions.Options;
 using SharedHost.Models.Local;
 using DbSchema.CachedState;
 using SharedHost;
@@ -39,13 +40,13 @@ namespace WorkerManager.Controllers
                                 ILocalStateStore cache,
                                 IConductorSocket socket,
                                 IWorkerNodePool workerPool,
-                                ClusterConfig config)
+                                IOptions<ClusterConfig> config)
         {
             _db = db;
             _cache = cache;
             _conductor = socket;
             _workerNodePool = workerPool;
-            _config = config;
+            _config = config.Value;
             _client = new RestClient();
         }
 
@@ -68,9 +69,12 @@ namespace WorkerManager.Controllers
             {
                 if(_db.Owner.Any())
                 {
-                    var ownerName = _db.Owner.First().Name;
-                    if(ownerName == jsonresult.UserName)
+                    var owner = _db.Owner.First();
+                    if(owner.Name == jsonresult.UserName)
                     {
+                        owner.token = jsonresult.Token;
+                        _db.Update(owner);
+                        await _db.SaveChangesAsync();
                         return Ok(jsonresult.Token);
                     }
                     else

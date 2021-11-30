@@ -38,11 +38,14 @@ namespace WorkerManager.Services
 
         private readonly ClusterConfig _config;
 
+        private bool isRunning;
+
         public ConductorSocket(IOptions<ClusterConfig> cluster, 
                                ClusterDbContext db,
                                ILocalStateStore cache)
         {
             _db = db;
+            isRunning = false;
             _cache = cache;
             _config = cluster.Value;
             _scriptmodel = new RestClient();
@@ -52,16 +55,19 @@ namespace WorkerManager.Services
         {
             try
             {
+                if (isRunning) { return false; }
                 var token = (string)_db.Clusters.First().Token;
                 _clientWebSocket = new ClientWebSocket();
                 await _clientWebSocket.ConnectAsync(
-                    new Uri(clusterConfig.ClusterHub+"?token=" + token), 
+                    new Uri(_config.ClusterHub+"?token=" + token), 
                     CancellationToken.None);
 
                 if (_clientWebSocket.State == WebSocketState.Open)
                 {
-                    Task.Run(() => Handle());
-                    var currentState = _cache.GetClusterState();
+                    // DONOT set this to awaited
+                    isRunning = true;
+                    Handle();
+                    var currentState = await _cache.GetClusterState();
                     var request = new Message
                     {
                         Opcode = Opcode.STATE_SYNCING,
@@ -77,20 +83,17 @@ namespace WorkerManager.Services
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch 
             { 
-                Serilog.Log.Information("fail to connect to system hub due to " + ex.Message);
-                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
-                _clientWebSocket = null;
                 return false;
             }
         }
 
         public async Task<bool> Stop()
         {
-            if(_clientWebSocket.State == WebSocketState.Open)
+            if(isRunning)
             {
-                await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                isRunning = false;
                 return true;
             }
             else
@@ -110,44 +113,77 @@ namespace WorkerManager.Services
                 WebSocketReceiveResult message;
                 do
                 {
+                    if (!isRunning) 
+                    { 
+                        await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                        return; 
+                    }
                     using (var memoryStream = new MemoryStream())
                     {
                         message = await ReceiveMessage(_clientWebSocket, memoryStream);
                         if (message.Count > 0)
                         {
                             var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                            if (receivedMessage == "ping") { continue; }
+                            if (receivedMessage == "ping") { Serilog.Log.Information("Got ping from system hub"); continue; }
                             var WsMessage = JsonConvert.DeserializeObject<Message>(receivedMessage);
                             switch (WsMessage.Opcode)
                             {
                                 // execute session operation by public id 
+                                // DONOT await this function because it will stop other message
                                 case Opcode.SESSION_INITIALIZE:
-                                    await Initialize((int)WsMessage.WorkerID, WsMessage.token);
+                                    Initialize((int)WsMessage.WorkerID, WsMessage.token);
                                     break;
                                 case Opcode.SESSION_TERMINATE:
-                                    await Terminate((int)WsMessage.WorkerID);
+                                    Terminate((int)WsMessage.WorkerID);
                                     break;
                                 case Opcode.SESSION_RECONNECT:
-                                    await Reconnect((int)WsMessage.WorkerID);
+                                    Reconnect((int)WsMessage.WorkerID);
                                     break;
                                 case Opcode.SESSION_DISCONNECT:
-                                    await Disconnect((int)WsMessage.WorkerID);
+                                    Disconnect((int)WsMessage.WorkerID);
                                     break;
                                 case Opcode.STATE_SYNCING:
-                                    await StateSyncing(WsMessage); 
+                                    StateSyncing(WsMessage); 
                                     break;
                             }
                         }
                     }
                 } while (message.MessageType != WebSocketMessageType.Close && _clientWebSocket.State == WebSocketState.Open);
                 await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                RestoreConnection(null);
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("fail to connect to system hub due to " + ex.Message);
-                Serilog.Log.Information("Retry after 10s");
+                RestoreConnection(ex);
+            }
+        }
+
+        async Task RestoreConnection(Exception? exception)
+        {
+            try
+            {
+                if(exception != null)
+                {
+                    Serilog.Log.Information("Error when connect to sytemhub: " + exception.Message);
+                    Serilog.Log.Information(exception.StackTrace);
+                    Serilog.Log.Information("Retry after 10 second");
+                }
+                else
+                {
+                    Serilog.Log.Information("Disconnected from systemhub");
+                    Serilog.Log.Information("Retry after 10 second");
+                }
                 Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
-                await Start();
+                var success = await Start();
+                if(!success)
+                {
+                    await RestoreConnection(null);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await RestoreConnection(ex);
             }
         }
 
@@ -230,11 +266,12 @@ namespace WorkerManager.Services
                             await _cache.SetWorkerState(item.Key,WorkerState.MISSING);
                         }
                     }
+                    Thread.Sleep((int)TimeSpan.FromMilliseconds(50).TotalMilliseconds);
                 }
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("state syncing failed due to " + ex.Message);
+                Serilog.Log.Information("state syncing failed");
                 await StateSyncing(message);
             }
         }
