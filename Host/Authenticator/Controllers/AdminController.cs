@@ -41,7 +41,7 @@ namespace Authenticator.Controllers
         /// <param name="Role"></param>
         /// <returns></returns>
         [Admin]
-        [HttpPost("GrantRole")]
+        [HttpPost("Grant/Role")]
         public async Task<IActionResult> GrantRole(string UserEmail, string Role)
         {
             var account = await _userManager.FindByEmailAsync(UserEmail);

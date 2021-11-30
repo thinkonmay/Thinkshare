@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using DbSchema.CachedState;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,7 @@ namespace Conductor
             //for postgresql
             services.AddDbContext<GlobalDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                ServiceLifetime.Transient
+                ServiceLifetime.Singleton
             );
             services.AddStackExchangeRedisCache(options =>
             {
@@ -96,6 +97,7 @@ namespace Conductor
             services.AddMvc();
             services.AddTransient<IClientHub,ClientHub>();
             services.AddSingleton<IWorkerCommnader,WorkerCommander>();
+            services.AddSingleton<IGlobalStateStore,GlobalStateStore>();
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
         }
 

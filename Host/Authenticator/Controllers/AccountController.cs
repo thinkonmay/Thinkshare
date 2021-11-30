@@ -208,7 +208,7 @@ namespace Authenticator.Controllers
         /// </summary>
         /// <returns></returns>
         [User]
-        [HttpGet("GetInfor")]
+        [HttpGet("Infor")]
         public async Task<IActionResult> GetInfor()
         {
             var UserID = HttpContext.Items["UserID"];
@@ -238,7 +238,7 @@ namespace Authenticator.Controllers
         /// </summary>
         /// <returns></returns>
         [User]
-        [HttpPost("SetInfor")]
+        [HttpPost("Infor")]
         public async Task<IActionResult> SetAccountInfor([FromBody] UserInforModel infor)
         {
             var UserID = HttpContext.Items["UserID"];
@@ -299,7 +299,7 @@ namespace Authenticator.Controllers
         /// </summary>
         /// <returns></returns>
         [User]
-        [HttpGet("GetSession")]
+        [HttpGet("Session")]
         public async Task<IActionResult> UserGetSession()
         {
             var UserID = HttpContext.Items["UserID"];

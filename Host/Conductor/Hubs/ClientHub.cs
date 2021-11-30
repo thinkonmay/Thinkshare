@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using SharedHost;
@@ -57,9 +58,9 @@ namespace Conductor.Hubs
     {
         private readonly RestClient _NotificationHub;
 
-        public ClientHub(SystemConfig config)
+        public ClientHub(IOptions<SystemConfig> config)
         {
-            _NotificationHub = new RestClient(config.SystemHub+"/Event");
+            _NotificationHub = new RestClient(config.Value.SystemHub+"/Event");
         }
 
 

@@ -67,24 +67,6 @@ namespace Authenticator.Controllers
         }
 
 
-        /// <summary>
-        /// login to server with email/username and password
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("Grant/Session")]
-        public async Task<IActionResult> SessionGrant(SessionAccession access)
-        {
-            if (ModelState.IsValid)
-            {
-                return Ok(await _tokenGenerator.GenerateSessionJwt(access));
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
 
         /// <summary>
         /// login to server with email/username and password
@@ -120,6 +102,25 @@ namespace Authenticator.Controllers
         public async Task<IActionResult> GrantCluster(string UserID, string ClusterName, int ClusterID)
         {
             return Ok(await _tokenGenerator.GenerateClusterJwt(UserID,ClusterName,ClusterID));
+        }
+
+        /// <summary>
+        /// /// </summary>
+        /// login to server with email/username and password
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("Grant/Session")]
+        public async Task<IActionResult> SessionGrant(SessionAccession access)
+        {
+            if (ModelState.IsValid)
+            {
+                return Ok(await _tokenGenerator.GenerateSessionJwt(access));
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

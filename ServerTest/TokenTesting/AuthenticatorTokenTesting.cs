@@ -78,7 +78,7 @@ namespace TokenTesting
                 Validator = "testcase",
             };
 
-            var testLogin = new HttpRequestMessage(HttpMethod.Post, "/Token/Challenge");
+            var testLogin = new HttpRequestMessage(HttpMethod.Post, "/Token/Challenge/User");
             testLogin.Content = new StringContent(
                 JsonConvert.SerializeObject(token), null, "application/json");
             var response = await _client.SendAsync(testLogin);
@@ -105,7 +105,7 @@ namespace TokenTesting
                 ClientID = 300,
             };
 
-            var testLogin = new HttpRequestMessage(HttpMethod.Post, "/Token/GrantSession");
+            var testLogin = new HttpRequestMessage(HttpMethod.Post, "/Token/Grant/Session");
             testLogin.Content = new StringContent(
                 JsonConvert.SerializeObject(accession), null, "application/json");
             var tokenResponse = await _client.SendAsync(testLogin);
@@ -115,7 +115,7 @@ namespace TokenTesting
 
             Console.WriteLine("Got token generated: "+ token);
 
-            var testToken = new HttpRequestMessage(HttpMethod.Post, "/Token/ChallengeSession?token="+token);
+            var testToken = new HttpRequestMessage(HttpMethod.Post, "/Token/Challenge/Session?token="+token);
             var resultResponse = await _client.SendAsync(testToken);
 
             Assert.AreEqual(resultResponse.StatusCode, HttpStatusCode.OK);
@@ -140,7 +140,7 @@ namespace TokenTesting
 
 
             var getToken = new HttpRequestMessage(HttpMethod.Post,
-                "/Token/GrantCluster?UserID="+UserID.ToString()+
+                "/Token/Grant/Cluster?UserID="+UserID.ToString()+
                 "&ClusterName="+ClusterName+
                 "&ClusterID="+ClusterID.ToString());
 
@@ -150,7 +150,7 @@ namespace TokenTesting
             Assert.AreEqual(ClusterToken.StatusCode, HttpStatusCode.OK);
             var clusterToken = await ClusterToken.Content.ReadAsStringAsync();
 
-            var challengeToken = new HttpRequestMessage(HttpMethod.Post,"/Token/ChallengeCluster?token="+clusterToken);
+            var challengeToken = new HttpRequestMessage(HttpMethod.Post,"/Token/Challenge/Cluster?token="+clusterToken);
             var result = await _client.SendAsync(challengeToken);
 
 
