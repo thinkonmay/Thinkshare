@@ -20,7 +20,7 @@ using SharedHost;
 namespace WorkerManager.Controllers
 {
     [ApiController]
-    [Route("/Agent")]
+    [Route("/agent")]
     [Produces("application/json")]
     public class AgentController : ControllerBase
     {
@@ -49,7 +49,7 @@ namespace WorkerManager.Controllers
         /// <param name="agent_register"></param>
         /// <returns></returns>
         [Owner]
-        [HttpPost("Register")]
+        [HttpPost("register")]
         public async Task<IActionResult> PostInfor([FromBody]WorkerRegisterModel agent_register)
         {
             var cachednode = _db.Devices.Where(x => 
@@ -99,7 +99,7 @@ namespace WorkerManager.Controllers
         }
 
         [Worker]
-        [HttpPost("EndRemote")]
+        [HttpPost("core/end")]
         public async Task<IActionResult> Post()
         {
             var workerID = Int32.Parse((string)HttpContext.Items["PrivateID"]);

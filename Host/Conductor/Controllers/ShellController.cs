@@ -35,7 +35,7 @@ namespace Conductor.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet("AllModel")]
+        [HttpGet("Model/All")]
         public IActionResult Model()
         {
             var model = _db.ScriptModels.ToList();
@@ -47,7 +47,7 @@ namespace Conductor.Controllers
         /// </summary>
         /// <returns></returns>
         [Manager]
-        [HttpPost("Update")]
+        [HttpPost("Model/Update")]
         public async Task<IActionResult> Update([FromBody] List<ShellSession> session)
         {
             _db.ShellSession.AddRange(session);

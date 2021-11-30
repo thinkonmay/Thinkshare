@@ -136,9 +136,6 @@ namespace WorkerManager.Services
                                 case Opcode.STATE_SYNCING:
                                     await StateSyncing(WsMessage); 
                                     break;
-                                case Opcode.WORKER_INFOR_REQUEST:
-                                    await GetWorkerInfor(WsMessage);
-                                    break;
                             }
                         }
                     }
@@ -241,34 +238,6 @@ namespace WorkerManager.Services
                 await StateSyncing(message);
             }
         }
-
-
-
-
-        async Task GetWorkerInfor(Message message)
-        {
-            var worker = _db.Devices.Find(message.WorkerID);
-            var registration = new WorkerRegisterModel
-            {
-                PrivateID = worker.ID,
-                CPU = worker.CPU,
-                GPU = worker.GPU,
-                RAMcapacity = worker.RAMcapacity,
-                OS = worker.OS,
-            };
-
-            var reply = new Message
-            {
-                From = Module.CLUSTER_MODULE,
-                To = Module.HOST_MODULE,
-                Opcode = Opcode.REGISTER_WORKER_NODE,
-                Data = JsonConvert.SerializeObject(registration)
-            };
-            await SendMessage(JsonConvert.SerializeObject(reply));
-        }
-
-
-
 
 
 

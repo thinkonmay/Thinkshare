@@ -54,7 +54,7 @@ namespace SystemHub.Services
                         await SendMessage(socket.Value, "ping");
                     }
                 }
-                Thread.Sleep(30*1000);
+                Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
             }catch
             {
                 await ConnectionHeartBeat();
@@ -67,9 +67,23 @@ namespace SystemHub.Services
             {                
                 foreach (var socket in _ClusterSocketsPool)
                 {
-                    if (socket.Value.State == WebSocketState.Closed)
+                    if (socket.Value.State != WebSocketState.Open)
                     {
-                        _ClusterSocketsPool.TryRemove(socket);
+                        var request = new RestRequest("Disconnected")
+                             .AddQueryParameter("ClusterID",socket.Key.ID.ToString());
+                        request.Method = Method.POST;
+                        var result = _conductor.Execute(request);
+                        if(result.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            var snapshoot = await _cache.GetClusterSnapshot(socket.Key.ID);
+                            var newsnapshoot = new Dictionary<int, string>();
+                            foreach (var Item in snapshoot)
+                            {
+                                newsnapshoot.Add(Item.Key,WorkerState.Disconnected);
+                            }
+                            await _cache.SetClusterSnapshot(socket.Key.ID,newsnapshoot);
+                            _ClusterSocketsPool.TryRemove(socket);
+                        }
                     }
                 }
                 Thread.Sleep(100);
@@ -88,7 +102,6 @@ namespace SystemHub.Services
                 return;
             }
             await Handle(resp, session);
-            _ClusterSocketsPool.Remove(resp, out session);
         }
 
 
@@ -99,22 +112,11 @@ namespace SystemHub.Services
             int NodeID = (int)message.WorkerID;
             foreach (var cluster in _ClusterSocketsPool)
             {
-                var request = new RestRequest("GetNode")
-                    .AddQueryParameter("ClusterID",cluster.Key.ID.ToString());
-                var result = _conductor.Execute(request);
-
-                if (result.StatusCode != System.Net.HttpStatusCode.OK)
+                var snapshoot = await _cache.GetClusterSnapshot(cluster.Key.ID);
+                if(snapshoot.ContainsKey(NodeID))
                 {
-                    continue;
+                    await SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
                 }
-                var devices = JsonConvert.DeserializeObject<List<WorkerNode>>(result.Content);
-                foreach (var device in devices)
-                {
-                    if(device.ID == NodeID)
-                    {
-                        await SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
-                    }
-                }                
             }
         }
 
@@ -204,12 +206,12 @@ namespace SystemHub.Services
                     }
                     syncedSnapshoot.Add(unsyncedItem.Key,syncedState);
                 }
-                else // otherwise, set item as disconnected state
+                else // otherwise, set item as missing state
                 {
                     await _cache.SetClusterSnapshot(cred.ID,syncedSnapshoot);
 
                     var syncrequest = new RestRequest("State")
-                        .AddQueryParameter("NewState", WorkerState.Disconnected)
+                        .AddQueryParameter("NewState", WorkerState.MISSING)
                         .AddQueryParameter("ID",unsyncedItem.Key.ToString());
                     syncrequest.Method = Method.POST;
 
@@ -218,7 +220,7 @@ namespace SystemHub.Services
                 }
             }
 
-            // find any item that has not been synced yet => unregistered 
+            // find any item that has not been synced yet => add to snapshoot 
             foreach (var item in clusterSnapshoot)
             {
                 bool success = syncedSnapshoot.ContainsKey(item.Key);

@@ -5,7 +5,7 @@ using SharedHost.Models.Hub;
 
 namespace SystemHub.Controllers
 {
-    [Route("/UserEvent")]
+    [Route("/User/Event")]
     [ApiController]
     [Produces("application/json")]
     public class UserEventController : ControllerBase
@@ -29,13 +29,6 @@ namespace SystemHub.Controllers
         public IActionResult BroadcastPost([FromBody] EventModel data)
         {
             _User.BroadcastClientEvent(data);
-            return Ok();
-        }
-
-        [HttpPost("Admin")]
-        public IActionResult AdminPost([FromBody] EventModel data)
-        {
-            _User.BroadcastAdminEvent(data);
             return Ok();
         }
     }

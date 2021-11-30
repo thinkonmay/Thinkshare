@@ -9,7 +9,7 @@ using SharedHost.Models.Cluster;
 
 namespace SystemHub.Controllers
 {
-    [Route("Cluster")]
+    [Route("Cluster/Worker")]
     [ApiController]
     [Produces("application/json")]
     public class ClusterEventController : ControllerBase

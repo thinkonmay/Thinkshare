@@ -43,7 +43,7 @@ namespace Authenticator.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("Challenge")]
+        [Route("Challenge/User")]
         public async Task<IActionResult> Challene([FromBody] AuthenticationRequest request)
         {
             if (ModelState.IsValid)
@@ -73,7 +73,7 @@ namespace Authenticator.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("GrantSession")]
+        [Route("Grant/Session")]
         public async Task<IActionResult> SessionGrant(SessionAccession access)
         {
             if (ModelState.IsValid)
@@ -93,7 +93,7 @@ namespace Authenticator.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("ChallengeSession")]
+        [Route("Challenge/Session")]
         public async Task<IActionResult> SessionChallenge(string token)
         {
             if (ModelState.IsValid)
@@ -109,14 +109,14 @@ namespace Authenticator.Controllers
 
 
         [HttpPost]
-        [Route("ChallengeCluster")]
+        [Route("Challenge/Cluster")]
         public async Task<IActionResult> ClusterChallange(string token)
         {
             return Ok(await _tokenGenerator.ValidateClusterToken(token));
         }
 
         [HttpPost]
-        [Route("GrantCluster")]
+        [Route("Grant/Cluster")]
         public async Task<IActionResult> GrantCluster(string UserID, string ClusterName, int ClusterID)
         {
             return Ok(await _tokenGenerator.GenerateClusterJwt(UserID,ClusterName,ClusterID));

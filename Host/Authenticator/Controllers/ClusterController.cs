@@ -116,8 +116,8 @@ namespace Authenticator.Controllers
         }
 
         [Manager]
-        [HttpGet("Turn")]
-        public async Task<IActionResult> SetTURN(string ClusterName, 
+        [HttpPost("Turn")]
+        public async Task<IActionResult> GetTURN(string ClusterName, 
                                                 string turnIP, 
                                                 string turnUSER, 
                                                 string turnPASSWORD)

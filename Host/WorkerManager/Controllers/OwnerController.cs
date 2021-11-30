@@ -140,7 +140,7 @@ namespace WorkerManager.Controllers
 
 
         [Owner]
-        [HttpGet("GetToken")]
+        [HttpGet("Cluster/Token")]
         public async Task<IActionResult> Token()
         {
             var token = _db.Owner.First().token;
@@ -189,7 +189,7 @@ namespace WorkerManager.Controllers
         /// <param name="login"></param>
         /// <returns></returns>
         [Owner]
-        [HttpPost("SetTURN")]
+        [HttpPost("Cluster/TURN")]
         public async Task<IActionResult> setturn(string IP, string user, string password)
         {
             var cluster = _db.Clusters.First();
@@ -207,7 +207,7 @@ namespace WorkerManager.Controllers
 
 
         [Owner]
-        [HttpPost("Start")]
+        [HttpPost("Cluster/Start")]
         public async Task<IActionResult> Start()
         {
             if(await _conductor.Start())
@@ -222,7 +222,7 @@ namespace WorkerManager.Controllers
 
 
         [Owner]
-        [HttpPost("Stop")]
+        [HttpPost("Cluster/Stop")]
         public async Task<IActionResult> Stop()
         {
             if(await _conductor.Stop())

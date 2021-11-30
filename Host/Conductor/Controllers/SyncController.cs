@@ -41,7 +41,7 @@ namespace Conductor.Controllers
             _userManager = userManager;
         }
 
-        [HttpPost("State")]
+        [HttpPost("Worker/State")]
         public async Task<IActionResult> Update(int ID, string NewState)
         {
 
@@ -96,7 +96,7 @@ namespace Conductor.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
-        [HttpPost("Disconnected")]
+        [HttpPost("Cluster/Disconnected")]
         public async Task<IActionResult> Disconnected(int ClusterID)
         {
             var cluster = _db.Clusters.Find(ClusterID);
@@ -115,19 +115,6 @@ namespace Conductor.Controllers
                 await _db.SaveChangesAsync();
             }
             return Ok();
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ClusterID"></param>
-        /// <returns></returns>
-        [HttpGet("GetNode")]
-        public IActionResult GetClusterInfor(int ClusterID)
-        {
-            GlobalCluster cluster = _db.Clusters.Find(ClusterID);
-            return Ok(cluster.WorkerNode);
         }
     }
 }
