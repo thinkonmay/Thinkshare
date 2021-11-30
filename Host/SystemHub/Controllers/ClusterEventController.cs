@@ -78,25 +78,5 @@ namespace SystemHub.Controllers
             _Cluster.SendToNode(message);
             return Ok();
         }
-
-        [HttpPost("GrantID")]
-        public IActionResult Reconnect(int ClusterID, int GlobalID, int PrivateID)
-        {
-            var IDAssign = new IDAssign
-            {
-                GlobalID = GlobalID,
-                PrivateID = PrivateID,
-                ClusterID = ClusterID
-            };
-            var message = new Message 
-            {
-                From = Module.HOST_MODULE,
-                To = Module.CLUSTER_MODULE,
-                Opcode = Opcode.ID_GRANT,
-                Data = JsonConvert.SerializeObject(IDAssign)
-            };
-            _Cluster.SendToCluster(ClusterID, message);
-            return Ok();
-        }
     }
 }

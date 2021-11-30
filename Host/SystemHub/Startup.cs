@@ -9,6 +9,7 @@ using SharedHost;
 using SystemHub.Interfaces;
 using SystemHub.Services;
 using Microsoft.OpenApi.Models;
+using DbSchema.CachedState;
 
 namespace SystemHub
 {
@@ -48,6 +49,7 @@ namespace SystemHub
             });
 
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
+            services.AddSingleton<IGlobalStateStore,GlobalStateStore>();
             services.AddSingleton<IClusterSocketPool, ClusterSocketPool>();
             services.AddSingleton<IUserSocketPool, UserSocketPool>();
             services.AddMvc();

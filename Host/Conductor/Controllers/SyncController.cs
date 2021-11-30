@@ -87,27 +87,6 @@ namespace Conductor.Controllers
         }
 
 
-        [HttpPost("Register")]
-        public async Task<IActionResult> Register(int ClusterID,[FromBody] WorkerRegisterModel body)
-        {
-            var cluster = _db.Clusters.Find(ClusterID);
-            var current = DateTime.Now;
-
-            var newWorker = new WorkerNode
-            {
-                Register = current,
-                CPU = body.CPU,
-                GPU = body.GPU,
-                RAMcapacity = body.RAMcapacity,
-                OS = body.OS
-            };
-
-            cluster.WorkerNode.Add(newWorker);
-            await _db.SaveChangesAsync();
-
-            await _Cluster.AssignGlobalID(cluster.ID, newWorker.ID, body.PrivateID);
-            return Ok();
-        }
 
 
 

@@ -12,6 +12,8 @@
 
         public string ScriptModelUrl {get;set;}
 
+        public string WorkerRegisterUrl{get;set;}
+
         public string ClusterName { get; set; }
 
         public string token { get; set; }

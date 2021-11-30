@@ -24,9 +24,6 @@
 
         STATE_SYNCING,
 
-        WORKER_INFOR_REQUEST,
-        REGISTER_WORKER_NODE,
-        ID_GRANT
     }
 
     public enum Module

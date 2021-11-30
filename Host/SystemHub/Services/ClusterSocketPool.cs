@@ -164,9 +164,6 @@ namespace SystemHub.Services
                                 case Opcode.STATE_SYNCING:
                                     await onClusterSnapshoot(WsMessage,cred);
                                     break;
-                                case Opcode.REGISTER_WORKER_NODE:
-                                    await HandleWorkerRegister(WsMessage,cred);
-                                    break;
                             }
                         }
                     }
@@ -189,6 +186,9 @@ namespace SystemHub.Services
             foreach (var unsyncedItem in unsyncedSnapshoot)
             {
                 bool success = clusterSnapshoot.TryGetValue(unsyncedItem.Key,out var syncedState );
+
+
+                // if unsynced item is exist in new snapshoot
                 if(success)
                 {
                     if(syncedState != unsyncedItem.Value)
@@ -204,27 +204,29 @@ namespace SystemHub.Services
                     }
                     syncedSnapshoot.Add(unsyncedItem.Key,syncedState);
                 }
+                else // otherwise, set item as disconnected state
+                {
+                    await _cache.SetClusterSnapshot(cred.ID,syncedSnapshoot);
+
+                    var syncrequest = new RestRequest("State")
+                        .AddQueryParameter("NewState", WorkerState.Disconnected)
+                        .AddQueryParameter("ID",unsyncedItem.Key.ToString());
+                    syncrequest.Method = Method.POST;
+
+                    await _conductor.ExecuteAsync(syncrequest);
+                    
+                }
             }
 
             // find any item that has not been synced yet => unregistered 
             foreach (var item in clusterSnapshoot)
             {
                 bool success = syncedSnapshoot.ContainsKey(item.Key);
+
+                // if item is exist in cluster snapshoot but not in synced, add it
                 if (!success)
                 {
-                    if(item.Value == WorkerState.Unregister)
-                    {
-                        var request = new Message
-                        {
-                            Opcode = Opcode.WORKER_INFOR_REQUEST,
-                            WorkerID = item.Key,
-                            From = Module.HOST_MODULE,
-                            To = Module.CLUSTER_MODULE
-                        };
-                        await SendToNode(request);
-                    }
-                    // otherwise just ignore
-                    syncedSnapshoot.Add(item.Key,WorkerState.Unregister);
+                    syncedSnapshoot.Add(item.Key,item.Value);
                 }
             }
 
@@ -240,28 +242,6 @@ namespace SystemHub.Services
         }
 
 
-        async Task HandleWorkerRegister(Message message,ClusterCredential cred)
-        {
-            var syncrequest = new RestRequest("Register")
-                .AddQueryParameter("ClusterID",cred.ID.ToString())
-                .AddJsonBody(JsonConvert.DeserializeObject<WorkerRegisterModel>(message.Data));
-            syncrequest.Method = Method.POST;
-
-            var result = await _conductor.ExecuteAsync(syncrequest);
-            if(result.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                // send id assignment result to cluster incase registration is sucessful
-                IDAssign assign = JsonConvert.DeserializeObject<IDAssign>(result.Content);
-                var reply = new Message
-                {
-                    From = Module.HOST_MODULE,
-                    To = Module.CLUSTER_MODULE,
-                    Opcode = Opcode.STATE_SYNCING,
-                    Data = JsonConvert.SerializeObject(assign)
-                };
-                await SendToCluster(cred.ID,reply);
-            }
-        }
 
         private async Task<WebSocketReceiveResult> ReceiveMessage(WebSocket ws, Stream memoryStream)
         {

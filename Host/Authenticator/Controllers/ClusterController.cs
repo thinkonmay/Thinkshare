@@ -88,6 +88,32 @@ namespace Authenticator.Controllers
             return Ok(token);
         }
 
+        [Manager]
+        [HttpPost("Worker/Register")]
+        public async Task<IActionResult> Register(string ClusterName, [FromBody] WorkerRegisterModel body)
+        {
+            var ManagerID = HttpContext.Items["UserID"];
+            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
+            
+            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).FirstOrDefault();
+            var newWorker = new WorkerNode
+            {
+                Register = DateTime.Now,
+                CPU = body.CPU,
+                GPU = body.GPU,
+                RAMcapacity = body.RAMcapacity,
+                OS = body.OS
+            };
+            cluster.WorkerNode.Add(newWorker);
+            await _db.SaveChangesAsync();
+            var result = new IDAssign
+            {
+                GlobalID = newWorker.ID,
+                ClusterID = cluster.ID,
+            };
+
+            return Ok(result);
+        }
 
         [Manager]
         [HttpGet("Turn")]
@@ -113,6 +139,5 @@ namespace Authenticator.Controllers
             await _db.SaveChangesAsync();
             return Ok();
         }
-
     }
 }

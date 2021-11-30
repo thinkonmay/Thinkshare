@@ -7,7 +7,7 @@ using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
 using DbSchema.CachedState;
-using WorkerManager.Data;
+using DbSchema.SystemDb;
 using Newtonsoft.Json;
 using SharedHost.Models.Local;
 
@@ -138,7 +138,7 @@ namespace WorkerManager.Services
 
         public async Task SystemHeartBeat()
         {
-            var _model_list = await _socket.GetDefaultModel();
+            var _model_list = _db.ScriptModels.ToList();
             try
             {
                 while(true)
@@ -173,7 +173,7 @@ namespace WorkerManager.Services
                             {
                                 session.Output = result;
                                 session.ModelID = i.ID;
-                                session.WorkerID = worker.GlobalID;
+                                session.WorkerID = worker.ID;
                                 session.Time = DateTime.Now;
                                 worker.agentFailedPing = 0;
                             }

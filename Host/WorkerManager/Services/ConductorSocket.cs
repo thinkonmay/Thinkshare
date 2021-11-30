@@ -1,4 +1,5 @@
 ﻿using WorkerManager.Interfaces;
+using Microsoft.Extensions.Options;
 using SharedHost.Models.Cluster;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
@@ -14,7 +15,7 @@ using System;
 using System.IO;
 using System.Text;
 using SharedHost.Models.Session;
-using WorkerManager.Data;
+using DbSchema.SystemDb;
 using SharedHost.Models.Local;
 using DbSchema.CachedState;
 using SharedHost;
@@ -37,14 +38,13 @@ namespace WorkerManager.Services
 
         private readonly ClusterConfig _config;
 
-        public ConductorSocket(ClusterConfig cluster, 
+        public ConductorSocket(IOptions<ClusterConfig> cluster, 
                                ClusterDbContext db,
                                ILocalStateStore cache)
         {
             _db = db;
             _cache = cache;
-            _config = cluster;
-            clusterConfig = cluster;
+            _config = cluster.Value;
             _scriptmodel = new RestClient();
         }
 
@@ -136,9 +136,6 @@ namespace WorkerManager.Services
                                 case Opcode.STATE_SYNCING:
                                     await StateSyncing(WsMessage); 
                                     break;
-                                case Opcode.ID_GRANT:
-                                    await Assignment(WsMessage);
-                                    break;
                                 case Opcode.WORKER_INFOR_REQUEST:
                                     await GetWorkerInfor(WsMessage);
                                     break;
@@ -193,10 +190,13 @@ namespace WorkerManager.Services
             {
                 while (true)
                 {
-                    var unsyncedState = await _cache.GetClusterState();
-                    foreach ( var item in unsyncedState)
+                    var clusterSnapshoot = await _cache.GetClusterState();
+                    /// check for every different between 
+                    foreach ( var item in clusterSnapshoot)
                     {
                         bool success = syncedState.TryGetValue(item.Key,out var output);
+
+                        // if item is not exist in synced snapshoot, sync
                         if(!success)
                         {
                             var request = new Message
@@ -204,9 +204,33 @@ namespace WorkerManager.Services
                                 Opcode = Opcode.STATE_SYNCING,
                                 From = Module.CLUSTER_MODULE,
                                 To = Module.HOST_MODULE,
-                                Data = JsonConvert.SerializeObject(syncedState)
+                                Data = JsonConvert.SerializeObject(clusterSnapshoot)
                             };
                             await SendMessage(JsonConvert.SerializeObject(request));
+                        }
+                        else // compare state and sync for any different
+                        {
+                            if(output != item.Value)
+                            {
+                                var request = new Message
+                                {
+                                    Opcode = Opcode.STATE_SYNCING,
+                                    From = Module.CLUSTER_MODULE,
+                                    To = Module.HOST_MODULE,
+                                    Data = JsonConvert.SerializeObject(clusterSnapshoot)
+                                };
+                                await SendMessage(JsonConvert.SerializeObject(request));
+                            }
+                        }
+                    }
+
+                    // check for item that is synced with host but not exist in cluster 
+                    foreach (var item in syncedState)
+                    {
+                        bool success = clusterSnapshoot.TryGetValue(item.Key,out var output);
+                        if(!success)
+                        {
+                            await _cache.SetWorkerState(item.Key,WorkerState.MISSING);
                         }
                     }
                 }
@@ -226,7 +250,7 @@ namespace WorkerManager.Services
             var worker = _db.Devices.Find(message.WorkerID);
             var registration = new WorkerRegisterModel
             {
-                PrivateID = worker.PrivateID,
+                PrivateID = worker.ID,
                 CPU = worker.CPU,
                 GPU = worker.GPU,
                 RAMcapacity = worker.RAMcapacity,
@@ -245,17 +269,6 @@ namespace WorkerManager.Services
 
 
 
-        async Task Assignment(Message message)
-        {
-            var assign = JsonConvert.DeserializeObject<IDAssign>(message.Data);
-            
-
-            var worker = _db.Devices.Find(assign.PrivateID);
-            worker.GlobalID = assign.GlobalID;
-            _db.Update(worker);
-            await _db.SaveChangesAsync();
-            await _cache.SetWorkerState(assign.PrivateID, WorkerState.Open);
-        }
 
 
 
@@ -279,19 +292,19 @@ namespace WorkerManager.Services
         /// </summary>
         /// <param name="session"></param>
         /// <returns></returns>
-        public async Task Initialize(int GlobalID, string token)
+        public async Task Initialize(int ID, string token)
         {
-            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
+            var worker = _db.Devices.Where(o => o.ID == ID).First();
             worker.RestoreWorkerNode();
 
             worker.RemoteToken = token;
             if (await worker.SessionInitialize())
             {
-                await _cache.SetWorkerState(worker.PrivateID, WorkerState.OnSession);
+                await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
             }
             else 
             {
-                await _cache.SetWorkerState(worker.PrivateID, WorkerState.OffRemote);
+                await _cache.SetWorkerState(worker.ID, WorkerState.OffRemote);
             }
         }
 
@@ -303,13 +316,13 @@ namespace WorkerManager.Services
         /// <returns></returns>
         public async Task Terminate(int GlobalID)
         {
-            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
+            var worker = _db.Devices.Where(o => o.ID == GlobalID).First();
             worker.RestoreWorkerNode();
 
             worker.RemoteToken = null;
             if(await worker.SessionTerminate())
             {
-                await _cache.SetWorkerState(worker.PrivateID, WorkerState.Open);
+                await _cache.SetWorkerState(worker.ID, WorkerState.Open);
             }
             await _db.SaveChangesAsync();
         }
@@ -322,12 +335,12 @@ namespace WorkerManager.Services
         /// <returns></returns>
         public async Task Disconnect(int GlobalID)
         {
-            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
+            var worker = _db.Devices.Where(o => o.ID == GlobalID).First();
             worker.RestoreWorkerNode();
 
             if (await worker.SessionDisconnect())
             {
-                await _cache.SetWorkerState(worker.PrivateID,WorkerState.OffRemote);
+                await _cache.SetWorkerState(worker.ID,WorkerState.OffRemote);
             }
             await _db.SaveChangesAsync();
         }
@@ -339,50 +352,14 @@ namespace WorkerManager.Services
         /// <returns></returns>
         public async Task Reconnect(int GlobalID)
         {
-            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
+            var worker = _db.Devices.Where(o => o.ID == GlobalID).First();
             worker.RestoreWorkerNode();
 
             if (await worker.SessionReconnect())
             {
-                await _cache.SetWorkerState(worker.PrivateID, WorkerState.OnSession);
+                await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
             }
         }
 
-
-
-
-
-
-
-
-        public async Task<List<ScriptModel>> GetDefaultModel()
-        {
-            if(!_db.ScriptModels.Any())
-            {
-                var token = _db.Owner.First().token;
-                var request = new RestRequest("AllModel")
-                    .AddHeader("Authorization", "Bearer " + token);
-                request.Method = Method.GET;
-
-                var result = await _scriptmodel.ExecuteAsync(request);
-                if(result.StatusCode == HttpStatusCode.OK)
-                {
-                    var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
-                    var defaultModel = allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
-                    _db.ScriptModels.AddRange(defaultModel);
-                    return defaultModel;
-                }
-                else
-                {
-                    Serilog.Log.Information("Failed to get default script");
-                    return await GetDefaultModel();
-                }
-            }
-            else
-            {
-                var allModel = _db.ScriptModels.ToList();
-                return allModel;
-            }
-        }
     }
 }

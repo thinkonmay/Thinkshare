@@ -14,10 +14,7 @@ namespace SharedHost.Models.Local
     public class ClusterWorkerNode 
     {
         [Key]
-        public int PrivateID { get; set; }
-
-        [Required]
-        public int GlobalID { get;set; }
+        public int ID{ get; set; }
 
         [Required]
         public string PrivateIP { get; set; }

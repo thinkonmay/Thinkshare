@@ -11,8 +11,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using WorkerManager.Data;
 using SharedHost.Models.Local;
+using DbSchema.SystemDb;
 
 namespace WorkerManager.Services
 {

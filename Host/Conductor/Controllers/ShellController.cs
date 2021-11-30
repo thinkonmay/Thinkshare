@@ -35,7 +35,6 @@ namespace Conductor.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        [Manager]
         [HttpGet("AllModel")]
         public IActionResult Model()
         {

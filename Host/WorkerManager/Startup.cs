@@ -9,7 +9,7 @@ using WorkerManager.Services;
 using System;
 using System.IO;
 using System.Reflection;
-using WorkerManager.Data;
+using DbSchema.SystemDb;
 using WorkerManager.Middleware;
 using DbSchema.CachedState;
 using SharedHost;
@@ -84,7 +84,7 @@ namespace WorkerManager
                     }
                 }); 
             });
-            services.AddSingleton(Configuration.GetSection("ClusterConfig").Get<ClusterConfig>());
+            services.Configure<ClusterConfig>(Configuration.GetSection("ClusterConfig"));
             services.AddSingleton<ILocalStateStore, LocalStateStore>();
             services.AddSingleton<IConductorSocket,ConductorSocket>();
             services.AddSingleton<IWorkerNodePool,WorkerNodePool>();

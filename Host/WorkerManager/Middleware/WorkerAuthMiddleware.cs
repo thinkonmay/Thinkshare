@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using System.Linq;
 using System.Threading.Tasks;
 using RestSharp;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
 using WorkerManager.Interfaces;
-using WorkerManager.Data;
+using DbSchema.SystemDb;
 using SharedHost.Models.User;
 using SharedHost.Models.Local;
 using SharedHost;
@@ -23,14 +24,14 @@ namespace WorkerManager.Middleware
         private readonly RestClient _token;
 
         public JwtMiddleware(RequestDelegate next,
-                            ClusterConfig config,
+                            IOptions<ClusterConfig> config,
                             ITokenGenerator generator,
                             ClusterDbContext db)
         {
             _db = db;
             _next = next;
             _generator = generator;
-            _token = new RestClient(config.OwnerAccountUrl);
+            _token = new RestClient(config.Value.OwnerAccountUrl);
         }
 
         public async Task Invoke(HttpContext context)
@@ -50,7 +51,7 @@ namespace WorkerManager.Middleware
                 ClusterWorkerNode node = await _generator.ValidateToken(token);
                 if (node == null)
                 {
-                    context.Items.Add("PrivateID", node.PrivateID.ToString());
+                    context.Items.Add("PrivateID", node.ID.ToString());
                 }
                 else
                 {

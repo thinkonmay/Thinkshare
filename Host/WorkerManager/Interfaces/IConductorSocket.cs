@@ -10,7 +10,6 @@ namespace WorkerManager.Interfaces
 
         Task<bool> Stop();
 
-        Task<List<ScriptModel>> GetDefaultModel();
 
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using DbSchema.SystemDb;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SharedHost;
 using SharedHost.Models.Device;
@@ -7,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace DbSchema.CachedState
 {
@@ -26,10 +29,13 @@ namespace DbSchema.CachedState
     {
         private IDistributedCache _cache;
 
-        public LocalStateStore(IDistributedCache cache,
-                               ClusterConfig config)
+        public LocalStateStore(IDistributedCache cache, ClusterDbContext db)
         {
             _cache = cache;
+            var nodes = db.Devices.ToList();
+            var initState = new Dictionary<int,string>();
+            nodes.ForEach(x => initState.Add(x.ID,WorkerState.Open));
+            _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", initState, TimeSpan.MaxValue, TimeSpan.MaxValue).Wait();
         }
         public async Task SetWorkerState(int WorkerID, string node)
         {
@@ -37,7 +43,7 @@ namespace DbSchema.CachedState
             var dictionary = JsonConvert.DeserializeObject<Dictionary<int, string>>(cachedValue);
             dictionary.Remove(WorkerID);
             dictionary.Add(WorkerID, node);
-            await _cache.SetRecordAsync<string>("ClusterWorkerCache", node, TimeSpan.MaxValue, TimeSpan.MaxValue);
+            await _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", dictionary, TimeSpan.MaxValue, TimeSpan.MaxValue);
             return;
         }
         public async Task<string?> GetWorkerState(int WorkerID)
@@ -55,7 +61,7 @@ namespace DbSchema.CachedState
 
         public async Task CacheWorkerInfor(ClusterWorkerNode Worker)
         {
-            await _cache.SetRecordAsync<ClusterWorkerNode>("Worker_" + Worker.PrivateID.ToString(), Worker, TimeSpan.FromDays(1), TimeSpan.FromDays(1));
+            await _cache.SetRecordAsync<ClusterWorkerNode>("Worker_" + Worker.ID.ToString(), Worker, TimeSpan.FromDays(1), TimeSpan.FromDays(1));
         }
         public async Task<ClusterWorkerNode?> GetWorkerInfor(int PrivateID)
         {

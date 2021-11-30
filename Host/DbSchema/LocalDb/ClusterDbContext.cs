@@ -4,7 +4,7 @@ using SharedHost.Models.Cluster;
 using SharedHost.Models.Shell;
 using SharedHost.Models.Local;
 
-namespace WorkerManager.Data
+namespace DbSchema.SystemDb
 {
     /// <summary>
     /// Database context in ef framework, readmore at https://www.entityframeworktutorial.net/efcore/entity-framework-core-dbcontext.aspx
