@@ -30,7 +30,8 @@ namespace SystemHub.Services
         private readonly IGlobalStateStore _cache;
                 
         
-        public ClusterSocketPool(IOptions<SystemConfig> config, IGlobalStateStore cache)
+        public ClusterSocketPool(IOptions<SystemConfig> config, 
+                                 IGlobalStateStore cache)
         {
             _config = config.Value;
             _cache = cache;
@@ -204,6 +205,7 @@ namespace SystemHub.Services
 
                         await _conductor.ExecuteAsync(syncrequest);
                     }
+
                     syncedSnapshoot.Add(unsyncedItem.Key,syncedState);
                 }
                 else // otherwise, set item as missing state
@@ -216,7 +218,7 @@ namespace SystemHub.Services
                     syncrequest.Method = Method.POST;
 
                     await _conductor.ExecuteAsync(syncrequest);
-                    
+                    syncedSnapshoot.Add(unsyncedItem.Key,WorkerState.MISSING);
                 }
             }
 
@@ -228,7 +230,15 @@ namespace SystemHub.Services
                 // if item is exist in cluster snapshoot but not in synced, add it
                 if (!success)
                 {
-                    syncedSnapshoot.Add(item.Key,item.Value);
+                    var workerInfor = _cache.GetWorkerInfor(item.Key);
+                    if(workerInfor == null)
+                    {
+                        syncedSnapshoot.Add(item.Key,WorkerState.unregister);
+                    }
+                    else
+                    {
+                        syncedSnapshoot.Add(item.Key,item.Value);
+                    }
                 }
             }
 

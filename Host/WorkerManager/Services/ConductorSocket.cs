@@ -245,6 +245,25 @@ namespace WorkerManager.Services
                         {
                             if(output != item.Value)
                             {
+                                if(item.Value == WorkerState.unregister)
+                                {
+                                    var device = await _cache.GetWorkerInfor(item.Key);
+                                    if(device == null)
+                                    {
+                                        clusterSnapshoot.Remove(item.Key);
+                                        await _cache.SetWorkerState(item.Key,null);
+                                    }
+                                    else
+                                    {
+                                        bool result = await reRegisterDevice((ClusterWorkerNode)device);
+                                        if(!result)
+                                        {
+                                            clusterSnapshoot.Remove(item.Key);
+                                            await _cache.SetWorkerState(item.Key,null);
+                                        }
+                                    }
+                                }
+
                                 var request = new Message
                                 {
                                     Opcode = Opcode.STATE_SYNCING,
@@ -272,14 +291,49 @@ namespace WorkerManager.Services
             catch (Exception ex)
             {
                 Serilog.Log.Information("state syncing failed");
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
                 await StateSyncing(message);
             }
         }
 
 
 
+        async Task<bool> reRegisterDevice(ClusterWorkerNode model)
+        {
 
+            var node = new WorkerRegisterModel
+            {
+                CPU = model.CPU,
+                GPU = model.GPU,
+                RAMcapacity = (int)model.RAMcapacity,
+                OS = model.OS,
+            };
 
+            var client = new RestClient();
+            var request = new RestRequest(_config.WorkerRegisterUrl)
+                .AddQueryParameter("ClusterName",_config.ClusterName)
+                .AddJsonBody(node)
+                .AddHeader("Authorization","Bearer "+_db.Owner.First().token);
+
+            var result = await client.ExecuteAsync(request);
+            if(result.StatusCode == HttpStatusCode.OK)
+            {
+                IDAssign id = JsonConvert.DeserializeObject<IDAssign>(result.Content);
+                model.ID = id.GlobalID;
+
+                _db.Devices.Add(model);
+                await _db.SaveChangesAsync();
+                await _cache.CacheWorkerInfor(model);
+                await _cache.SetWorkerState(model.ID, WorkerState.Open);
+                return true;
+            }
+            else
+            {
+                Serilog.Log.Information("Fail to register device");
+                return false;
+            }
+        }
 
 
 
