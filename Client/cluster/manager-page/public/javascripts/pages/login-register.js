@@ -23,7 +23,7 @@ function login(body) {
 					const response = await data.json()
 					if (data.status == 200) {
 						if (response.errors == null) {
-							setCookie("token", response.token, MINUTES59)
+							setCookie("token", response, MINUTES59)
 							window.location.replace(API.Dashboard)
 						} else {
 							console.log(response.error);

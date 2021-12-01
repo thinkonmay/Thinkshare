@@ -30,23 +30,23 @@ export const StopRoute = `${host}/Owner/Stop`
 
 //////////////////////////////////////////////// 
 // User API 
-export const Token = `${host}/Account/ExchangeToken`
-export const Infor = `${host}/Account/Infor`
-export const Session = `${host}/Account/History`
+export const Token = `${host_user}/Account/ExchangeToken`
+export const Infor = `${host_user}/Account/Infor`
+export const Session = `${host_user}/Account/History`
 
-export const Setting = `${host}/Setting`
+export const Setting = `${host_user}/Setting`
 
 // Session API
-export const InitializeSession = `${host}/Session/Initialize`
-export const TerminateSession = `${host}/Session/Terminate`
-export const DisconnectSession = `${host}/Session/Disconnect`
-export const ReconnectSession = `${host}/Session/Reconnect`
+export const InitializeSession = `${host_user}/Session/Initialize`
+export const TerminateSession = `${host_user}/Session/Terminate`
+export const DisconnectSession = `${host_user}/Session/Disconnect`
+export const ReconnectSession = `${host_user}/Session/Reconnect`
 
 export const UserHub = `wss://host.thinkmay.net/Hub/User`
 
 // User API
-export const FetchSlave = `${host}/Fetch/Node`
-export const FetchSession = `${host}/Fetch/Session`
+export const FetchSlave = `${host_user}/Fetch/Node`
+export const FetchSession = `${host_user}/Fetch/Session`
 //////////////////////////////////////////////// 
 
 export const genHeaders = () => {
@@ -256,19 +256,19 @@ export const getInfor = () => {
 		}
 	})
 }
-
-export const getSetting = () => {
-	return fetch(Infor, {
-		method: "GET",
-		headers: genHeadersUser()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
+	
+// export const getSetting = () => {
+// 	return fetch(Infor, {
+// 		method: "GET",
+// 		headers: genHeadersUser()
+// 	}, function (error) {
+// 		if (401 == error.response.status) {
+// 			window.location.replace(API.Login)
+// 		} else {
+// 			return Promise.reject(error);
+// 		}
+// 	})
+// }
 
 export const setInfor = (body) => {
 	return fetch(Infor, {

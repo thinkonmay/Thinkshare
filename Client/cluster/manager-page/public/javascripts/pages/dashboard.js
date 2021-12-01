@@ -9,7 +9,7 @@ import * as CheckDevice from "../util/checkdevice.js"
 let datasets = [];
 let sessionInfor;
 API.getInfor().then(async data => {
-	$("#fullName").html((await data.json()).fullName)
+	$("#WelcomeUsername").html((await data.json()).fullName)
 })
 $(document).ready(async () => {
 	$('#logout').click(() => {
@@ -42,9 +42,9 @@ $(document).ready(async () => {
 
 	try {
 		const userinfor = await (await API.getInfor()).json()
-		const sessions = await (await API.fetchSession()).json()
-		const slaves = await (await API.fetchSlave()).json()
-		sessionInfor = await (await API.getSession()).json()
+		// const sessions = await (await API.fetchSession()).json()
+		// const slaves = await (await API.fetchSlave()).json()
+		// sessionInfor = await (await API.getSession()).json()
 		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
 
 		for (const slave of sessions) {
@@ -54,14 +54,14 @@ $(document).ready(async () => {
 			createSlave(slave, "availableSlaves");
 		}
 	} catch (err) {
-		location.reload();
+		// location.reload();
 	}
 
 	// set data for chart to anaylize hour used
 	setDataForChart();
 
 	// using websocket to connect to systemhub
-	const Websocket = new WebSocket(API.UserHub + `?token=${getCookie("token")}`)
+	// const Websocket = new WebSocket(API.UserHub + `?token=${getCookie("token")}`)
 	Websocket.addEventListener('open', onWebsocketOpen);
 	Websocket.addEventListener('message', onClientHubEvent);
 	Websocket.addEventListener('error', onWebsocketClose);
@@ -123,7 +123,7 @@ function onWebsocketOpen() {
 	console.log("connected to client hub");
 }
 function onWebsocketClose(event) {
-	location.reload();
+	// location.reload();
 };
 
 function createSlave(slave, queue) {
@@ -157,26 +157,26 @@ function setState(serviceState, slaveID) {
 	var button = document.getElementById(`button${slaveID}`);
 	button.innerHTML = slaveState(serviceState, slaveID);
 
-	if (serviceState === "ON_SESSION") {
-		var initbutt = document.getElementById(`disconnect${slaveID}`)
-		initbutt.addEventListener("click", async function () {
-			await API.disconnectSession(slaveID)
-		});
-		var terminatebutt = document.getElementById(`terminate${slaveID}`)
-		terminatebutt.addEventListener("click", async function () {
-			await API.terminateSession(slaveID)
-		});
-	}
-	if (serviceState === "OFF_REMOTE") {
-		var recbutt = document.getElementById(`reconnect${slaveID}`)
-		recbutt.addEventListener("click", async function () {
-			RemotePage.sessionReconnect(slaveID)
-		});
-		var terminatebutt = document.getElementById(`terminate${slaveID}`)
-		terminatebutt.addEventListener("click", async function () {
-			await API.terminateSession(slaveID)
-		});;
-	}
+	// if (serviceState === "ON_SESSION") {
+	// 	var initbutt = document.getElementById(`disconnect${slaveID}`)
+	// 	initbutt.addEventListener("click", async function () {
+	// 		await API.disconnectSession(slaveID)
+	// 	});
+	// 	var terminatebutt = document.getElementById(`terminate${slaveID}`)
+	// 	terminatebutt.addEventListener("click", async function () {
+	// 		await API.terminateSession(slaveID)
+	// 	});
+	// }
+	// if (serviceState === "OFF_REMOTE") {
+	// 	var recbutt = document.getElementById(`reconnect${slaveID}`)
+	// 	recbutt.addEventListener("click", async function () {
+	// 		RemotePage.sessionReconnect(slaveID)
+	// 	});
+	// 	var terminatebutt = document.getElementById(`terminate${slaveID}`)
+	// 	terminatebutt.addEventListener("click", async function () {
+	// 		await API.terminateSession(slaveID)
+	// 	});;
+	// }
 	if (serviceState === "DEVICE_OPEN") {
 		var connbutt = document.getElementById(`connect${slaveID}`)
 		connbutt.addEventListener("click", async function () {
