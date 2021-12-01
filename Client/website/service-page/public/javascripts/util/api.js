@@ -25,7 +25,7 @@ export const Login = `${host}/Account/Login`
 export const Register = `${host}/Account/Register`
 export const Token = `${host}/Account/ExchangeToken`
 export const Infor = `${host}/Account/Infor`
-export const Session = `${host}/Account/Session`
+export const Session = `${host}/Account/History`
 
 export const Setting = `${host}/Setting`
 
