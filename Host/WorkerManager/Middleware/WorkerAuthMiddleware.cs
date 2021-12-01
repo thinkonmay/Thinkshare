@@ -13,7 +13,7 @@ using SharedHost;
 
 namespace WorkerManager.Middleware
 {
-    public class JwtMiddleware
+    public class ClusterJwtMiddleware
     {
         private readonly RequestDelegate _next;
         
@@ -23,7 +23,9 @@ namespace WorkerManager.Middleware
 
         private readonly RestClient _token;
 
-        public JwtMiddleware(RequestDelegate next,
+        private readonly ClusterConfig _config;
+
+        public ClusterJwtMiddleware(RequestDelegate next,
                             IOptions<ClusterConfig> config,
                             ITokenGenerator generator,
                             ClusterDbContext db)
@@ -31,7 +33,8 @@ namespace WorkerManager.Middleware
             _db = db;
             _next = next;
             _generator = generator;
-            _token = new RestClient(config.Value.OwnerAccountUrl);
+            _config = config.Value;
+            _token = new RestClient();
         }
 
         public async Task Invoke(HttpContext context)
@@ -49,14 +52,16 @@ namespace WorkerManager.Middleware
             try
             {
                 ClusterWorkerNode node = await _generator.ValidateToken(token);
-                if (node == null)
+                if (node != null)
                 {
                     context.Items.Add("PrivateID", node.ID.ToString());
+                    context.Items.Add("isWorker", "true");
                 }
                 else
                 {
-                    var request = new RestRequest("GetInfor")
-                        .AddHeader("token","Bearer "+ token);
+                    context.Items.Add("isWorker", "false");
+                    var request = new RestRequest(_config.OwnerAuthorizeUrl)
+                        .AddHeader("Authorization","Bearer "+ token);
                     request.Method = Method.GET;
 
                     var result = await _token.ExecuteAsync(request);
@@ -70,9 +75,12 @@ namespace WorkerManager.Middleware
                             {
                                 context.Items.Add("IsOwner", "true");
                             }
+                            else
+                            {
+                                context.Items.Add("IsOwner", "false");
+                            }
                         }
                     }
-
                 }
                 return;
             }
@@ -86,11 +94,11 @@ namespace WorkerManager.Middleware
 
 
 
-    public class AuthorizeMiddleware
+    public class ClusterAuthorizeMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public AuthorizeMiddleware(RequestDelegate next)
+        public ClusterAuthorizeMiddleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -101,8 +109,8 @@ namespace WorkerManager.Middleware
             var userAttribute = endpoint?.Metadata.GetMetadata<WorkerAttribute>();
             if (userAttribute != null)
             {
-                var isUser = context.Items["PrivateID"];
-                if (isUser == null)
+                var isWorker = (string)context.Items["PrivateID"];
+                if (isWorker != "true")
                 {
                     context.Response.StatusCode =  StatusCodes.Status401Unauthorized;
                     return;

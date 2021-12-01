@@ -99,18 +99,19 @@ namespace WorkerManager
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
             
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
 
-            app.UseMiddleware<JwtMiddleware>();
-            app.UseMiddleware<AuthorizeMiddleware>();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseMiddleware<ClusterJwtMiddleware>();
+            app.UseMiddleware<ClusterAuthorizeMiddleware>();
+
 
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
