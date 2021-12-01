@@ -120,14 +120,6 @@ namespace WorkerManager.Migrations
                     b.Property<string>("RemoteToken")
                         .HasColumnType("text");
 
-                    b.Property<string>("agentUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("coreUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("ID");
 
                     b.ToTable("Devices");

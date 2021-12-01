@@ -47,7 +47,6 @@
     <PackageReference Include="Serilog.Sinks.ElasticSearch" Version="8.4.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.2.88" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.0" />
   </ItemGroup>
 
   <ItemGroup>

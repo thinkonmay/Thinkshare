@@ -19,7 +19,8 @@ namespace SharedHost.Auth
 
         private readonly SystemConfig _config;
 
-        public JwtMiddleware(RequestDelegate next, IOptions<SystemConfig> config)
+        public JwtMiddleware(RequestDelegate next, 
+                            IOptions<SystemConfig> config)
         {
             _next = next;
             _config = config.Value;

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
 using RestSharp;
 using Microsoft.AspNetCore.Mvc;
@@ -28,13 +27,13 @@ namespace WorkerManager.Controllers
 
         private readonly ClusterDbContext _db;
 
-        private readonly LocalStateStore _cache;
+        private readonly ILocalStateStore _cache;
 
         private readonly ClusterConfig _config;
 
         public AgentController( ClusterDbContext db, 
                                 ITokenGenerator token,
-                                LocalStateStore cache,
+                                ILocalStateStore cache,
                                 IOptions<ClusterConfig> config)
         {
             _cache = cache;
@@ -49,7 +48,8 @@ namespace WorkerManager.Controllers
         /// <param name="agent_register"></param>
         /// <returns></returns>
         [Owner]
-        [HttpPost("register")]
+        [Route("register")]
+        [HttpPost]
         public async Task<IActionResult> PostInfor([FromBody]WorkerRegisterModel agent_register)
         {
             var cachednode = _db.Devices.Where(x => 
@@ -65,6 +65,7 @@ namespace WorkerManager.Controllers
                     .AddQueryParameter("ClusterName",_config.ClusterName)
                     .AddJsonBody(agent_register)
                     .AddHeader("Authorization","Bearer "+_db.Owner.First().token);
+                request.Method = Method.POST;
 
                 var result = await client.ExecuteAsync(request);
                 if(result.StatusCode == HttpStatusCode.OK)
@@ -99,7 +100,8 @@ namespace WorkerManager.Controllers
         }
 
         [Worker]
-        [HttpPost("core/end")]
+        [Route("core/end")]
+        [HttpPost]
         public async Task<IActionResult> Post()
         {
             var workerID = Int32.Parse((string)HttpContext.Items["PrivateID"]);

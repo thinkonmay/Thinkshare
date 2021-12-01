@@ -34,12 +34,6 @@ namespace SharedHost.Models.Local
         [Required]
         public DateTime Register { get;set; }
 
-        [Required]
-        public string agentUrl { get; set; }
-
-        [Required]
-        public string coreUrl { get; set; }
-        
         public string? RemoteToken { get; set; }
 
         [NotMapped]
@@ -60,8 +54,8 @@ namespace SharedHost.Models.Local
 
         public void RestoreWorkerNode ()
         {
-            _coreClient = new RestClient(coreUrl+"/cluster");
-            _agentClient = new RestClient(agentUrl+"/cluster");
+            _coreClient = new RestClient("http://"+PrivateIP.ToString()+":3330/cluster");
+            _agentClient = new RestClient("https://"+PrivateIP.ToString()+":2220/cluster");
         }
 
 

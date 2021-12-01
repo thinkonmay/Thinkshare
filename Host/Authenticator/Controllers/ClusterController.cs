@@ -110,7 +110,10 @@ namespace Authenticator.Controllers
                 OS = body.OS
             };
             cluster.WorkerNode.Add(newWorker);
+            _db.Clusters.Update(cluster);
             await _db.SaveChangesAsync();
+
+            // get GlobalID and return to cluster
             var result = new IDAssign
             {
                 GlobalID = newWorker.ID,

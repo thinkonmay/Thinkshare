@@ -58,11 +58,12 @@ namespace WorkerManager.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var request = new RestRequest( new Uri(_config.OwnerAccountUrl+"/Login"))
+            var request = new RestRequest( new Uri(_config.OwnerAccountUrl))
                  .AddJsonBody(login);
             request.Method = Method.POST;
 
             var result = await _client.ExecuteAsync(request);
+            if(result.StatusCode != HttpStatusCode.OK) {return BadRequest("Fail to connect to host");}
             var jsonresult = JsonConvert.DeserializeObject<AuthResponse>(result.Content);
 
             if(jsonresult.Errors == null)
@@ -95,7 +96,7 @@ namespace WorkerManager.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest(jsonresult);
             }
         }
 
@@ -110,7 +111,7 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> Register(bool isPrivate)
         {
             var token = _db.Owner.First().token;
-            var request = new RestRequest(_config.ClusterInforUrl+"/Register")
+            var request = new RestRequest(_config.ClusterRegisterUrl)
                 .AddHeader("Authorization","Bearer "+token)
                 .AddQueryParameter("ClusterName", _config.ClusterName)
                 .AddQueryParameter("Private", isPrivate.ToString());
@@ -148,7 +149,7 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> Token()
         {
             var token = _db.Owner.First().token;
-            var request = new RestRequest(_config.ClusterInforUrl+"/Token")
+            var request = new RestRequest(_config.ClusterRegisterUrl)
                 .AddHeader("Authorization","Bearer "+token)
                 .AddQueryParameter("ClusterName", _config.ClusterName);
             request.Method = Method.GET;
