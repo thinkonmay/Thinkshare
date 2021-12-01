@@ -4,6 +4,7 @@ import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 const MINUTES59 = 59 * 60 * 1000;
 
+
 function serializeArrToObject(serializeArr) {
 	const obj = {}
 	serializeArr.map(item => (obj[item.name] = item.value))

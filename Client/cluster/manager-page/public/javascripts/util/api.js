@@ -2,6 +2,11 @@ import {getCookie} from "./cookie.js"
 
 const host = "http://localhost:5000"
 
+// local api
+export const Dashboard = "/dashboard"
+export const Initialize = "/initialize"
+export const Reconnect = "/reconnect"
+
 // owner api
 export const LoginRoute = `${host}/Owner/Login`
 export const RegisterClusterRoute = `${host}/Owner/Register`
