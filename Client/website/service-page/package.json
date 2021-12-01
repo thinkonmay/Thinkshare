@@ -8,7 +8,6 @@
     "debug": "node --inspect-brk src/www"
   },
   "dependencies": {
-    "@microsoft/signalr": "^5.0.10",
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
