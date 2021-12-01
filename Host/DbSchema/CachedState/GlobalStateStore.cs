@@ -46,7 +46,13 @@ namespace DbSchema.CachedState
         }
         public async Task<Dictionary<int, string>> GetClusterSnapshot(int ClusterID)
         {
-            return await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString());
+            var snapshoot = await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString());
+            if(snapshoot == null)
+            {
+                snapshoot = new Dictionary<int, string>();
+                await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString(), snapshoot,null,null);
+            }
+            return snapshoot;
         }
 
 
@@ -76,9 +82,22 @@ namespace DbSchema.CachedState
             await _cache.SetRecordAsync<UserSetting>(SettingID.ToString(), defaultSetting, null,null);
         }
 
-        public async Task<UserSetting> GetUserSetting(int WorkerID)
+        public async Task<UserSetting> GetUserSetting(int UserID)
         {
-            return await _cache.GetRecordAsync<UserSetting>(WorkerID.ToString());
+            var setting = await _cache.GetRecordAsync<UserSetting?>(UserID.ToString());
+            if(setting == null)
+            {
+                setting = new UserSetting {
+                    device = DeviceType.WEB_APP,
+                    videoCodec = Codec.CODEC_H264,
+                    audioCodec = Codec.OPUS_ENC,
+                    mode = QoEMode.HIGH_CONST,
+                    screenHeight = 1920,
+                    screenWidth = 1080                         
+                };
+                await _cache.SetRecordAsync<UserSetting>(UserID.ToString(), setting);
+            }
+            return setting;
         }
 
 

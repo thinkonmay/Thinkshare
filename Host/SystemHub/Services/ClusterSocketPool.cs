@@ -67,10 +67,6 @@ namespace SystemHub.Services
         {
             bool result = _ClusterSocketsPool.TryAdd(resp, session);
             var snapshoot = await _cache.GetClusterSnapshot(resp.ID);
-            if(snapshoot == null)
-            {
-                await _cache.SetClusterSnapshot(resp.ID,new Dictionary<int, string>());
-            }
             if(!result)
             {
                 return;

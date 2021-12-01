@@ -214,23 +214,7 @@ namespace Authenticator.Controllers
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
-
-            var DefaultSetting = await _cache.GetUserSetting(Int32.Parse((string)UserID));
-
-            if(DefaultSetting == null)
-            {
-                DefaultSetting = new UserSetting {
-                    device = DeviceType.WEB_APP,
-                    videoCodec = Codec.CODEC_H264,
-                    audioCodec = Codec.OPUS_ENC,
-                    mode = QoEMode.HIGH_CONST,
-                    screenHeight = 1920,
-                    screenWidth = 1080                         
-                };
-                await _cache.SetUserSetting(Int32.Parse((string)UserID), DefaultSetting);
-            }
-
-            return Ok(new UserInforModel(account,DefaultSetting));
+            return Ok(new UserInforModel(account));
         }
 
 
@@ -300,7 +284,7 @@ namespace Authenticator.Controllers
         /// </summary>
         /// <returns></returns>
         [User]
-        [HttpGet("Session")]
+        [HttpGet("History")]
         public async Task<IActionResult> UserGetSession()
         {
             var UserID = HttpContext.Items["UserID"];

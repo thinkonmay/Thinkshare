@@ -50,7 +50,6 @@ namespace Authenticator.Controllers
         public async Task<IActionResult> GetDefaultSetting()
         {
             var UserID = HttpContext.Items["UserID"];
-
             return Ok(await _cache.GetUserSetting(Int32.Parse((string)UserID)));
         }
 
@@ -58,11 +57,10 @@ namespace Authenticator.Controllers
         
         [User]
         [HttpPost("Set")]
-        public async Task<IActionResult> SetDefaultSetting([FromBody] UserSetting capability)
+        public async Task<IActionResult> SetDefaultSetting([FromBody] UserSetting body)
         {
             var UserID = HttpContext.Items["UserID"];
-
-            await _cache.SetUserSetting(Int32.Parse((string)UserID), capability);
+            await _cache.SetUserSetting(Int32.Parse((string)UserID), body);
             await _db.SaveChangesAsync();
             return Ok();
         }

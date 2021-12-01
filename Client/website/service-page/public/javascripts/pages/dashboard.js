@@ -44,6 +44,7 @@ $(document).ready(async () => {
 		const userinfor = await (await API.getInfor()).json()
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
+
 		sessionInfor = await (await API.getSession()).json()
 		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
 
@@ -54,7 +55,10 @@ $(document).ready(async () => {
 			createSlave(slave, "availableSlaves");
 		}
 	} catch (err) {
-		location.reload();
+		(new Promise(resolve => setTimeout(resolve, 5000)))
+		.then(() => {
+			location.reload();
+		});
 	}
 
 	// set data for chart to anaylize hour used
@@ -123,7 +127,10 @@ function onWebsocketOpen() {
 	console.log("connected to client hub");
 }
 function onWebsocketClose(event) {
-	location.reload();
+	(new Promise(resolve => setTimeout(resolve, 5000)))
+	.then(() => {
+		location.reload();
+	});
 };
 
 function createSlave(slave, queue) {
