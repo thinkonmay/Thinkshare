@@ -9,12 +9,6 @@ namespace SharedHost.Models.Device
     /// </summary>
     public class WorkerRegisterModel
     {
-        /// <summary>
-        /// Each slave device defined with an unique ID 
-        /// </summary>
-        [Required]
-        public int PrivateID { get; set; }
-
         [Required]
         public string? CPU { get; set; }
 
@@ -28,7 +22,5 @@ namespace SharedHost.Models.Device
         public string? OS { get; set; }
 
         public string? LocalIP {get;set;}
-
-
     }
 }

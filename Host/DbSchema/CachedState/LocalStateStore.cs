@@ -15,7 +15,7 @@ namespace DbSchema.CachedState
 {
     public interface ILocalStateStore
     {
-        Task SetWorkerState(int WorkerID, string node);
+        Task SetWorkerState(int WorkerID, string? node);
 
         Task<string?> GetWorkerState(int WorkerID);
 
@@ -38,11 +38,14 @@ namespace DbSchema.CachedState
             _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", initState, null,null).Wait();
         }
 
-        public async Task SetWorkerState(int WorkerID, string node)
+        public async Task SetWorkerState(int WorkerID, string? node)
         {
             var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterWorkerCache");
             cachedValue.Remove(WorkerID);
-            cachedValue.Add(WorkerID, node);
+            if(node != null)
+            {
+                cachedValue.Add(WorkerID, node);
+            }
             await _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", cachedValue, null,null);
             return;
         }

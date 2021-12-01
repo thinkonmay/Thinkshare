@@ -8,6 +8,8 @@ using System.Reflection;
 using SharedHost;
 using SystemHub.Interfaces;
 using SystemHub.Services;
+using DbSchema.SystemDb;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using DbSchema.CachedState;
 
@@ -46,6 +48,12 @@ namespace SystemHub
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
                 c.IncludeXmlComments(xmlFilePath);
+            });
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = "Cluster";
             });
 
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));

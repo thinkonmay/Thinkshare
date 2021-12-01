@@ -11,6 +11,7 @@ using Authenticator.Interfaces;
 using SharedHost;
 using RestSharp;
 using System.Linq;
+using DbSchema.CachedState;
 
 namespace Authenticator.Controllers
 {
@@ -29,10 +30,14 @@ namespace Authenticator.Controllers
 
         private readonly ITokenGenerator _token;
 
+        private readonly IGlobalStateStore _cache;
+
         public ClusterController(GlobalDbContext db,
                                  UserManager<UserAccount> userManager,
-                                 ITokenGenerator token)
+                                 ITokenGenerator token,
+                                 IGlobalStateStore cache)
         {
+            _cache = cache;
             _db = db;
             _token = token;
             _userManager = userManager;
@@ -112,6 +117,7 @@ namespace Authenticator.Controllers
                 ClusterID = cluster.ID,
             };
 
+            await _cache.CacheWorkerInfor(newWorker);
             return Ok(result);
         }
 

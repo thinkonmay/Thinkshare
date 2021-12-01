@@ -60,6 +60,10 @@ namespace Conductor.Controllers
                         await _clientHubctx.ReportSessionDisconnected(Session.First().WorkerID, Session.First().ClientId);
                         Session.First().EndTime = DateTime.Now;
                         break;
+                    case WorkerState.MISSING:
+                        await _clientHubctx.ReportSessionDisconnected(Session.First().WorkerID, Session.First().ClientId);
+                        Session.First().EndTime = DateTime.Now;
+                        break;
                     case WorkerState.OffRemote:
                         await _clientHubctx.ReportSessionDisconnected(Session.First().WorkerID, Session.First().ClientId);
                         break;
@@ -78,6 +82,9 @@ namespace Conductor.Controllers
                         await _clientHubctx.ReportNewSlaveAvailable(device);
                         break;
                     case WorkerState.Disconnected:
+                        await _clientHubctx.ReportSlaveObtained(Session.First().WorkerID);
+                        break;
+                    case WorkerState.MISSING:
                         await _clientHubctx.ReportSlaveObtained(Session.First().WorkerID);
                         break;
                 }
