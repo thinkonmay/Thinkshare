@@ -60,7 +60,6 @@ namespace WorkerManager.Services
             {
                 isRunning = false;
                 _systemHeartBeat.Wait();
-                _stateStyncing.Wait();
                 _sessionHeartBeat.Wait();
                 return true;
             }
@@ -130,7 +129,9 @@ namespace WorkerManager.Services
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("ping session failed due to " + ex.Message);
+                Serilog.Log.Information("ping session failed");
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
                 Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
                 await SessionHeartBeat();
             }
@@ -197,7 +198,9 @@ namespace WorkerManager.Services
                 }
             }catch (Exception ex)
             {
-                Serilog.Log.Information("ping worker failed due to " + ex.Message);
+                Serilog.Log.Information("ping worker failed");
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
                 Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 await SystemHeartBeat();
             }

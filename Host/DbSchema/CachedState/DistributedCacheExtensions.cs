@@ -17,8 +17,8 @@ namespace DbSchema.CachedState
         {
             var options = new DistributedCacheEntryOptions();
 
-            options.AbsoluteExpirationRelativeToNow = absoluteExpireTime ?? TimeSpan.FromSeconds(60);
-            options.SlidingExpiration = unusedExpireTime;
+            options.AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(30);
+            options.SlidingExpiration = TimeSpan.FromDays(30);
 
             var jsonData = JsonSerializer.Serialize(data);
             await cache.SetStringAsync(recordId, jsonData, options);

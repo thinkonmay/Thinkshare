@@ -19,21 +19,12 @@ spec:
       - name: redis
         image: redis:6.2.3-alpine
         command: ["redis-server"]
-        args: ["/etc/redis/redis.conf"]
         ports:
         - containerPort: 6379
-          name: redis
         volumeMounts:
         - name: data
           mountPath: /data
-        - name: config
-          mountPath: /etc/redis/
       volumes:
-      - name: redis-config
-        emptyDir: {}
-      - name: config
-        configMap:
-          name: redis-config   
       - name: data
         awsElasticBlockStore:        
           volumeID: "vol-046dcf4ee77ff68ae"
@@ -45,7 +36,7 @@ metadata:
   name: redis
   namespace: backend
 spec:
-  clusterIP: None
+  type: ClusterIP
   ports:
   - port: 6379
     targetPort: 6379

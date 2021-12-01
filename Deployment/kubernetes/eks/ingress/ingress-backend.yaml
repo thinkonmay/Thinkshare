@@ -80,21 +80,7 @@ spec:
 
 
 
-      - path: /Token/Challenge
-        pathType: Prefix
-        backend:
-          service:
-            name: authenticator
-            port:
-              number: 80
-      - path: /Token/ChallengeCluster
-        pathType: Prefix
-        backend:
-          service:
-            name: authenticator
-            port:
-              number: 80
-      - path: /Token/ChallengeSession
+      - path: /Token/Challenge/*
         pathType: Prefix
         backend:
           service:

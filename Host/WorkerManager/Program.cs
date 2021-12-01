@@ -62,6 +62,7 @@ namespace WorkerManager
                         var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
                         var defaultModel = allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
                         _db.ScriptModels.AddRange(defaultModel);
+                        await _db.SaveChangesAsync();
                     }
                 }
             }

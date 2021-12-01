@@ -41,12 +41,18 @@ namespace DbSchema.CachedState
 
         public async Task SetClusterSnapshot(int ClusterID, Dictionary<int, string> snapshoot)
         {
-            await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString(), snapshoot,TimeSpan.MaxValue,TimeSpan.MaxValue);
+            await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString(), snapshoot,null,null);
 
         }
         public async Task<Dictionary<int, string>> GetClusterSnapshot(int ClusterID)
         {
-            return await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString());
+            var snapshoot = await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString());
+            if(snapshoot == null)
+            {
+                snapshoot = new Dictionary<int, string>();
+                await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString(), snapshoot,null,null);
+            }
+            return snapshoot;
         }
 
 
@@ -54,7 +60,7 @@ namespace DbSchema.CachedState
 
         public async Task CacheWorkerInfor(WorkerNode node)
         {
-            await _cache.SetRecordAsync<WorkerNode>("WorkerInfor_"+node.ID.ToString(), node,TimeSpan.MaxValue,TimeSpan.MaxValue);
+            await _cache.SetRecordAsync<WorkerNode>("WorkerInfor_"+node.ID.ToString(), node,null,null);
         }
         public async Task<WorkerNode?> GetWorkerInfor(int WorkerID)
         {
@@ -73,12 +79,25 @@ namespace DbSchema.CachedState
 
         public async Task SetUserSetting(int SettingID, UserSetting defaultSetting)
         {
-            await _cache.SetRecordAsync<UserSetting>(SettingID.ToString(), defaultSetting, TimeSpan.FromDays(7), TimeSpan.FromDays(7));
+            await _cache.SetRecordAsync<UserSetting>(SettingID.ToString(), defaultSetting, null,null);
         }
 
-        public async Task<UserSetting> GetUserSetting(int WorkerID)
+        public async Task<UserSetting> GetUserSetting(int UserID)
         {
-            return await _cache.GetRecordAsync<UserSetting>(WorkerID.ToString());
+            var setting = await _cache.GetRecordAsync<UserSetting?>(UserID.ToString());
+            if(setting == null)
+            {
+                setting = new UserSetting {
+                    device = DeviceType.WEB_APP,
+                    videoCodec = Codec.CODEC_H264,
+                    audioCodec = Codec.OPUS_ENC,
+                    mode = QoEMode.HIGH_CONST,
+                    screenHeight = 1920,
+                    screenWidth = 1080                         
+                };
+                await _cache.SetRecordAsync<UserSetting>(UserID.ToString(), setting);
+            }
+            return setting;
         }
 
 
@@ -116,8 +135,8 @@ namespace DbSchema.CachedState
             config.STUNlist.ForEach(x => sessionClient.STUNlist.Add(x)) ;
             config.STUNlist.ForEach(x => sessionWorker.STUNlist.Add(x));
 
-            await _cache.SetRecordAsync<SessionClient>(SessionID.ToString() + "_" + Module.CLIENT_MODULE.ToString(), sessionClient, TimeSpan.FromDays(7), TimeSpan.FromDays(7));
-            await _cache.SetRecordAsync<SessionWorker>(SessionID.ToString() + "_" + Module.CORE_MODULE.ToString(), sessionWorker, TimeSpan.FromDays(7), TimeSpan.FromDays(7));
+            await _cache.SetRecordAsync<SessionClient>(SessionID.ToString() + "_" + Module.CLIENT_MODULE.ToString(), sessionClient, null,null);
+            await _cache.SetRecordAsync<SessionWorker>(SessionID.ToString() + "_" + Module.CORE_MODULE.ToString(), sessionWorker, null,null);
         }
 
         public async Task<SessionWorker> GetClientSessionSetting(SessionAccession accession)

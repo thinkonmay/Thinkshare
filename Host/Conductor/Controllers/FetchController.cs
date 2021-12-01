@@ -30,12 +30,12 @@ namespace Conductor.Controllers
 
         private readonly IWorkerCommnader _slmsocket;
 
-        private readonly GlobalStateStore _cache;
+        private readonly IGlobalStateStore _cache;
 
         public FetchController(GlobalDbContext db, 
                             UserManager<UserAccount> userManager,
                             IWorkerCommnader slm,
-                            GlobalStateStore cache)
+                            IGlobalStateStore cache)
         {
             _cache = cache;
             _slmsocket = slm;

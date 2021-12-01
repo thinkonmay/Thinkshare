@@ -24,11 +24,10 @@ export const Reconnect = "/reconnect"
 export const Login = `${host}/Account/Login`
 export const Register = `${host}/Account/Register`
 export const Token = `${host}/Account/ExchangeToken`
-export const GetInfor = `${host}/Account/GetInfor`
-export const SetInfor = `${host}/Account/SetInfor`
-export const GetSession = `${host}/Account/GetSession`
+export const Infor = `${host}/Account/Infor`
+export const Session = `${host}/Account/History`
 
-export const GetSetting = `${host}/Setting`
+export const Setting = `${host}/Setting`
 
 // Session API
 export const InitializeSession = `${host}/Session/Initialize`
@@ -84,6 +83,19 @@ export const register = body => {
 	})
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const tokenExchange = body => {
 	return fetch(Token, {
 		method: "POST",
@@ -96,18 +108,6 @@ export const tokenExchange = body => {
 }
 
 
-export const getInfor = () => {
-	return fetch(GetInfor, {
-		method: "GET",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
 
 export const fetchSlave = () => {
 	return fetch(FetchSlave, {
@@ -136,7 +136,7 @@ export const fetchSession = () => {
 }
 
 export const getSession = () => {
-	return fetch(GetSession, {
+	return fetch(Session, {
 		method: "GET",
 		headers: genHeaders()
 	}, function (error) {
@@ -147,6 +147,20 @@ export const getSession = () => {
 		}
 	})
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -203,9 +217,62 @@ export const initializeSession = (SlaveID) => {
 	})
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // User
+export const getInfor = () => {
+	return fetch(Infor, {
+		method: "GET",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+export const getSetting = () => {
+	return fetch(Infor, {
+		method: "GET",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
 export const setInfor = (body) => {
-	return fetch(SetInfor, {
+	return fetch(Infor, {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({
@@ -220,10 +287,8 @@ export const setInfor = (body) => {
 	})
 }
 
-
-
-export const setInfor = (body) => {
-	return fetch(GetSetting, {
+export const setSetting = (body) => {
+	return fetch(Setting, {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({

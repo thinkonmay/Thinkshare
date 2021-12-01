@@ -33,14 +33,17 @@ namespace SystemHub.Services
         {
             try
             {                
-                foreach (var socket in _UserSocketsPool)
+                while (true)
                 {
-                    if(socket.Value.State == WebSocketState.Open)
+                    foreach (var socket in _UserSocketsPool)
                     {
-                        await SendMessage(socket.Value,"ping");
+                        if(socket.Value.State == WebSocketState.Open)
+                        {
+                            await SendMessage(socket.Value,"ping");
+                        }
                     }
+                    Thread.Sleep(30*1000);
                 }
-                Thread.Sleep(30*1000);
             }catch
             {
                 await ConnectionHeartBeat();
@@ -51,14 +54,17 @@ namespace SystemHub.Services
         {
             try
             {                
-                foreach (var socket in _UserSocketsPool)
+                while (true)
                 {
-                    if(socket.Value.State == WebSocketState.Closed) 
+                    foreach (var socket in _UserSocketsPool)
                     {
-                        _UserSocketsPool.Remove(socket);
+                        if(socket.Value.State == WebSocketState.Closed) 
+                        {
+                            _UserSocketsPool.Remove(socket);
+                        }
                     }
+                    Thread.Sleep(100);
                 }
-                Thread.Sleep(100);
             }catch
             {
                 await ConnectionStateCheck();
@@ -134,16 +140,14 @@ namespace SystemHub.Services
                     using (var memoryStream = new MemoryStream())
                     {
                         message = await ReceiveMessage(ws, memoryStream);
-                        if (message.Count > 0)
-                        {
-                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                        }
                     }
                 } while (message.MessageType != WebSocketMessageType.Close && ws.State == WebSocketState.Open);
                 await Close(ws);
             } catch (Exception ex)
             {
-                Serilog.Log.Information("Connection with client closed due to "+ ex.Message);
+                Serilog.Log.Information("Connection with client closed ");
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
                 return;
             }
         }
