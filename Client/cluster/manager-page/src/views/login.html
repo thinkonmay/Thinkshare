@@ -24,28 +24,39 @@
 
 <body>
   <div class="container-scroller">
-    <div class="container-fluid page-body-wrapper full-page-wrapper"> 
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
       <div class="content-wrapper d-flex align-items-center auth px-0" id="outer">
         <div class="row w-99 mx-0">
           <div class="col-lg-12 mx-auto">
-            <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+            <div class="auth-form-light text-left py-5 px-4 px-sm-5" style="border-radius:1ch;">
               <div class="brand-logo">
                 <img src="../../images/logo-thinkmay-black.png" alt="logo">
               </div>
-              <h4>Hello! let's get started</h4>
-              <h6 class="fw-light">Sign in to continue.</h6>
-              <form class="pt-3">
-                <div class="form-group">
-                  <input type="email" class="form-control form-control-lg" id="exampleInputEmail1"
-                    placeholder="Username">
+              <form class="validate-form">
+                <h4>Hello! let's get started</h4>
+                <h6 class="fw-light">Sign in to continue.</h6>
+                <label class="error" for="username"></label>
+                <div class="wrap-input100 validate-input">
+                  <input class="form-control form-control-lg input100" type="username" name="username"
+                    placeholder="UserName">
+                  <span class="focus-input100"></span>
+                  <span class="symbol-input100">
+                    <i class="fa fa-envelope" aria-hidden="true"></i>
+                  </span>
                 </div>
-                <div class="form-group">
-                  <input type="password" class="form-control form-control-lg" id="exampleInputPassword1"
+                <label class="error" for="password"></label>
+                <div class="wrap-input100 validate-input">
+                  <input class="form-control form-control-lg input100" type="password" name="password"
                     placeholder="Password">
+                  <span class="focus-input100"></span>
+                  <span class="symbol-input100">
+                    <i class="fa fa-lock" aria-hidden="true"></i>
+                  </span>
                 </div>
-                <div class="mt-3">
-                  <a id="login" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">SIGN IN</a>
-                </div>
+              </form>
+              <div id="login" class="mt-3">
+                <a class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">SIGN IN</a>
+              </div>
               </form>
             </div>
           </div>
@@ -68,8 +79,10 @@
   <script src="../../js/template.js"></script>
   <script src="../../js/settings.js"></script>
   <script src="../../js/todolist.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
   <!-- endinject -->
-
+  <script type="module" src="../../javascripts/pages/login-register.js"></script>
 </body>
 
 </html>
