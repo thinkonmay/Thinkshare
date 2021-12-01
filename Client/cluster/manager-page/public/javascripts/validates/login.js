@@ -1,9 +1,9 @@
 export default {
 	rules: {
-		email: {
+		username: {
 			required: true,
-			email: true,
-			minlength: 10
+			minlength: 5,
+			maxlength: 50
 		},
 		password: {
 			required: true,
@@ -12,10 +12,10 @@ export default {
 		}
 	},
 	messages: {
-		email: {
-			required: "Your email address is required",
-			email: "Invalid email",
-			minlength: "Minimum character is 10"
+		username: {
+			required: "Your username is required!",
+			minlength: "Minimum character is 5",
+			maxlength: "Maximum character is 50"
 		},
 		password: {
 			required: "Your password is required!",

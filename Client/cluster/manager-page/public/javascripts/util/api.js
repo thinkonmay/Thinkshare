@@ -22,13 +22,13 @@ export const genHeaders = () => {
 	)
 }
 
-export const Login = (username, password) => {
+export const Login = body => {
 	return fetch(LoginRoute, {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({
-			userName: username,
-			password: password
+			userName: body.username,
+			password: body.password
 		})
 	})
 }
