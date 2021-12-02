@@ -109,7 +109,7 @@ namespace WorkerManager.Middleware
             var userAttribute = endpoint?.Metadata.GetMetadata<WorkerAttribute>();
             if (userAttribute != null)
             {
-                var isWorker = (string)context.Items["PrivateID"];
+                var isWorker = (string)context.Items["IsWorker"];
                 if (isWorker != "true")
                 {
                     context.Response.StatusCode =  StatusCodes.Status401Unauthorized;

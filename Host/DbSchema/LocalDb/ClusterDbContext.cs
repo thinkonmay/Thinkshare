@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SharedHost.Models.Session;
 using SharedHost.Models.Cluster;
 using SharedHost.Models.Shell;
 using SharedHost.Models.Local;
@@ -27,6 +26,7 @@ namespace DbSchema.SystemDb
 
             builder.Entity<ClusterWorkerNode>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
             builder.Entity<LocalCluster>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
+            builder.Entity<Log>().Property(u => u.LogTime).HasDefaultValueSql("current_timestamp");
         }
 
 
@@ -35,5 +35,6 @@ namespace DbSchema.SystemDb
         public DbSet<ShellSession> CachedSession { get; set; }
         public DbSet<ClusterWorkerNode> Devices { get; set; }
         public DbSet<ScriptModel> ScriptModels {get;set;}
+        public DbSet<Log> Logs{get;set;}
     }
 }

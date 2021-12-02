@@ -52,16 +52,7 @@ namespace Signalling.Controllers
                     var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();
                     await Queue.Handle(accession, webSocket);
-                    return Ok();
                 }
-                else
-                {
-                    return BadRequest();
-                }
-            }
-            else
-            {
-                return BadRequest();
             }
         }
     }
