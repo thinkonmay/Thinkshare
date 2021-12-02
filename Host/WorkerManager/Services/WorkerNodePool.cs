@@ -156,42 +156,29 @@ namespace WorkerManager.Services
                         continue;
 
                     }
-                    foreach (var i in _model_list)
+                    foreach (var keyValue in worker_list)
                     {
-                        foreach (var keyValue in worker_list)
+                        ClusterWorkerNode worker = await _cache.GetWorkerInfor(keyValue.Key);
+                        if(worker == null)
                         {
-                            ClusterWorkerNode worker = await _cache.GetWorkerInfor(keyValue.Key);
-                            if(worker == null)
-                            {
-                                worker = _db.Devices.Find(keyValue.Key);
-                                await _cache.CacheWorkerInfor(worker);
-                            }
+                            worker = _db.Devices.Find(keyValue.Key);
+                            await _cache.CacheWorkerInfor(worker);
+                        }
 
-                            worker.RestoreWorkerNode();
-                            var session = new ShellSession { Script = i.Script };
-                            var result = await worker.PingWorker(session);
-                            if(result != null)
-                            {
-                                session.Output = result;
-                                session.ModelID = i.ID;
-                                session.WorkerID = worker.ID;
-                                session.Time = DateTime.Now;
-                                worker.agentFailedPing = 0;
-                            }
-                            else
-                            {
-                                worker.agentFailedPing++;
-                            }
+                        worker.RestoreWorkerNode();
+                        var success = await worker.PingWorker(_db,_model_list);
+                        if(success)
+                        {
+                            worker.agentFailedPing = 0;
+                        }
+                        else
+                        {
+                            worker.agentFailedPing++;
+                        }
 
-                            if(worker.agentFailedPing > 5)
-                            {
-                                await _cache.SetWorkerState(keyValue.Key, WorkerState.OffRemote);
-                            }
-                            if(session != null)
-                            {
-                                await _db.CachedSession.AddAsync(session);
-                                await _db.SaveChangesAsync();
-                            }
+                        if(worker.agentFailedPing > 5)
+                        {
+                            await _cache.SetWorkerState(keyValue.Key, WorkerState.Disconnected);
                         }
                     }
                     Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));

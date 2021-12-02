@@ -13,8 +13,5 @@
 
         public string ClusterRegisterUrl{get;set;}
         public string WorkerRegisterUrl{get;set;}
-
-
-        public string ClusterName { get; set; }
     }
 }

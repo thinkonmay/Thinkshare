@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+using DbSchema.SystemDb;
 using System.Threading.Tasks;
 using System;
 using SharedHost.Models.Device;
@@ -54,8 +56,8 @@ namespace SharedHost.Models.Local
 
         public void RestoreWorkerNode ()
         {
-            _coreClient = new RestClient("http://"+PrivateIP.ToString()+"/cluster");
-            _agentClient = new RestClient("https://"+PrivateIP.ToString()+"/cluster");
+            _coreClient = new RestClient("http://"+PrivateIP.ToString()+":3330/cluster");
+            _agentClient = new RestClient("http://"+PrivateIP.ToString()+":2220/cluster");
         }
 
 
@@ -111,15 +113,41 @@ namespace SharedHost.Models.Local
         }
 
 
-        public async Task<string?> PingWorker(ShellSession session)
+        public async Task<bool> PingWorker(ClusterDbContext db, List<ScriptModel> model_list)
         {
-            var request = new RestRequest("ping")
-                .AddJsonBody(session.Script);
+            var request = new RestRequest("ping");
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);
-            if(result.StatusCode == HttpStatusCode.OK) { return result.Content; }
-            else { return null; }
+            if(result.StatusCode == HttpStatusCode.OK) 
+            { 
+                GetWorkerMetric(db,model_list);
+                return true; 
+            }
+            else 
+            { 
+                return false; 
+            }
+        }
+
+        private async Task GetWorkerMetric(ClusterDbContext db, List<ScriptModel> models)
+        {
+            foreach (var model in models)
+            {
+                var session = new ShellSession { Script = model.Script, ModelID = model.ID };
+                var request = new RestRequest("Shell")
+                    .AddJsonBody(session.Script);
+                request.Method = Method.POST;
+
+                var result = await _agentClient.ExecuteAsync(request);
+                if(result.StatusCode == HttpStatusCode.OK) 
+                { 
+                    session.Output = result.Content;
+                    session.WorkerID = ID;
+                    session.Time = DateTime.Now;
+                    db.CachedSession.Add(session);
+                }
+            }
         }
     }
 }

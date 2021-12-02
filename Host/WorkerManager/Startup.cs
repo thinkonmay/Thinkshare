@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using SharedHost.Models.Auth;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,16 +35,49 @@ namespace WorkerManager
                     builder => builder.AllowAnyOrigin());
             });
 
+            var POSTGRES_USER =  Environment.GetEnvironmentVariable("POSTGRES_USER");
+            var POSTGRES_PASSWORD =  Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+            var POSTGRES_DATABASE =  Environment.GetEnvironmentVariable("POSTGRES_DATABASE");
+            var POSTGRES_IP =  Environment.GetEnvironmentVariable("POSTGRES_IP");
+            var REDIS_IP =  Environment.GetEnvironmentVariable("POSTGRES_IP");
 
-            services.AddDbContext<ClusterDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                ServiceLifetime.Singleton
-            );
-            services.AddStackExchangeRedisCache(options =>
+            if( POSTGRES_USER == null ||
+                POSTGRES_PASSWORD == null ||
+                POSTGRES_DATABASE == null ||
+                POSTGRES_IP == null ||
+                REDIS_IP == null)
             {
-                options.Configuration = Configuration.GetConnectionString("Redis");
-                options.InstanceName = "Cluster";
-            });
+                Console.WriteLine("Missing environment variable");
+                Console.WriteLine("Using default connection string");
+
+                services.AddDbContext<ClusterDbContext>(options =>
+                    options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
+                    ServiceLifetime.Singleton
+                );
+                services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = Configuration.GetConnectionString("Redis");
+                    options.InstanceName = "Cluster";
+                });
+            }
+            else
+            {
+                services.AddDbContext<ClusterDbContext>(options =>
+                    options.UseNpgsql(
+                        "Host="+POSTGRES_IP+";Port=5432;"+                    
+                        "Database="+POSTGRES_DATABASE+";"+                    
+                        "Username="+POSTGRES_USER+";"+                    
+                        "Password="+POSTGRES_PASSWORD+";"
+                    ),
+                    ServiceLifetime.Singleton
+                );
+                services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = REDIS_IP+":6379";
+                    options.InstanceName = "Cluster";
+                });
+            }
+
             services.AddControllers();            
             services.AddSwaggerGen(c =>
             {
@@ -85,6 +119,7 @@ namespace WorkerManager
                 }); 
             });
             services.Configure<ClusterConfig>(Configuration.GetSection("ClusterConfig"));
+            services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
             services.AddSingleton<ILocalStateStore, LocalStateStore>();
             services.AddSingleton<IConductorSocket,ConductorSocket>();
             services.AddSingleton<IWorkerNodePool,WorkerNodePool>();

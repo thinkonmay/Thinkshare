@@ -9,18 +9,6 @@ namespace SharedHost.Models.User
 {
     public class UserInforModel
     {
-        public UserInforModel(UserAccount account)
-        {
-            UserName = account.UserName;
-            FullName = account.FullName;
-            Jobs = account.Jobs;
-            PhoneNumber = account.PhoneNumber;
-            Gender = account.Gender;
-            DateOfBirth = account.DateOfBirth;
-            Avatar = account.Avatar;
-        }
-
-
         public string? UserName {get;set;}
 
         public string? FullName {get;set;}

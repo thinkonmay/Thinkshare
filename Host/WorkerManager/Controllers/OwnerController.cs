@@ -108,12 +108,12 @@ namespace WorkerManager.Controllers
         /// <returns></returns>
         [Owner]
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(bool isPrivate)
+        public async Task<IActionResult> Register(bool isPrivate, string ClusterName)
         {
             var token = _db.Owner.First().token;
             var request = new RestRequest(_config.ClusterRegisterUrl)
                 .AddHeader("Authorization","Bearer "+token)
-                .AddQueryParameter("ClusterName", _config.ClusterName)
+                .AddQueryParameter("ClusterName", ClusterName)
                 .AddQueryParameter("Private", isPrivate.ToString());
 
 
@@ -148,10 +148,11 @@ namespace WorkerManager.Controllers
         [HttpGet("Cluster/Token")]
         public async Task<IActionResult> Token()
         {
+            var ClusterName = _db.Clusters.First().Name;
             var token = _db.Owner.First().token;
             var request = new RestRequest(_config.ClusterRegisterUrl)
                 .AddHeader("Authorization","Bearer "+token)
-                .AddQueryParameter("ClusterName", _config.ClusterName);
+                .AddQueryParameter("ClusterName", ClusterName);
             request.Method = Method.GET;
 
             var result = await _client.ExecuteAsync(request);

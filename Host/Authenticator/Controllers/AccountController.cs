@@ -214,7 +214,16 @@ namespace Authenticator.Controllers
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
-            return Ok(new UserInforModel(account));
+            return Ok(new  UserInforModel
+            {
+                UserName = account.UserName,
+                FullName = account.FullName,
+                Jobs = account.Jobs,
+                PhoneNumber = account.PhoneNumber,
+                Gender = account.Gender,
+                DateOfBirth = account.DateOfBirth,
+                Avatar = account.Avatar
+            });
         }
 
 

@@ -76,7 +76,7 @@ namespace SystemHub.Services
             await Handle(resp, session);
 
             /// report to conductor
-            var request = new RestRequest("Disconnected")
+            var request = new RestRequest("Cluster/Disconnected")
                 .AddQueryParameter("ClusterID",resp.ID.ToString());
             request.Method = Method.POST;
 
@@ -87,11 +87,11 @@ namespace SystemHub.Services
             var newsnapshoot = new Dictionary<int, string>();
             foreach (var Item in snapshoot)
             {
+                Serilog.Log.Information("cluster disconnected, worker state set to disconncted");
                 newsnapshoot.Add(Item.Key,WorkerState.Disconnected);
+                Serilog.Log.Information("WorkerID: "+Item.Key.ToString()+" | State: "+Item.Value);
             }
             await _cache.SetClusterSnapshot(resp.ID,newsnapshoot);
-
-            // remove from 
             var done = _ClusterSocketsPool.TryRemove(resp,out var output);
         }
 
@@ -182,8 +182,17 @@ namespace SystemHub.Services
 
         async Task onClusterSnapshoot(Message message, ClusterCredential cred)
         {
+            Serilog.Log.Information("Got sync state message from cluster, syncing with globalhub");
+            Serilog.Log.Information("Before syncing:");
             Dictionary<int, string> clusterSnapshoot = JsonConvert.DeserializeObject<Dictionary<int, string>>(message.Data);
             Dictionary<int, string>? unsyncedSnapshoot = await _cache.GetClusterSnapshot(cred.ID);
+
+            foreach (var item in unsyncedSnapshoot)
+            {
+                Serilog.Log.Information("WorkerID: "+item.Key.ToString()+" | State: "+item.Value);
+            }
+
+
             var syncedSnapshoot = new Dictionary<int, string>();
 
             foreach (var unsyncedItem in unsyncedSnapshoot)
@@ -196,9 +205,7 @@ namespace SystemHub.Services
                 {
                     if(syncedState != unsyncedItem.Value)
                     {
-                        await _cache.SetClusterSnapshot(cred.ID,syncedSnapshoot);
-
-                        var syncrequest = new RestRequest("State")
+                        var syncrequest = new RestRequest("Worker/State")
                             .AddQueryParameter("NewState", syncedState)
                             .AddQueryParameter("ID",unsyncedItem.Key.ToString());
                         syncrequest.Method = Method.POST;
@@ -210,9 +217,7 @@ namespace SystemHub.Services
                 }
                 else // otherwise, set item as missing state
                 {
-                    await _cache.SetClusterSnapshot(cred.ID,syncedSnapshoot);
-
-                    var syncrequest = new RestRequest("State")
+                    var syncrequest = new RestRequest("Worker/State")
                         .AddQueryParameter("NewState", WorkerState.MISSING)
                         .AddQueryParameter("ID",unsyncedItem.Key.ToString());
                     syncrequest.Method = Method.POST;
@@ -250,6 +255,13 @@ namespace SystemHub.Services
                 Data = JsonConvert.SerializeObject(syncedSnapshoot)
             };
             await _cache.SetClusterSnapshot(cred.ID,syncedSnapshoot);
+
+
+            Serilog.Log.Information("State syncing done, after syncing: ");
+            foreach (var item in syncedSnapshoot)
+            {
+                Serilog.Log.Information("WorkerID: "+item.Key.ToString()+" | State: "+item.Value);
+            }
             await SendToCluster(cred.ID,reply);
         }
 

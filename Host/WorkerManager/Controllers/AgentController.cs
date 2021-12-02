@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SharedHost.Models.Auth;
 using SharedHost.Models.Cluster;
 using RestSharp;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,7 @@ namespace WorkerManager.Controllers
         [HttpPost]
         public async Task<IActionResult> PostInfor([FromBody]WorkerRegisterModel agent_register)
         {
+            var ClusterName = _db.Clusters.First().Name;
             var cachednode = _db.Devices.Where(x => 
                 x.PrivateIP == agent_register.LocalIP &&
                 x.CPU == agent_register.CPU &&
@@ -62,7 +64,7 @@ namespace WorkerManager.Controllers
             {
                 var client = new RestClient();
                 var request = new RestRequest(_config.WorkerRegisterUrl)
-                    .AddQueryParameter("ClusterName",_config.ClusterName)
+                    .AddQueryParameter("ClusterName",ClusterName)
                     .AddJsonBody(agent_register)
                     .AddHeader("Authorization","Bearer "+_db.Owner.First().token);
                 request.Method = Method.POST;
@@ -86,7 +88,8 @@ namespace WorkerManager.Controllers
                     await _db.SaveChangesAsync();
                     await _cache.CacheWorkerInfor(node);
                     await _cache.SetWorkerState(node.ID, WorkerState.Open);
-                    return Ok(await _tokenGenerator.GenerateWorkerToken(node));
+                    var Token = await _tokenGenerator.GenerateWorkerToken(node);
+                    return Ok(AuthResponse.GenerateSuccessful(null,Token,null));
                 }
                 else
                 {
@@ -95,7 +98,8 @@ namespace WorkerManager.Controllers
             }
             else
             {
-                return Ok(await _tokenGenerator.GenerateWorkerToken(cachednode.First()));
+                var result = await _tokenGenerator.GenerateWorkerToken(cachednode.First());
+                return Ok(AuthResponse.GenerateSuccessful(null,result,null));
             }
         }
 

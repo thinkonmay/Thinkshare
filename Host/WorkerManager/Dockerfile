@@ -30,6 +30,13 @@ RUN dotnet publish "WorkerManager.csproj" -c Release -o /app/publish
 
 
 FROM base AS prod
+
+ENV POSTGRES_USER=cluster_manager
+ENV POSTGRES_PASSWORD=cluster_manager_password
+ENV POSTGRES_DATABASE=cluster_manager
+ENV POSTGRES_IP="192.168.1.12"
+
+
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "WorkerManager.dll"]

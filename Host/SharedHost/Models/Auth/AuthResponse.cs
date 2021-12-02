@@ -8,13 +8,13 @@ namespace SharedHost.Models.Auth
 {
     public class AuthResponse
     {
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
         public List<IdentityError>? Errors {get;set;}
-        public string Token { get; set; }
-        public DateTime ValidUntil { get; set; }
+        public string? Token { get; set; }
+        public DateTime? ValidUntil { get; set; }
 
 
-        public static AuthResponse GenerateSuccessful(string username, string token, DateTime expiry)
+        public static AuthResponse GenerateSuccessful(string? username, string? token, DateTime? expiry)
         {
             return new AuthResponse()
             {

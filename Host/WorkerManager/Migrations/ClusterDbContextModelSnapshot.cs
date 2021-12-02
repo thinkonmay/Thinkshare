@@ -29,6 +29,9 @@ namespace WorkerManager.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.Property<bool>("Private")
                         .HasColumnType("boolean");
 

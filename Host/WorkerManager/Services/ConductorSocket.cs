@@ -310,9 +310,10 @@ namespace WorkerManager.Services
                 OS = model.OS,
             };
 
+            var ClusterName = _db.Clusters.First().Name;
             var client = new RestClient();
             var request = new RestRequest(_config.WorkerRegisterUrl)
-                .AddQueryParameter("ClusterName",_config.ClusterName)
+                .AddQueryParameter("ClusterName",ClusterName)
                 .AddJsonBody(node)
                 .AddHeader("Authorization","Bearer "+_db.Owner.First().token);
 
