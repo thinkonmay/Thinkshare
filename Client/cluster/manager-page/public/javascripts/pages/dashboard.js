@@ -9,7 +9,12 @@ import * as CheckDevice from "../util/checkdevice.js"
 let datasets = [];
 let sessionInfor;
 API.getInfor().then(async data => {
-	$("#WelcomeUsername").html((await data.json()).fullName)
+	let body = await data.json();
+	$("#dashboardSrcImg").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
+	$("#WelcomeUsername").html(body.fullName)
+	$("#avatarSrc").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
+	$("#fullname").text(body.fullName)
+	$("#jobs").text(body.jobs)
 })
 $(document).ready(async () => {
 	$('#logout').click(() => {
@@ -44,7 +49,7 @@ $(document).ready(async () => {
 		const userinfor = await (await API.getInfor()).json()
 		// const sessions = await (await API.fetchSession()).json()
 		// const slaves = await (await API.fetchSlave()).json()
-		// sessionInfor = await (await API.getSession()).json()
+		sessionInfor = await (await API.getSession()).json()
 		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
 
 		for (const slave of sessions) {
@@ -268,7 +273,6 @@ async function tutorial() {
 }
 
 function setDataForChart() {
-	console.log(sessionInfor)
 	for (let i = 0; i < 7; i++) {
 		datasets[i] = 0;
 	}
@@ -299,15 +303,15 @@ function setDataForChart() {
 		var graphGradient = document.getElementById("performaneLine").getContext('2d');
 		var graphGradient2 = document.getElementById("performaneLine").getContext('2d');
 		var saleGradientBg = graphGradient.createLinearGradient(5, 0, 5, 100);
-		saleGradientBg.addColorStop(0, 'rgba(26, 115, 232, 0.18)');
-		saleGradientBg.addColorStop(1, 'rgba(26, 115, 232, 0.02)');
+		saleGradientBg.addColorStop(0, 'rgba(0, 0, 0, 0)');
+		saleGradientBg.addColorStop(1, 'rgba(0, 0, 0, 0)');
 		var saleGradientBg2 = graphGradient2.createLinearGradient(100, 0, 50, 150);
-		saleGradientBg2.addColorStop(0, 'rgba(0, 208, 255, 0.19)');
-		saleGradientBg2.addColorStop(1, 'rgba(0, 208, 255, 0.03)');
+		saleGradientBg2.addColorStop(0, 'rgba(0, 0, 0, 0)');
+		saleGradientBg2.addColorStop(1, 'rgba(0, 0, 0, 0)');
 		var salesTopData = {
 			labels: _lables,
 			datasets: [{
-				label: 'This week',
+				label: 'CPU',
 				data: datasets,
 				backgroundColor: saleGradientBg,
 				borderColor: [
@@ -318,24 +322,53 @@ function setDataForChart() {
 				pointBorderWidth: 1,
 				pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
 				pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-				pointBackgroundColor: ['#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)'],
+				pointBackgroundColor: ['#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3'],
+				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
+			}, {
+				label: 'GPU',
+				data: [21, 20, 30, 15, 40, 95, 12],
+				backgroundColor: saleGradientBg2,
+				borderColor: [
+					'#52CDFF',
+				],
+				borderWidth: 1.5,
+				fill: true, // 3: no fill
+				pointBorderWidth: 1,
+				pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+				pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+				pointBackgroundColor: ['#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF'],
 				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
 			},
-				//  {
-				// 	label: 'Last week',
-				// 	data: [30, 150, 190, 250, 120, 150, 130],
-				// 	backgroundColor: saleGradientBg2,
-				// 	borderColor: [
-				// 		'#52CDFF',
-				// 	],
-				// 	borderWidth: 1.5,
-				// 	fill: true, // 3: no fill
-				// 	pointBorderWidth: 1,
-				// 	pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-				// 	pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-				// 	pointBackgroundColor: ['#52CDFF)', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF)', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF)', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF)'],
-				// 	pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-				// }
+				{
+					label: 'RAM',
+					data: [	43, 2, 30, 1, 40, 95, 1],
+					backgroundColor: saleGradientBg2,
+					borderColor: [
+						'#eded68',
+					],
+					borderWidth: 1.5,
+					fill: true, // 3: no fill
+					pointBorderWidth: 1,
+					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+					pointBackgroundColor: ['#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68'],
+					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
+				},
+				{
+					label: 'RAM',
+					data: [	11, 51, 22, 40, 95, 32, 53],
+					backgroundColor: saleGradientBg2,
+					borderColor: [
+						'#e65555',
+					],
+					borderWidth: 1.5,
+					fill: true, // 3: no fill
+					pointBorderWidth: 1,
+					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+					pointBackgroundColor: ['#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555'],
+					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
+				}
 			]
 		};
 
