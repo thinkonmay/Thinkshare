@@ -4,18 +4,20 @@ import { getCookie, setCookie, deleteCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
 
+let datasetCPU = [];
+let datasetGPU = [];
+let datasetRAM = [];
+let datasetNetwork = [];
 
-
-let datasets = [];
 let sessionInfor;
-API.getInfor().then(async data => {
-	let body = await data.json();
-	$("#dashboardSrcImg").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
-	$("#WelcomeUsername").html(body.fullName)
-	$("#avatarSrc").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
-	$("#fullname").text(body.fullName)
-	$("#jobs").text(body.jobs)
-})
+// API.getInfor().then(async data => {
+// 	let body = await data.json();
+// 	$("#dashboardSrcImg").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
+// 	$("#WelcomeUsername").html(body.fullName)
+// 	$("#avatarSrc").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
+// 	$("#fullname").text(body.fullName)
+// 	$("#jobs").text(body.jobs)
+// })
 $(document).ready(async () => {
 	$('#logout').click(() => {
 		setCookie("logout", "true")
@@ -30,6 +32,7 @@ $(document).ready(async () => {
 			window.location = "/login"
 		}
 	})
+
 
 	tutorial()
 
@@ -46,10 +49,10 @@ $(document).ready(async () => {
 	}
 
 	try {
-		const userinfor = await (await API.getInfor()).json()
+		// const userinfor = await (await API.getInfor()).json()
 		// const sessions = await (await API.fetchSession()).json()
 		// const slaves = await (await API.fetchSlave()).json()
-		sessionInfor = await (await API.getSession()).json()
+		// sessionInfor = await (await API.getSession()).json()
 		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
 
 		for (const slave of sessions) {
@@ -61,17 +64,34 @@ $(document).ready(async () => {
 	} catch (err) {
 		// location.reload();
 	}
-
-	// set data for chart to anaylize hour used
 	setDataForChart();
+	$('#testFeature').click(() => {
+		console.log('idadassdas')
+		datasetNetwork = datasetNetwork == 0 ? [11, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1] : 0
+		setDataForChart();
+	})
+
+
+	$('#RAMElement').click(() => {
+		console.log("RAM nè");
+	})
+	$('#CPUElement').click(() => {
+		console.log("CPU nè");
+	})
+	$('#GPUElement').click(() => {
+	})
+
+
 
 	// using websocket to connect to systemhub
 	// const Websocket = new WebSocket(API.UserHub + `?token=${getCookie("token")}`)
-	Websocket.addEventListener('open', onWebsocketOpen);
-	Websocket.addEventListener('message', onClientHubEvent);
-	Websocket.addEventListener('error', onWebsocketClose);
-	Websocket.addEventListener('close', onWebsocketClose);
+	// Websocket.addEventListener('open', onWebsocketOpen);
+	// Websocket.addEventListener('message', onClientHubEvent);
+	// Websocket.addEventListener('error', onWebsocketClose);
+	// Websocket.addEventListener('close', onWebsocketClose);
 })
+
+
 
 function onClientHubEvent(event) {
 	try {
@@ -272,32 +292,18 @@ async function tutorial() {
 	});
 }
 
+
 function setDataForChart() {
-	for (let i = 0; i < 7; i++) {
-		datasets[i] = 0;
-	}
-	for (let i = 0; i < sessionInfor.length; i++) {
-		datasets[sessionInfor[i].dayofWeek] = sessionInfor[i].sessionTime;
-	}
-	var date = new Date();
-	var day = date.getDay();
-	let countDay = 0;
+	let isSetElement = false;
+	// for (let i = 0; i < 7; i++) {
+	// 	datasets[i] = 0;
+	// }
+	// for (let i = 0; i < sessionInfor.length; i++) {
+	// 	datasets[sessionInfor[i].dayofWeek] = sessionInfor[i].sessionTime;
+	// }
 	let _lables = [];
-	while (countDay <= 6) {
-		switch (day) {
-			case 0: _lables.unshift("SUN"); break;
-			case 1: _lables.unshift("MON"); break;
-			case 2: _lables.unshift("TUE"); break;
-			case 3: _lables.unshift("WED"); break;
-			case 4: _lables.unshift("THU"); break;
-			case 5: _lables.unshift("FRI"); break;
-			case 6: _lables.unshift("SAT"); break;
-		}
-		day--;
-		if (day < 0) {
-			day = 6;
-		}
-		countDay++;
+	for (let index = 0; index <= 60; index++) {
+		_lables.unshift(index);
 	}
 	if ($("#performaneLine").length) {
 		var graphGradient = document.getElementById("performaneLine").getContext('2d');
@@ -312,7 +318,8 @@ function setDataForChart() {
 			labels: _lables,
 			datasets: [{
 				label: 'CPU',
-				data: datasets,
+				// data: datasets,
+				//data: [21, 20, 1, 51, 22, 40, 95, 43, 2, 30, 5, 16, 14, 49, 21, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 30, 15, 40, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 95, 12],
 				backgroundColor: saleGradientBg,
 				borderColor: [
 					'#1F3BB3',
@@ -326,7 +333,7 @@ function setDataForChart() {
 				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
 			}, {
 				label: 'GPU',
-				data: [21, 20, 30, 15, 40, 95, 12],
+				//data: [21, 20, 30, 15, 40, 95, 16, 14, 49, 21, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 29, 45, 61, 25, 34, 61, 5, 3, 51, 4, 51, 24, 23, 6, 1, 16, 14, 49, 21, 29, 45, 61, 25, 34, 61, 5, 3],
 				backgroundColor: saleGradientBg2,
 				borderColor: [
 					'#52CDFF',
@@ -339,39 +346,39 @@ function setDataForChart() {
 				pointBackgroundColor: ['#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF'],
 				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
 			},
-				{
-					label: 'RAM',
-					data: [	43, 2, 30, 1, 40, 95, 1],
-					backgroundColor: saleGradientBg2,
-					borderColor: [
-						'#eded68',
-					],
-					borderWidth: 1.5,
-					fill: true, // 3: no fill
-					pointBorderWidth: 1,
-					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-					pointBackgroundColor: ['#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68'],
-					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-				},
-				{
-					label: 'RAM',
-					data: [	11, 51, 22, 40, 95, 32, 53],
-					backgroundColor: saleGradientBg2,
-					borderColor: [
-						'#e65555',
-					],
-					borderWidth: 1.5,
-					fill: true, // 3: no fill
-					pointBorderWidth: 1,
-					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-					pointBackgroundColor: ['#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555'],
-					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-				}
+			{
+				label: 'RAM',
+				//data: [43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 45, 61, 25, 3, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 6],
+				backgroundColor: saleGradientBg2,
+				borderColor: [
+					'#eded68',
+				],
+				borderWidth: 1.5,
+				fill: true, // 3: no fill
+				pointBorderWidth: 1,
+				pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+				pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+				pointBackgroundColor: ['#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68'],
+				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
+			},
+			{
+				label: 'Network',
+				data: datasetNetwork,
+				backgroundColor: saleGradientBg2,
+				borderColor: [
+					'#e65555',
+				],
+				borderWidth: 1.5,
+				fill: true, // 3: no fill
+				pointBorderWidth: 1,
+				tension: 0.1
+				//pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+				//pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+				//pointBackgroundColor: ['#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555'],
+				//pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
+			}
 			]
 		};
-
 		var salesTopOptions = {
 			responsive: true,
 			maintainAspectRatio: false,
@@ -384,8 +391,8 @@ function setDataForChart() {
 						zeroLineColor: '#F0F0F0',
 					},
 					ticks: {
-						beginAtZero: false,
-						autoSkip: true,
+						beginAtZero: true,
+						autoSkip: false,
 						maxTicksLimit: 4,
 						fontSize: 10,
 						color: "#6B778C"
@@ -399,7 +406,7 @@ function setDataForChart() {
 					ticks: {
 						beginAtZero: false,
 						autoSkip: true,
-						maxTicksLimit: 7,
+						maxTicksLimit: 1,
 						fontSize: 10,
 						color: "#6B778C"
 					}
@@ -407,18 +414,20 @@ function setDataForChart() {
 			},
 			legend: false,
 			legendCallback: function (chart) {
-				var text = [];
-				text.push('<div class="chartjs-legend"><ul>');
-				for (var i = 0; i < chart.data.datasets.length; i++) {
-					text.push('<li>');
-					text.push('<span style="background-color:' + chart.data.datasets[i].borderColor + '">' + '</span>');
-					text.push(chart.data.datasets[i].label);
-					text.push('</li>');
+				if (!isSetElement) {
+					isSetElement = true;
+					var text = [];
+					text.push('<div class="chartjs-legend"><ul>');
+					for (var i = 0; i < chart.data.datasets.length; i++) {
+						text.push('<li id=' + chart.data.datasets[i].label + 'Element>');
+						text.push('<span style="background-color:' + chart.data.datasets[i].borderColor + '">' + '</span>');
+						text.push(chart.data.datasets[i].label);
+						text.push('</li>');
+					}
+					text.push('</ul></div>');
+					return text.join("");
 				}
-				text.push('</ul></div>');
-				return text.join("");
 			},
-
 			elements: {
 				line: {
 					tension: 0.4,
@@ -428,105 +437,22 @@ function setDataForChart() {
 				backgroundColor: 'rgba(31, 59, 179, 1)',
 			}
 		}
-		var salesTop = new Chart(graphGradient, {
+		var salesTop = isSetElement ? Chart(graphGradient, {
 			type: 'line',
 			data: salesTopData,
 			options: salesTopOptions
-		});
+		}) :
+			new Chart(graphGradient, {
+				type: 'line',
+				data: salesTopData,
+				options: salesTopOptions
+			});
+		if(!isSetElement)
 		document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
 	}
-
-
-
-	///////////////////////////////////////////////////////////////////////////////////////////////////////
-	// do not delete this block, i intentionally reserve doughnutChart for future use
-	if ($("#doughnutChart").length) {
-		var doughnutChartCanvas = $("#doughnutChart").get(0).getContext("2d");
-		var doughnutPieData = {
-			datasets: [{
-				data: [40, 20, 30, 10],
-				backgroundColor: [
-					"#1F3BB3",
-					"#FDD0C7",
-					"#52CDFF",
-					"#81DADA"
-				],
-				borderColor: [
-					"#1F3BB3",
-					"#FDD0C7",
-					"#52CDFF",
-					"#81DADA"
-				],
-			}],
-
-			// These labels appear in the legend and in the tooltips when hovering different arcs
-			labels: [
-				'Total',
-				'Net',
-				'Gross',
-				'AVG',
-			]
-		};
-		var doughnutPieOptions = {
-			cutoutPercentage: 50,
-			animationEasing: "easeOutBounce",
-			animateRotate: true,
-			animateScale: false,
-			responsive: true,
-			maintainAspectRatio: true,
-			showScale: true,
-			legend: false,
-			legendCallback: function (chart) {
-				var text = [];
-				text.push('<div class="chartjs-legend"><ul class="justify-content-center">');
-				for (var i = 0; i < chart.data.datasets[0].data.length; i++) {
-					text.push('<li><span style="background-color:' + chart.data.datasets[0].backgroundColor[i] + '">');
-					text.push('</span>');
-					if (chart.data.labels[i]) {
-						text.push(chart.data.labels[i]);
-					}
-					text.push('</li>');
-				}
-				text.push('</div></ul>');
-				return text.join("");
-			},
-
-			layout: {
-				padding: {
-					left: 0,
-					right: 0,
-					top: 0,
-					bottom: 0
-				}
-			},
-			tooltips: {
-				callbacks: {
-					title: function (tooltipItem, data) {
-						return data['labels'][tooltipItem[0]['index']];
-					},
-					label: function (tooltipItem, data) {
-						return data['datasets'][0]['data'][tooltipItem['index']];
-					}
-				},
-
-				backgroundColor: '#fff',
-				titleFontSize: 14,
-				titleFontColor: '#0B0F32',
-				bodyFontColor: '#737F8B',
-				bodyFontSize: 11,
-				displayColors: false
-			}
-		};
-		var doughnutChart = new Chart(doughnutChartCanvas, {
-			type: 'doughnut',
-			data: doughnutPieData,
-			options: doughnutPieOptions
-		});
-		document.getElementById('doughnut-chart-legend').innerHTML = doughnutChart.generateLegend();
-	}
-	//////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 (function ($) {
+
 })(jQuery);
