@@ -9,7 +9,12 @@ import * as CheckDevice from "../util/checkdevice.js"
 let datasets = [];
 let sessionInfor;
 API.getInfor().then(async data => {
-	$("#WelcomeUsername").html((await data.json()).fullName)
+	let body = await data.json();
+	$("#dashboardSrcImg").attr("src", (body.avatar) == null ? "images/default_user.png": body.avatar)
+	$("#WelcomeUsername").html(body.fullName)
+	$("#avatarSrc").attr("src", (body.avatar) == null ? "images/default_user.png":  body.avatar)
+	$("#fullname").text(body.fullName)
+	$("#jobs").text(body.jobs)
 })
 $(document).ready(async () => {
 	$('#logout').click(() => {
