@@ -206,5 +206,21 @@ namespace WorkerManager.Services
             }
         }
 
+        async Task PushCachedShellSession()
+        {
+            DateTime currentTime = DateTime.Now;
+            while (true)
+            {
+                var CachedSession = _db.CachedSession.All(x => true);
+                // var client = new RestClient();
+                
+                // var request = new RestRequest()
+                //     .AddJsonBody(CachedSession);
+
+                Thread.Sleep((int)TimeSpan.FromDays(1).TotalMilliseconds);
+                currentTime.AddDays(1);
+            }
+        }
+
     }
 }

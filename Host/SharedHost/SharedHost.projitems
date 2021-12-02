@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\GlobalCluster.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\ClusterCredential.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\IDAssign.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\Log.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Hub\EventModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Local\ClusterWorkerNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Local\OwnerCredential.cs" />

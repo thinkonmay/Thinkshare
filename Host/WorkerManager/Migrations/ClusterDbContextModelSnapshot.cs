@@ -54,6 +54,31 @@ namespace WorkerManager.Migrations
                     b.ToTable("Clusters");
                 });
 
+            modelBuilder.Entity("SharedHost.Models.Cluster.Log", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LogTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("current_timestamp");
+
+                    b.Property<int?>("workerID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("workerID");
+
+                    b.ToTable("Logs");
+                });
+
             modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>
                 {
                     b.Property<int>("ID")
@@ -194,6 +219,15 @@ namespace WorkerManager.Migrations
                     b.HasIndex("WorkerID");
 
                     b.ToTable("CachedSession");
+                });
+
+            modelBuilder.Entity("SharedHost.Models.Cluster.Log", b =>
+                {
+                    b.HasOne("SharedHost.Models.Local.ClusterWorkerNode", "worker")
+                        .WithMany()
+                        .HasForeignKey("workerID");
+
+                    b.Navigation("worker");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>

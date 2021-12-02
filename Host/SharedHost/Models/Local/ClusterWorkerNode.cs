@@ -54,8 +54,8 @@ namespace SharedHost.Models.Local
 
         public void RestoreWorkerNode ()
         {
-            _coreClient = new RestClient("http://"+PrivateIP.ToString()+":3330/cluster");
-            _agentClient = new RestClient("https://"+PrivateIP.ToString()+":2220/cluster");
+            _coreClient = new RestClient("http://"+PrivateIP.ToString()+"/cluster");
+            _agentClient = new RestClient("https://"+PrivateIP.ToString()+"/cluster");
         }
 
 
