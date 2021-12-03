@@ -45,7 +45,7 @@ namespace Conductor
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");
-                options.InstanceName = "SystemCaching";
+                options.InstanceName = Configuration.GetConnectionString("RedisInstanceName");
             });
 
             services.AddDatabaseDeveloperPageExceptionFilter();

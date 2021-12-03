@@ -47,7 +47,7 @@ namespace Authenticator
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");
-                options.InstanceName = "SystemCaching";
+                options.InstanceName = Configuration.GetConnectionString("RedisInstanceName");
             });
 
             //for postgresql

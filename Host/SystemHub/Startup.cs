@@ -53,7 +53,7 @@ namespace SystemHub
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");
-                options.InstanceName = "Cluster";
+                options.InstanceName = Configuration.GetConnectionString("RedisInstanceName");
             });
 
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
