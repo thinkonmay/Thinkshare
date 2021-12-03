@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.SignalR;
+using System.Linq;
+using DbSchema.SystemDb.Data;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using SharedHost;
 using RestSharp;
 using SharedHost.Models.Hub;
+using DbSchema.CachedState;
 using Newtonsoft.Json;
 
 namespace Conductor.Hubs
@@ -57,9 +60,12 @@ namespace Conductor.Hubs
     public class ClientHub : IClientHub
     {
         private readonly RestClient _NotificationHub;
+        private readonly IGlobalStateStore _cache;
 
-        public ClientHub(IOptions<SystemConfig> config)
+        public ClientHub(IOptions<SystemConfig> config,
+                         IGlobalStateStore cache)
         {
+            _cache = cache;
             _NotificationHub = new RestClient(config.Value.SystemHub+"/User/Event");
         }
 
@@ -80,12 +86,13 @@ namespace Conductor.Hubs
             await _NotificationHub.ExecuteAsync(request);
         }
 
-        public async Task ReportSessionInitialized(WorkerNode slave, int ID)
+        public async Task ReportSessionInitialized(WorkerNode worker, int ID)
         {
+            worker.WorkerState = await _cache.GetWorkerState(worker.ID);
             var data = new EventModel
             {
                 EventName = "ReportSessionInitialized",
-                Message = JsonConvert.SerializeObject(slave)
+                Message = JsonConvert.SerializeObject(worker)
             };
 
             /*generate rest post to signalling server*/
@@ -159,6 +166,7 @@ namespace Conductor.Hubs
 
         public async Task ReportNewSlaveAvailable(WorkerNode device)
         {
+            device.WorkerState = await _cache.GetWorkerState(device.ID);
             var data = new EventModel
             {
                 EventName = "ReportNewSlaveAvailable",

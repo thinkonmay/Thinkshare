@@ -124,6 +124,7 @@ namespace WorkerManager.Controllers
             {
                 var cluster = new LocalCluster
                 {
+                    Name = ClusterName,
                     Token = result.Content,
                     Private = isPrivate,
                     Register = DateTime.Now
@@ -149,7 +150,7 @@ namespace WorkerManager.Controllers
         {
             var ClusterName = _db.Clusters.First().Name;
             var token = _db.Owner.First().token;
-            var request = new RestRequest(_config.ClusterRegisterUrl)
+            var request = new RestRequest(_config.ClusterTokenUrl)
                 .AddHeader("Authorization","Bearer "+token)
                 .AddQueryParameter("ClusterName", ClusterName);
             request.Method = Method.GET;

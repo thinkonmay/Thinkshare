@@ -52,7 +52,15 @@ namespace WorkerManager.Controllers
         [HttpPost]
         public async Task<IActionResult> PostInfor([FromBody]WorkerRegisterModel agent_register)
         {
-            var ClusterName = _db.Clusters.First().Name;
+            var Cluster = _db.Clusters.First();
+            if(Cluster == null)
+            {
+                return BadRequest("Cluster haven't been registered yet");
+            }
+            var ClusterName = Cluster.Name;
+
+
+
             var cachednode = _db.Devices.Where(x => 
                 x.PrivateIP == agent_register.LocalIP &&
                 x.CPU == agent_register.CPU &&

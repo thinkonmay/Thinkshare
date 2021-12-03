@@ -70,6 +70,7 @@ namespace Conductor.Controllers
                             node = _db.Devices.Find(state.Key);
                             await _cache.CacheWorkerInfor(node);
                         }
+                        node.WorkerState = state.Value;
                         result.Add(node);
                     }
                 }

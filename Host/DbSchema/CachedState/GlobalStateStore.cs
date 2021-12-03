@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using System.Linq;
+using DbSchema.SystemDb.Data;
 using SharedHost;
 using SharedHost.Models.Cluster;
 using SharedHost.Models.Device;
@@ -25,6 +27,7 @@ namespace DbSchema.CachedState
         Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, GlobalCluster cluster);
         Task<SessionWorker> GetClientSessionSetting(SessionAccession accession);
         Task<SessionClient> GetWorkerSessionSetting(SessionAccession accession);
+        Task<string?> GetWorkerState(int WorkerID);
     }
 
 
@@ -33,8 +36,12 @@ namespace DbSchema.CachedState
     {
         private IDistributedCache _cache;
 
-        public GlobalStateStore(IDistributedCache cache)
+        private GlobalDbContext _db;
+
+        public GlobalStateStore(IDistributedCache cache,
+                                GlobalDbContext db)
         {
+            _db = db;
             _cache = cache;
         }
 
@@ -55,6 +62,22 @@ namespace DbSchema.CachedState
             return snapshoot;
         }
 
+        public async Task<string?> GetWorkerState(int WorkerID)
+        {
+            var clusters = _db.Clusters.Where(X => true);
+            foreach (var item in clusters)
+            {
+                var snapshoot = await this.GetClusterSnapshot(item.ID);
+                foreach (var state in snapshoot)
+                {
+                    if (state.Key == WorkerID)
+                    {
+                        return state.Value;
+                    }
+                }
+            }
+            return null;
+        }
 
 
 

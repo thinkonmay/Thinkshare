@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using DbSchema.SystemDb.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -50,6 +51,10 @@ namespace SystemHub
                 c.IncludeXmlComments(xmlFilePath);
             });
 
+            services.AddDbContext<GlobalDbContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
+                ServiceLifetime.Singleton
+            );
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = Configuration.GetConnectionString("Redis");
