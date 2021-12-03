@@ -49,12 +49,6 @@ namespace Conductor
             });
 
             services.AddDatabaseDeveloperPageExceptionFilter();
-
-            services.AddDefaultIdentity<UserAccount>(options => options.SignIn.RequireConfirmedAccount = false)
-             
-                .AddRoles<IdentityRole<int>>()
-                .AddEntityFrameworkStores<GlobalDbContext>();
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
