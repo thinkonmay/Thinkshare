@@ -116,7 +116,7 @@ namespace Conductor.Controllers
                 }
                 else
                 {
-                    await _clientHubctx.ReportSlaveObtained(Session.First().WorkerID);
+                    await _clientHubctx.ReportSlaveObtained(worker.ID);
                 }
                 await _db.SaveChangesAsync();
             }

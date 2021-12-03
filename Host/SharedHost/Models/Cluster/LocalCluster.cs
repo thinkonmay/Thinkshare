@@ -15,6 +15,7 @@ namespace SharedHost.Models.Cluster
         public int ID { get; set; }
 
 
+        [Required]
         public string Name {get;set;}
 
         /// <summary>
