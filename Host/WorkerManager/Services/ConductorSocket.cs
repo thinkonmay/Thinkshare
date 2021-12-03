@@ -177,6 +177,7 @@ namespace WorkerManager.Services
                 var success = await Start();
                 if(!success)
                 {
+                    if(!isRunning){return;}
                     await RestoreConnection(null);
                 }
 

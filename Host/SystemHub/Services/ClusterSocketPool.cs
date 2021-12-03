@@ -89,7 +89,7 @@ namespace SystemHub.Services
             {
                 Serilog.Log.Information("cluster disconnected, worker state set to disconncted");
                 newsnapshoot.Add(Item.Key,WorkerState.Disconnected);
-                Serilog.Log.Information("WorkerID: "+Item.Key.ToString()+" | State: "+Item.Value);
+                Serilog.Log.Information("WorkerID: "+Item.Key.ToString()+" | State: "+WorkerState.Disconnected);
             }
             await _cache.SetClusterSnapshot(resp.ID,newsnapshoot);
             var done = _ClusterSocketsPool.TryRemove(resp,out var output);
@@ -210,7 +210,15 @@ namespace SystemHub.Services
                             .AddQueryParameter("ID",unsyncedItem.Key.ToString());
                         syncrequest.Method = Method.POST;
 
-                        await _conductor.ExecuteAsync(syncrequest);
+                        var result = await _conductor.ExecuteAsync(syncrequest);
+                        if(result.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            Serilog.Log.Information("Reportd state changing to conductor");
+                        }
+                        else
+                        {
+                            Serilog.Log.Information("Fail to report event to conductor");
+                        }
                     }
 
                     syncedSnapshoot.Add(unsyncedItem.Key,syncedState);
@@ -235,13 +243,16 @@ namespace SystemHub.Services
                 // if item is exist in cluster snapshoot but not in synced, add it
                 if (!success)
                 {
+                    Serilog.Log.Information("New worker node sync to host");
                     var workerInfor = _cache.GetWorkerInfor(item.Key);
                     if(workerInfor == null)
                     {
+                        Serilog.Log.Information("Cannot find worker infor in cache");
                         syncedSnapshoot.Add(item.Key,WorkerState.unregister);
                     }
                     else
                     {
+                        Serilog.Log.Information("Found worker infor in cache, added to synced cluster snapshoot");
                         syncedSnapshoot.Add(item.Key,item.Value);
                     }
                 }
