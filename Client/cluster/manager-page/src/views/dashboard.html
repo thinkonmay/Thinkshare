@@ -21,6 +21,8 @@
   <link rel="stylesheet" href="../../css/vertical-layout-light/style.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="../../images/logo-thinkmay-white.ico" />
+  <link rel="stylesheet" href="../../css/style.css">
+
 </head>
 
 <body>
@@ -139,7 +141,8 @@
           </li> -->
           <li class="nav-item dropdown d-none d-lg-block user-dropdown">
             <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-              <img class="img-xs rounded-circle" id="dashboardSrcImg" alt="Profile image" src="images/default_user.png"> </a>
+              <img class="img-xs rounded-circle" id="dashboardSrcImg" alt="Profile image" src="images/default_user.png">
+            </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
               <div class="dropdown-header text-center">
                 <img class="img-md rounded-circle" id="avatarSrc" alt="Profile image" src="images/default_user.png">
@@ -358,8 +361,8 @@
                                     <p class="card-subtitle card-subtitle-dash">You have 50+ new requests</p>
                                   </div>
                                   <div>
-                                    <button id="testFeature" class="btn btn-primary btn-lg text-white mb-0 me-0" type="button"><i
-                                        class="mdi mdi-account-plus"></i>Add new member</button>
+                                    <button id="testFeature" class="btn btn-primary btn-lg text-white mb-0 me-0"
+                                      type="button"><i class="mdi mdi-account-plus"></i>Add new member</button>
                                   </div>
                                 </div>
                                 <div class="table-responsive  mt-1">
@@ -374,9 +377,10 @@
                                           </div>
                                         </th>
                                         <th>Customer</th>
-                                        <th>Company</th>
+                                        <!-- <th>Company</th> -->
                                         <th>Progress</th>
                                         <th>Status</th>
+                                        <th>Information</th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -397,10 +401,10 @@
                                             </div>
                                           </div>
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                           <h6>Company name 1</h6>
                                           <p>company type</p>
-                                        </td>
+                                        </td> -->
                                         <td>
                                           <div>
                                             <div
@@ -416,6 +420,9 @@
                                         </td>
                                         <td>
                                           <div class="badge badge-opacity-warning">In progress</div>
+                                        </td>
+                                        <td>
+                                          <a href="#popup1" id=detailBtn class="bn11">Detail</a>
                                         </td>
                                       </tr>
                                       <tr>
@@ -435,10 +442,10 @@
                                             </div>
                                           </div>
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                           <h6>Company name 1</h6>
                                           <p>company type</p>
-                                        </td>
+                                        </td> -->
                                         <td>
                                           <div>
                                             <div
@@ -454,6 +461,9 @@
                                         </td>
                                         <td>
                                           <div class="badge badge-opacity-warning">In progress</div>
+                                        </td>
+                                        <td>
+                                          <a href="/" class="bn11">Detail</a>
                                         </td>
                                       </tr>
                                       <tr>
@@ -473,10 +483,10 @@
                                             </div>
                                           </div>
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                           <h6>Company name 1</h6>
                                           <p>company type</p>
-                                        </td>
+                                        </td> -->
                                         <td>
                                           <div>
                                             <div
@@ -492,6 +502,9 @@
                                         </td>
                                         <td>
                                           <div class="badge badge-opacity-warning">In progress</div>
+                                        </td>
+                                        <td>
+                                          <a href="/" class="bn11">Detail</a>
                                         </td>
                                       </tr>
                                       <tr>
@@ -511,10 +524,10 @@
                                             </div>
                                           </div>
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                           <h6>Company name 1</h6>
                                           <p>company type</p>
-                                        </td>
+                                        </td> -->
                                         <td>
                                           <div>
                                             <div
@@ -530,6 +543,9 @@
                                         </td>
                                         <td>
                                           <div class="badge badge-opacity-danger">Pending</div>
+                                        </td>
+                                        <td>
+                                          <a href="#myModal" class="bn11">Detail</a>
                                         </td>
                                       </tr>
                                       <tr>
@@ -549,10 +565,10 @@
                                             </div>
                                           </div>
                                         </td>
-                                        <td>
+                                        <!-- <td>
                                           <h6>Company name 1</h6>
                                           <p>company type</p>
-                                        </td>
+                                        </td>  -->
                                         <td>
                                           <div>
                                             <div
@@ -568,6 +584,9 @@
                                         </td>
                                         <td>
                                           <div class="badge badge-opacity-success">Completed</div>
+                                        </td>
+                                        <td>
+                                          <a href="/" class="bn11">Detail</a>
                                         </td>
                                       </tr>
                                     </tbody>
@@ -591,6 +610,74 @@
                                     </div>
                                     <canvas class="my-auto" id="doughnutChart" height="200"></canvas>
                                     <div id="doughnut-chart-legend" class="mt-5 text-center"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div id="popup1" class="overlay">
+                          <div class="popup">
+                            <a class="close" href="#">&times;</a>
+                            <div class="col-lg-8 d-flex flex-column">
+                              <div class="row flex-grow">
+                                <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
+                                  <div class="card card-rounded">
+                                    <div class="card-body">
+                                      <div class="d-sm-flex justify-content-between align-items-start">
+                                        <div>
+                                          <h4 class="card-title card-title-dash">Monitor Worker Node
+                                          </h4>
+                                          <h5 class="card-subtitle card-subtitle-dash"> $nameOfWorkerNode
+                                          </h5>
+                                        </div>
+                                        <div id="performance-line-legend"></div>
+                                      </div>
+                                      <div class="form-group row">
+                                        <div class="col-sm-3">
+                                          <div class="form-check" id="remoteCoreOption1">
+                                            <label class="form-check-label">
+                                              <input name="optionsRemoteCore" type="radio" class="form-check-input"
+                                                id="analyticCPU">
+                                              CPU
+                                              <i class="input-helper"></i><i class="input-helper"></i></label>
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                          <div class="form-check" id="remoteCoreOption2">
+                                            <label class="form-check-label">
+                                              <input name="optionsRemoteCore" type="radio" class="form-check-input"
+                                                id="analyticGPU">
+                                              GPU
+                                              <i class="input-helper"></i><i class="input-helper"></i></label>
+                                            </p>
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                          <div class="form-check" id="remoteCoreOption3">
+                                            <label class="form-check-label">
+                                              <input name="optionsRemoteCore" type="radio" class="form-check-input"
+                                                id="analyticRAM">
+                                              RAM
+                                              <i class="input-helper"></i><i class="input-helper"></i></label>
+                                            </p>
+                                          </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                          <div class="form-check" id="remoteCoreOption2">
+                                            <label class="form-check-label">
+                                              <input name="optionsRemoteCore" type="radio" class="form-check-input"
+                                                id="analyticNetwork">
+                                              Network
+                                              <i class="input-helper"></i><i class="input-helper"></i></label>
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="chartjs-wrapper mt-5">
+                                        <canvas id="performaneLine"></canvas>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -682,30 +769,6 @@
                         </div>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-lg-8 d-flex flex-column">
-                        <div class="row flex-grow">
-                          <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="d-sm-flex justify-content-between align-items-start">
-                                  <div>
-                                    <h4 class="card-title card-title-dash">Monitor Worker Node
-                                    </h4>
-                                    <h5 class="card-subtitle card-subtitle-dash"> $nameOfWorkerNode
-                                    </h5>
-                                  </div>
-                                  <div id="performance-line-legend"></div>
-                                </div>
-                                <div class="chartjs-wrapper mt-5">
-                                  <canvas id="performaneLine"></canvas>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -750,7 +813,6 @@
   <script src="../../js/Chart.roundedBarCharts.js"></script>
   <!-- End custom js for this page-->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
   <script type="module" src="../../javascripts/pages/dashboard.js"></script>
 </body>
 

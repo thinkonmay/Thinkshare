@@ -19,6 +19,11 @@ let sessionInfor;
 // 	$("#jobs").text(body.jobs)
 // })
 $(document).ready(async () => {
+
+	$('#detailBtn').click(() => {
+		// pop up module details infor user
+	})
+
 	$('#logout').click(() => {
 		setCookie("logout", "true")
 		setCookie("token", null, 1)
@@ -65,20 +70,22 @@ $(document).ready(async () => {
 		// location.reload();
 	}
 	setDataForChart();
-	$('#testFeature').click(() => {
-		console.log('idadassdas')
-		datasetNetwork = datasetNetwork == 0 ? [11, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1] : 0
-		setDataForChart();
-	})
+	$('#analyticCPU').click(() => {
+		datasetNetwork = [11, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
+		setDataForChart('#1F3BB3');
+	});
 
-
-	$('#RAMElement').click(() => {
-		console.log("RAM nè");
+	$('#analyticGPU').click(() => {
+		datasetNetwork = [11, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 11, 51, 22, 40, 95, 43, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
+		setDataForChart('#52CDFF');
 	})
-	$('#CPUElement').click(() => {
-		console.log("CPU nè");
+	$('#analyticRAM').click(() => {
+		datasetNetwork = [11, 51, 22, 40, 95, 43, 2, 30, , 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, , 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
+		setDataForChart('#eded68');
 	})
-	$('#GPUElement').click(() => {
+	$('#analyticNetwork').click(() => {
+		datasetNetwork = [29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
+		setDataForChart('#e65555');
 	})
 
 
@@ -293,7 +300,7 @@ async function tutorial() {
 }
 
 
-function setDataForChart() {
+function setDataForChart(color) {
 	let isSetElement = false;
 	// for (let i = 0; i < 7; i++) {
 	// 	datasets[i] = 0;
@@ -322,7 +329,7 @@ function setDataForChart() {
 				//data: [21, 20, 1, 51, 22, 40, 95, 43, 2, 30, 5, 16, 14, 49, 21, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 30, 15, 40, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 95, 12],
 				backgroundColor: saleGradientBg,
 				borderColor: [
-					'#1F3BB3',
+					color,
 				],
 				borderWidth: 1.5,
 				fill: true, // 3: no fill
@@ -336,7 +343,7 @@ function setDataForChart() {
 				//data: [21, 20, 30, 15, 40, 95, 16, 14, 49, 21, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 29, 45, 61, 25, 34, 61, 5, 3, 51, 4, 51, 24, 23, 6, 1, 16, 14, 49, 21, 29, 45, 61, 25, 34, 61, 5, 3],
 				backgroundColor: saleGradientBg2,
 				borderColor: [
-					'#52CDFF',
+					color,
 				],
 				borderWidth: 1.5,
 				fill: true, // 3: no fill
@@ -351,7 +358,7 @@ function setDataForChart() {
 				//data: [43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 45, 61, 25, 3, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 6],
 				backgroundColor: saleGradientBg2,
 				borderColor: [
-					'#eded68',
+					color,
 				],
 				borderWidth: 1.5,
 				fill: true, // 3: no fill
@@ -366,7 +373,7 @@ function setDataForChart() {
 				data: datasetNetwork,
 				backgroundColor: saleGradientBg2,
 				borderColor: [
-					'#e65555',
+					color,
 				],
 				borderWidth: 1.5,
 				fill: true, // 3: no fill
@@ -417,14 +424,6 @@ function setDataForChart() {
 				if (!isSetElement) {
 					isSetElement = true;
 					var text = [];
-					text.push('<div class="chartjs-legend"><ul>');
-					for (var i = 0; i < chart.data.datasets.length; i++) {
-						text.push('<li id=' + chart.data.datasets[i].label + 'Element>');
-						text.push('<span style="background-color:' + chart.data.datasets[i].borderColor + '">' + '</span>');
-						text.push(chart.data.datasets[i].label);
-						text.push('</li>');
-					}
-					text.push('</ul></div>');
 					return text.join("");
 				}
 			},
