@@ -60,7 +60,7 @@ namespace Conductor.Hubs
 
         public ClientHub(IOptions<SystemConfig> config)
         {
-            _NotificationHub = new RestClient(config.Value.SystemHub+"/Event");
+            _NotificationHub = new RestClient(config.Value.SystemHub+"/User/Event");
         }
 
 

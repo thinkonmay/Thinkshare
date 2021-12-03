@@ -30,7 +30,7 @@ namespace Conductor.Services
         {
             _db = dbContext;
             _cache = cache;
-            _Cluster =  new RestClient(config.Value.SystemHub + "/Cluster");
+            _Cluster =  new RestClient(config.Value.SystemHub + "/Cluster/Worker");
         }
 
 
@@ -53,57 +53,45 @@ namespace Conductor.Services
             return null;
         }
 
-        public async Task SessionReconnect(int SlaveID)
+        public async Task SessionReconnect(int WorkerID)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Reconnect")
-                .AddQueryParameter("SlaveID", SlaveID.ToString());
+                .AddQueryParameter("WorkerID", WorkerID.ToString());
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);
         }
 
-        public async Task SessionDisconnect(int SlaveID)
+        public async Task SessionDisconnect(int WorkerID)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Disconnect")
-                .AddQueryParameter("SlaveID", SlaveID.ToString());
+                .AddQueryParameter("WorkerID", WorkerID.ToString());
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);
         }
 
-        public async Task SessionInitialize(int ID, string token)
+        public async Task SessionInitialize(int WorkerID, string token)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Initialize")
-                .AddQueryParameter("token", token);
+                .AddQueryParameter("token", token)
+                .AddQueryParameter("WorkerID", WorkerID.ToString());
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);
         }
 
-        public async Task SessionTerminate(int SlaveID)
+        public async Task SessionTerminate(int WorkerID)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Terminate")
-                .AddQueryParameter("SlaveID", SlaveID.ToString());
+                .AddQueryParameter("WorkerID", WorkerID.ToString());
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);
-        }
-
-
-        public async Task AssignGlobalID(int ClusterID ,int GlobalID, int PrivateID)
-        {
-            var request = new RestRequest("GrantID")
-                .AddQueryParameter("ClusterID", ClusterID.ToString())
-                .AddQueryParameter("GlobalID", GlobalID.ToString())
-                .AddQueryParameter("PrivateID", PrivateID.ToString());
-            request.Method = Method.POST;
-
-            await _Cluster.ExecuteAsync(request);
-
         }
     }
 }
