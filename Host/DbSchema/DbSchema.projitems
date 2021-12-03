@@ -16,6 +16,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)DbSeeding\RoleSeeding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbSeeding\ScriptModelSeeder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LocalDb\ClusterDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LocalDb\Models\ClusterWorkerNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LocalDb\Models\Log.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LocalDb\Models\OwnerCredential.cs" />
     <Compile Include="..\DbSchema\SystemDb\GlobalDbContext.cs" />
   </ItemGroup>
 </Project>

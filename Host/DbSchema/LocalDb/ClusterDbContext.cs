@@ -1,15 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DbSchema.LocalDb.Models;
+using Microsoft.EntityFrameworkCore;
 using SharedHost.Models.Cluster;
 using SharedHost.Models.Shell;
-using SharedHost.Models.Local;
 
-namespace DbSchema.SystemDb
+namespace DbSchema.LocalDb
 {
     /// <summary>
     /// Database context in ef framework, readmore at https://www.entityframeworktutorial.net/efcore/entity-framework-core-dbcontext.aspx
     /// </summary>
     public class ClusterDbContext : DbContext
     {
+        private DbSet<ShellSession> cachedSession;
+
         public ClusterDbContext(DbContextOptions<ClusterDbContext> options) : base(options)
         {
         }
@@ -32,9 +34,9 @@ namespace DbSchema.SystemDb
 
         public DbSet<OwnerCredential> Owner { get; set; }
         public DbSet<LocalCluster> Clusters { get; set; }
-        public DbSet<ShellSession> CachedSession { get; set; }
+        public DbSet<ShellSession> CachedSession { get => cachedSession; set => cachedSession = value; }
         public DbSet<ClusterWorkerNode> Devices { get; set; }
-        public DbSet<ScriptModel> ScriptModels {get;set;}
-        public DbSet<Log> Logs{get;set;}
+        public DbSet<ScriptModel> ScriptModels { get; set; }
+        public DbSet<Log> Logs { get; set; }
     }
 }

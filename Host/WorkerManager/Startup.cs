@@ -14,6 +14,7 @@ using DbSchema.SystemDb;
 using WorkerManager.Middleware;
 using DbSchema.CachedState;
 using SharedHost;
+using DbSchema.LocalDb;
 
 namespace WorkerManager
 {

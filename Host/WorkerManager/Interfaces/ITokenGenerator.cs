@@ -1,5 +1,4 @@
-﻿using SharedHost.Models.Local;
-using SharedHost.Models.User;
+﻿using DbSchema.LocalDb.Models;
 using System.Threading.Tasks;
 
 namespace WorkerManager.Interfaces

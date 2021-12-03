@@ -12,6 +12,8 @@ using SharedHost.Models.Cluster;
 using System;
 using RestSharp;
 using Newtonsoft.Json;
+using DbSchema.LocalDb;
+using DbSchema.LocalDb.Models;
 
 // TODO: authentification
 

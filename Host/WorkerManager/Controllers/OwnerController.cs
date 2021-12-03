@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using DbSchema.SystemDb;
 using WorkerManager.Interfaces;
-using WorkerManager.Services;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -12,9 +10,10 @@ using RestSharp;
 using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
 using Microsoft.Extensions.Options;
-using SharedHost.Models.Local;
 using DbSchema.CachedState;
 using SharedHost;
+using DbSchema.LocalDb;
+using DbSchema.LocalDb.Models;
 
 namespace WorkerManager.Controllers
 {
