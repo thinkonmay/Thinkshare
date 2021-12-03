@@ -47,6 +47,9 @@ namespace Conductor
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = Configuration.GetConnectionString("RedisInstanceName");
             });
+            services.AddDefaultIdentity<UserAccount>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole<int>>()
+                .AddEntityFrameworkStores<GlobalDbContext>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddControllers();
