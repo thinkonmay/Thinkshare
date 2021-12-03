@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Threading;
-using System.Collections.Generic;
 using System.Linq;
 using WorkerManager.Interfaces;
-using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
 using DbSchema.CachedState;
-using DbSchema.SystemDb;
-using Newtonsoft.Json;
-using SharedHost.Models.Local;
+using DbSchema.LocalDb;
+using DbSchema.LocalDb.Models;
 
 namespace WorkerManager.Services
 {

@@ -1,10 +1,7 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SharedHost.Models.Local;
 
-
-namespace SharedHost.Models.Cluster
+namespace DbSchema.LocalDb.Models
 {
     public class Log
     {

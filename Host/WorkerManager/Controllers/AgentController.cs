@@ -8,14 +8,13 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
-using DbSchema.SystemDb;
 using WorkerManager.Middleware;
 using System.Linq;
 using DbSchema.CachedState;
-using SharedHost.Models.Local;
-using MersenneTwister;
 using Microsoft.Extensions.Options;
 using SharedHost;
+using DbSchema.LocalDb;
+using DbSchema.LocalDb.Models;
 
 namespace WorkerManager.Controllers
 {

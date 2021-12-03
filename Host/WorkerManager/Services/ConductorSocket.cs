@@ -4,7 +4,6 @@ using SharedHost.Models.Cluster;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
-using SharedHost.Models.Shell;
 using RestSharp;
 using System.Net;
 using Newtonsoft.Json;
@@ -14,11 +13,10 @@ using System.Threading;
 using System;
 using System.IO;
 using System.Text;
-using SharedHost.Models.Session;
-using DbSchema.SystemDb;
-using SharedHost.Models.Local;
 using DbSchema.CachedState;
 using SharedHost;
+using DbSchema.LocalDb;
+using DbSchema.LocalDb.Models;
 
 namespace WorkerManager.Services
 {

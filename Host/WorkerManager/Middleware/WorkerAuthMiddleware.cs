@@ -6,10 +6,10 @@ using RestSharp;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
 using WorkerManager.Interfaces;
-using DbSchema.SystemDb;
 using SharedHost.Models.User;
-using SharedHost.Models.Local;
 using SharedHost;
+using DbSchema.LocalDb;
+using DbSchema.LocalDb.Models;
 
 namespace WorkerManager.Middleware
 {

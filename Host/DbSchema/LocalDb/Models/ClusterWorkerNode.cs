@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using SharedHost.Models.Session;
 using System.Net;
 
-namespace SharedHost.Models.Local
+namespace DbSchema.LocalDb.Models
 {
     public class ClusterWorkerNode 
     {

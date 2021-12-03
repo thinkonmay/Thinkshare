@@ -15,6 +15,7 @@ using SharedHost;
 using System.Linq;
 using Newtonsoft.Json;
 using RestSharp;
+using DbSchema.LocalDb;
 
 namespace WorkerManager
 {

@@ -1,15 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
-using DbSchema.SystemDb;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using SharedHost;
 using SharedHost.Models.Device;
-using SharedHost.Models.Local;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using DbSchema.LocalDb.Models;
+using DbSchema.LocalDb;
 
 namespace DbSchema.CachedState
 {
