@@ -44,7 +44,6 @@ namespace Conductor.Controllers
         [HttpPost("Worker/State")]
         public async Task<IActionResult> Update(int ID, string NewState)
         {
-
             var Session = _db.RemoteSessions.Where(o => o.WorkerID == ID && !o.EndTime.HasValue);
             // if device is already obtained by one user (dont have endtime)
             if (Session.Any())
