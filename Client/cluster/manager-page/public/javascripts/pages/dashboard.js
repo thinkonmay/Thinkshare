@@ -20,6 +20,10 @@ let sessionInfor;
 // })
 $(document).ready(async () => {
 
+	$('#registerCluster').click(() => {
+		window.location = "/register-cluster"
+	})
+
 	$('#detailBtn').click(() => {
 		// pop up module details infor user
 	})
