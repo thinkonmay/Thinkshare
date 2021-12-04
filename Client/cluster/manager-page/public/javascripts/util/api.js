@@ -1,12 +1,18 @@
-import {getCookie} from "./cookie.js"
+import { getCookie } from "./cookie.js"
 
-const host = "http://localhost:5000"
-
-let host_user;
+let host = "";
 let currentURL = document.URL
-let subdomain = currentURL.slice(0, 28)
+let count = 0
+for (let i = 0; i < currentURL.length; i++) {
+	if (currentURL[i] == ":")
+		count++;
+	if (count == 2) break;
+	host += currentURL[i];
+}
+host += ":5000"
 
-host_user = "https://host.thinkmay.net"
+
+const host_user = "https://host.thinkmay.net"
 
 
 // local api
@@ -55,28 +61,33 @@ const FetchSession = `${host_user}/Fetch/Session`
 export const genHeaders = () => {
 	const token = getCookie("token")
 	return Object.assign({
-			"Content-Type": "application/json"
-		},
+		"Content-Type": "application/json"
+	},
 		token ?
-		{
-			Authorization: `${token}`
-		} :
-		{}
+			{
+				Authorization: `${token}`
+			} :
+			{}
 	)
 }
 
 export const genHeadersUser = () => {
 	const token = getCookie("token")
 	return Object.assign({
-			"Content-Type": "application/json"
-		},
+		"Content-Type": "application/json"
+	},
 		token ?
-		{
-			Authorization: `Bearer ${token}`
-		} :
-		{}
+			{
+				Authorization: `Bearer ${token}`
+			} :
+			{}
 	)
 }
+
+
+
+
+
 
 /////////////////////////////////////////
 // user api 
@@ -91,17 +102,18 @@ export const Login = body => {
 	})
 }
 
-export const RegisterCluster = (isPrivate, TURN) => {
+export const RegisterCluster = (isPrivate, Name) => {
 	if (isPrivate) {
-		RegisterClusterRoute += `?isPrivate=true`
+		RegisterClusterRoute += `?isPrivate=true&ClusterName=${Name}`
 	} else {
-		RegisterClusterRoute += `?isPrivate=false`
+		RegisterClusterRoute += `?isPrivate=false&ClusterName=${Name}`
 	}
 	return fetch(RegisterClusterRoute, {
 		method: "POST",
 		headers: genHeaders()
 	})
 }
+
 
 export const GetClusterToken = () => {
 	return fetch(GetClusterTokenRoute, {
@@ -140,7 +152,7 @@ export const Stop = () => {
 
 
 
-
+///////////////////////////////////////////////////////////////////////
 // User
 export const getInfor = () => {
 	return fetch(Infor, {
@@ -154,7 +166,7 @@ export const getInfor = () => {
 		}
 	})
 }
-	
+
 
 export const setInfor = (body) => {
 	return fetch(Infor, {
