@@ -125,6 +125,23 @@ namespace Authenticator.Controllers
         }
 
         [Manager]
+        [HttpPost("Infor")]
+        public async Task<IActionResult> getInfor(string ClusterName)
+        {
+            var ManagerID = HttpContext.Items["UserID"];
+            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
+            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
+            if (!cluster.Any())
+            {
+                return BadRequest("Cluster not found");
+            }
+            else
+            {
+                return Ok(cluster.First());
+            }
+        }
+
+        [Manager]
         [HttpPost("Turn")]
         public async Task<IActionResult> GetTURN(string ClusterName, 
                                                 string turnIP, 

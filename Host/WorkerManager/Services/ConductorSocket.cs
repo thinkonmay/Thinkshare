@@ -35,15 +35,19 @@ namespace WorkerManager.Services
         private ILocalStateStore _cache;
 
         private readonly ClusterConfig _config;
+        
+        private readonly ITokenGenerator _generator;
 
         private bool isRunning;
 
         public ConductorSocket(IOptions<ClusterConfig> cluster, 
+                               ITokenGenerator generator,
                                ClusterDbContext db,
                                ILocalStateStore cache)
         {
             _db = db;
             isRunning = false;
+            _generator = generator;
             _cache = cache;
             _config = cluster.Value;
             _scriptmodel = new RestClient();
@@ -349,18 +353,17 @@ namespace WorkerManager.Services
 
 
 
-        /// <summary>
-        /// initialize session
-        /// </summary>
-        /// <param name="session"></param>
-        /// <returns></returns>
-        public async Task Initialize(int ID, string token)
+        public async Task Initialize(int ID, string remoteToken)
         {
             var worker = _db.Devices.Where(o => o.ID == ID).First();
             worker.RestoreWorkerNode();
 
-            worker.RemoteToken = token;
-            if (await worker.SessionInitialize())
+            worker.RemoteToken = remoteToken;
+            _db.Update(worker);
+            await _db.SaveChangesAsync();
+
+            var workerToken = await _generator.GenerateWorkerToken(worker);
+            if (await worker.SessionInitialize(workerToken))
             {
                 await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
             }
@@ -371,18 +374,15 @@ namespace WorkerManager.Services
         }
 
 
-        /// <summary>
-        /// Terminate session 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
+
         public async Task Terminate(int GlobalID)
         {
             var worker = _db.Devices.Where(o => o.ID == GlobalID).First();
             worker.RestoreWorkerNode();
 
             worker.RemoteToken = null;
-            if(await worker.SessionTerminate())
+            var workerToken = await _generator.GenerateWorkerToken(worker);
+            if(await worker.SessionTerminate(workerToken))
             {
                 await _cache.SetWorkerState(worker.ID, WorkerState.Open);
             }
@@ -390,34 +390,27 @@ namespace WorkerManager.Services
         }
 
 
-        /// <summary>
-        /// disconnect remote control during session
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
         public async Task Disconnect(int GlobalID)
         {
             var worker = _db.Devices.Where(o => o.ID == GlobalID).First();
             worker.RestoreWorkerNode();
 
-            if (await worker.SessionDisconnect())
+            var workerToken = await _generator.GenerateWorkerToken(worker);
+            if (await worker.SessionDisconnect(workerToken))
             {
                 await _cache.SetWorkerState(worker.ID,WorkerState.OffRemote);
             }
             await _db.SaveChangesAsync();
         }
 
-        /// <summary>
-        /// Reconnect remote control after disconnect
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
         public async Task Reconnect(int GlobalID)
         {
             var worker = _db.Devices.Where(o => o.ID == GlobalID).First();
+
             worker.RestoreWorkerNode();
 
-            if (await worker.SessionReconnect())
+            var workerToken = await _generator.GenerateWorkerToken(worker);
+            if (await worker.SessionReconnect(workerToken))
             {
                 await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
             }

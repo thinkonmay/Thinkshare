@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
+using Microsoft.Extensions.Options;
 using SharedHost;
 using SharedHost.Models.Shell;
 
@@ -14,9 +15,9 @@ namespace MetricCollector.Service
     public class ScriptGetter : IScriptGetter
     {
         private readonly RestClient _conductor;
-        public ScriptGetter(SystemConfig config)
+        public ScriptGetter(IOptions<SystemConfig> config)
         {
-            _conductor = new RestClient(config.Conductor + "/Shell");
+            _conductor = new RestClient(config.Value.Conductor + "/Shell");
         }
 
         public List<CPUDataModel> GetCPU(int DeviceID)

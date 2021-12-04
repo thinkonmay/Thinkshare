@@ -8,51 +8,51 @@ namespace SharedHost.Models.Session
     public class SessionClient
     {
         [Required]
-        public string SignallingUrl { get; set; }
+        public string signallingurl { get; set; }
 
         [Required]
-        public string turnIP { get; set; }
+        public string turnip { get; set; }
 
         [Required]
-        public string turnUser { get; set; }
+        public string turnuser { get; set; }
 
         [Required]
-        public string turnPassword { get; set; }
+        public string turnpassword{ get; set; }
 
         [Required]
-        public List<string> STUNlist { get; set; }
+        public List<string> stuns { get; set; }
 
         [Required]
-        public Codec AudioCodec { get; set; }
+        public Codec audiocodec { get; set; }
 
         [Required]
-        public Codec VideoCodec { get; set; }
+        public Codec videocodec { get; set; }
     }
 
     public class SessionWorker
     {
         [Required]
-        public string SignallingUrl { get; set; }
+        public string signallingurl { get; set; }
 
         [Required]
-        public string turnConnection { get; set; }
+        public string turn { get; set; }
 
         [Required]
-        public List<string> STUNlist { get; set; }
+        public List<string> stuns { get; set; }
 
         [Required]
-        public int ScreenWidth { get; set; }
+        public int screenwidth { get; set; }
 
         [Required]
-        public int ScreenHeight { get; set; }
+        public int screenheight { get; set; }
 
         [Required]
-        public Codec AudioCodec { get; set; }
+        public Codec audiocodec { get; set; }
 
         [Required]
-        public Codec VideoCodec { get; set; }
+        public Codec videocodec { get; set; }
 
         [Required]
-        public QoEMode QoEMode { get; set; }
+        public QoEMode mode { get; set; }
     }
 }

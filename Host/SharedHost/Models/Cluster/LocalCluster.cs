@@ -26,37 +26,7 @@ namespace SharedHost.Models.Cluster
         /// <summary>
         /// 
         /// </summary>
-        public string? TurnIP { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string? TurnUser { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string? TurnPassword { get;set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public DateTime Register { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool Private { get;set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool Enabled {  get; set; }
-
-        /// <summary>
-        /// Each cluster will contain a certain number of Slave Device
-        /// </summary>
-        public virtual ICollection<WorkerNode> Slave { get; set; }
     }
 }
 
