@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Threading;
 using System.Collections.Generic;
 using DbSchema.SystemDb;
 using System.Threading.Tasks;
@@ -115,20 +116,46 @@ namespace DbSchema.LocalDb.Models
 
         public async Task<bool> PingWorker(ClusterDbContext db, List<ScriptModel> model_list)
         {
+            using (var timeoutCancellation = new CancellationTokenSource())
+            {
+                var originalTask = Ping(db,model_list);
+                var delayTask = Task.Delay(TimeSpan.FromMilliseconds(100));
+                var completedTask = await Task.WhenAny(originalTask, delayTask);
+                // Cancel timeout to stop either task:
+                // - Either the original task completed, so we need to cancel the delay task.
+                // - Or the timeout expired, so we need to cancel the original task.
+                // Canceling will not affect a task, that is already completed.
+                timeoutCancellation.Cancel();
+                if (completedTask == originalTask)
+                {
+                    // original task completed
+                    return await originalTask;
+                }
+                else
+                {
+                    // timeout
+                    return false;
+                }
+            }
+        } 
+
+        async Task<bool> Ping(ClusterDbContext db, List<ScriptModel> model_list)
+        {
             var request = new RestRequest("ping");
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);
-            if(result.StatusCode == HttpStatusCode.OK) 
-            { 
-                GetWorkerMetric(db,model_list);
+            if(result.StatusCode == HttpStatusCode.OK) { 
                 return true; 
-            }
-            else 
-            { 
+            } else { 
                 return false; 
             }
+
         }
+
+
+
+
 
         private async Task GetWorkerMetric(ClusterDbContext db, List<ScriptModel> models)
         {

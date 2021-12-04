@@ -52,19 +52,25 @@ namespace Conductor.Controllers
                 {
                     case WorkerState.Open:
                         var device = _db.Devices.Find(ID);
+                        device.WorkerState = NewState;
                         await _clientHubctx.ReportNewSlaveAvailable(device);
                         Session.First().EndTime = DateTime.Now;
+                        _db.RemoteSessions.UpdateRange(Session);
+                        await _db.SaveChangesAsync();
                         break;
                     case WorkerState.Disconnected:
-                        await _clientHubctx.ReportSessionDisconnected(Session.First().WorkerID, Session.First().ClientId);
+                        await _clientHubctx.ReportSessionDisconnected(ID, Session.First().ClientId);
                         Session.First().EndTime = DateTime.Now;
+                        _db.RemoteSessions.UpdateRange(Session);
+                        await _db.SaveChangesAsync();
                         break;
                     case WorkerState.MISSING:
-                        await _clientHubctx.ReportSessionDisconnected(Session.First().WorkerID, Session.First().ClientId);
+                        await _clientHubctx.ReportSessionDisconnected(ID, Session.First().ClientId);
                         Session.First().EndTime = DateTime.Now;
+                        _db.RemoteSessions.UpdateRange(Session);
                         break;
                     case WorkerState.OffRemote:
-                        await _clientHubctx.ReportSessionDisconnected(Session.First().WorkerID, Session.First().ClientId);
+                        await _clientHubctx.ReportSessionDisconnected(ID, Session.First().ClientId);
                         break;
                     case WorkerState.OnSession:
                         await _clientHubctx.ReportSessionInitialized(Session.First().Worker, Session.First().ClientId);
@@ -78,13 +84,14 @@ namespace Conductor.Controllers
                 {
                     case WorkerState.Open:
                         var device = _db.Devices.Find(ID);
+                        device.WorkerState = NewState;
                         await _clientHubctx.ReportNewSlaveAvailable(device);
                         break;
                     case WorkerState.Disconnected:
-                        await _clientHubctx.ReportSlaveObtained(Session.First().WorkerID);
+                        await _clientHubctx.ReportSlaveObtained(ID);
                         break;
                     case WorkerState.MISSING:
-                        await _clientHubctx.ReportSlaveObtained(Session.First().WorkerID);
+                        await _clientHubctx.ReportSlaveObtained(ID);
                         break;
                 }
 

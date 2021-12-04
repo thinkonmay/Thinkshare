@@ -187,6 +187,14 @@ namespace WorkerManager.Controllers
             }
         }
 
+        [Owner]
+        [HttpGet("Worker/State")]
+        public async Task<IActionResult> clusterState()
+        {
+            var result = await _cache.GetClusterState();
+            return Ok(result);
+        }
+
 
 
 
