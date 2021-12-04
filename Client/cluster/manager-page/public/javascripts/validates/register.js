@@ -13,6 +13,7 @@ export default {
 			maxlength: 50
 		},
 		dob: {
+			required: true,
 		},
 		username: {
 			required: true,
@@ -26,6 +27,7 @@ export default {
 			maxlength: 15
 		},
 		jobs: {
+			required: true,
 			minlength: 5,
 			maxlength: 50
 		},
@@ -54,7 +56,7 @@ export default {
 			maxlength: "Maximum character is 50"
 		},
 		dob: {
-			required: "Your bỉthday is require field"
+			required: "Your birthday is require field"
 		},
 		userName: {
 			required: "Your username is require field",
