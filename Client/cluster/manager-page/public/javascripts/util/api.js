@@ -19,34 +19,40 @@ export const Reconnect = "/reconnect"
 
 //////////////////////////////////////////////// 
 // owner api
-export const LoginRoute = `${host}/Owner/Login`
-export const RegisterClusterRoute = `${host}/Owner/Register`
-export const GetClusterTokenRoute = `${host}/Owner/Cluster/Token`
-export const SetTurnRoute = `${host}/Owner/Cluster/TURN`
-export const StartRoute = `${host}/Owner/Start`
-export const StopRoute = `${host}/Owner/Stop`
+const LoginRoute = `${host}/Owner/Login`
+const RegisterClusterRoute = `${host}/Owner/Register`
+const GetClusterTokenRoute = `${host}/Owner/Cluster/Token`
+const SetTurnRoute = `${host}/Owner/Cluster/TURN`
+const StartRoute = `${host}/Owner/Start`
+const StopRoute = `${host}/Owner/Stop`
 //////////////////////////////////////////////// 
 
 
-//////////////////////////////////////////////// 
-// User API 
-export const Token = `${host_user}/Account/ExchangeToken`
-export const Infor = `${host_user}/Account/Infor`
-export const Session = `${host_user}/Account/History`
+/**
+ * User API
+ */
+const Token = `${host_user}/Account/ExchangeToken`
+const Infor = `${host_user}/Account/Infor`
+const Session = `${host_user}/Account/History`
 
-export const Setting = `${host_user}/Setting`
+/**
+ * Setting API
+ */
+const Setting = `${host_user}/Setting`
 
 // Session API
-export const InitializeSession = `${host_user}/Session/Initialize`
-export const TerminateSession = `${host_user}/Session/Terminate`
-export const DisconnectSession = `${host_user}/Session/Disconnect`
-export const ReconnectSession = `${host_user}/Session/Reconnect`
+const InitializeSession = `${host_user}/Session/Initialize`
+const TerminateSession = `${host_user}/Session/Terminate`
+const DisconnectSession = `${host_user}/Session/Disconnect`
+const ReconnectSession = `${host_user}/Session/Reconnect`
 
-export const UserHub = `wss://host.thinkmay.net/Hub/User`
+
+
+const UserHub = `wss://host.thinkmay.net/Hub/User`
 
 // User API
-export const FetchSlave = `${host_user}/Fetch/Node`
-export const FetchSession = `${host_user}/Fetch/Session`
+const FetchSlave = `${host_user}/Fetch/Node`
+const FetchSession = `${host_user}/Fetch/Session`
 //////////////////////////////////////////////// 
 
 export const genHeaders = () => {

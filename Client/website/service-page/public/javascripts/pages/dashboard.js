@@ -156,7 +156,7 @@ function createSlave(slave, queue) {
         </div>
       </div>
     </div>`)
-	setState(slave.serviceState, slave.id);
+	setState(slave.workerState, slave.id);
 }
 
 

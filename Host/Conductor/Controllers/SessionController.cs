@@ -81,7 +81,7 @@ namespace Conductor.Controllers
             var workerTokenRequest = new RestRequest(new Uri(_config.SessionTokenValidator))
                 .AddJsonBody(new SessionAccession
                 {
-                    ClientID = (int)UserID,
+                    ClientID = Int32.Parse((string)UserID),
                     WorkerID = sess.Worker.ID,
                     ID = sess.ID,
                     Module = Module.CORE_MODULE
@@ -90,7 +90,7 @@ namespace Conductor.Controllers
             var clientTokenRequest = new RestRequest(new Uri(_config.SessionTokenValidator))
                 .AddJsonBody(new SessionAccession
                 {
-                    ClientID = (int)UserID,
+                    ClientID = Int32.Parse((string)UserID),
                     WorkerID = sess.Worker.ID,
                     ID = sess.ID,
                     Module = Module.CLIENT_MODULE
@@ -218,7 +218,7 @@ namespace Conductor.Controllers
             var clientTokenRequest = new RestRequest("GrantSession")
                 .AddJsonBody(new SessionAccession
                 {
-                    ClientID = (int)UserID,
+                    ClientID = Int32.Parse((string)UserID),
                     WorkerID = device.ID,
                     ID = ses.First().ID,
                     Module = Module.CLIENT_MODULE

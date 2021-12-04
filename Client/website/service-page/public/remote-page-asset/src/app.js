@@ -34,12 +34,6 @@ var app = new Vue({
             Screen:
             {
                 /*
-                * slave screen (determined in session initialize step)
-                */
-                SlaveWidth: 0,
-                SlaveHeight: 0,
-
-                /*
                 * frame resolution used to transport to client
                 */
                 StreamWidth: 0,
@@ -117,9 +111,6 @@ var app = new Vue({
             {"iceServers":    
                 [
                     {
-                        urls: ["stun:stun.thinkmay.net:3478"]
-                    },
-                    {
                         urls: ["stun:stun.l.google.com:19302"] 
                     }
                 ],
@@ -153,13 +144,20 @@ var app = new Vue({
     {
         SetupSession(sessionClient){
             this.SessionClientID = sessionClient.sessionClientID;
-            this.RTPconfig.iceServers.push(sessionClient.turn);
 
+
+            sessionClient.sTUNlist.forEach(element => {
+                this.RTPconfig.iceServers.push(element);
+            });
+
+            this.RTPconfig.iceServers.push({
+                "urls":sessionClient.turnIP,
+                "username":sessionClient.turnUser,
+                "credentials":sessionClient.turnPassword,
+            });
             this.SignallingUrl = sessionClient.signallingUrl;
-            this.AudioCodec = sessionClient.qoE.audioCodec;
-            this.VideoCodec = sessionClient.qoE.videoCodec;
-            this.Screen.SlaveWidth = sessionClient.qoE.screenWidth;
-            this.Screen.SlaveHeight = sessionClient.qoE.screenHeight;
+            this.AudioCodec = sessionClient.audioCodec;
+            this.VideoCodec = sessionClient.videoCodec;
         },
         ///enter full screen mode, all functional keywill be activated
         enterFullscreen() {
