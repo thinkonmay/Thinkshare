@@ -162,7 +162,7 @@ $(document).ready(() => {
 
     if (CheckDevice.isElectron()) {
         $('#optionsVideo3').removeAttr('disabled');
-        $('#remoteGstreamCtrler').removeAttr('disabled');
+        $('#remoteCtrler2').removeAttr('disabled');
     } else {
         // website
     }
