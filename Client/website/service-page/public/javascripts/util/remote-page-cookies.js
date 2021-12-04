@@ -3,48 +3,55 @@ import { Initialize, setSetting, setInfor, getSetting } from "./api.js"
 import { reconnectSession } from "./api.js"
 import { initializeSession } from "./api.js"
 import { isElectron } from "./checkdevice.js"
+import { CoreEngine, DeviceType } from "../pages/setting.js"
 
 const coookies_expire = 100 * 1000
 
 
 ////////////// setting
-export const sessionInitialize = async (SlaveID) => {
+
+
+function setupDevice() {
     let deviceCurrent;
-    let dbDevice;
     // 1: chrome, 2: gstreamer
     if (isElectron() == true) {
-        deviceCurrent = "gstreamer";
+        deviceCurrent = DeviceType("WINDOW_APP");
     } else {
-        deviceCurrent = "chrome";
+        deviceCurrent = DeviceType("WEB_APP");
     }
+
     getSetting().then(async data => {
         let body = data.json();
-        dbDevice = body.defaultSetting['device']
-        if (deviceCurrent == 'chrome' && dbDevice == 2) {
-            dbDevice = 1;
-            let body = {};
-            body.defaultSetting_device = 1;
-            setInfor(body)
+        if(deviceCurrent != body.device)
+        {
+            if(deviceCurrent == DeviceType("WEB_APP"))
+            {
+                if(body.engine == CoreEngine("GSTREAMER"))
+                {
+                    body.engine = CoreEngine("WEB_APP");
+                }
+            }
+            body.device = deviceCurrent;
+            setSetting(body);
         }
     })
+}
+
+
+export const sessionInitialize = async (SlaveID) => {
+    setupDevice();
+
     initializeSession(parseInt(SlaveID)).then(async response => {
         if (response.status == 200) {
             var token = await response.json();
-            var platform = 1;
             getSetting().then(async _data => {
                 let _body = await _data.json();
 
-                if (_body.defaultSetting['device'] == 2) {
-                    platform = 'gstreamer';
-                } else if (_body.defaultSetting['device'] == 1) {
-                    platform = 'chrome'
-                }
-                console.log(platform)
-                if (platform == 'chrome') {
+                if (_body.engine == CoreEngine('GSTREAMER')) {
+                    window.location.assign(`thinkmay://token=${token}/`);
+                } else {
                     Cookies.setCookie("remoteToken", token, coookies_expire)
                     getRemotePage()
-                } else if (platform == 'gstreamer') {
-                    window.location.assign(`thinkmay://token=${token}/`);
                 }
             })
         } else {
@@ -53,23 +60,19 @@ export const sessionInitialize = async (SlaveID) => {
 }
 
 export const sessionReconnect = async (SlaveID) => {
+    setupDevice();
+
     reconnectSession(parseInt(SlaveID)).then(async response => {
         if (response.status == 200) {
             var token = await response.json();
-            var platform = 1;
-            getInfor().then(async _data => {
+            getSetting().then(async _data => {
                 let _body = await _data.json();
-                if (_body.defaultSetting['device'] == 2) {
-                    platform = 'gstreamer';
-                } else if (_body.defaultSetting['device'] == 1) {
-                    platform = 'chrome'
-                }
-                console.log(platform)
-                if (platform == 'chrome') {
+
+                if (_body.engine == CoreEngine('GSTREAMER')) {
+                    window.location.assign(`thinkmay://token=${token}/`);
+                } else {
                     Cookies.setCookie("remoteToken", token, coookies_expire)
                     getRemotePage()
-                } else if (platform == 'gstreamer') {
-                    window.location.assign(`thinkmay://token=${token}/`);
                 }
             })
         } else {

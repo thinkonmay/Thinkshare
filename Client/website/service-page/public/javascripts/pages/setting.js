@@ -2,7 +2,7 @@ import * as API from "../util/api.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
 
-function Codec (key)
+export function Codec (key)
 {
     switch (key) {
     
@@ -21,7 +21,7 @@ function Codec (key)
     }
 };
 
-function CoreEngine(key)  
+export function CoreEngine(key)  
 {
     switch (key) {
     case "GSTREAMER":
@@ -32,7 +32,7 @@ function CoreEngine(key)
 };
 
 
-function DeviceType(key) 
+export function DeviceType(key) 
 {
     switch (key) {
     case "WEB_APP":
@@ -50,7 +50,7 @@ function DeviceType(key)
     }
 };
 
-function QoEMode  (key)
+export function QoEMode  (key)
 {
     switch (key) {
     case "ULTRA_LOW_CONST":
@@ -76,28 +76,15 @@ function QoEMode  (key)
     }
 }
 
-$(document).ready(() => {
-    let idDisplay;
-    API.getInfor().then(async data => {
-        let body = await data.json()
-        $("#usernameCtrler").attr("placeholder", body.userName)
-        $("#fullnameCtrler").attr("placeholder", body.fullName)
-        $("#jobsCtrler").attr("placeholder", body.jobs)
-        $("#phonenumberCtrler").attr("placeholder", body.phoneNumber)
-        $("#genderCtrler").val(body.gender)
-        $("#dobCtrler").val((body.dateOfBirth).substring(0, 10))
-    })
+$(document).ready(async () => {
+    var body = await (await API.getInfor()).json();
+    $("#usernameCtrler").attr("placeholder", body.userName)
+    $("#fullnameCtrler").attr("placeholder", body.fullName)
+    $("#jobsCtrler").attr("placeholder", body.jobs)
+    $("#phonenumberCtrler").attr("placeholder", body.phoneNumber)
+    $("#genderCtrler").val(body.gender)
+    $("#dobCtrler").val((body.dateOfBirth).substring(0, 10))
 
-    API.setSetting().then(async data => {
-        let body = await data.json()
-        $("#usernameCtrler").attr("placeholder", body.userName)
-        $("#fullnameCtrler").attr("placeholder", body.fullName)
-        $("#jobsCtrler").attr("placeholder", body.jobs)
-        $("#phonenumberCtrler").attr("placeholder", body.phoneNumber)
-        $("#genderCtrler").val(body.gender)
-        $("#dobCtrler").val((body.dateOfBirth).substring(0, 10))
-    })
-    let body = {}
     $("#usernameCtrler").on("change", function () {
         body.username = this.value;
     });
@@ -129,22 +116,19 @@ $(document).ready(() => {
         window.location = '/dashboard/en'
     })
 
-       
-    let display = {};
+    var display = await (await API.getSetting()).json();
     $('[name="resolutionOptions"]').click(function () {
         var value = $(this).find("input").val();
-
-
         switch (value) {
-            case 0: 
+            case "FullHD": 
                 display.screenWidth= 1920;
                 display.screenHeight= 1080;
                 break;
-            case 1:
+            case "2K":
                 display.screenWidth = 2560;
                 display.screenHeight = 1440;
                 break;
-            case 2:
+            case "4K":
                 display.screenWidth= 3840;
                 display.screenHeight = 2160;
                 break;
@@ -152,19 +136,19 @@ $(document).ready(() => {
     });
     $('[name="bitrateOptions"]').click(function () {
         var value = $(this).find("input").val();
-        display.mode = QoEMode.value;
+        display.mode = QoEMode(value);
     });
     $('[name="audioOptions"]').click(function () {
         var value = $(this).find("input").val();
-        display.audio = Codec[`${value}`]
+        display.audio = Codec(value)
     });
     $('[name="videoOptions"]').click(function () {
         var value = $(this).find("input").val();
-        display.video = Codec.value;
+        display.video = Codec(value);
     });
     $('#remoteCoreOption1').on('change', function () {
         var value = $(this).find("input").val();
-        display.engine = CoreEngine.value;
+        display.engine = CoreEngine(value);
     })
 
 
@@ -197,37 +181,7 @@ $(document).ready(() => {
             title: "Đang đăng kí",
             text: "Vui lòng chờ . . .",
             didOpen: () => {
-                let body = {}
-                body.= parseInt(display.audio);
-                body.defaultSetting_videoCodec = parseInt(display.video)
-                body.defaultSetting_mode = parseInt(display.bitrate)
-                API.setSetting(body)
-                    .then(async data => {
-                        if (data.status == 200) {
-                            Utils.newSwal.fire({
-                                title: "Thành công!",
-                                text: "Thông tin của bạn đã được cập nhật",
-                                icon: "success",
-                            })
-                        } else {
-                            Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
-                        }
-                    })
-                    .catch(status ? Utils.fetchErrorHandler : "")
-            }
-        })
-    });
-
-
-    $('#sumbitRemoteCoreCtrler').click(() => {
-        console.log(parseInt(remoteCore))
-        Utils.newSwal.fire({
-            title: "Đang đăng kí",
-            text: "Vui lòng chờ . . .",
-            didOpen: () => {
-                let body = {}
-                body.defaultSetting_device = parseInt(remoteCore)
-                API.setInfor(body)
+                API.setSetting(display)
                     .then(async data => {
                         if (data.status == 200) {
                             Utils.newSwal.fire({

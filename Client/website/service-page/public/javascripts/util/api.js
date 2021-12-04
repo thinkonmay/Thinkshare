@@ -18,6 +18,7 @@ const Token = `${host}/Account/ExchangeToken`
 const Infor = `${host}/Account/Infor`
 const Session = `${host}/Account/History`
 
+
 const Setting = `${host}/Setting`
 
 // Session API
@@ -264,7 +265,7 @@ export const getInfor = () => {
 }
 
 export const getSetting = () => {
-	return fetch(Infor, {
+	return fetch(Setting+"/Get", {
 		method: "GET",
 		headers: genHeaders()
 	}, function (error) {
@@ -293,7 +294,7 @@ export const setInfor = (body) => {
 }
 
 export const setSetting = (body) => {
-	return fetch(Setting, {
+	return fetch(Setting+"/Set", {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({
