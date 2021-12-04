@@ -239,6 +239,7 @@ namespace WorkerManager.Services
                                 Data = JsonConvert.SerializeObject(clusterSnapshoot)
                             };
                             await SendMessage(JsonConvert.SerializeObject(request));
+                            return;
                         }
                         else // compare state and sync for any different
                         {
@@ -271,6 +272,7 @@ namespace WorkerManager.Services
                                     Data = JsonConvert.SerializeObject(clusterSnapshoot)
                                 };
                                 await SendMessage(JsonConvert.SerializeObject(request));
+                                return;
                             }
                         }
                     }

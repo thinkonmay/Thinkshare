@@ -47,6 +47,7 @@ namespace WorkerManager.Controllers
             _workerNodePool = workerPool;
             _config = config.Value;
             _client = new RestClient();
+
         }
 
         /// <summary>
@@ -240,6 +241,5 @@ namespace WorkerManager.Controllers
             }
             return BadRequest("Cluster has already been initialized");
         }
-
     }
 }

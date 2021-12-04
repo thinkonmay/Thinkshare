@@ -167,18 +167,23 @@ namespace WorkerManager.Services
                         if(success)
                         {
                             worker.agentFailedPing = 0;
+                            if(keyValue.Value == WorkerState.Disconnected)
+                            {
+                                await _cache.SetWorkerState(keyValue.Key, WorkerState.Open);
+                            }
                         }
                         else
                         {
                             worker.agentFailedPing++;
                         }
+                        await _cache.CacheWorkerInfor(worker);
 
                         if(worker.agentFailedPing > 5)
                         {
                             await _cache.SetWorkerState(keyValue.Key, WorkerState.Disconnected);
                         }
                     }
-                    Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
+                    Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
                 }
             }catch (Exception ex)
             {

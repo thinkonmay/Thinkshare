@@ -25,6 +25,7 @@ namespace WorkerManager
         {
             var host = CreateHostBuilder(args).Build();
             GetDefaultModel(host).Wait();
+            AutoStart(host).Wait();
             host.Run();
         }
 
@@ -68,5 +69,23 @@ namespace WorkerManager
             }
         }
 
+        static async Task AutoStart(IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var _db = scope.ServiceProvider.GetRequiredService<ClusterDbContext>();
+                var conductor = scope.ServiceProvider.GetRequiredService<IConductorSocket>();
+                var pool      = scope.ServiceProvider.GetRequiredService<IWorkerNodePool>();
+
+                if(_db.Owner.First().token != null &&
+                _db.Clusters.First().Token != null)
+                {
+                    if(await conductor.Start())
+                    {
+                        pool.Start();
+                    }
+                }
+            }
+        }
     }
 }
