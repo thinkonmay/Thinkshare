@@ -17,9 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SystemHub", "SystemHub\Syst
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerManager", "WorkerManager\WorkerManager.csproj", "{2581B75B-1C79-4249-8CC7-D8AC7C6A6063}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TokenTesting", "..\ServerTest\TokenTesting\TokenTesting.csproj", "{5DE0DAE9-0034-44A9-A52A-05F646A5A80B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TokenTesting", "..\Test\Token\TokenTesting.csproj", "{5DE0DAE9-0034-44A9-A52A-05F646A5A80B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebsocketTesting", "..\ServerTest\WebsocketTesting\WebsocketTesting.csproj", "{8DE8AD05-78B4-46B8-8A7B-1C7C15C6984F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebsocketTesting", "..\Test\Websocket\WebsocketTesting.csproj", "{8DE8AD05-78B4-46B8-8A7B-1C7C15C6984F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authenticator", "Authenticator\Authenticator.csproj", "{E7CE091E-DCF6-41E4-A9E4-EEC5AF669848}"
 EndProject
