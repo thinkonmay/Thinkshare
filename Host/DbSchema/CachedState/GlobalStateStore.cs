@@ -25,8 +25,8 @@ namespace DbSchema.CachedState
         Task<UserSetting> GetUserSetting(int WorkerID);
 
         Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, GlobalCluster cluster);
-        Task<SessionWorker> GetClientSessionSetting(SessionAccession accession);
-        Task<SessionClient> GetWorkerSessionSetting(SessionAccession accession);
+        Task<SessionClient> GetClientSessionSetting(SessionAccession accession);
+        Task<SessionWorker> GetWorkerSessionSetting(SessionAccession accession);
         Task<string?> GetWorkerState(int WorkerID);
     }
 
