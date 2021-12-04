@@ -5,11 +5,8 @@ const host = "http://localhost:5000"
 let host_user;
 let currentURL = document.URL
 let subdomain = currentURL.slice(0, 28)
-// if (subdomain == 'https://service.thinkmay.net') {
-	host_user = "https://host.thinkmay.net"
-// } else {
-// 	host = "http://hostdev.thinkmay.net"
-// }
+
+host_user = "https://host.thinkmay.net"
 
 
 // local api
@@ -142,112 +139,7 @@ export const Stop = () => {
 
 
 
-/////////////////////////////////////////////////
-// user api
-export const tokenExchange = body => {
-	return fetch(Token, {
-		method: "POST",
-		headers: genHeadersUser(),
-		body: JSON.stringify({
-			token: body.token,
-			Validator: body.Validator
-		})
-	})
-}
 
-
-
-export const fetchSlave = () => {
-	return fetch(FetchSlave, {
-		method: "GET",
-		headers: genHeadersUser()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
-export const fetchSession = () => {
-	return fetch(FetchSession, {
-		method: "GET",
-		headers: genHeadersUser()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
-export const getSession = () => {
-	return fetch(Session, {
-		method: "GET",
-		headers: genHeadersUser()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
-export const terminateSession = SlaveID => {
-	return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
-		method: "DELETE",
-		headers: genHeadersUser()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
-export const disconnectSession = SlaveID => {
-	return fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
-		method: "POST",
-		headers: genHeadersUser()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
-export const reconnectSession = (SlaveID) => {
-	return fetch(ReconnectSession + "?SlaveID=" + SlaveID, {
-		method: "POST",
-		headers: genHeadersUser()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
-
-export const initializeSession = (SlaveID) => {
-	return fetch(InitializeSession + "?SlaveID=" + SlaveID, {
-		method: "POST",
-		headers: genHeadersUser()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
 
 // User
 export const getInfor = () => {
@@ -263,18 +155,6 @@ export const getInfor = () => {
 	})
 }
 	
-// export const getSetting = () => {
-// 	return fetch(Infor, {
-// 		method: "GET",
-// 		headers: genHeadersUser()
-// 	}, function (error) {
-// 		if (401 == error.response.status) {
-// 			window.location.replace(API.Login)
-// 		} else {
-// 			return Promise.reject(error);
-// 		}
-// 	})
-// }
 
 export const setInfor = (body) => {
 	return fetch(Infor, {
@@ -292,19 +172,5 @@ export const setInfor = (body) => {
 	})
 }
 
-export const setSetting = (body) => {
-	return fetch(Setting, {
-		method: "POST",
-		headers: genHeadersUser(),
-		body: JSON.stringify({
-			device: body.defaultSetting_device != null ? body.defaultSetting_device : null,
-			audioCodec: body.defaultSetting_audioCodec != null ? body.defaultSetting_audioCodec : null,
-			videoCodec: body.defaultSetting_videoCodec != null ? body.defaultSetting_videoCodec : null,
-			mode: body.defaultSetting_mode != null ? body.defaultSetting_mode : null,
-			screenWidth: body.defaultSetting_screenWidth != null ? body.defaultSetting_screenWidth : null,
-			screenHeight: body.defaultSetting_screenHeight != null ? body.defaultSetting_screenHeight : null
-		})
-	})
-}
 
 

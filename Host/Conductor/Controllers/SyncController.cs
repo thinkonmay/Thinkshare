@@ -52,7 +52,7 @@ namespace Conductor.Controllers
                 {
                     case WorkerState.Open:
                         var device = _db.Devices.Find(ID);
-                        device.WorkerState = NewState;
+                        device.WorkerState = WorkerState.Open;
                         await _clientHubctx.ReportNewSlaveAvailable(device);
                         Session.First().EndTime = DateTime.Now;
                         _db.RemoteSessions.UpdateRange(Session);
@@ -84,7 +84,7 @@ namespace Conductor.Controllers
                 {
                     case WorkerState.Open:
                         var device = _db.Devices.Find(ID);
-                        device.WorkerState = NewState;
+                        device.WorkerState = WorkerState.Open;
                         await _clientHubctx.ReportNewSlaveAvailable(device);
                         break;
                     case WorkerState.Disconnected:
