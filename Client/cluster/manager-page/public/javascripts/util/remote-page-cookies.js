@@ -38,16 +38,11 @@ export const sessionInitialize = async (SlaveID) => {
                 } else if (_body.defaultSetting['device'] == 1) {
                     platform = 'chrome'
                 }
-                console.log(platform)
                 if (platform == 'chrome') {
-                    var cookie = JSON.stringify(json);
-                    Cookies.setCookie("sessionClient", cookie, coookies_expire)
+                    Cookies.setCookie("remoteToken", json, coookies_expire)
                     getRemotePage()
                 } else if (platform == 'gstreamer') {
-                    window.location.assign('thinkmay://' +
-                        'videocodec=' + json.qoE.videoCodec +
-                        '.audiocodec=' + json.qoE.audioCodec +
-                        '.sessionid=' + json.sessionClientID);
+                    window.location.assign(`thinkmay://token${json}/`);
                 }
             })
         } else {
@@ -58,7 +53,6 @@ export const sessionInitialize = async (SlaveID) => {
 export const sessionReconnect = async (SlaveID) => {
     reconnectSession(parseInt(SlaveID)).then(async response => {
         if (response.status == 200) {
-            var json = await response.json();
             var platform = 1;
             getInfor().then(async _data => {
                 let _body = await _data.json();
@@ -69,14 +63,10 @@ export const sessionReconnect = async (SlaveID) => {
                 }
                 console.log(platform)
                 if (platform == 'chrome') {
-                    var cookie = JSON.stringify(json);
-                    Cookies.setCookie("sessionClient", cookie, coookies_expire)
+                    Cookies.setCookie("remoteToken", json, coookies_expire)
                     getRemotePage()
                 } else if (platform == 'gstreamer') {
-                    window.location.assign('thinkmay://' +
-                        'videocodec=' + json.qoE.videoCodec +
-                        '.audiocodec=' + json.qoE.audioCodec +
-                        '.sessionid=' + json.sessionClientID);
+                    window.location.assign(`thinkmay://token${json}/`);
                 }
             })
         } else {
