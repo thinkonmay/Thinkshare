@@ -60,7 +60,6 @@ namespace WorkerManager.Controllers
             var ClusterName = Cluster.Name;
 
 
-
             var cachednode = _db.Devices.Where(x => 
                 x.PrivateIP == agent_register.LocalIP &&
                 x.CPU == agent_register.CPU &&

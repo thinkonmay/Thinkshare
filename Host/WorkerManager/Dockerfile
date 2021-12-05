@@ -35,6 +35,7 @@ ENV POSTGRES_USER=cluster_manager
 ENV POSTGRES_PASSWORD=cluster_manager_password
 ENV POSTGRES_DATABASE=cluster_manager
 ENV POSTGRES_IP="192.168.1.12"
+ENV AUTO_START="true"
 
 
 WORKDIR /app

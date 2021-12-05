@@ -35,10 +35,6 @@ namespace MetricCollector
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
-
-            var config = Configuration.GetSection("SystemConfig").Get<SystemConfig>();
-
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigins",
@@ -62,7 +58,7 @@ namespace MetricCollector
                 c.IncludeXmlComments(xmlFilePath);
             });
 
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
+            services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
             services.AddTransient<IScriptGetter, ScriptGetter>();
             services.AddMvc();
         }

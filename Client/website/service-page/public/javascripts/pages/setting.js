@@ -6,17 +6,17 @@ export function Codec (key)
 {
     switch (key) {
     
-    case "CODEC_H265":
+    case "H265":
         return 0
-    case "CODEC_H264":
+    case "H264":
         return 1
-    case "CODEC_VP8":
+    case "VP8":
         return 2
-    case "CODEC_VP9":
+    case "VP9":
         return 3
-    case "OPUS_ENC":
+    case "OPUS":
         return 4
-    case "AAC_ENC":
+    case "MP3":
         return 5
     }
 };
@@ -140,13 +140,13 @@ $(document).ready(async () => {
     });
     $('[name="audioOptions"]').click(function () {
         var value = $(this).find("input").val();
-        display.audio = Codec(value)
+        display.audioCodec = Codec(value)
     });
     $('[name="videoOptions"]').click(function () {
         var value = $(this).find("input").val();
-        display.video = Codec(value);
+        display.videoCodec = Codec(value);
     });
-    $('#remoteCoreOption1').on('change', function () {
+    $('#remoteCoreOption1').click(function () {
         var value = $(this).find("input").val();
         display.engine = CoreEngine(value);
     })

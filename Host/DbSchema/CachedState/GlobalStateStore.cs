@@ -25,8 +25,8 @@ namespace DbSchema.CachedState
         Task<UserSetting> GetUserSetting(int WorkerID);
 
         Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, GlobalCluster cluster);
-        Task<SessionWorker> GetClientSessionSetting(SessionAccession accession);
-        Task<SessionClient> GetWorkerSessionSetting(SessionAccession accession);
+        Task<SessionClient> GetClientSessionSetting(SessionAccession accession);
+        Task<SessionWorker> GetWorkerSessionSetting(SessionAccession accession);
         Task<string?> GetWorkerState(int WorkerID);
     }
 
@@ -137,39 +137,38 @@ namespace DbSchema.CachedState
         {
             var sessionWorker = new SessionWorker
             {
-                SignallingUrl = config.SignallingWs,
-                turnConnection = "turn://" + cluster.turnUSER + ":" + cluster.turnPASSWORD + "@turn:" + cluster.turnIP + ":3478",
-                ScreenHeight = defaultSetting.screenHeight,
-                ScreenWidth = defaultSetting.screenWidth,
-                AudioCodec = defaultSetting.audioCodec,
-                VideoCodec = defaultSetting.videoCodec,
-                QoEMode = defaultSetting.mode
+                signallingurl = config.SignallingWs,
+                turn = "turn://" + cluster.turnUSER + ":" + cluster.turnPASSWORD + "@turn:" + cluster.turnIP + ":3478",
+                screenheight = defaultSetting.screenHeight,
+                screenwidth = defaultSetting.screenWidth,
+                audiocodec = defaultSetting.audioCodec,
+                videocodec = defaultSetting.videoCodec,
+                mode = defaultSetting.mode,
+                stuns = config.STUNlist
             };
             var sessionClient = new SessionClient
             {
-                SignallingUrl = config.SignallingWs,
-                turnIP =  "turn:"+cluster.turnIP + ":3478",
-                turnUser = cluster.turnUSER,
-                turnPassword = cluster.turnPASSWORD,
-                AudioCodec = defaultSetting.audioCodec,
-                VideoCodec = defaultSetting.videoCodec,
+                signallingurl = config.SignallingWs,
+                turnip =  "turn:"+cluster.turnIP + ":3478",
+                turnuser = cluster.turnUSER,
+                turnpassword = cluster.turnPASSWORD,
+                audiocodec = defaultSetting.audioCodec,
+                videocodec = defaultSetting.videoCodec,
+                stuns = config.STUNlist
             };
 
-            config.STUNlist.ForEach(x => sessionClient.STUNlist.Add(x)) ;
-            config.STUNlist.ForEach(x => sessionWorker.STUNlist.Add(x));
-
-            await _cache.SetRecordAsync<SessionClient>(SessionID.ToString() + "_" + Module.CLIENT_MODULE.ToString(), sessionClient, null,null);
-            await _cache.SetRecordAsync<SessionWorker>(SessionID.ToString() + "_" + Module.CORE_MODULE.ToString(), sessionWorker, null,null);
+            await _cache.SetRecordAsync<SessionClient>(SessionID.ToString() + "_CLIENT_MODULE", sessionClient, null,null);
+            await _cache.SetRecordAsync<SessionWorker>(SessionID.ToString() + "_CORE_MODULE", sessionWorker, null,null);
         }
 
-        public async Task<SessionWorker> GetClientSessionSetting(SessionAccession accession)
+        public async Task<SessionClient> GetClientSessionSetting(SessionAccession accession)
         {
-            return await _cache.GetRecordAsync<SessionWorker>(accession.ID.ToString() + "_" + accession.Module.ToString());
+            return await _cache.GetRecordAsync<SessionClient>(accession.ID.ToString() + "_CLIENT_MODULE");
         }
 
-        public async Task<SessionClient> GetWorkerSessionSetting(SessionAccession accession)
+        public async Task<SessionWorker> GetWorkerSessionSetting(SessionAccession accession)
         {
-            return await _cache.GetRecordAsync<SessionClient>(accession.ID.ToString() + "_" + accession.Module.ToString());
+            return await _cache.GetRecordAsync<SessionWorker>(accession.ID.ToString() + "_CORE_MODULE");
         }
     }
 }

@@ -48,9 +48,9 @@ export const sessionInitialize = async (SlaveID) => {
                 let _body = await _data.json();
 
                 if (_body.engine == CoreEngine('GSTREAMER')) {
-                    window.location.assign(`thinkmay://token=${token}/`);
+                    window.location.assign(`thinkmay://token=${token.token}/`);
                 } else {
-                    Cookies.setCookie("remoteToken", token, coookies_expire)
+                    Cookies.setCookie("remoteToken", token.token, coookies_expire)
                     getRemotePage()
                 }
             })
@@ -69,9 +69,9 @@ export const sessionReconnect = async (SlaveID) => {
                 let _body = await _data.json();
 
                 if (_body.engine == CoreEngine('GSTREAMER')) {
-                    window.location.assign(`thinkmay://token=${token}/`);
+                    window.location.assign(`thinkmay://token=${token.token}/`);
                 } else {
-                    Cookies.setCookie("remoteToken", token, coookies_expire)
+                    Cookies.setCookie("remoteToken", token.token, coookies_expire)
                     getRemotePage()
                 }
             })

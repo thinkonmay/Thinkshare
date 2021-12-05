@@ -249,8 +249,10 @@ export const sessionSetting = (remoteToken) => {
 
 
 
-
-// User
+/**
+ * 
+ * @returns 
+ */
 export const getInfor = () => {
 	return fetch(Infor, {
 		method: "GET",
@@ -281,15 +283,7 @@ export const setInfor = (body) => {
 	return fetch(Infor, {
 		method: "POST",
 		headers: genHeaders(),
-		body: JSON.stringify({
-			userName: body.username ? body.username : null,
-			fullName: body.fullname ? body.fullname : null,
-			jobs: body.jobs ? body.jobs : null,
-			phoneNumber: body.phonenumber ? body.phonenumber : null,
-			gender: body.gender ? body.gender : null,
-			dateOfBirth: body.dob ? body.dob : null,
-			avatar: body.avatar ? body.avatar : null,
-		})
+		body: JSON.stringify({ body })
 	})
 }
 
@@ -297,14 +291,7 @@ export const setSetting = (body) => {
 	return fetch(Setting+"/Set", {
 		method: "POST",
 		headers: genHeaders(),
-		body: JSON.stringify({
-			device: body.defaultSetting_device != null ? body.defaultSetting_device : null,
-			audioCodec: body.defaultSetting_audioCodec != null ? body.defaultSetting_audioCodec : null,
-			videoCodec: body.defaultSetting_videoCodec != null ? body.defaultSetting_videoCodec : null,
-			mode: body.defaultSetting_mode != null ? body.defaultSetting_mode : null,
-			screenWidth: body.defaultSetting_screenWidth != null ? body.defaultSetting_screenWidth : null,
-			screenHeight: body.defaultSetting_screenHeight != null ? body.defaultSetting_screenHeight : null
-		})
+		body: JSON.stringify({ body })
 	})
 }
 

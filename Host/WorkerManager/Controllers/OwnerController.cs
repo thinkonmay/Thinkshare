@@ -127,7 +127,6 @@ namespace WorkerManager.Controllers
                 {
                     Name = ClusterName,
                     Token = result.Content,
-                    Private = isPrivate,
                     Register = DateTime.Now
                 };
 
@@ -142,6 +141,27 @@ namespace WorkerManager.Controllers
         }
 
 
+        [Owner]
+        [HttpGet("Cluster/Infor")]
+        public async Task<IActionResult> Infor()
+        {
+            var ClusterName = _db.Clusters.First().Name;
+            var token = _db.Owner.First().token;
+            var request = new RestRequest(_config.ClusterInforUrl)
+                .AddHeader("Authorization","Bearer "+token)
+                .AddQueryParameter("ClusterName", ClusterName);
+            request.Method = Method.GET;
+
+            var result = await _client.ExecuteAsync(request);
+            if(result.StatusCode == HttpStatusCode.OK)            
+            {
+                return Ok(result.Content);
+            }
+            else
+            {
+                return BadRequest(result.Content);
+            }
+        }
 
 
 
@@ -165,18 +185,6 @@ namespace WorkerManager.Controllers
                     var cluster = _db.Clusters.First();
                     cluster.Token = JsonConvert.DeserializeObject<string>(result.Content);
                     _db.Update(cluster);
-                    await _db.SaveChangesAsync();
-                }
-                else
-                {
-                    var cluster = new LocalCluster
-                    {
-                        Token = JsonConvert.DeserializeObject<string>(result.Content),
-                        Private = true,
-                        Enabled = false,
-                        Register = DateTime.Now,
-                    };
-                    _db.Clusters.Add(cluster);
                     await _db.SaveChangesAsync();
                 }
                 return Ok();
@@ -205,19 +213,31 @@ namespace WorkerManager.Controllers
         /// <returns></returns>
         [Owner]
         [HttpPost("Cluster/TURN")]
-        public async Task<IActionResult> setturn(string IP, string user, string password)
+        public async Task<IActionResult> setturn(string turnIP, 
+                                                 string turnUSER, 
+                                                 string turnPASSWORD)
         {
             var cluster = _db.Clusters.First();
-            cluster.TurnIP = IP;
-            cluster.TurnUser = user;
-            cluster.TurnPassword = password;
-            _db.Update(cluster);
-            await _db.SaveChangesAsync();
+            var owner = _db.Owner.First();
+
+            var request = new RestRequest(_config.ClusterTURNUrl)
+                .AddHeader("Authorization","Bearer "+owner.token)
+                .AddQueryParameter("ClusterName",cluster.Name)
+                .AddQueryParameter("turnIP",turnIP)
+                .AddQueryParameter("turnUSER",turnUSER)
+                .AddQueryParameter("turnPASSWORD",turnPASSWORD);
+            request.Method = Method.POST;
 
 
-
-
-            return Ok();
+            var result = await _client.ExecuteAsync(request);
+            if(result.StatusCode == HttpStatusCode.OK)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest("Fail to update cluster turn");
+            }
         }
 
 

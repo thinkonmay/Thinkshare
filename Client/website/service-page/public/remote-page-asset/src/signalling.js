@@ -19,9 +19,7 @@ function
 SignallingSend(request_type, content)
 {
     var json_message = {"RequestType":request_type,
-                        "SubjectId": app.SessionClientID,
-                        "Content":content,
-                        "Result":"SESSION_ACCEPTED"}
+                        "Content":content}
 
     app.Websocket.send(JSON.stringify(json_message));
 }

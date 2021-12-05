@@ -11,8 +11,6 @@ var app = new Vue({
     data() 
     {
         return {
-            SessionClientID: 0,
-
             loadingText: '',
 
             connectionVideoDecoder: "unknown",
@@ -143,21 +141,18 @@ var app = new Vue({
     methods: 
     {
         SetupSession(sessionClient){
-            this.SessionClientID = sessionClient.sessionClientID;
-
-
-            sessionClient.sTUNlist.forEach(element => {
-                this.RTPconfig.iceServers.push(element);
+            sessionClient.stuns.forEach(element => {
+                this.RTPconfig.iceServers.push("stun:"+element);
             });
 
             this.RTPconfig.iceServers.push({
-                "urls":sessionClient.turnIP,
-                "username":sessionClient.turnUser,
-                "credentials":sessionClient.turnPassword,
+                "urls": sessionClient.turnip,
+                "username":sessionClient.turnuser,
+                "credentials":sessionClient.turnpassword,
             });
-            this.SignallingUrl = sessionClient.signallingUrl;
-            this.AudioCodec = sessionClient.audioCodec;
-            this.VideoCodec = sessionClient.videoCodec;
+            this.SignallingUrl = sessionClient.signallingurl;
+            this.AudioCodec = sessionClient.audiocodec;
+            this.VideoCodec = sessionClient.videocodec;
         },
         ///enter full screen mode, all functional keywill be activated
         enterFullscreen() {

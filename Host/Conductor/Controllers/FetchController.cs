@@ -102,9 +102,9 @@ namespace Conductor.Controllers
                 var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
                 foreach (var state in snapshoot)
                 {
-                    if (state.Value == WorkerState.OffRemote &&
-                        state.Value == WorkerState.OnSession &&
-                        nodeList.Contains(state.Key))
+                    if ((state.Value == WorkerState.OffRemote || 
+                         state.Value == WorkerState.OnSession) &&
+                         nodeList.Contains(state.Key))
                     {
                         var node = await _cache.GetWorkerInfor(state.Key);
                         if(node == null)

@@ -64,36 +64,40 @@ namespace DbSchema.LocalDb.Models
 
 
         /*state dependent method*/
-        public async Task<bool> SessionInitialize()
+        public async Task<bool> SessionInitialize(string token)
         {
-            var request = new RestRequest("Initialize");
+            var request = new RestRequest("Initialize")
+                .AddHeader("Authorization", token);
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);
             return (result.StatusCode == HttpStatusCode.OK);
         }
 
-        public async Task<bool> SessionTerminate()
+        public async Task<bool> SessionTerminate(string token)
         {
-            var request = new RestRequest("Terminate");
+            var request = new RestRequest("Terminate")
+                .AddHeader("Authorization", token);
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);
             return (result.StatusCode == HttpStatusCode.OK);
         }
 
-        public async Task<bool> SessionDisconnect()
+        public async Task<bool> SessionDisconnect(string token)
         {
-            var request = new RestRequest("Disconnect");
+            var request = new RestRequest("Disconnect")
+                .AddHeader("Authorization", token);
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);
             return (result.StatusCode == HttpStatusCode.OK);
         }
 
-        public async Task<bool> SessionReconnect()
+        public async Task<bool> SessionReconnect(string token)
         {
-            var request = new RestRequest("Reconnect");
+            var request = new RestRequest("Reconnect")
+                .AddHeader("Authorization", token);
             request.Method = Method.POST;
 
             var result = await _agentClient.ExecuteAsync(request);

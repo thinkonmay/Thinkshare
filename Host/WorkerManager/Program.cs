@@ -25,7 +25,10 @@ namespace WorkerManager
         {
             var host = CreateHostBuilder(args).Build();
             GetDefaultModel(host).Wait();
-            AutoStart(host).Wait();
+            if(Environment.GetEnvironmentVariable("AUTO_START") == "true")
+            {
+                AutoStart(host).Wait();
+            }
             host.Run();
         }
 

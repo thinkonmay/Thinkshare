@@ -4,6 +4,8 @@
     {
         public string ClusterHub {get;set;}
         public string ClusterTokenUrl {get;set;}
+        public string ClusterInforUrl {get;set;}
+        public string ClusterTURNUrl{get;set;}
 
         public string OwnerAuthorizeUrl {get;set;}
         public string OwnerAccountUrl {get;set;}
