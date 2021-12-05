@@ -111,11 +111,16 @@ namespace Authenticator.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("Grant/Session")]
-        public async Task<IActionResult> SessionGrant(SessionAccession access)
+        public async Task<IActionResult> SessionGrant([FromBody] SessionAccession access)
         {
             if (ModelState.IsValid)
             {
-                return Ok(await _tokenGenerator.GenerateSessionJwt(access));
+                var token = await _tokenGenerator.GenerateSessionJwt(access);
+                return Ok(new AuthenticationRequest
+                {
+                    token = token,
+                    Validator = _config.Authenticator
+                });
             }
             else
             {

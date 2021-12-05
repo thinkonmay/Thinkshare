@@ -16,6 +16,7 @@ namespace SharedHost
         public string UserTokenValidator {get;set;}
         public string ClusterTokenValidator {get;set;}
         public string SessionTokenValidator {get;set;}
+        public string SessionTokenGrantor {get;set;}
         public LoginModel AdminLogin { get; set; }
         public List<string> STUNlist { get; set; }
     }

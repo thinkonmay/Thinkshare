@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SharedHost.Auth;
 using DbSchema.SystemDb.Data;
 using Conductor.Interfaces;
 using System.Linq;
@@ -21,10 +22,9 @@ namespace Conductor.Controllers
     /// <summary>
     /// Routes related to session initialize/termination process
     /// </summary>
-    [User]
     [ApiController]
     [Route("/Session")]
-    [Produces("application/text")]
+    [Produces("application/json")]
     public class SessionController : Controller
     {
         private readonly GlobalDbContext _db;
@@ -59,6 +59,7 @@ namespace Conductor.Controllers
         /// <param name="SlaveID"></param>
         /// <param name="request"></param>
         /// <returns></returns>
+        [User]
         [HttpPost("Initialize")]
         public async Task<IActionResult> Create(int SlaveID)
         {
@@ -78,7 +79,7 @@ namespace Conductor.Controllers
 
 
             /*generate rest post to signalling server*/
-            var workerTokenRequest = new RestRequest(new Uri(_config.SessionTokenValidator))
+            var workerTokenRequest = new RestRequest(new Uri(_config.SessionTokenGrantor))
                 .AddJsonBody(new SessionAccession
                 {
                     ClientID = Int32.Parse((string)UserID),
@@ -87,7 +88,7 @@ namespace Conductor.Controllers
                     Module = Module.CORE_MODULE
                 });
 
-            var clientTokenRequest = new RestRequest(new Uri(_config.SessionTokenValidator))
+            var clientTokenRequest = new RestRequest(new Uri(_config.SessionTokenGrantor))
                 .AddJsonBody(new SessionAccession
                 {
                     ClientID = Int32.Parse((string)UserID),
@@ -97,8 +98,8 @@ namespace Conductor.Controllers
                 });
 
             // return bad request if fail to delete session pair      
-            var clientToken = _sessionToken.Post(clientTokenRequest).Content;
-            var workerToken = _sessionToken.Post(workerTokenRequest).Content;
+            var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(workerTokenRequest).Content);
+            var workerToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(workerTokenRequest).Content);
 
 
             _db.RemoteSessions.Add(sess);
@@ -110,7 +111,7 @@ namespace Conductor.Controllers
             var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(sess.Worker)).First();
             await _cache.SetSessionSetting(sess.ID,userSetting,_config, globalCluster);
             // invoke session initialization in slave pool
-            await _Cluster.SessionInitialize(SlaveID, workerToken);
+            await _Cluster.SessionInitialize(SlaveID, workerToken.token);
 
             // return view for user
             return Ok(clientToken);
@@ -124,6 +125,7 @@ namespace Conductor.Controllers
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
+        [User]
         [HttpDelete("Terminate")]
         public async Task<IActionResult> Terminate(int SlaveID)
         {
@@ -159,6 +161,7 @@ namespace Conductor.Controllers
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
+        [User]
         [HttpPost("Disconnect")]
         public async Task<IActionResult> DisconnectRemoteControl(int SlaveID)
         {
@@ -193,6 +196,7 @@ namespace Conductor.Controllers
         /// </summary>
         /// <param name="SlaveID"></param>
         /// <returns></returns>
+        [User]
         [HttpPost("Reconnect")]
         public async Task<IActionResult> ReconnectRemoteControl(int SlaveID)
         {
@@ -225,7 +229,7 @@ namespace Conductor.Controllers
                 });
 
             // return bad request if fail to delete session pair      
-            var clientToken = _sessionToken.Post(clientTokenRequest);
+            var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(workerTokenRequest).Content);
 
             // return null if session is not found
             if (ses == null) return BadRequest();
@@ -251,7 +255,7 @@ namespace Conductor.Controllers
         public async Task<IActionResult> GetSetting(string token)
         {
 
-            var request = new RestRequest("Session")
+            var request = new RestRequest(_config.SessionTokenValidator)
                 .AddQueryParameter("token", token);
             request.Method = Method.POST;
 
