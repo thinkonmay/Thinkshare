@@ -229,7 +229,7 @@ namespace Conductor.Controllers
                 });
 
             // return bad request if fail to delete session pair      
-            var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(workerTokenRequest).Content);
+            var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(clientTokenRequest).Content);
 
             // return null if session is not found
             if (ses == null) return BadRequest();
