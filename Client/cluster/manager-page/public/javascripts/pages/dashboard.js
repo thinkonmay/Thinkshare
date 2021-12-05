@@ -10,18 +10,53 @@ let datasetRAM = [];
 let datasetNetwork = [];
 
 let sessionInfor;
-// API.getInfor().then(async data => {
-// 	let body = await data.json();
-// 	$("#dashboardSrcImg").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
-// 	$("#WelcomeUsername").html(body.fullName)
-// 	$("#avatarSrc").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
-// 	$("#fullname").text(body.fullName)
-// 	$("#jobs").text(body.jobs)
-// })
+API.getInfor().then(async data => {
+	let body = await data.json();
+	$("#dashboardSrcImg").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
+	$("#WelcomeUsername").html(body.fullName)
+	$("#avatarSrc").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
+	$("#fullname").text(body.fullName)
+	$("#jobs").text(body.jobs)
+})
 $(document).ready(async () => {
+	let nameOfCluster;
+	let isPrivate;
+	$("#nameCluster").on("change", function () {
+		nameOfCluster = this.value;
+	})
+	$("#isPrivate").on("change", function () {
+		if (this.value == "private")
+			isPrivate = true;
+		else isPrivate = false;
+	})
 
-	$('#registerCluster').click(() => {
-		window.location = "/register-cluster"
+	$('#register').click(() => {
+		if (isPrivate == undefined)
+			isPrivate = true;
+		Utils.newSwal.fire({
+			title: "Register...",
+			text: "Wait a min",
+			didOpen: () => {
+				Swal.showLoading()
+				API.RegisterCluster(isPrivate, nameOfCluster)
+					.then(async data => {
+						console.log(data)
+						if (data.status == 200) {
+							Utils.newSwal.fire({
+								title: "Thành công!",
+								text: "Chuyển hướng tới bảng điều khiển sau 2s",
+								icon: "success",
+								didOpen: () => {
+									setTimeout(() => {
+										window.location.href = "/dashboard"
+									}, 2000)
+								}
+							})
+						} else Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
+					})
+					.catch(Utils.fetchErrorHandler)
+			}
+		})
 	})
 
 	$('#detailBtn').click(() => {
@@ -58,7 +93,7 @@ $(document).ready(async () => {
 	}
 
 	try {
-		// const userinfor = await (await API.getInfor()).json()
+		const userinfor = await (await API.getInfor()).json()
 		// const sessions = await (await API.fetchSession()).json()
 		// const slaves = await (await API.fetchSlave()).json()
 		// sessionInfor = await (await API.getSession()).json()
@@ -450,8 +485,8 @@ function setDataForChart(color) {
 				data: salesTopData,
 				options: salesTopOptions
 			});
-		if(!isSetElement)
-		document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
+		if (!isSetElement)
+			document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
 	}
 }
 
