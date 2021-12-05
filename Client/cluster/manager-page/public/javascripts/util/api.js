@@ -23,7 +23,7 @@ export const Reconnect = "/reconnect"
 //////////////////////////////////////////////// 
 // owner api
 const LoginRoute = `${host}/Owner/Login`
-const RegisterClusterRoute = `${host}/Owner/Register`
+let RegisterClusterRoute = `${host}/Owner/Register`
 const GetClusterTokenRoute = `${host}/Owner/Cluster/Token`
 const SetTurnRoute = `${host}/Owner/Cluster/TURN`
 const StartRoute = `${host}/Owner/Start`
@@ -103,6 +103,7 @@ export const Login = body => {
 }
 
 export const RegisterCluster = (isPrivate, Name) => {
+    RegisterClusterRoute = `${host}/Owner/Register`
 	if (isPrivate) {
 		RegisterClusterRoute += `?isPrivate=true&ClusterName=${Name}`
 	} else {
