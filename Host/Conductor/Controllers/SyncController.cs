@@ -45,7 +45,6 @@ namespace Conductor.Controllers
         public async Task<IActionResult> Update(int ID, string NewState)
         {
             var Sessions = _db.RemoteSessions.Where(o => o.WorkerID == ID && !o.EndTime.HasValue);
-
             Serilog.Log.Information("Got worker sync message from worker"+ID.ToString()+", new worker state: "+NewState);            
 
 

@@ -77,6 +77,8 @@ namespace Conductor.Controllers
             };
 
 
+            _db.RemoteSessions.Add(sess);
+            await _db.SaveChangesAsync();
 
             /*generate rest post to signalling server*/
             var workerTokenRequest = new RestRequest(new Uri(_config.SessionTokenGrantor))
@@ -102,8 +104,6 @@ namespace Conductor.Controllers
             var workerToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(workerTokenRequest).Content);
 
 
-            _db.RemoteSessions.Add(sess);
-            await _db.SaveChangesAsync();
 
 
             /*create session from client device capability*/

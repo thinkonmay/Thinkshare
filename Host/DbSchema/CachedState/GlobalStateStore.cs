@@ -163,6 +163,7 @@ namespace DbSchema.CachedState
                 stuns = config.STUNlist
             };
 
+            Serilog.Log.Information("setting up session setting for session id "+ SessionID.ToString());
             await _cache.SetRecordAsync<SessionClient>(SessionID.ToString() + "_CLIENT_MODULE", sessionClient, null,null);
             await _cache.SetRecordAsync<SessionWorker>(SessionID.ToString() + "_CORE_MODULE", sessionWorker, null,null);
         }

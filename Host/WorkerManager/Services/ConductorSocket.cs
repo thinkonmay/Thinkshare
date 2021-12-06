@@ -315,6 +315,20 @@ namespace WorkerManager.Services
                 OS = model.OS,
             };
 
+            var workers = _db.Devices.ToList();
+            foreach (var item in workers)
+            {
+                await _cache.SetWorkerState(item.ID,WorkerState.Disconnected);
+                if(item.RemoteToken != null)
+                {
+                    item.RemoteToken = null;
+                    _db.Devices.Update(item);
+                    await _db.SaveChangesAsync();
+                }
+            }
+
+
+
             var ClusterName = _db.Clusters.First().Name;
             var client = new RestClient();
             var request = new RestRequest(_config.WorkerRegisterUrl)

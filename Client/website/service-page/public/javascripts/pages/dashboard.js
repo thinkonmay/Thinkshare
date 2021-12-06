@@ -19,14 +19,13 @@ async function prepare_worker_dashboard()
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
 
-		sessionInfor = await (await API.getSession()).json()
 		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
 
-		for (var worker of sessions) {
+		for (var worker in sessions) {
 			createSlave(worker,sessions[worker], "slavesInUses");
 		}
-		for (const worker of slaves) {
-			createSlave(worker,sessions[worker], "availableSlaves");
+		for (var worker in slaves) {
+			createSlave(worker,slaves[worker], "availableSlaves");
 		}
 	} catch (err) {
 		(new Promise(resolve => setTimeout(resolve, 5000)))
@@ -41,7 +40,7 @@ async function refresh_session_queue()
 	try {
 		const sessions = await (await API.fetchSession()).json()
 
-		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
+		if(sessions == null) { return; }
 		for (var worker of sessions) {
 			createSlave(worker,sessions[worker], "slavesInUses");
 		}
@@ -87,6 +86,7 @@ $(document).ready(async () => {
 	}
 
 	prepare_worker_dashboard();
+	sessionInfor = await (await API.getSession()).json()
 
 
 	// set data for chart to anaylize hour used
@@ -127,7 +127,7 @@ function onClientHubEvent(event) {
 	if (message_json.EventName === "ReportSlaveObtained") {
 		var workerID = parseInt(message_json.Message)
 
-		var slave = document.getElementById(`availableSlaves${slaveId}`);
+		var slave = document.getElementById(`availableSlaves${workerID}`);
 		slave.remove()
 	}
 	if (message_json.EventName === "ReportNewSlaveAvailable") {
@@ -147,7 +147,7 @@ function onWebsocketClose(event) {
 	});
 };
 
-function createSlave(workerID, workerState, queue) {
+async function createSlave(workerID, workerState, queue) {
 	var slave = await(await API.fetchInfor(workerID)).json();
 
 	append(queue, `
