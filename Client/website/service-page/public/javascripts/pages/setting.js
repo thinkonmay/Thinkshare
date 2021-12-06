@@ -2,6 +2,9 @@ import * as API from "../util/api.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
 
+var body ;
+body = await (await API.getInfor()).json();
+
 export function Codec (key)
 {
     switch (key) {
@@ -75,9 +78,19 @@ export function QoEMode  (key)
         return 9;
     }
 }
+async function updateSetting(display)
+{
+    API.setSetting(display)
+        .then(async data => {
+            if (data.status == 200) {
+            } else {
+                Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
+            }
+        })
+}
 
 $(document).ready(async () => {
-    var body = await (await API.getInfor()).json();
+
     $("#usernameCtrler").attr("placeholder", body.userName)
     $("#fullnameCtrler").attr("placeholder", body.fullName)
     $("#jobsCtrler").attr("placeholder", body.jobs)
@@ -116,8 +129,13 @@ $(document).ready(async () => {
         window.location = '/dashboard/en'
     })
 
-    var display = await (await API.getSetting()).json();
-    $('[name="resolutionOptions"]').click(function () {
+    
+
+
+
+    
+    $('[name="resolutionOptions"]').click(async function () {
+        var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         switch (value) {
             case "FullHD": 
@@ -133,22 +151,31 @@ $(document).ready(async () => {
                 display.screenHeight = 2160;
                 break;
         }
+        await updateSetting(display);
     });
-    $('[name="bitrateOptions"]').click(function () {
+    $('[name="bitrateOptions"]').click(async function () {
+        var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         display.mode = QoEMode(value);
+        await updateSetting(display);
     });
-    $('[name="audioOptions"]').click(function () {
+    $('[name="audioOptions"]').click(async function () {
+        var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         display.audioCodec = Codec(value)
+        await updateSetting(display);
     });
-    $('[name="videoOptions"]').click(function () {
+    $('[name="videoOptions"]').click(async function () {
+        var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         display.videoCodec = Codec(value);
+        await updateSetting(display);
     });
-    $('#remoteCoreOption1').click(function () {
+    $('#remoteCoreOption1').click(async function () {
+        var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         display.engine = CoreEngine(value);
+        await updateSetting(display);
     })
 
 
@@ -166,6 +193,7 @@ $(document).ready(async () => {
                                 text: "Thông tin của bạn đã được cập nhật",
                                 icon: "success",
                             })
+                        body = await (await API.getInfor()).json();
                         } else {
                             Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
                         }
@@ -181,19 +209,6 @@ $(document).ready(async () => {
             title: "Đang đăng kí",
             text: "Vui lòng chờ . . .",
             didOpen: () => {
-                API.setSetting(display)
-                    .then(async data => {
-                        if (data.status == 200) {
-                            Utils.newSwal.fire({
-                                title: "Thành công!",
-                                text: "Thông tin của bạn đã được cập nhật",
-                                icon: "success",
-                            })
-                        } else {
-                            Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
-                        }
-                    })
-                    .catch(status ? Utils.fetchErrorHandler : "")
             }
         })
     });

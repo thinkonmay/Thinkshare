@@ -5,6 +5,7 @@ import { sessionSetting } from "../util/api.js";
 
 
 var token = await getCookie("remoteToken");
-const sessionInfor = await (await sessionSetting(token)).json()
+const res = await sessionSetting(token);
+const sessionInfor = await (res).json()
 app.SetupSession(sessionInfor);
 app.connectServer();

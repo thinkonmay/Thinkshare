@@ -21,7 +21,7 @@ function setupDevice() {
     }
 
     getSetting().then(async data => {
-        let body = data.json();
+        let body = await data.json();
         if(deviceCurrent != body.device)
         {
             if(deviceCurrent == DeviceType("WEB_APP"))

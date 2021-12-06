@@ -225,8 +225,9 @@ export const initializeSession = (SlaveID) => {
 }
 
 export const sessionSetting = (remoteToken) => {
-	return fetch(InitializeSession + "?token=" + remoteToken, {
+	return fetch(SessionInfor + "?token=" + remoteToken, {
 		method: "GET",
+		headers: genHeaders()
 		}, function (error) {
 		if (401 == error.response.status) {
 			window.location.replace(API.Login)
@@ -304,7 +305,15 @@ export const setSetting = (body) => {
 	return fetch(Setting+"/Set", {
 		method: "POST",
 		headers: genHeaders(),
-		body: JSON.stringify({ body })
+		body: JSON.stringify({ 
+			device: body.device,
+			engine: body.engine,
+			audioCodec: body.audioCodec,
+			videoCodec: body.videoCodec,
+			mode: body.mode,
+			screenWidth: body.screenWidth,
+			screenHeight: body.screenHeight
+		})
 	})
 }
 

@@ -61,7 +61,6 @@ namespace Authenticator.Controllers
         {
             var UserID = HttpContext.Items["UserID"];
             await _cache.SetUserSetting(Int32.Parse((string)UserID), body);
-            await _db.SaveChangesAsync();
             return Ok();
         }
     }

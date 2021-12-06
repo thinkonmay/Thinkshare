@@ -53,7 +53,7 @@ namespace Authenticator
             //for postgresql
             services.AddDbContext<GlobalDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                ServiceLifetime.Transient
+                ServiceLifetime.Singleton
             );
             services.AddDatabaseDeveloperPageExceptionFilter();
 
