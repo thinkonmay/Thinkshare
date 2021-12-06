@@ -50,19 +50,6 @@ async function prepare_worker_dashboard()
 	}
 }
 
-async function refresh_session_queue()
-{
-	var sessions;
-	document.getElementById("slavesInUses").innerHTML = " ";
-	sessions = await (await API.fetchSession()).json()
-
-	if(sessions == null) { return; }
-	for (var worker in sessions) {
-		createSlave(worker,sessions[worker], "slavesInUses");
-	}
-}
-
-
 
 
 
@@ -130,22 +117,29 @@ function onClientHubEvent(event) {
 	}
 
 	if (message_json.EventName === "ReportSessionDisconnected") {
-		refresh_session_queue();
+		var workerID = parseInt(message_json.Message)
+
+		createSlave(workerID,"OFF_REMOTE","slavesInUses");
 	}
 	if (message_json.EventName === "ReportSessionReconnected") {
-		refresh_session_queue();
+		var workerID = parseInt(message_json.Message)
+
+		createSlave(workerID,"ON_SESSION","slavesInUses");
 	}
 	if (message_json.EventName === "ReportSessionTerminated") {
-		refresh_session_queue();
+		var workerID = parseInt(message_json.Message)
+
+		createSlave(workerID,null,null);
 	}
 	if (message_json.EventName === "ReportSessionOn") {
-		refresh_session_queue();
+		var workerID = parseInt(message_json.Message)
+
+		createSlave(workerID,"ON_SESSION","slavesInUses")
 	}
 	if (message_json.EventName === "ReportSlaveObtained") {
 		var workerID = parseInt(message_json.Message)
 
-		var slave = document.getElementById(`availableSlaves${workerID}`);
-		slave.remove()
+		createSlave(workerID,null,null);
 	}
 	if (message_json.EventName === "ReportNewSlaveAvailable") {
 		var workerID = parseInt(message_json.Message)
@@ -165,6 +159,19 @@ function onWebsocketClose(event) {
 };
 
 async function createSlave(workerID, workerState, queue) {
+	var queues = ["slavesInUses","availableSlaves"]
+	for(var item in queues)	
+	{
+		var worker = document.getElementById(`${queues[item]}${workerID}`);
+		if(worker != null)
+		{
+			worker.remove();
+		}
+	}
+
+	if(queue == null)
+		return;
+
 	try {
 		var slave = await(await API.fetchInfor(workerID)).json();
 	} catch (error) {
@@ -201,7 +208,7 @@ async function createSlave(workerID, workerState, queue) {
 }
 
 
-function setState(serviceState, slaveID,queue) {
+function setState(serviceState, slaveID, queue) {
 	var button = document.getElementById(`${queue}button${slaveID}`);
 	button.innerHTML = slaveState(serviceState, slaveID);
 
