@@ -111,7 +111,8 @@ namespace TokenTesting
             var tokenResponse = await _client.SendAsync(testLogin);
 
             Assert.AreEqual(tokenResponse.StatusCode , HttpStatusCode.OK);
-            var token = await tokenResponse.Content.ReadAsStringAsync();
+            var result = await tokenResponse.Content.ReadAsStringAsync();
+            var token = JsonConvert.DeserializeObject<AuthenticationRequest>(result).token;
 
             Console.WriteLine("Got token generated: "+ token);
 

@@ -18,51 +18,36 @@ namespace Signalling.Services
     public class SessionQueue : ISessionQueue
     {
         private ConcurrentDictionary<SessionAccession, WebSocket> onlineList;
+
+        private SystemConfig _config;
         
-        public SessionQueue()
+        public SessionQueue(IOptions<SystemConfig> config)
         {
             onlineList = new ConcurrentDictionary<SessionAccession, WebSocket>();
+            _config = config.Value;
+
 
             Task.Run(() => SystemHeartBeat());
-            Task.Run(() => ConnectionStateCheck());
         }
 
         public async Task SystemHeartBeat()
         {
-            try
+            while(true)
             {
-                while(true)
+                foreach(var item in onlineList)
                 {
-                    foreach(var item in onlineList)
+                    try
                     {
-                        var bytes = Encoding.UTF8.GetBytes("ping");
-                        var buffer = new ArraySegment<byte>(bytes);
-                        await item.Value.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+                        SendMessage(item.Value,"ping");
                     }
-                    Thread.Sleep(30000);
-                }
-            }catch
-            {
-                await SystemHeartBeat();
-            }
-        }
-
-        public async Task ConnectionStateCheck()
-        {
-            try
-            {
-                foreach (var socket in onlineList)
-                {
-                    if (socket.Value.State == WebSocketState.Closed)
+                    catch (Exception ex)
                     {
-                        onlineList.TryRemove(socket);
+                        Serilog.Log.Information("Fail to ping client");
+                        Serilog.Log.Information(ex.Message);
+                        Serilog.Log.Information(ex.StackTrace);
                     }
                 }
-                Thread.Sleep(100);
-            }
-            catch
-            {
-                await ConnectionStateCheck();
+                Thread.Sleep(TimeSpan.FromSeconds(20).TotalMilliseconds);
             }
         }
 
@@ -74,7 +59,7 @@ namespace Signalling.Services
             if(core.Count() == 2)
             {
                 var sessionCore = core.Where(o => o.Key.Module == Module.CORE_MODULE).First();
-                SendMessage(sessionCore.Value,JsonConvert.SerializeObject(new WebSocketMessage{RequestType = WebSocketMessageResult.REQUEST_STREAM}));
+                await SendMessage(sessionCore.Value,JsonConvert.SerializeObject(new WebSocketMessage{RequestType = WebSocketMessageResult.REQUEST_STREAM, Content = " "}));
             }
 
 
@@ -95,13 +80,28 @@ namespace Signalling.Services
                         }
                     }
                 } while (ws.State == WebSocketState.Open);
+                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                Serilog.Log.Information("Connection closed");
             }
             catch (Exception ex)
             {
                 Serilog.Log.Information("Connection closed");
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
             }
-            // Device goes offline
-            await Close(ws);
+
+            if(accession.Module == Module.CLIENT_MODULE)
+            {
+                var client = new RestClient();
+                var request = new RestRequest(_config.Conductor+"/Sync/Signalling/Disconnect")
+                    .AddQueryParameter("WorkerID",accession.WorkerID)
+                    .AddQueryParameter("ClientID",accession.ClientID);
+                request.Method = Method.Post;
+
+                await client.ExcecuteAsync(request);
+            }
+
+            onlineList.TryRemove(accession,out var output);
         }
 
         private async Task<WebSocketReceiveResult> ReceiveMessage(WebSocket ws, Stream memoryStream)
@@ -114,7 +114,6 @@ namespace Signalling.Services
                 await memoryStream.WriteAsync(readBuffer.Array, readBuffer.Offset, result.Count,
                     CancellationToken.None);
             } while (!result.EndOfMessage);
-
             return result;
         }
 
@@ -128,44 +127,37 @@ namespace Signalling.Services
 
         void _handleSdpIceOffer(SessionAccession accession, WebSocketMessage msg, WebSocket ws)
         {
-            foreach(var item in onlineList)
+            try
             {
-                if(item.Key.ID == accession.ID)
+                foreach(var item in onlineList)
                 {
-                    if(accession.Module == Module.CLIENT_MODULE)
+                    if(item.Key.ID == accession.ID)
                     {
-                        if(item.Key.WorkerID == accession.WorkerID)
+                        if(accession.Module == Module.CLIENT_MODULE)
                         {
-                            SendMessage(item.Value, JsonConvert.SerializeObject(msg));
-                            return;
+                            if(item.Key.WorkerID == accession.WorkerID)
+                            {
+                                SendMessage(item.Value, JsonConvert.SerializeObject(msg));
+                                return;
+                            }
                         }
-                    }
-                    else if (accession.Module == Module.CORE_MODULE)
-                    {
-                        if (item.Key.ClientID == accession.ClientID)
+                        else if (accession.Module == Module.CORE_MODULE)
                         {
-                            SendMessage(item.Value, JsonConvert.SerializeObject(msg));
-                            return;
+                            if (item.Key.ClientID == accession.ClientID)
+                            {
+                                SendMessage(item.Value, JsonConvert.SerializeObject(msg));
+                                return;
+                            }
                         }
                     }
                 }
             }
-        }
-
-
-        public async Task Close(WebSocket ws)
-        {
-            try
-            {
-                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-            }
             catch (Exception ex)
             {
-                Serilog.Log.Information("Connection closed ");
-                Serilog.Log.Information(ex.Message);
-                Serilog.Log.Information(ex.StackTrace);
+                Serilog.Log.Information("Fail to handle handshake");                
+                Serilog.Log.Information(ex.Message);                
+                Serilog.Log.Information(ex.StackTrace);                
             }
-            return;
         }
     }
 }

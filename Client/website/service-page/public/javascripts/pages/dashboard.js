@@ -12,14 +12,29 @@ API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
+async function prepare_user_infor()
+{
+	try
+	{
+		const userinfor = await (await API.getInfor()).json()
+		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
+	} catch{
+		(new Promise(resolve => setTimeout(resolve, 5000)))
+		.then(() => {
+			prepare_user_infor();
+		});
+	}
+
+}
+
 async function prepare_worker_dashboard()
 {
 	try {
-		const userinfor = await (await API.getInfor()).json()
+		document.getElementById("slavesInUses").innerHTML = " ";
+		document.getElementById("availableSlaves").innerHTML = " ";
 		const sessions = await (await API.fetchSession()).json()
 		const slaves = await (await API.fetchSlave()).json()
 
-		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
 
 		for (var worker in sessions) {
 			createSlave(worker,sessions[worker], "slavesInUses");
@@ -30,7 +45,7 @@ async function prepare_worker_dashboard()
 	} catch (err) {
 		(new Promise(resolve => setTimeout(resolve, 5000)))
 		.then(() => {
-			location.reload();
+			prepare_worker_dashboard();
 		});
 	}
 }
@@ -38,6 +53,7 @@ async function prepare_worker_dashboard()
 async function refresh_session_queue()
 {
 	try {
+		document.getElementById("slavesInUses").innerHTML = " ";
 		const sessions = await (await API.fetchSession()).json()
 
 		if(sessions == null) { return; }
@@ -47,7 +63,7 @@ async function refresh_session_queue()
 	} catch (err) {
 		(new Promise(resolve => setTimeout(resolve, 5000)))
 		.then(() => {
-			location.reload();
+			// location.reload();
 		});
 	}
 }
@@ -85,12 +101,12 @@ $(document).ready(async () => {
 		// Macintosh (MacOS)
 	}
 
-	prepare_worker_dashboard();
-	sessionInfor = await (await API.getSession()).json()
+	await prepare_user_infor();
+	await prepare_worker_dashboard();
+	await setDataForChart();
 
 
 	// set data for chart to anaylize hour used
-	setDataForChart();
 
 	// using websocket to connect to systemhub
 	const Websocket = new WebSocket(API.UserHub + `?token=${getCookie("token")}`)
@@ -148,7 +164,15 @@ function onWebsocketClose(event) {
 };
 
 async function createSlave(workerID, workerState, queue) {
-	var slave = await(await API.fetchInfor(workerID)).json();
+	try {
+		var slave = await(await API.fetchInfor(workerID)).json();
+	} catch (error) {
+		(new Promise(resolve => setTimeout(resolve, 5000)))
+		.then(async () => {
+			await createSlave(workerID,workerState,queue);
+		});
+		
+	}
 
 	append(queue, `
     <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
@@ -290,8 +314,12 @@ async function tutorial() {
 	});
 }
 
-function setDataForChart() {
-	console.log(sessionInfor)
+async function setDataForChart() {
+	try {
+		sessionInfor = await (await API.getSession()).json()
+	} catch (error) {
+		await setDataForChart();		
+	}
 	for (let i = 0; i < 7; i++) {
 		datasets[i] = 0;
 	}

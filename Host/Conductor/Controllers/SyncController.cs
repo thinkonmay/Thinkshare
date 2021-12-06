@@ -136,5 +136,15 @@ namespace Conductor.Controllers
             }
             return Ok();
         }
+
+        [HttpPost("Signalling/Disconnected")]
+        public async Task<IActionResult> Disconnected(int WorkerID, int ClientID)
+        {
+            Serilog.Log.Information("Receive client disconnected from signalling server");
+            Serilog.Log.Information("Broadcasting to worker "+WorkerID.ToString()+" and client "+ ClientID.ToString());
+            await _Cluster.SessionDisconnect(WorkerID);
+            await _clientHubctx.ReportSessionDisconnected(WorkerID,ClientID);
+            return Ok();
+        }
     }
 }

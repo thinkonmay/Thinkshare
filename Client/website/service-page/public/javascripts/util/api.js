@@ -132,7 +132,6 @@ export const fetchSession = () => {
 export const fetchInfor = (workerID) => {
 	return fetch(FetchInfor+"?WorkerID="+workerID, {
 		method: "GET",
-		headers: genHeaders()
 	}, function (error) {
 		if (401 == error.response.status) {
 			window.location.replace(API.Login)
@@ -227,7 +226,6 @@ export const initializeSession = (SlaveID) => {
 export const sessionSetting = (remoteToken) => {
 	return fetch(SessionInfor + "?token=" + remoteToken, {
 		method: "GET",
-		headers: genHeaders()
 		}, function (error) {
 		if (401 == error.response.status) {
 			window.location.replace(API.Login)

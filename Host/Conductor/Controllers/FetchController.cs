@@ -18,7 +18,6 @@ namespace Conductor.Controllers
     /// <summary>
     /// Routes used by user to fetch information about the system
     /// </summary>
-    [User]
     [ApiController]
     [Route("/Fetch")]
     [Produces("application/json")]
@@ -51,6 +50,7 @@ namespace Conductor.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
+        [User]
         [HttpGet("Node")]
         public async Task<IActionResult> FetchNode()
         {
@@ -77,6 +77,7 @@ namespace Conductor.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
+        [User]
         [HttpGet("Session")]
         public async Task<IActionResult> GetUserSession()
         {

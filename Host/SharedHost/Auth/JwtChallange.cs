@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
 using SharedHost.Auth.ThinkmayAuthProtocol;
-using System.Net.Http;
+using System.Net;
+using RestSharp;
 
 namespace SharedHost.Auth
 {
@@ -13,7 +14,7 @@ namespace SharedHost.Auth
     {
         private readonly RequestDelegate _next;
 
-        private readonly HttpClient _UserTokenIssuer;
+        private readonly RestClient _UserTokenIssuer;
 
         private readonly string IssuerUrl;
 
@@ -24,7 +25,7 @@ namespace SharedHost.Auth
         {
             _next = next;
             _config = config.Value;
-            _UserTokenIssuer = new HttpClient();
+            _UserTokenIssuer = new RestClient();
         }
 
         public async Task Invoke(HttpContext context)
@@ -46,14 +47,14 @@ namespace SharedHost.Auth
                    token = token,
                    Validator = _config.UserTokenValidator
                 };
-                var request = new HttpRequestMessage(HttpMethod.Post,_config.UserTokenValidator);
-                request.Content = new StringContent(
-                    JsonConvert.SerializeObject(tokenRequest),null,"application/json");
+                var request = new RestRequest(_config.UserTokenValidator)
+                    .AddJsonBody(JsonConvert.SerializeObject(tokenRequest));
+                request.Method = Method.POST;
 
-                var result = await _UserTokenIssuer.SendAsync(request);
-                if(result.StatusCode == System.Net.HttpStatusCode.OK)
+                var result = await _UserTokenIssuer.ExecuteAsync(request);
+                if(result.StatusCode == HttpStatusCode.OK)
                 {
-                    var content = await result.Content.ReadAsStringAsync();
+                    var content = result.Content;
                     var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(content);
                     // attach user to context on successful jwt
 
