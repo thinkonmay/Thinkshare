@@ -93,13 +93,50 @@ namespace TokenTesting
 
         [Test]
         [Order(1)]
-        public async Task TestSessionToken()
+        public async Task TestWorkerSessionToken()
         {
             Console.WriteLine("Setting session token");
 
             var accession = new SessionAccession
             {
                 Module = Module.CORE_MODULE,
+                ID = 100,
+                WorkerID = 200,
+                ClientID = 300,
+            };
+
+            var testLogin = new HttpRequestMessage(HttpMethod.Post, "/Token/Grant/Session");
+            testLogin.Content = new StringContent(
+                JsonConvert.SerializeObject(accession), null, "application/json");
+            var tokenResponse = await _client.SendAsync(testLogin);
+
+            Assert.AreEqual(tokenResponse.StatusCode , HttpStatusCode.OK);
+            var result = await tokenResponse.Content.ReadAsStringAsync();
+            var token = JsonConvert.DeserializeObject<AuthenticationRequest>(result).token;
+
+            Console.WriteLine("Got token generated: "+ token);
+
+            var testToken = new HttpRequestMessage(HttpMethod.Post, "/Token/Challenge/Session?token="+token);
+            var resultResponse = await _client.SendAsync(testToken);
+
+            Assert.AreEqual(resultResponse.StatusCode, HttpStatusCode.OK);
+            var responseAccession = JsonConvert.DeserializeObject<SessionAccession>(await resultResponse.Content.ReadAsStringAsync());
+
+            Assert.AreEqual(responseAccession.ClientID,accession.ClientID);
+            Assert.AreEqual(responseAccession.WorkerID,accession.WorkerID);
+            Assert.AreEqual(responseAccession.ID,accession.ID);
+            Assert.AreEqual(responseAccession.Module,accession.Module);
+        }
+
+        [Test]
+        [Order(1)]
+        public async Task TestClientSessionToken()
+        {
+            Console.WriteLine("Setting session token");
+
+            var accession = new SessionAccession
+            {
+                Module = Module.CLIENT_MODULE,
                 ID = 100,
                 WorkerID = 200,
                 ClientID = 300,

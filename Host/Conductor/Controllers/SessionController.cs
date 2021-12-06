@@ -100,7 +100,7 @@ namespace Conductor.Controllers
                 });
 
             // return bad request if fail to delete session pair      
-            var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(workerTokenRequest).Content);
+            var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(clientTokenRequest).Content);
             var workerToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(workerTokenRequest).Content);
 
 
@@ -114,6 +114,7 @@ namespace Conductor.Controllers
             await _Cluster.SessionInitialize(SlaveID, workerToken.token);
 
             // return view for user
+            Serilog.Log.Information("Remote session between user "+sess.Client.FullName+" and worker "+SlaveID+" reconnected");
             return Ok(clientToken);
         }
 
@@ -152,6 +153,7 @@ namespace Conductor.Controllers
                 await _Cluster.SessionTerminate(ses.First().WorkerID);
                 return Ok();
             }
+            Serilog.Log.Information("Start remote session between user "+userAccount.FullName+" and worker "+SlaveID);
             return BadRequest("Cannot send terminate session signal to slave");            
         }
 
@@ -188,6 +190,7 @@ namespace Conductor.Controllers
                 await _Cluster.SessionDisconnect(ses.Worker.ID);
                 return Ok();
             }
+            Serilog.Log.Information("Remote session between user "+userAccount.FullName+" and worker "+SlaveID+" disconnected");
             return BadRequest("Device not in session");            
         }
 
@@ -245,6 +248,7 @@ namespace Conductor.Controllers
                 // return view to client 
                 return Ok(clientToken);
             }
+            Serilog.Log.Information("Remote session between user "+userAccount.FullName+" and worker "+SlaveID+" reconnected");
             return BadRequest("Device not in off remote");            
         }
 
@@ -265,17 +269,52 @@ namespace Conductor.Controllers
                 var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
                 if(accession.Module == Module.CLIENT_MODULE)
                 {
+                    Serilog.Log.Information("Got Session setting request from client");
                     var clientSession = await _cache.GetClientSessionSetting(accession);
+                    Serilog.Log.Information(JsonConvert.SerializeObject(clientSession));
                     return Ok(clientSession);
                 }
                 else
                 {
+                    Serilog.Log.Information("Got Session setting request from worker");
                     var workerSession = await _cache.GetWorkerSessionSetting(accession);
+                    Serilog.Log.Information(JsonConvert.SerializeObject(workerSession));
                     return Ok(workerSession);
                 }
             }
             else
             {
+                Serilog.Log.Information("Fail to parse token");
+                return BadRequest("Token is invalid");
+            }
+        }
+
+        [HttpPost("Setting")]
+        public async Task<IActionResult> SetSetting(string token,[FromBody]UserSetting setting)
+        {
+
+            var request = new RestRequest(_config.SessionTokenValidator)
+                .AddQueryParameter("token", token);
+            request.Method = Method.POST;
+
+            var result = await _sessionToken.ExecuteAsync(request);
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
+
+                foreach (var item in _db.Clusters.ToList())
+                {
+                    if((await _cache.GetClusterSnapshot(item.ID)).ContainsKey(accession.WorkerID))
+                    {
+                        await _cache.SetSessionSetting(accession.ID,setting,_config, item);
+                        return Ok();
+                    }
+                }
+                return BadRequest();
+            }
+            else
+            {
+                Serilog.Log.Information("Fail to parse token");
                 return BadRequest("Token is invalid");
             }
         }
