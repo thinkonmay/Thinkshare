@@ -57,9 +57,7 @@ namespace Conductor.Controllers
                 switch (NewState)
                 {
                     case WorkerState.Open:
-                        var device = await _cache.GetWorkerInfor(ID);
-                        device.WorkerState = WorkerState.Open;
-                        await _clientHubctx.ReportNewSlaveAvailable(device);
+                        await _clientHubctx.ReportNewSlaveAvailable(ID);
 
                         session.EndTime = DateTime.Now;
                         _db.RemoteSessions.Update(session);
@@ -94,9 +92,7 @@ namespace Conductor.Controllers
                 switch (NewState)
                 {
                     case WorkerState.Open:
-                        var device = _db.Devices.Find(ID);
-                        device.WorkerState = WorkerState.Open;
-                        await _clientHubctx.ReportNewSlaveAvailable(device);
+                        await _clientHubctx.ReportNewSlaveAvailable(ID);
                         break;
                     case WorkerState.Disconnected:
                         await _clientHubctx.ReportSlaveObtained(ID);
