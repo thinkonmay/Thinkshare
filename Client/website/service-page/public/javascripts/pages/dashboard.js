@@ -52,19 +52,13 @@ async function prepare_worker_dashboard()
 
 async function refresh_session_queue()
 {
-	try {
-		document.getElementById("slavesInUses").innerHTML = " ";
-		const sessions = await (await API.fetchSession()).json()
+	var sessions;
+	document.getElementById("slavesInUses").innerHTML = " ";
+	sessions = await (await API.fetchSession()).json()
 
-		if(sessions == null) { return; }
-		for (var worker of sessions) {
-			createSlave(worker,sessions[worker], "slavesInUses");
-		}
-	} catch (err) {
-		(new Promise(resolve => setTimeout(resolve, 5000)))
-		.then(() => {
-			// location.reload();
-		});
+	if(sessions == null) { return; }
+	for (var worker in sessions) {
+		createSlave(worker,sessions[worker], "slavesInUses");
 	}
 }
 
@@ -104,17 +98,24 @@ $(document).ready(async () => {
 	await prepare_user_infor();
 	await prepare_worker_dashboard();
 	await setDataForChart();
+	await connectToClientHub();
 
 
 	// set data for chart to anaylize hour used
 
+})
+
+
+async function connectToClientHub()
+{
 	// using websocket to connect to systemhub
 	const Websocket = new WebSocket(API.UserHub + `?token=${getCookie("token")}`)
 	Websocket.addEventListener('open', onWebsocketOpen);
 	Websocket.addEventListener('message', onClientHubEvent);
 	Websocket.addEventListener('error', onWebsocketClose);
 	Websocket.addEventListener('close', onWebsocketClose);
-})
+	
+}
 
 function onClientHubEvent(event) {
 	try {
@@ -192,16 +193,16 @@ async function createSlave(workerID, workerState, queue) {
           </div>
         </div>
         <div class="devicebutton">
-          <div class="row slaveState" id="button${slave.id}"></div>
+          <div class="row slaveState" id="${queue}button${slave.id}"></div>
         </div>
       </div>
     </div>`)
-	setState(workerState, slave.id);
+	setState(workerState, slave.id,queue);
 }
 
 
-function setState(serviceState, slaveID) {
-	var button = document.getElementById(`button${slaveID}`);
+function setState(serviceState, slaveID,queue) {
+	var button = document.getElementById(`${queue}button${slaveID}`);
 	button.innerHTML = slaveState(serviceState, slaveID);
 
 	if (serviceState === "ON_SESSION") {

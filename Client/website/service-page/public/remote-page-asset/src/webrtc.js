@@ -202,19 +202,15 @@ ondatachannel(event)
  * invoke after request sdp signal has been replied
  */
 function 
-WebrtcConnect(msg) 
+WebrtcConnect() 
 {
     console.log('Creating RTCPeerConnection');
 
-    app.Webrtc = new RTCPeerConnection(app.RTPconfig);
+    var config = app.RTPconfig;
+    app.Webrtc = new RTCPeerConnection(config);
     app.Webrtc.ondatachannel = ondatachannel;    
-
     app.Webrtc.ontrack = onRemoteTrack;
 
-    if (msg != null && !msg.sdp) 
-    {
-        app.setError("Empty sdp");
-    }
 
     //send ice dandidate to slave whenever icecandidate has been triggered on client
     app.Webrtc.onicecandidate = (event) => {
@@ -227,7 +223,4 @@ WebrtcConnect(msg)
         app.setDebug("OFFER_ICE" + JSON.stringify({'ice': event.candidate}));
         SignallingSend("OFFER_ICE",JSON.stringify({'ice': event.candidate}));
     };
-
-    if (msg != null)
-        app.setStatus("Created peer connection for call, waiting for SDP");     
 }

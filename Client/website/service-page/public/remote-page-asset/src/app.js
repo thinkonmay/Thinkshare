@@ -107,7 +107,8 @@ var app = new Vue({
              * RTP config, use to establish webrtc connection
              */
             RTPconfig:   
-            {"iceServers":    
+            {
+                "iceServers":    
                 [
                     {
                         urls: ["stun:stun.l.google.com:19302"] 
@@ -143,14 +144,20 @@ var app = new Vue({
     {
         SetupSession(sessionClient){
             sessionClient.stuns.forEach(element => {
-                this.RTPconfig.iceServers.push("stun:"+element);
+                // this.RTPconfig.iceServers[1].urls.push("stun:"+element);
             });
 
-            this.RTPconfig.iceServers.push({
-                "urls": sessionClient.turnip,
-                "username":sessionClient.turnuser,
-                "credentials":sessionClient.turnpassword,
-            });
+            if(sessionClient.turnip != null || 
+                sessionClient.turnuser != null || 
+                sessionClient.turnpassword != null)
+            {
+                this.RTPconfig.iceServers.push({
+                    "urls": sessionClient.turnip,
+                    "username":sessionClient.turnuser,
+                    "credentials":sessionClient.turnpassword,
+                });
+            }
+
             this.SignallingUrl = sessionClient.signallingurl;
             this.AudioCodec = sessionClient.audiocodec;
             this.VideoCodec = sessionClient.videocodec;

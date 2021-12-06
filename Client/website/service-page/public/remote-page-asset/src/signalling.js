@@ -6,7 +6,6 @@ function
 onServerOpen(event)
 {
     app.signalling_state = 'connected';
-    SignallingSend("CLIENTREQUEST",null)            
 }
 
 
@@ -64,35 +63,14 @@ onServerMessage(event)
     }
 
 
-    if (message_json.Result == "SESSION_REJECTED" || message_json.Result == "SESSION_TIMEOUT")
-    {
-        app.Websocket.close();
-        app.setStatus("Session Denied");
-    }
 
-
-    if(message_json.RequestType === "CLIENTREQUEST")
-    {
-        app.setStatus("Registered with server.");
-        app.setDebug("[signalling] " + message_json.Result)
-        app.setStatus("Requesting for video stream.");
-        var data = 
-        {
-            "sdp":
-            { 
-                "type":"request" 
-            }
-        }
-        app.setDebug("[SDPOUT]   "+JSON.stringify(data))
-        SignallingSend("OFFER_SDP",JSON.stringify(data));
-    }
 
     /**
      * initialize webrtc connection after receive sdp offer
      */
     if(app.Webrtc == null)
     {
-        WebrtcConnect(JSON.parse(message_json.Content));
+        WebrtcConnect();
     }
 
     /**
