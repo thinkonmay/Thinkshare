@@ -110,12 +110,17 @@ namespace WorkerManager.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(bool isPrivate, string ClusterName)
         {
+            if(_db.Clusters.Any())
+            {
+                return BadRequest("cluster is already registered");
+            }
+
+
             var token = _db.Owner.First().token;
             var request = new RestRequest(_config.ClusterRegisterUrl)
                 .AddHeader("Authorization","Bearer "+token)
                 .AddQueryParameter("ClusterName", ClusterName)
                 .AddQueryParameter("Private", isPrivate.ToString());
-
 
             request.Method = Method.POST;
 
@@ -268,6 +273,35 @@ namespace WorkerManager.Controllers
                 }
             }
             return BadRequest("Cluster has already been initialized");
+        }
+
+
+
+
+
+
+
+        [Owner]
+        [HttpPost("Cluster/isRegistered")]
+        public async Task<IActionResult> isRegistered()
+        {
+            if(_db.Clusters.Any())
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+
+        [Owner]
+        [HttpPost("Cluster/Worker/Infor")]
+        public async Task<IActionResult> GetWorkerInfor(int ID)
+        {
+            var result = await _cache.GetWorkerInfor(ID);
+            return (result != null) ? Ok(result) : BadRequest("Worker not found");
         }
     }
 }

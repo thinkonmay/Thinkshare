@@ -43,11 +43,6 @@ namespace WorkerManager.Controllers
             _tokenGenerator = token;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="agent_register"></param>
-        /// <returns></returns>
         [Route("validate")]
         [HttpPost]
         public async Task<IActionResult> TokenValidation(string token)

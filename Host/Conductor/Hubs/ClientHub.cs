@@ -78,6 +78,8 @@ namespace Conductor.Hubs
                 Message = slaveID.ToString()
             };
 
+            Serilog.Log.Information("Sending session disconnected event to client "+ID.ToString());
+
             /*generate rest post to signalling server*/
             var request = new RestRequest("Client")
                 .AddQueryParameter("ID", ID.ToString())
@@ -95,6 +97,8 @@ namespace Conductor.Hubs
                 Message = JsonConvert.SerializeObject(worker)
             };
 
+            Serilog.Log.Information("Sending session initialized event to client "+ID.ToString());
+
             /*generate rest post to signalling server*/
             var request = new RestRequest("Client")
                 .AddQueryParameter("ID", ID.ToString())
@@ -111,6 +115,8 @@ namespace Conductor.Hubs
                 Message = slaveID.ToString()
             };
 
+            Serilog.Log.Information("Sending session reconnected event to client "+ID.ToString());
+
             /*generate rest post to signalling server*/
             var request = new RestRequest("Client")
                 .AddQueryParameter("ID", ID.ToString())
@@ -126,6 +132,8 @@ namespace Conductor.Hubs
                 EventName = "ReportSessionTerminated",
                 Message = slaveID.ToString()
             };
+
+            Serilog.Log.Information("Sending session reconnected event to client "+ID.ToString());
 
             /*generate rest post to signalling server*/
             var request = new RestRequest("Client")
@@ -157,6 +165,8 @@ namespace Conductor.Hubs
                 Message = slaveID.ToString()
             };
 
+            Serilog.Log.Information("Broadcasting worker obtained event to all client");
+
             /*generate rest post to signalling server*/
             var request = new RestRequest("Broadcast")
                 .AddJsonBody(data);
@@ -164,14 +174,16 @@ namespace Conductor.Hubs
             await _NotificationHub.ExecuteAsync(request);
         }
 
+
         public async Task ReportNewSlaveAvailable(WorkerNode device)
         {
-            device.WorkerState = await _cache.GetWorkerState(device.ID);
             var data = new EventModel
             {
                 EventName = "ReportNewSlaveAvailable",
                 Message = JsonConvert.SerializeObject(device)
             };
+
+            Serilog.Log.Information("Broadcasting worker "+device.ID.ToString()+" available event to all client");
 
             /*generate rest post to signalling server*/
             var request = new RestRequest("Broadcast")

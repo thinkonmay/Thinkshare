@@ -45,9 +45,14 @@ namespace Conductor.Controllers
         public async Task<IActionResult> Update(int ID, string NewState)
         {
             var Session = _db.RemoteSessions.Where(o => o.WorkerID == ID && !o.EndTime.HasValue);
+
+            Serilog.Log.Information("Got worker sync message from worker"+ID.ToString()+", new worker state: "+NewState);            
+
+
             // if device is already obtained by one user (dont have endtime)
             if (Session.Any())
             {
+                Serilog.Log.Information("Worker is already in session ");            
                 switch (NewState)
                 {
                     case WorkerState.Open:
@@ -68,6 +73,7 @@ namespace Conductor.Controllers
                         await _clientHubctx.ReportSessionDisconnected(ID, Session.First().ClientId);
                         Session.First().EndTime = DateTime.Now;
                         _db.RemoteSessions.UpdateRange(Session);
+                        await _db.SaveChangesAsync();
                         break;
                     case WorkerState.OffRemote:
                         await _clientHubctx.ReportSessionDisconnected(ID, Session.First().ClientId);
@@ -80,6 +86,7 @@ namespace Conductor.Controllers
             // if device is not obtained by any one (has endtime)
             else
             {
+                Serilog.Log.Information("Worker is not in session ");            
                 switch (NewState)
                 {
                     case WorkerState.Open:
@@ -96,6 +103,7 @@ namespace Conductor.Controllers
                 }
 
             }
+            Serilog.Log.Information("Handle event done");
             return Ok();
         }
 

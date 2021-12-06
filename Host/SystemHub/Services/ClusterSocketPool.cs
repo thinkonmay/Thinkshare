@@ -208,6 +208,10 @@ namespace SystemHub.Services
                         var syncrequest = new RestRequest("Worker/State")
                             .AddQueryParameter("NewState", syncedState)
                             .AddQueryParameter("ID",unsyncedItem.Key.ToString());
+
+                        Serilog.Log.Information("Reporting sync event to conductor: ");
+                        Serilog.Log.Information("WorkerID: "+unsyncedItem.Key.ToString()+" | State: "+syncedState);
+                        
                         syncrequest.Method = Method.POST;
 
                         var result = await _conductor.ExecuteAsync(syncrequest);
@@ -229,8 +233,19 @@ namespace SystemHub.Services
                         .AddQueryParameter("NewState", WorkerState.MISSING)
                         .AddQueryParameter("ID",unsyncedItem.Key.ToString());
                     syncrequest.Method = Method.POST;
+                    
+                    Serilog.Log.Information("Reporting sync event to conductor: ");
+                    Serilog.Log.Information("WorkerID: "+unsyncedItem.Key.ToString()+" | State: Missing");
 
-                    await _conductor.ExecuteAsync(syncrequest);
+                    var result = await _conductor.ExecuteAsync(syncrequest);
+                    if(result.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        Serilog.Log.Information("Reportd state changing to conductor");
+                    }
+                    else
+                    {
+                        Serilog.Log.Information("Fail to report event to conductor");
+                    }
                     syncedSnapshoot.Add(unsyncedItem.Key,WorkerState.MISSING);
                 }
             }
