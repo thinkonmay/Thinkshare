@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using SharedHost.Models.Device;
+using Microsoft.Extensions.Options;
+using RestSharp;
 
 namespace Signalling.Services
 {
@@ -47,7 +49,7 @@ namespace Signalling.Services
                         Serilog.Log.Information(ex.StackTrace);
                     }
                 }
-                Thread.Sleep(TimeSpan.FromSeconds(20).TotalMilliseconds);
+                Thread.Sleep((int)TimeSpan.FromSeconds(20).TotalMilliseconds);
             }
         }
 
@@ -59,7 +61,7 @@ namespace Signalling.Services
             if(core.Count() == 2)
             {
                 var sessionCore = core.Where(o => o.Key.Module == Module.CORE_MODULE).First();
-                await SendMessage(sessionCore.Value,JsonConvert.SerializeObject(new WebSocketMessage{RequestType = WebSocketMessageResult.REQUEST_STREAM, Content = " "}));
+                SendMessage(sessionCore.Value,JsonConvert.SerializeObject(new WebSocketMessage{RequestType = WebSocketMessageResult.REQUEST_STREAM, Content = " "}));
             }
 
 
@@ -94,11 +96,11 @@ namespace Signalling.Services
             {
                 var client = new RestClient();
                 var request = new RestRequest(_config.Conductor+"/Sync/Signalling/Disconnect")
-                    .AddQueryParameter("WorkerID",accession.WorkerID)
-                    .AddQueryParameter("ClientID",accession.ClientID);
-                request.Method = Method.Post;
+                    .AddQueryParameter("WorkerID",accession.WorkerID.ToString())
+                    .AddQueryParameter("ClientID",accession.ClientID.ToString());
+                request.Method = Method.POST;
 
-                await client.ExcecuteAsync(request);
+                await client.ExecuteAsync(request);
             }
 
             onlineList.TryRemove(accession,out var output);
@@ -117,11 +119,11 @@ namespace Signalling.Services
             return result;
         }
 
-        public void SendMessage(WebSocket ws, string msg)
+        public async Task SendMessage(WebSocket ws, string msg)
         {
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
-            ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
 
