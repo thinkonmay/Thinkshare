@@ -44,42 +44,46 @@ namespace Conductor.Controllers
         [HttpPost("Worker/State")]
         public async Task<IActionResult> Update(int ID, string NewState)
         {
-            var Session = _db.RemoteSessions.Where(o => o.WorkerID == ID && !o.EndTime.HasValue);
+            var Sessions = _db.RemoteSessions.Where(o => o.WorkerID == ID && !o.EndTime.HasValue);
 
             Serilog.Log.Information("Got worker sync message from worker"+ID.ToString()+", new worker state: "+NewState);            
 
 
             // if device is already obtained by one user (dont have endtime)
-            if (Session.Any())
+            if (Sessions.Any())
             {
                 Serilog.Log.Information("Worker is already in session ");            
+                var session = Sessions.First();
                 switch (NewState)
                 {
                     case WorkerState.Open:
-                        var device = _db.Devices.Find(ID);
+                        var device = await _cache.GetWorkerInfor(ID);
                         device.WorkerState = WorkerState.Open;
                         await _clientHubctx.ReportNewSlaveAvailable(device);
-                        Session.First().EndTime = DateTime.Now;
-                        _db.RemoteSessions.UpdateRange(Session);
+
+                        session.EndTime = DateTime.Now;
+                        _db.RemoteSessions.Update(session);
                         await _db.SaveChangesAsync();
                         break;
                     case WorkerState.Disconnected:
-                        await _clientHubctx.ReportSessionDisconnected(ID, Session.First().ClientId);
-                        Session.First().EndTime = DateTime.Now;
-                        _db.RemoteSessions.UpdateRange(Session);
+                        await _clientHubctx.ReportSessionDisconnected(ID, session.ClientId);
+
+                        session.EndTime = DateTime.Now;
+                        _db.RemoteSessions.Update(session);
                         await _db.SaveChangesAsync();
                         break;
                     case WorkerState.MISSING:
-                        await _clientHubctx.ReportSessionDisconnected(ID, Session.First().ClientId);
-                        Session.First().EndTime = DateTime.Now;
-                        _db.RemoteSessions.UpdateRange(Session);
+                        await _clientHubctx.ReportSessionDisconnected(ID, session.ClientId);
+
+                        session.EndTime = DateTime.Now;
+                        _db.RemoteSessions.Update(session);
                         await _db.SaveChangesAsync();
                         break;
                     case WorkerState.OffRemote:
-                        await _clientHubctx.ReportSessionDisconnected(ID, Session.First().ClientId);
+                        await _clientHubctx.ReportSessionDisconnected(ID, session.ClientId);
                         break;
                     case WorkerState.OnSession:
-                        await _clientHubctx.ReportSessionInitialized(Session.First().Worker, Session.First().ClientId);
+                        await _clientHubctx.ReportSessionInitialized(session.Worker, session.ClientId);
                         break;
                 }
             }

@@ -65,11 +65,6 @@ namespace Conductor.Controllers
                     if (state.Value == WorkerState.Open)
                     {
                         var node = await _cache.GetWorkerInfor(state.Key);
-                        if(node == null)
-                        {
-                            node = _db.Devices.Find(state.Key);
-                            await _cache.CacheWorkerInfor(node);
-                        }
                         node.WorkerState = state.Value;
                         result.Add(node);
                     }
@@ -92,6 +87,9 @@ namespace Conductor.Controllers
             var session = _db.RemoteSessions.Where(s => s.ClientId == Int32.Parse(UserID.ToString()) &&
                                                   !s.EndTime.HasValue).ToList();
             
+            Serilog.Log.Information("Fetching session from cache");
+            Serilog.Log.Information("User "+UserID+" has "+session.Count().ToString()+" session");
+
             session.ForEach(x => nodeList.Add(x.ClientId));
             var result = new List<WorkerNode>();
 
@@ -102,16 +100,9 @@ namespace Conductor.Controllers
                 var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
                 foreach (var state in snapshoot)
                 {
-                    if ((state.Value == WorkerState.OffRemote || 
-                         state.Value == WorkerState.OnSession) &&
-                         nodeList.Contains(state.Key))
+                    if (nodeList.Contains(state.Key))
                     {
                         var node = await _cache.GetWorkerInfor(state.Key);
-                        if(node == null)
-                        {
-                            node = _db.Devices.Find(state.Key);
-                            await _cache.CacheWorkerInfor(node);
-                        }
                         node.WorkerState = state.Value;
                         result.Add(node);
                     }

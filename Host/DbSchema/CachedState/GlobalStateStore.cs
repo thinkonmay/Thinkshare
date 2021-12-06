@@ -87,7 +87,13 @@ namespace DbSchema.CachedState
         }
         public async Task<WorkerNode?> GetWorkerInfor(int WorkerID)
         {
-            return await _cache.GetRecordAsync<WorkerNode>("WorkerInfor_"+WorkerID.ToString());
+            var result = await _cache.GetRecordAsync<WorkerNode?>("WorkerInfor_"+WorkerID.ToString());
+            if (result == null)
+            {
+                result = _db.Devices.Find(WorkerID);
+                await _cache.SetRecordAsync<WorkerNode>("WorkerInfor_"+WorkerID.ToString(), result,null,null);
+            }
+            return result;
         }
 
 
