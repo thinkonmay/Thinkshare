@@ -125,7 +125,7 @@ namespace Authenticator.Controllers
         }
 
         [Manager]
-        [HttpPost("Infor")]
+        [HttpGet("Infor")]
         public async Task<IActionResult> getInfor(string ClusterName)
         {
             var ManagerID = HttpContext.Items["UserID"];

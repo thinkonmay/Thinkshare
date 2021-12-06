@@ -11,6 +11,52 @@ let sessionInfor;
 API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
+
+async function prepare_worker_dashboard()
+{
+	try {
+		const userinfor = await (await API.getInfor()).json()
+		const sessions = await (await API.fetchSession()).json()
+		const slaves = await (await API.fetchSlave()).json()
+
+		sessionInfor = await (await API.getSession()).json()
+		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
+
+		for (var worker of sessions) {
+			createSlave(worker,sessions[worker], "slavesInUses");
+		}
+		for (const worker of slaves) {
+			createSlave(worker,sessions[worker], "availableSlaves");
+		}
+	} catch (err) {
+		(new Promise(resolve => setTimeout(resolve, 5000)))
+		.then(() => {
+			location.reload();
+		});
+	}
+}
+
+async function refresh_session_queue()
+{
+	try {
+		const sessions = await (await API.fetchSession()).json()
+
+		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
+		for (var worker of sessions) {
+			createSlave(worker,sessions[worker], "slavesInUses");
+		}
+	} catch (err) {
+		(new Promise(resolve => setTimeout(resolve, 5000)))
+		.then(() => {
+			location.reload();
+		});
+	}
+}
+
+
+
+
+
 $(document).ready(async () => {
 	$('#logout').click(() => {
 		setCookie("logout", "true")
@@ -40,26 +86,8 @@ $(document).ready(async () => {
 		// Macintosh (MacOS)
 	}
 
-	try {
-		const userinfor = await (await API.getInfor()).json()
-		const sessions = await (await API.fetchSession()).json()
-		const slaves = await (await API.fetchSlave()).json()
+	prepare_worker_dashboard();
 
-		sessionInfor = await (await API.getSession()).json()
-		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
-
-		for (const slave of sessions) {
-			createSlave(slave, "slavesInUses");
-		}
-		for (const slave of slaves) {
-			createSlave(slave, "availableSlaves");
-		}
-	} catch (err) {
-		(new Promise(resolve => setTimeout(resolve, 5000)))
-		.then(() => {
-			location.reload();
-		});
-	}
 
 	// set data for chart to anaylize hour used
 	setDataForChart();
@@ -85,41 +113,27 @@ function onClientHubEvent(event) {
 	}
 
 	if (message_json.EventName === "ReportSessionDisconnected") {
-		var slaveId = message_json.Message
-		setState("OFF_REMOTE", slaveId)
+		refresh_session_queue();
 	}
 	if (message_json.EventName === "ReportSessionReconnected") {
-		var slaveId = message_json.Message
-		setState("ON_SESSION", slaveId);
+		refresh_session_queue();
 	}
 	if (message_json.EventName === "ReportSessionTerminated") {
-		var slaveId = message_json.Message
-		var slave = document.getElementById(`slavesInUses${slaveId}`);
-		slave.remove()
+		refresh_session_queue();
+	}
+	if (message_json.EventName === "ReportSessionOn") {
+		refresh_session_queue();
 	}
 	if (message_json.EventName === "ReportSlaveObtained") {
-		var slaveId = message_json.Message
+		var workerID = parseInt(message_json.Message)
+
 		var slave = document.getElementById(`availableSlaves${slaveId}`);
 		slave.remove()
 	}
-	if (message_json.EventName === "ReportSessionInitialized") {
-		var device = JSON.parse(message_json.Message)
-		device.os = device.OS;
-		device.raMcapacity = device.RAMcapacity;
-		device.gpu = device.GPU;
-		device.id = device.ID;
-		device.cpu = device.CPU;
-		device.serviceState = "ON_SESSION";
-		createSlave(device, "slavesInUses")
-	}
 	if (message_json.EventName === "ReportNewSlaveAvailable") {
-		var device = JSON.parse(message_json.Message)
-		device.os = device.OS;
-		device.raMcapacity = device.RAMcapacity;
-		device.gpu = device.GPU;
-		device.id = device.ID;
-		device.cpu = device.CPU;
-		createSlave(device, "availableSlaves")
+		var workerID = parseInt(message_json.Message)
+
+		createSlave(workerID,"DEVICE_OPEN","availableSlaves")
 	}
 }
 
@@ -133,9 +147,11 @@ function onWebsocketClose(event) {
 	});
 };
 
-function createSlave(slave, queue) {
+function createSlave(workerID, workerState, queue) {
+	var slave = await(await API.fetchInfor(workerID)).json();
+
 	append(queue, `
-    <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${slave.id}">
+    <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
       <div class="card bg-light d-flex flex-fill">
         <div style="text-alignt: center" class="card-header text-muted border-bottom-0">
 		<img width="20px" height="20px" src="images/window-logo.png" alt="user-avatar" class="img-fluid">
@@ -156,7 +172,7 @@ function createSlave(slave, queue) {
         </div>
       </div>
     </div>`)
-	setState(slave.workerState, slave.id);
+	setState(workerState, slave.id);
 }
 
 

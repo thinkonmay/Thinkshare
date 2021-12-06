@@ -56,7 +56,7 @@ namespace Conductor.Controllers
         {
             var publicCluster = _db.Clusters.Where(x => x.Private == false);
 
-            var result = new List<WorkerNode>();
+            var result = new Dictionary<int,string>();
             foreach (var cluster in publicCluster)
             {
                 var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
@@ -64,9 +64,7 @@ namespace Conductor.Controllers
                 {
                     if (state.Value == WorkerState.Open)
                     {
-                        var node = await _cache.GetWorkerInfor(state.Key);
-                        node.WorkerState = state.Value;
-                        result.Add(node);
+                        result.TryAdd(state.Key,state.Value);
                     }
                 }
             }
@@ -80,37 +78,27 @@ namespace Conductor.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("Session")]
-        public async Task<IActionResult> UserGetCurrentSesssion()
+        public async Task<IActionResult> GetUserSession()
         {
+            var result = new Dictionary<int,string>();
             var UserID = HttpContext.Items["UserID"];
-            var nodeList = new List<int>();
             var session = _db.RemoteSessions.Where(s => s.ClientId == Int32.Parse(UserID.ToString()) &&
                                                   !s.EndTime.HasValue).ToList();
             
             Serilog.Log.Information("Fetching session from cache");
             Serilog.Log.Information("User "+UserID+" has "+session.Count().ToString()+" session");
 
-            session.ForEach(x => nodeList.Add(x.ClientId));
-            var result = new List<WorkerNode>();
-
-            var publicCluster = _db.Clusters.Where(x => x.Private == false);
-
-            foreach (var cluster in publicCluster)
+            foreach (var x in session)
             {
-                var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
-                foreach (var state in snapshoot)
-                {
-                    if (nodeList.Contains(state.Key))
-                    {
-                        var node = await _cache.GetWorkerInfor(state.Key);
-                        node.WorkerState = state.Value;
-                        result.Add(node);
-                    }
-                }
+                result.TryAdd(x.WorkerID, await _cache.GetWorkerState(x.WorkerID));
             }
-
-            
             return Ok(result);
+        }
+
+        [HttpGet("Worker/Infor")]
+        public async Task<IActionResult> GetWorkerInfor(int WorkerID)
+        {
+            return Ok(await _cache.GetWorkerInfor(WorkerID));
         }
     }
 }

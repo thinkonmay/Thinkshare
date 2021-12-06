@@ -83,7 +83,7 @@ namespace Conductor.Controllers
                         await _clientHubctx.ReportSessionDisconnected(ID, session.ClientId);
                         break;
                     case WorkerState.OnSession:
-                        await _clientHubctx.ReportSessionInitialized(session.Worker, session.ClientId);
+                        await _clientHubctx.ReportSessionInitialized(ID, session.ClientId);
                         break;
                 }
             }

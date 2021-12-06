@@ -34,6 +34,7 @@ export const UserHub = `wss://host.thinkmay.net/Hub/User`
 // User API
 const FetchSlave = `${host}/Fetch/Node`
 const FetchSession = `${host}/Fetch/Session`
+const FetchInfor = `${host}/Fetch/Worker/Infor`
 
 
 export const genHeaders = () => {
@@ -118,6 +119,18 @@ export const fetchSlave = () => {
 
 export const fetchSession = () => {
 	return fetch(FetchSession, {
+		method: "GET",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+export const fetchInfor = (workerID) => {
+	return fetch(FetchInfor+"?WorkerID="+workerID, {
 		method: "GET",
 		headers: genHeaders()
 	}, function (error) {
