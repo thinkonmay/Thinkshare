@@ -49,12 +49,13 @@ namespace Authenticator.Controllers
             if (ModelState.IsValid)
             {
                 var account = await _tokenGenerator.ValidateUserToken(request.token);
+                var roles = await _userManager.GetRolesAsync(account);
                 var resp = new AuthenticationResponse
                 { 
-                    UserID = await _userManager.GetUserIdAsync(account),
-                    IsAdmin = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.ADMIN),
-                    IsManager = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.MOD),
-                    IsUser = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.USER),
+                    UserID = account.Id.ToString(),
+                    IsAdmin = (roles).Contains(RoleSeeding.ADMIN),
+                    IsManager = (roles).Contains(RoleSeeding.MOD),
+                    IsUser = (roles).Contains(RoleSeeding.USER),
                     ValidatedBy = _config.Authenticator
                 };
 

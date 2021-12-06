@@ -19,7 +19,7 @@ namespace Signalling.Services
     {
         private ConcurrentDictionary<SessionAccession, WebSocket> onlineList;
         
-        public SessionQueue(SystemConfig config)
+        public SessionQueue()
         {
             onlineList = new ConcurrentDictionary<SessionAccession, WebSocket>();
 

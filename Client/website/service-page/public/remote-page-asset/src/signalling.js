@@ -136,7 +136,7 @@ SignallingConnect()
     app.signalling_state = 'connecting';
     app.setStatus("Connecting to server.");
 
-    app.Websocket = new WebSocket(app.SignallingUrl);
+    app.Websocket = new WebSocket(app.SignallingUrl+"?token="+app.remoteToken);
 
     // Bind event handlers.
     app.Websocket.addEventListener('open', onServerOpen);

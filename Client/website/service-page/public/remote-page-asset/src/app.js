@@ -12,6 +12,7 @@ var app = new Vue({
     {
         return {
             loadingText: '',
+            remoteToken: '',
 
             connectionVideoDecoder: "unknown",
             connectionStatType: "unknown",
