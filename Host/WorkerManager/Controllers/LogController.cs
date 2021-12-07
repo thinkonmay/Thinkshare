@@ -41,7 +41,7 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> Log([FromBody] string log)
         {
             var PrivateID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
-            var worker = _db.Devices.Find(PrivateID);
+            var worker = await _db.Devices.FindAsync(PrivateID);
 
             var logRecord = new Log
             {
