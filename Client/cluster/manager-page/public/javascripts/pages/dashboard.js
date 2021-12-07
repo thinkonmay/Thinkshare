@@ -21,6 +21,13 @@ API.getInfor().then(async data => {
 $(document).ready(async () => {
 	let nameOfCluster;
 	let isPrivate;
+
+	API.isRegistered().then(async data =>{
+		if(data.status == 200){
+			$('#RegisterButton').hide()
+		}
+	})
+
 	$("#nameCluster").on("change", function () {
 		nameOfCluster = this.value;
 	})
@@ -38,7 +45,7 @@ $(document).ready(async () => {
 			text: "Wait a min",
 			didOpen: () => {
 				Swal.showLoading()
-				API.RegisterCluster(isPrivate, nameOfCluster)
+				API.registerCluster(isPrivate, nameOfCluster)
 					.then(async data => {
 						console.log(data)
 						if (data.status == 200) {
@@ -337,7 +344,6 @@ async function tutorial() {
 		e.preventDefault();
 	});
 }
-
 
 function setDataForChart(color) {
 	let isSetElement = false;
