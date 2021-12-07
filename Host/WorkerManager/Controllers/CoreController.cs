@@ -36,67 +36,13 @@ namespace WorkerManager.Controllers
         }
 
         [Worker]
-        [HttpPost("token")]
+        [HttpGet("token")]
         public async Task<IActionResult> Session()
         {
             var PrivateID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
             var Node = _db.Devices.Find(PrivateID);
-            var State = await _cache.GetWorkerState(PrivateID);
 
-            if (State == WorkerState.OnSession ||
-                State == WorkerState.OffRemote)
-            {
-                return Ok(Node.RemoteToken);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        [Worker]
-        [HttpPost("infor")]
-        public async Task<IActionResult> QoE()
-        {
-            var PrivateID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
-            var Node = _db.Devices.Find(PrivateID);
-            var State = await _cache.GetWorkerState(PrivateID);
-
-            if (State == WorkerState.OnSession ||
-                State == WorkerState.OffRemote)
-            {
-                var request = new RestRequest("Setting")
-                    .AddQueryParameter("token", Node.RemoteToken);
-                request.Method = Method.GET;
-
-                var result = await _sessionClient.ExecuteAsync(request);
-                if (result.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    var sessionWorker = JsonConvert.DeserializeObject<SessionWorker>(result.Content);
-                    return Ok(sessionWorker);
-                }
-                {
-                    return BadRequest("Broken session token");
-                }
-            }
-            else
-            {
-                return BadRequest("receive request when device is not on session");
-            }
+            return Ok(Node.RemoteToken);
         }
     }
 }
