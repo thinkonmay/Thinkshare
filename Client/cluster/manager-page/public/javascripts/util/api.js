@@ -28,6 +28,7 @@ const GetClusterTokenRoute = `${host}/Owner/Cluster/Token`
 const SetTurnRoute = `${host}/Owner/Cluster/TURN`
 const StartRoute = `${host}/Owner/Start`
 const StopRoute = `${host}/Owner/Stop`
+const IsRegisteredRoute = `${host}/Owner/Cluster/isRegistered`
 //////////////////////////////////////////////// 
 
 
@@ -91,7 +92,7 @@ export const genHeadersUser = () => {
 
 /////////////////////////////////////////
 // user api 
-export const Login = body => {
+export const login = body => {
 	return fetch(LoginRoute, {
 		method: "POST",
 		headers: genHeaders(),
@@ -102,7 +103,7 @@ export const Login = body => {
 	})
 }
 
-export const RegisterCluster = (isPrivate, Name) => {
+export const registerCluster = (isPrivate, Name) => {
     RegisterClusterRoute = `${host}/Owner/Register`
 	if (isPrivate) {
 		RegisterClusterRoute += `?isPrivate=true&ClusterName=${Name}`
@@ -115,15 +116,15 @@ export const RegisterCluster = (isPrivate, Name) => {
 	})
 }
 
-
-export const GetClusterToken = () => {
+// save token for database to access 
+export const getClusterToken = () => {
 	return fetch(GetClusterTokenRoute, {
 		method: "GET",
 		headers: genHeaders(),
 	})
 }
 
-export const SetTurn = (ip, username, password) => {
+export const setTurn = (ip, username, password) => {
 	return fetch(SetTurnRoute + `?IP=${ip}&user=${username}&password${password}`, {
 		method: 'POST',
 		headers: genHeaders(),
@@ -134,7 +135,7 @@ export const SetTurn = (ip, username, password) => {
 	})
 }
 
-export const Start = () => {
+export const start = () => {
 	return fetch(StartRoute, {
 		method: "POST",
 		headers: genHeaders(),
@@ -142,13 +143,20 @@ export const Start = () => {
 }
 
 
-export const Stop = () => {
+export const stop = () => {
 	return fetch(StopRoute, {
 		method: "POST",
 		headers: genHeaders(),
 	})
 }
 
+
+export const isRegistered = () => {
+	return fetch(IsRegisteredRoute, {
+		method: "POST",
+		headers: genHeaders()
+	})
+}
 
 
 

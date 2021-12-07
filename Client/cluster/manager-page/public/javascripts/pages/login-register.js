@@ -18,7 +18,7 @@ function login(body) {
 		text: "Vui lòng chờ . . .",
 		didOpen: () => {
 			Swal.showLoading()
-			API.Login(body)
+			API.login(body)
 				.then(async data => {
 					const response = await data.json()
 					if (data.status == 200) {
