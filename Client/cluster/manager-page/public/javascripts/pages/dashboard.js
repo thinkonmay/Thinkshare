@@ -1,6 +1,6 @@
 import * as API from "../util/api.js"
 import * as RemotePage from "../util/remote-page-cookies.js"
-import { getCookie, setCookie, deleteCookie } from "../util/cookie.js"
+import {getCookie, setCookie, deleteCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
 
@@ -22,8 +22,8 @@ $(document).ready(async () => {
 	let nameOfCluster;
 	let isPrivate;
 
-	API.isRegistered().then(async data =>{
-		if(data.status == 200){
+	API.isRegistered().then(async data => {
+		if (data.status == 200) {
 			$('#RegisterButton').hide()
 		}
 	})
@@ -49,16 +49,21 @@ $(document).ready(async () => {
 					.then(async data => {
 						console.log(data)
 						if (data.status == 200) {
-							Utils.newSwal.fire({
-								title: "Thành công!",
-								text: "Chuyển hướng tới bảng điều khiển sau 2s",
-								icon: "success",
-								didOpen: () => {
-									setTimeout(() => {
-										window.location.href = "/dashboard"
-									}, 2000)
-								}
-							})
+							var status = await (await API.getClusterToken()).status
+							if (status == 200)
+								Utils.newSwal.fire({
+									title: "Thành công!",
+									text: "Chuyển hướng tới bảng điều khiển sau 2s",
+									icon: "success",
+									didOpen: () => {
+										setTimeout(() => {
+											window.location.href = "/dashboard"
+										}, 2000)
+									}
+								})
+							else {
+								Utils.responseError("ERROR", "Save your token to database fail! \n Please reload and try again!", "error")
+							}
 						} else Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
 					})
 					.catch(Utils.fetchErrorHandler)
@@ -200,6 +205,7 @@ function onClientHubEvent(event) {
 function onWebsocketOpen() {
 	console.log("connected to client hub");
 }
+
 function onWebsocketClose(event) {
 	// location.reload();
 };
@@ -299,8 +305,8 @@ function serialize(obj, prefix) {
 				v = obj[p]
 			str.push(
 				v !== null && typeof v === "object" ?
-					serialize(v, k) :
-					encodeURIComponent(k) + "=" + encodeURIComponent(v)
+				serialize(v, k) :
+				encodeURIComponent(k) + "=" + encodeURIComponent(v)
 			)
 		}
 	}
@@ -369,66 +375,66 @@ function setDataForChart(color) {
 		var salesTopData = {
 			labels: _lables,
 			datasets: [{
-				label: 'CPU',
-				// data: datasets,
-				//data: [21, 20, 1, 51, 22, 40, 95, 43, 2, 30, 5, 16, 14, 49, 21, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 30, 15, 40, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 95, 12],
-				backgroundColor: saleGradientBg,
-				borderColor: [
-					color,
-				],
-				borderWidth: 1.5,
-				fill: true, // 3: no fill
-				pointBorderWidth: 1,
-				pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-				pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-				pointBackgroundColor: ['#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3'],
-				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-			}, {
-				label: 'GPU',
-				//data: [21, 20, 30, 15, 40, 95, 16, 14, 49, 21, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 29, 45, 61, 25, 34, 61, 5, 3, 51, 4, 51, 24, 23, 6, 1, 16, 14, 49, 21, 29, 45, 61, 25, 34, 61, 5, 3],
-				backgroundColor: saleGradientBg2,
-				borderColor: [
-					color,
-				],
-				borderWidth: 1.5,
-				fill: true, // 3: no fill
-				pointBorderWidth: 1,
-				pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-				pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-				pointBackgroundColor: ['#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF'],
-				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-			},
-			{
-				label: 'RAM',
-				//data: [43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 45, 61, 25, 3, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 6],
-				backgroundColor: saleGradientBg2,
-				borderColor: [
-					color,
-				],
-				borderWidth: 1.5,
-				fill: true, // 3: no fill
-				pointBorderWidth: 1,
-				pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-				pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-				pointBackgroundColor: ['#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68'],
-				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-			},
-			{
-				label: 'Network',
-				data: datasetNetwork,
-				backgroundColor: saleGradientBg2,
-				borderColor: [
-					color,
-				],
-				borderWidth: 1.5,
-				fill: true, // 3: no fill
-				pointBorderWidth: 1,
-				tension: 0.1
-				//pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-				//pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-				//pointBackgroundColor: ['#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555'],
-				//pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-			}
+					label: 'CPU',
+					// data: datasets,
+					//data: [21, 20, 1, 51, 22, 40, 95, 43, 2, 30, 5, 16, 14, 49, 21, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 30, 15, 40, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 95, 12],
+					backgroundColor: saleGradientBg,
+					borderColor: [
+						color,
+					],
+					borderWidth: 1.5,
+					fill: true, // 3: no fill
+					pointBorderWidth: 1,
+					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+					pointBackgroundColor: ['#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3'],
+					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', ],
+				}, {
+					label: 'GPU',
+					//data: [21, 20, 30, 15, 40, 95, 16, 14, 49, 21, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 29, 45, 61, 25, 34, 61, 5, 3, 51, 4, 51, 24, 23, 6, 1, 16, 14, 49, 21, 29, 45, 61, 25, 34, 61, 5, 3],
+					backgroundColor: saleGradientBg2,
+					borderColor: [
+						color,
+					],
+					borderWidth: 1.5,
+					fill: true, // 3: no fill
+					pointBorderWidth: 1,
+					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+					pointBackgroundColor: ['#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF'],
+					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', ],
+				},
+				{
+					label: 'RAM',
+					//data: [43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 45, 61, 25, 3, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 6],
+					backgroundColor: saleGradientBg2,
+					borderColor: [
+						color,
+					],
+					borderWidth: 1.5,
+					fill: true, // 3: no fill
+					pointBorderWidth: 1,
+					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+					pointBackgroundColor: ['#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68'],
+					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', ],
+				},
+				{
+					label: 'Network',
+					data: datasetNetwork,
+					backgroundColor: saleGradientBg2,
+					borderColor: [
+						color,
+					],
+					borderWidth: 1.5,
+					fill: true, // 3: no fill
+					pointBorderWidth: 1,
+					tension: 0.1
+					//pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+					//pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+					//pointBackgroundColor: ['#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555'],
+					//pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
+				}
 			]
 		};
 		var salesTopOptions = {
@@ -482,10 +488,10 @@ function setDataForChart(color) {
 			}
 		}
 		var salesTop = isSetElement ? Chart(graphGradient, {
-			type: 'line',
-			data: salesTopData,
-			options: salesTopOptions
-		}) :
+				type: 'line',
+				data: salesTopData,
+				options: salesTopOptions
+			}) :
 			new Chart(graphGradient, {
 				type: 'line',
 				data: salesTopData,

@@ -116,7 +116,7 @@ export const registerCluster = (isPrivate, Name) => {
 	})
 }
 
-
+// save token for database to access 
 export const getClusterToken = () => {
 	return fetch(GetClusterTokenRoute, {
 		method: "GET",
