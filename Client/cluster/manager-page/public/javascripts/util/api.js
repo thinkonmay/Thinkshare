@@ -28,7 +28,7 @@ const GetClusterTokenRoute = `${host}/Owner/Cluster/Token`
 const SetTurnRoute = `${host}/Owner/Cluster/TURN`
 const StartRoute = `${host}/Owner/Start`
 const StopRoute = `${host}/Owner/Stop`
-const IsRegistered = `${host}/Owner/Cluster/isRegistered`
+const IsRegisteredRoute = `${host}/Owner/Cluster/isRegistered`
 //////////////////////////////////////////////// 
 
 
@@ -152,7 +152,7 @@ export const stop = () => {
 
 
 export const isRegistered = () => {
-	return fetch(IsRegistered, {
+	return fetch(IsRegisteredRoute, {
 		method: "POST",
 		headers: genHeaders()
 	})
