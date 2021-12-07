@@ -12,6 +12,6 @@ namespace DbSchema.LocalDb.Models
 
         public DateTime LogTime {get;set;}
         
-        public virtual ClusterWorkerNode worker {get;set;}       
+        public virtual ClusterWorkerNode? worker {get;set;}       
     }
 }

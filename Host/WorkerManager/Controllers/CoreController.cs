@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SharedHost.Auth;
 using Microsoft.Extensions.Options;
 using WorkerManager.Interfaces;
 using System.Threading.Tasks;
@@ -28,12 +29,16 @@ namespace WorkerManager.Controllers
 
         private readonly RestClient _sessionClient;
 
+        private readonly ClusterConfig _config;
+
         public CoreController(IOptions<ClusterConfig> config,
                               ClusterDbContext db,
                               ILocalStateStore cache)
         {
             _db = db;
+            _config = config.Value;
         }
+
 
         [Worker]
         [HttpGet("token")]
@@ -42,7 +47,10 @@ namespace WorkerManager.Controllers
             var PrivateID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
             var Node = _db.Devices.Find(PrivateID);
 
-            return Ok(Node.RemoteToken);
+            return Ok(new AuthenticationRequest{
+                token = Node.RemoteToken,
+                Validator = "WorkerManager",
+            });
         }
     }
 }

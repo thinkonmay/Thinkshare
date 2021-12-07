@@ -55,11 +55,11 @@ namespace WorkerManager.Middleware
                 if (node != null)
                 {
                     context.Items.Add("PrivateID", node.ID.ToString());
-                    context.Items.Add("isWorker", "true");
+                    context.Items.Add("IsWorker", "true");
                 }
                 else
                 {
-                    context.Items.Add("isWorker", "false");
+                    context.Items.Add("IsWorker", "false");
                     var request = new RestRequest(_config.OwnerAuthorizeUrl)
                         .AddHeader("Authorization","Bearer "+ token);
                     request.Method = Method.GET;
