@@ -127,7 +127,7 @@ namespace Signalling.Services
         }
 
 
-        void _handleSdpIceOffer(SessionAccession accession, WebSocketMessage msg, WebSocket ws)
+        async Task _handleSdpIceOffer(SessionAccession accession, WebSocketMessage msg, WebSocket ws)
         {
             try
             {
@@ -135,21 +135,17 @@ namespace Signalling.Services
                 {
                     if(item.Key.ID == accession.ID)
                     {
-                        if(accession.Module == Module.CLIENT_MODULE)
+                        if(accession.Module == Module.CLIENT_MODULE &&
+                           item.Key.Module == Module.CORE_MODULE)
                         {
-                            if(item.Key.WorkerID == accession.WorkerID)
-                            {
-                                SendMessage(item.Value, JsonConvert.SerializeObject(msg));
-                                return;
-                            }
+                            await SendMessage(item.Value, JsonConvert.SerializeObject(msg));
+                            return;
                         }
-                        else if (accession.Module == Module.CORE_MODULE)
+                        if(accession.Module == Module.CORE_MODULE &&
+                           item.Key.Module == Module.CLIENT_MODULE)
                         {
-                            if (item.Key.ClientID == accession.ClientID)
-                            {
-                                SendMessage(item.Value, JsonConvert.SerializeObject(msg));
-                                return;
-                            }
+                            await SendMessage(item.Value, JsonConvert.SerializeObject(msg));
+                            return;
                         }
                     }
                 }

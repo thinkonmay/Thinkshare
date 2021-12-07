@@ -9,4 +9,5 @@ const res = await sessionSetting(token);
 const sessionInfor = await (res).json();
 app.remoteToken = token;
 app.SetupSession(sessionInfor);
+WebrtcConnect();
 app.connectServer();
