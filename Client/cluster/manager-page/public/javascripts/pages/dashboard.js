@@ -1,8 +1,15 @@
 import * as API from "../util/api.js"
 import * as RemotePage from "../util/remote-page-cookies.js"
-import {getCookie, setCookie, deleteCookie } from "../util/cookie.js"
+import {
+	getCookie,
+	setCookie,
+	deleteCookie
+} from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
+import {
+	appendWorkerNode
+} from "../util/user-row-component.js"
 
 let datasetCPU = [];
 let datasetGPU = [];
@@ -21,12 +28,96 @@ API.getInfor().then(async data => {
 $(document).ready(async () => {
 	let nameOfCluster;
 	let isPrivate;
+	let isConfigPrivate;
+	let turnIP
+	let turnUSER
+	let turnPASSWORD
 
 	API.isRegistered().then(async data => {
 		if (data.status == 200) {
 			$('#RegisterButton').hide()
 		}
 	})
+
+	$("#isConfigPrivate").on("change", function () {
+		if (this.value == "private")
+			isConfigPrivate = true;
+		else isConfigPrivate = false;
+	})
+
+
+	$("#changePrivate").click(() => {
+		// if (isConfigPrivate == undefined)
+		// 	isConfigPrivate = true;
+		// Utils.newSwal.fire({
+		// 	title: "Config...",
+		// 	text: "Wait a min",
+		// 	didOpen: () => {
+		// 		Swal.showLoading()
+		// 		API.changePrivate(isConfigPrivate)
+		// 			.then(async data => {
+		// 				console.log(data)
+		// 				if (data.status == 200) {
+		// 					var status = await (await API.getClusterToken()).status
+		// 					if (status == 200)
+		// 						Utils.newSwal.fire({
+		// 							title: "Completed!",
+		// 							text: "Redirect to dashboard after 2s",
+		// 							icon: "success",
+		// 							didOpen: () => {
+		// 								setTimeout(() => {
+		// 									window.location.href = "/dashboard"
+		// 								}, 2000)
+		// 							}
+		// 						})
+		// 					else {
+		// 						Utils.responseError("ERROR", "Save your token to database fail! \n Please reload and try again!", "error")
+		// 					}
+		// 				} else Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
+		// 			})
+		// 			.catch(Utils.fetchErrorHandler)
+		// 	}
+		// })
+	})
+
+	$("#turnIP").on("change", function () {
+		turnIP = $("#turnIP").val();
+	})
+	$("#turnUSER").on("change", function () {
+		turnUSER = $("#turnUSER").val();
+	})
+	$("#turnPASSWORD").on("change", function () {
+		turnPASSWORD = $("#turnPASSWORD").val();
+	})
+
+
+	$("#changeTURN").click(() => {
+		if (turnIP.length >= 1 && turnPASSWORD.length >= 1 && turnUSER.length >= 1) {
+			Utils.newSwal.fire({
+				title: "Config...",
+				text: "Wait a min",
+				didOpen: () => {
+					Swal.showLoading()
+					API.setTurn(turnIP, turnUSER.turnPASSWORD).then(async data => {
+						if (data.status) {
+							Utils.newSwal.fire({
+								title: "Completed!",
+								text: "Redirect to dashboard after 2s",
+								icon: "success",
+								didOpen: () => {
+									setTimeout(() => {
+										window.location.href = "/dashboard"
+									}, 2000)
+								}
+							})
+						}
+					}).catch(Utils.fetchErrorHandler)
+				}
+			})
+		}
+	})
+
+
 
 	$("#nameCluster").on("change", function () {
 		nameOfCluster = this.value;
@@ -52,8 +143,8 @@ $(document).ready(async () => {
 							var status = await (await API.getClusterToken()).status
 							if (status == 200)
 								Utils.newSwal.fire({
-									title: "Thành công!",
-									text: "Chuyển hướng tới bảng điều khiển sau 2s",
+									title: "Completed!",
+									text: "Redirect to dashboard after 2s",
 									icon: "success",
 									didOpen: () => {
 										setTimeout(() => {
@@ -147,9 +238,36 @@ $(document).ready(async () => {
 	// Websocket.addEventListener('message', onClientHubEvent);
 	// Websocket.addEventListener('error', onWebsocketClose);
 	// Websocket.addEventListener('close', onWebsocketClose);
+
+	let ClusterInfor = await (await API.getInforClusterRoute()).json()
+	// for (let i = 0; i < ClusterInfor["workerNode"].length; i++)
+	if (ClusterInfor != undefined) {
+		let _ClusterInfor = JSON.parse(String(ClusterInfor))
+		let data = _ClusterInfor["workerNode"];
+		var date = new Date(_ClusterInfor["register"])
+		append('Cluster-Infor', `
+		<div>
+			<h4 class="card-title card-title-dash">Name: ${_ClusterInfor["name"]}</h4> 
+			<h6 class="card-subtitle card-subtitle-dash">Private: ${_ClusterInfor["private"]}</h6> 
+		</div>
+		<div>
+			<h4 class="card-title card-title-dash">Turn IP: ${_ClusterInfor["turnIP"]}</h4> 
+			<h6 class="card-subtitle card-subtitle-dash">Register: ${String(date).slice(0, 24)}</h6>
+		</div>
+		<div>
+       		<a href="#popup3" id="turnServerConfig" class="bn11">Change TURN Server</a>
+       		<a href="#popup4" id="privateConfig" class="bn11">Change Private</a>
+		</div>
+		`)
+		for (let i = 0; i < data.length; i++) {
+			let workerNodeId = data.at(i).id
+			let workerState = await (await API.getWorkerStateRoute()).json();
+			let state = workerState[workerNodeId]
+			appendWorkerNode(data.at(i).os, data.at(i).cpu, data.at(i).gpu, data.at(i).id, data.at(i).raMcapacity, data.at(i).register, state)
+		}
+	}
+
 })
-
-
 
 function onClientHubEvent(event) {
 	try {

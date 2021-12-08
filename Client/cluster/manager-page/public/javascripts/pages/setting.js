@@ -71,20 +71,25 @@ $(document).ready(() => {
 
     $('#submitChangeInfoCtrler').click(() => {
         Utils.newSwal.fire({
-            title: "Đang đăng kí",
-            text: "Vui lòng chờ . . .",
+            title: "Setting",
+            text: "Wait a min . . .",
             didOpen: () => {
                 console.log(body)
                 API.setInfor(body)
                     .then(async data => {
                         if (data.status == 200) {
                             Utils.newSwal.fire({
-                                title: "Thành công!",
-                                text: "Thông tin của bạn đã được cập nhật",
+                                title: "Completed!",
+                                text: "Redirect to dashboard after 2s",
                                 icon: "success",
+                                didOpen: () => {
+                                    setTimeout(() => {
+                                        window.location.href = "/dashboard"
+                                    }, 2000)
+                                }
                             })
                         } else {
-                            Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
+                            Utils.responseError("Errpr!", "Change infor not sucessfully, please check your information and try again", "error")
                         }
                     })
                     .catch(status ? Utils.fetchErrorHandler : "")
@@ -120,12 +125,17 @@ $(document).ready(() => {
                     .then(async data => {
                         if (data.status == 200) {
                             Utils.newSwal.fire({
-                                title: "Thành công!",
-                                text: "Thông tin của bạn đã được cập nhật",
+                                title: "Completed!",
+                                text: "Redirect to dashboard after 2s",
                                 icon: "success",
+                                didOpen: () => {
+                                    setTimeout(() => {
+                                        window.location.href = "/dashboard"
+                                    }, 2000)
+                                }
                             })
                         } else {
-                            Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
+                            Utils.responseError("Error!", "Change infor not sucessfully, please check your information and try again", "error")
                         }
                     })
                     .catch(status ? Utils.fetchErrorHandler : "")
@@ -146,12 +156,17 @@ $(document).ready(() => {
                     .then(async data => {
                         if (data.status == 200) {
                             Utils.newSwal.fire({
-                                title: "Thành công!",
-                                text: "Thông tin của bạn đã được cập nhật",
+                                title: "Completed!",
+                                text: "Redirect to dashboard after 2s",
                                 icon: "success",
+                                didOpen: () => {
+                                    setTimeout(() => {
+                                        window.location.href = "/dashboard"
+                                    }, 2000)
+                                }
                             })
                         } else {
-                            Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
+                            Utils.responseError("Error!", "Change infor not sucessfully, please check your information and try again", "error")
                         }
                     })
                     .catch(status ? Utils.fetchErrorHandler : "")

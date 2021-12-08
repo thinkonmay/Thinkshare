@@ -14,8 +14,8 @@ function serializeArrToObject(serializeArr) {
 function login(body) {
 	console.log(body);
 	Utils.newSwal.fire({
-		title: "Đang đăng nhập",
-		text: "Vui lòng chờ . . .",
+		title: "Logging",
+		text: "Wait a min. . .",
 		didOpen: () => {
 			Swal.showLoading()
 			API.login(body)

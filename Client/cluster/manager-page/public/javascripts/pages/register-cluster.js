@@ -25,8 +25,8 @@ function register(body, status) {
 						if (response.errors == null) {
 							setCookie("token-cluster", response.token, MINUTES59)
 							Utils.newSwal.fire({
-								title: "Thành công!",
-								text: "Chuyển hướng tới bảng điều khiển sau 2s",
+								title: "Completed!",
+								text: "Redirect to dashboard after 2s",
 								icon: "success",
 								didOpen: () => {
 									setTimeout(() => {

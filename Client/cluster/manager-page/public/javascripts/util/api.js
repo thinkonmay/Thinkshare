@@ -24,7 +24,9 @@ export const Reconnect = "/reconnect"
 // owner api
 const LoginRoute = `${host}/Owner/Login`
 let RegisterClusterRoute = `${host}/Owner/Register`
+const GetInforClusterRoute = `${host}/Owner/Cluster/Infor`
 const GetClusterTokenRoute = `${host}/Owner/Cluster/Token`
+const GetWorkerStateRoute = `${host}/Owner/Worker/State`
 const SetTurnRoute = `${host}/Owner/Cluster/TURN`
 const StartRoute = `${host}/Owner/Start`
 const StopRoute = `${host}/Owner/Stop`
@@ -116,6 +118,13 @@ export const registerCluster = (isPrivate, Name) => {
 	})
 }
 
+export const getInforClusterRoute = () => {
+	return fetch(GetInforClusterRoute, {
+		method: "GET",
+		headers: genHeaders()
+	})
+}
+
 // save token for database to access 
 export const getClusterToken = () => {
 	return fetch(GetClusterTokenRoute, {
@@ -124,14 +133,17 @@ export const getClusterToken = () => {
 	})
 }
 
+export const getWorkerStateRoute = () => {
+	return fetch(GetWorkerStateRoute, {
+		method: "GET",
+		headers: genHeaders(),
+	})
+}
+
 export const setTurn = (ip, username, password) => {
-	return fetch(SetTurnRoute + `?IP=${ip}&user=${username}&password${password}`, {
+	return fetch(SetTurnRoute + `?turnIP=${ip}&turnUSER=${username}&turnPASSWORD${password}`, {
 		method: 'POST',
 		headers: genHeaders(),
-		body: JSON.stringify({
-			username: username,
-			password: password
-		})
 	})
 }
 
