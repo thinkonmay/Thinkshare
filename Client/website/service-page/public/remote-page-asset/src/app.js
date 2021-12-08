@@ -143,20 +143,20 @@ var app = new Vue({
     methods: 
     {
         SetupSession(sessionClient){
-            sessionClient.stuns.forEach(element => {
-                // this.RTPconfig.iceServers[1].urls.push("stun:"+element);
-            });
+            // sessionClient.stuns.forEach(element => {
+            //     this.RTPconfig.iceServers[1].urls.push("stun:"+element);
+            // });
 
-            if(sessionClient.turnip != null || 
-                sessionClient.turnuser != null || 
-                sessionClient.turnpassword != null)
-            {
-                this.RTPconfig.iceServers.push({
-                    "urls": sessionClient.turnip,
-                    "username":sessionClient.turnuser,
-                    "credentials":sessionClient.turnpassword,
-                });
-            }
+            // if(sessionClient.turnip != null || 
+            //     sessionClient.turnuser != null || 
+            //     sessionClient.turnpassword != null)
+            // {
+            //     this.RTPconfig.iceServers.push({
+            //         "urls": sessionClient.turnip,
+            //         "username":sessionClient.turnuser,
+            //         "credentials":sessionClient.turnpassword,
+            //     });
+            // }
 
             this.SignallingUrl = sessionClient.signallingurl;
             this.AudioCodec = sessionClient.audiocodec;
