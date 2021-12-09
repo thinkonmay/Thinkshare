@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: signalling
-        image: pigeatgarlic/signalling:2021-12-07
+        image: pigeatgarlic/signalling:2021-12-08
         imagePullPolicy: Always
         resources:
           requests:

@@ -111,6 +111,14 @@ var app = new Vue({
                 "iceServers":    
                 [
                     {
+                        urls:       "turn:18.138.254.172:3478",
+                        username:   "coturnuser",
+                        credential: "coturnpassword",
+                    },
+                    {
+                        urls: ["stun:stun.thinkmay.net:3478"]
+                    },
+                    {
                         urls: ["stun:stun.l.google.com:19302"] 
                     }
                 ],
@@ -143,20 +151,20 @@ var app = new Vue({
     methods: 
     {
         SetupSession(sessionClient){
-            // sessionClient.stuns.forEach(element => {
-            //     this.RTPconfig.iceServers[1].urls.push("stun:"+element);
-            // });
+            sessionClient.stuns.forEach(element => {
+                this.RTPconfig.iceServers.push({
+                    urls: ["stun:"+element]
+                });
+            });
 
-            // if(sessionClient.turnip != null || 
-            //     sessionClient.turnuser != null || 
-            //     sessionClient.turnpassword != null)
-            // {
-            //     this.RTPconfig.iceServers.push({
-            //         "urls": sessionClient.turnip,
-            //         "username":sessionClient.turnuser,
-            //         "credentials":sessionClient.turnpassword,
-            //     });
-            // }
+            if(sessionClient.turnuser != null && sessionClient.turnpassword != null)
+            {
+                this.RTPconfig.iceServers[0]  = {
+                    urls:       sessionClient.turnip,
+                    username:   sessionClient.turnuser,
+                    credential: sessionClient.turnpassword,
+                };
+            }
 
             this.SignallingUrl = sessionClient.signallingurl;
             this.AudioCodec = sessionClient.audiocodec;
