@@ -1,0 +1,128 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:574816112352:certificate/c16e0153-b5b6-483f-a841-0f69a63787eb
+    
+spec:
+  rules:
+  - host: server.earthview.co
+    http:
+      paths:
+      - path: /*
+        pathType: Prefix
+        backend:
+          service:
+            name: earthview-backend
+            port:
+              number: 5000
+              
+  - host: www.earthview.co
+    http:
+      paths:
+      - path: /*
+        pathType: Prefix
+        backend:
+          service:
+            name: earthview-frontend
+            port:
+              number: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: earthview-frontend
+  namespace: default
+  labels:
+    app: earthview-frontend
+spec:
+  type: NodePort
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP  
+  selector:
+   app: earthview-frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: earthview-frontend
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: earthview-frontend
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: earthview-frontend
+    spec:
+      containers:
+      - name: earthview-frontend
+        image: earthview/earthview-client:2021-12-06
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "500m"
+          limits:
+            memory: "900Mi"
+            cpu: "900m"
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: earthview-backend
+  namespace: default
+  labels:
+    app: earthview-backend
+spec:
+  type: NodePort 
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP  
+  selector:
+   app: earthview-backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: earthview-backend
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: earthview-backend
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: earthview-backend
+    spec:
+      containers:
+      - name: earthview-backend
+        image: earthview/earthview-server:2021-12-06
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "200m"
+          limits:
+            memory: "300Mi"
+            cpu: "300m"
+        ports:
+        - containerPort: 5000
