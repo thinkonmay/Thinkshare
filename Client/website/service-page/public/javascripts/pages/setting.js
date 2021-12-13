@@ -177,6 +177,12 @@ $(document).ready(async () => {
         display.engine = CoreEngine(value);
         await updateSetting(display);
     })
+    $('#remoteCoreOption2').click(async function () {
+        var display = await (await API.getSetting()).json();
+        var value = $(this).find("input").val();
+        display.engine = CoreEngine(value);
+        await updateSetting(display);
+    })
 
 
     $('#submitChangeInfoCtrler').click(() => {
