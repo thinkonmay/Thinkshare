@@ -11,7 +11,7 @@ const coookies_expire = 100 * 1000
 ////////////// setting
 
 
-function setupDevice() {
+async function setupDevice() {
     let deviceCurrent;
     // 1: chrome, 2: gstreamer
     if (isElectron() == true) {
@@ -20,26 +20,24 @@ function setupDevice() {
         deviceCurrent = DeviceType("WEB_APP");
     }
 
-    getSetting().then(async data => {
-        let body = await data.json();
-        if(deviceCurrent != body.device)
+    var body = await(await  getSetting()).json();
+    if(deviceCurrent != body.device)
+    {
+        if(deviceCurrent == DeviceType("WEB_APP"))
         {
-            if(deviceCurrent == DeviceType("WEB_APP"))
+            if(body.engine == CoreEngine("GSTREAMER"))
             {
-                if(body.engine == CoreEngine("GSTREAMER"))
-                {
-                    body.engine = CoreEngine("WEB_APP");
-                }
+                body.engine = CoreEngine("WEB_APP");
             }
-            body.device = deviceCurrent;
-            setSetting(body);
         }
-    })
+        body.device = deviceCurrent;
+    }
+    await setSetting(body);
 }
 
 
 export const sessionInitialize = async (SlaveID) => {
-    setupDevice();
+    await setupDevice();
 
     initializeSession(parseInt(SlaveID)).then(async response => {
         if (response.status == 200) {
@@ -60,7 +58,7 @@ export const sessionInitialize = async (SlaveID) => {
 }
 
 export const sessionReconnect = async (SlaveID) => {
-    setupDevice();
+    await setupDevice();
 
     reconnectSession(parseInt(SlaveID)).then(async response => {
         if (response.status == 200) {
