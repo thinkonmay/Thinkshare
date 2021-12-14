@@ -242,7 +242,7 @@ namespace Conductor.Controllers
             _db.Update(ses.First());
             await _db.SaveChangesAsync();
 
-            var clientTokenRequest = new RestRequest("GrantSession")
+            var clientTokenRequest = new RestRequest(new Uri(_config.SessionTokenGrantor))
                 .AddJsonBody(new SessionAccession
                 {
                     ClientID = Int32.Parse((string)UserID),
