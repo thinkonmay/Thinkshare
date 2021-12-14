@@ -3,7 +3,7 @@ import { Initialize, setSetting, setInfor, getSetting } from "./api.js"
 import { reconnectSession } from "./api.js"
 import { initializeSession } from "./api.js"
 import { isElectron } from "./checkdevice.js"
-import { CoreEngine, DeviceType } from "../pages/setting.js"
+import { Codec, CoreEngine, DeviceType } from "../pages/setting.js"
 
 const coookies_expire = 100 * 1000
 
@@ -21,17 +21,27 @@ async function setupDevice() {
     }
 
     var body = await(await  getSetting()).json();
-    if(deviceCurrent != body.device)
+
+
+    // onlly 
+    body.device = deviceCurrent;
+
+    // only window app are capable of handling gstreamer
+    if(deviceCurrent == DeviceType("WEB_APP")&&
+        body.engine == CoreEngine("GSTREAMER"))
     {
-        if(deviceCurrent == DeviceType("WEB_APP"))
-        {
-            if(body.engine == CoreEngine("GSTREAMER"))
-            {
-                body.engine = CoreEngine("WEB_APP");
-            }
-        }
-        body.device = deviceCurrent;
+        body.engine = CoreEngine("CHROME");
     }
+    
+    // only gstreamer are capable of handling h265 video
+    if(body.engine == CoreEngine("CHROME") &&
+       body.videoCodec == Codec("H265"))
+    {
+        body.videoCodec = Codec("H264");
+
+    }
+
+
     await setSetting(body);
 }
 

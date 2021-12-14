@@ -145,6 +145,10 @@ namespace DbSchema.CachedState
             {
                 signallingurl = config.SignallingWs,
                 turn = "turn://" + cluster.turnUSER + ":" + cluster.turnPASSWORD + "@turn:" + cluster.turnIP + ":3478",
+
+                clientdevice = defaultSetting.device,
+                clientengine = defaultSetting.engine,
+
                 screenheight = defaultSetting.screenHeight,
                 screenwidth = defaultSetting.screenWidth,
                 audiocodec = defaultSetting.audioCodec,

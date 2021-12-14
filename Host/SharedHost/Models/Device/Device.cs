@@ -46,7 +46,7 @@ namespace SharedHost.Models.Device
     }
 
     public class UserSetting
-    {        
+    {
         public DeviceType device {get;set;}
 
         public CoreEngine engine {get;set;}
