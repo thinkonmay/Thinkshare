@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SharedHost.Auth;
+using SharedHost.Models.Cluster;
 using DbSchema.SystemDb.Data;
 using Conductor.Interfaces;
 using System.Linq;
@@ -63,9 +64,26 @@ namespace Conductor.Controllers
         [HttpPost("Initialize")]
         public async Task<IActionResult> Create(int SlaveID)
         {
+            GlobalCluster? globalCluster = null;
             var UserID = HttpContext.Items["UserID"];
             var worker = _db.Devices.Where(x => x.ID == SlaveID).FirstOrDefault();
-            var globalCluster = _db.Clusters.Where(x => x.WorkerNode == worker).First();
+
+            var globalClusters = _db.Clusters.ToList();
+            foreach (var item in globalClusters)
+            {
+                foreach (var node in item.WorkerNode)
+                {
+                    if(node.ID == worker.ID)
+                    {
+                        globalCluster = item;
+                    }
+                }
+            }
+
+            if(globalCluster == null)
+            {
+                return BadRequest("Cannot recognize worker");
+            }
 
             var workerState = await _Cluster.GetWorkerState(SlaveID);
             // search for availability of slave device
