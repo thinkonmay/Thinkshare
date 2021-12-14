@@ -33,23 +33,42 @@ resource "aws_efs_file_system" "efs" {
     Name = "eks-volume"
   }
 }
+output "efs-logging-id" {
+  description = "id of efs file system"
+  value = "${aws_efs_file_system.efs.id}"
+}
 
+// required for eks volume
 resource "aws_efs_mount_target" "volume" {
   file_system_id = "${aws_efs_file_system.efs.id}"
 
   security_groups = [
-    aws_security_group.all_worker_mgmt.id,
     aws_security_group.efs-security-group.id
   ]
   
   subnet_id = "${module.vpc.public_subnets[0]}"
 }
 
-output "efs-volume-id" {
-  description = "id of efs block"
-  value = "${aws_efs_mount_target.volume.id}"
+
+
+
+resource "aws_efs_file_system" "database" {
+  creation_token = "database-volume"
+  tags = {
+    Name = "eks-volume"
+  }
 }
-output "efs-file-system-id" {
+output "efs-database-id" {
   description = "id of efs file system"
-  value = "${aws_efs_file_system.efs.id}"
+  value = "${aws_efs_file_system.database.id}"
+}
+
+resource "aws_efs_mount_target" "database-eks" {
+  file_system_id = "${aws_efs_file_system.database.id}"
+
+  security_groups = [
+    aws_security_group.efs-security-group.id
+  ]
+  
+  subnet_id = "${module.vpc.public_subnets[0]}"
 }

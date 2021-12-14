@@ -31,7 +31,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: efs-pv2
+  name: efs-systemdb-volume
 spec:
   capacity:
     storage: 30Gi
@@ -42,7 +42,7 @@ spec:
   storageClassName: efs-sc
   csi:
     driver: efs.csi.aws.com
-    volumeHandle: fs-066168ed4b244dbb8
+    volumeHandle: fs-0ee8eddbc99927bd6
 
 
 
