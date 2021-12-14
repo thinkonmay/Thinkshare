@@ -65,6 +65,8 @@ namespace Conductor.Controllers
         {
             var UserID = HttpContext.Items["UserID"];
             var worker = _db.Devices.Where(x => x.ID == SlaveID).FirstOrDefault();
+            var globalCluster = _db.Clusters.Where(x => x.WorkerNode == worker).First();
+
             var workerState = await _Cluster.GetWorkerState(SlaveID);
             // search for availability of slave device
             if (workerState != WorkerState.Open) { return BadRequest("Device Not Available"); }
@@ -108,8 +110,8 @@ namespace Conductor.Controllers
 
             /*create session from client device capability*/
             var userSetting = await _cache.GetUserSetting(Int32.Parse((string)UserID));
-            var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(sess.Worker)).First();
             await _cache.SetSessionSetting(sess.ID,userSetting,_config, globalCluster);
+
             // invoke session initialization in slave pool
             await _Cluster.SessionInitialize(SlaveID, workerToken.token);
 
@@ -269,16 +271,16 @@ namespace Conductor.Controllers
                 var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
                 if(accession.Module == Module.CLIENT_MODULE)
                 {
-                    Serilog.Log.Information("Got Session setting request from client");
                     var clientSession = await _cache.GetClientSessionSetting(accession);
-                    Serilog.Log.Information(JsonConvert.SerializeObject(clientSession));
+                    Serilog.Log.Information("Got Session setting request from client");
+                    Serilog.Log.Information("Result "+JsonConvert.SerializeObject(clientSession));
                     return Ok(clientSession);
                 }
                 else
                 {
-                    Serilog.Log.Information("Got Session setting request from worker");
                     var workerSession = await _cache.GetWorkerSessionSetting(accession);
-                    Serilog.Log.Information(JsonConvert.SerializeObject(workerSession));
+                    Serilog.Log.Information("Got Session setting request from worker");
+                    Serilog.Log.Information("Result: "+JsonConvert.SerializeObject(workerSession));
                     return Ok(workerSession);
                 }
             }
@@ -301,16 +303,10 @@ namespace Conductor.Controllers
             if (result.StatusCode == HttpStatusCode.OK)
             {
                 var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
-
-                foreach (var item in _db.Clusters.ToList())
-                {
-                    if((await _cache.GetClusterSnapshot(item.ID)).ContainsKey(accession.WorkerID))
-                    {
-                        await _cache.SetSessionSetting(accession.ID,setting,_config, item);
-                        return Ok();
-                    }
-                }
-                return BadRequest();
+                var worker = _db.Devices.Find(accession.WorkerID);
+                var cluster = _db.Clusters.Where(o=>o.WorkerNode.Contains(worker)).First();
+                await _cache.SetSessionSetting(accession.ID,setting,_config, cluster);
+                return Ok();
             }
             else
             {
