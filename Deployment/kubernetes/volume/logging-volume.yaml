@@ -43,8 +43,22 @@ spec:
   csi:
     driver: efs.csi.aws.com
     volumeHandle: fs-0ee8eddbc99927bd6
-
-
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: efs-caching-volume
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: fs-0a305c87468b0dfd5
 
 
 
@@ -74,3 +88,16 @@ spec:
   resources:
     requests:
       storage: 30Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-caching
+  namespace: default
+spec:
+  storageClassName: efs-sc
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi

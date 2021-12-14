@@ -207,7 +207,10 @@ namespace WorkerManager.Services
         {
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
-            await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            try
+            {
+                await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            } catch { }
         }
 
 

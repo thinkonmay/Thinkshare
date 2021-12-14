@@ -2,6 +2,7 @@
 using System.Linq;
 using DbSchema.SystemDb.Data;
 using SharedHost;
+using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
@@ -168,18 +169,25 @@ namespace DbSchema.CachedState
             };
 
             Serilog.Log.Information("setting up session setting for session id "+ SessionID.ToString());
+            Serilog.Log.Information("Client session "+ JsonConvert.SerializeObject(sessionClient));
+            Serilog.Log.Information("Worker session "+ JsonConvert.SerializeObject(sessionWorker));
+
             await _cache.SetRecordAsync<SessionClient>(SessionID.ToString() + "_CLIENT_MODULE", sessionClient, null,null);
             await _cache.SetRecordAsync<SessionWorker>(SessionID.ToString() + "_CORE_MODULE", sessionWorker, null,null);
         }
 
         public async Task<SessionClient> GetClientSessionSetting(SessionAccession accession)
         {
-            return await _cache.GetRecordAsync<SessionClient>(accession.ID.ToString() + "_CLIENT_MODULE");
+            var result = await _cache.GetRecordAsync<SessionClient>(accession.ID.ToString() + "_CLIENT_MODULE");
+            Serilog.Log.Information("Got client session in cache :"+ JsonConvert.SerializeObject(result));
+            return result;
         }
 
         public async Task<SessionWorker> GetWorkerSessionSetting(SessionAccession accession)
         {
-            return await _cache.GetRecordAsync<SessionWorker>(accession.ID.ToString() + "_CORE_MODULE");
+            var result = await _cache.GetRecordAsync<SessionWorker>(accession.ID.ToString() + "_CORE_MODULE");
+            Serilog.Log.Information("Got worker session in cache :"+ JsonConvert.SerializeObject(result));
+            return result;
         }
     }
 }
