@@ -19,6 +19,7 @@ namespace remote.Controllers
         }
 
 
+        [Route("/Remote")]
         public IActionResult Remote(string token)
         {
             return View(new RemoteViewModel{ token = token });

@@ -1,11 +1,9 @@
-import * as Cookies from "./cookie.js"
-import { Initialize, setSetting, setInfor, getSetting } from "./api.js"
+import { setSetting, getSetting } from "./api.js"
 import { reconnectSession } from "./api.js"
 import { initializeSession } from "./api.js"
 import { isElectron } from "./checkdevice.js"
 import { Codec, CoreEngine, DeviceType } from "../pages/setting.js"
 
-const coookies_expire = 100 * 1000
 
 
 ////////////// setting
@@ -58,8 +56,7 @@ export const sessionInitialize = async (SlaveID) => {
                 if (_body.engine == CoreEngine('GSTREAMER')) {
                     window.location.assign(`thinkmay://token=${token.token}/`);
                 } else {
-                    Cookies.setCookie("remoteToken", token.token, coookies_expire)
-                    getRemotePage()
+                    getRemotePage(token.token);
                 }
             })
         } else {
@@ -79,8 +76,7 @@ export const sessionReconnect = async (SlaveID) => {
                 if (_body.engine == CoreEngine('GSTREAMER')) {
                     window.location.assign(`thinkmay://token=${token.token}/`);
                 } else {
-                    Cookies.setCookie("remoteToken", token.token, coookies_expire)
-                    getRemotePage()
+                    getRemotePage(token.token);
                 }
             })
         } else {
@@ -88,6 +84,8 @@ export const sessionReconnect = async (SlaveID) => {
     })
 }
 
-const getRemotePage = () => {
-    window.open(Initialize, "__blank")
+const RemotePageUrl = "https://remote.thinkmay.net/Remote"
+
+const getRemotePage = (token) => {
+    window.open(RemotePageUrl+"?token="+token, "__blank");
 }

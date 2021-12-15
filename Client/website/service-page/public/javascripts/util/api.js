@@ -6,8 +6,6 @@ const host = "https://host.thinkmay.net"
 
 // local api
 export const Dashboard = "/dashboard"
-export const Initialize = "/initialize"
-export const Reconnect = "/reconnect"
 
 
 // thinkmay api
