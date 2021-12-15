@@ -223,17 +223,6 @@ export const initializeSession = (SlaveID) => {
 	})
 }
 
-export const sessionSetting = (remoteToken) => {
-	return fetch(SessionInfor + "?token=" + remoteToken, {
-		method: "GET",
-		}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
 
 
 
