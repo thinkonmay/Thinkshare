@@ -8,8 +8,6 @@ module.exports = {
 	"GET /dashboard": {action: "view-dashboard"},
 	"GET /setting": {action: "view-setting"},
 	"GET /logout": {action: "logout"},
-	"GET /initialize": {action: "initialize"},
-	"GET /reconnect": {action: "reconnect"},
 	"GET /404": {action: "404"},
 	"GET /500": {action: "500"},
 	//  ╔╦╗╦╔═╗╔═╗  ╦═╗╔═╗╔╦╗╦╦═╗╔═╗╔═╗╔╦╗╔═╗   ┬   ╔╦╗╔═╗╦ ╦╔╗╔╦  ╔═╗╔═╗╔╦╗╔═╗
