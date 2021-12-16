@@ -222,4 +222,69 @@ export const setInfor = (body) => {
 }
 
 
+// temp
+////////////////////////////////////////////////////
+export const terminateSession = SlaveID => {
+	return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
+		method: "DELETE",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
 
+export const disconnectSession = SlaveID => {
+	return fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
+		method: "POST",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+export const reconnectSession = (SlaveID) => {
+	return fetch(ReconnectSession + "?SlaveID=" + SlaveID, {
+		method: "POST",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+
+export const initializeSession = (SlaveID) => {
+	return fetch(InitializeSession + "?SlaveID=" + SlaveID, {
+		method: "POST",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+export const sessionSetting = (remoteToken) => {
+	return fetch(SessionInfor + "?token=" + remoteToken, {
+		method: "GET",
+		}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}

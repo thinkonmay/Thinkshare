@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Authenticator.Interfaces;
@@ -50,7 +51,9 @@ namespace Authenticator.Controllers
         public async Task<IActionResult> GetDefaultSetting()
         {
             var UserID = HttpContext.Items["UserID"];
-            return Ok(await _cache.GetUserSetting(Int32.Parse((string)UserID)));
+            var result = await _cache.GetUserSetting(Int32.Parse((string)UserID));
+            Serilog.Log.Information("User setting received with value:"+ JsonConvert.SerializeObject(result));
+            return Ok(result);
         }
 
 
@@ -60,6 +63,7 @@ namespace Authenticator.Controllers
         public async Task<IActionResult> SetDefaultSetting([FromBody] UserSetting body)
         {
             var UserID = HttpContext.Items["UserID"];
+            Serilog.Log.Information("Set new setting: "+ JsonConvert.SerializeObject(body));
             await _cache.SetUserSetting(Int32.Parse((string)UserID), body);
             return Ok();
         }

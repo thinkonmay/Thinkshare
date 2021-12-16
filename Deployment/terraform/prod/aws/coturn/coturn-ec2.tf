@@ -35,7 +35,7 @@ resource "aws_instance" "coturn" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
 
-#   key_name = module.key_pair.key_pair_key_name
+  key_name = module.key_pair.key_pair_key_name
 
   tags = {
     Name = "coturn"

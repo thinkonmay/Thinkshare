@@ -39,17 +39,17 @@ export function DeviceType(key)
 {
     switch (key) {
     case "WEB_APP":
-        return 1
+        return 0
     case "WINDOW_APP":
-        return 2
+        return 1
     case "LINUX_APP":
-        return 3
+        return 2
     case "MAC_OS_APP":
-        return 4
+        return 3
     case "ANDROID_APP":
-        return 5
+        return 4
     case "IOS_APP":
-        return 6
+        return 5
     }
 };
 
@@ -177,6 +177,12 @@ $(document).ready(async () => {
         display.engine = CoreEngine(value);
         await updateSetting(display);
     })
+    $('#remoteCoreOption2').click(async function () {
+        var display = await (await API.getSetting()).json();
+        var value = $(this).find("input").val();
+        display.engine = CoreEngine(value);
+        await updateSetting(display);
+    })
 
 
     $('#submitChangeInfoCtrler').click(() => {
@@ -188,12 +194,12 @@ $(document).ready(async () => {
                 API.setInfor(body)
                     .then(async data => {
                         if (data.status == 200) {
+                            body = await (await API.getInfor()).json();
                             Utils.newSwal.fire({
                                 title: "Thành công!",
                                 text: "Thông tin của bạn đã được cập nhật",
                                 icon: "success",
                             })
-                        body = await (await API.getInfor()).json();
                         } else {
                             Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
                         }

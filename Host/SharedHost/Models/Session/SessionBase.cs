@@ -54,5 +54,11 @@ namespace SharedHost.Models.Session
 
         [Required]
         public QoEMode mode { get; set; }
+
+        [Required]
+        public DeviceType clientdevice { get; set; }
+
+        [Required]
+        public CoreEngine clientengine { get; set; }
     }
 }

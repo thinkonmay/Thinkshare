@@ -68,6 +68,5 @@ spec:
           privileged: true
       volumes:
       - name: data
-        awsElasticBlockStore:        
-          volumeID: "vol-033ae945a9c2121a5"
-          fsType: ext4
+        persistentVolumeClaim:
+          claimName: pvc-logging
