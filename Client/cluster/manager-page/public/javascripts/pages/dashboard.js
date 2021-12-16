@@ -11,10 +11,7 @@ import {
 	appendWorkerNode
 } from "../util/user-row-component.js"
 
-let datasetCPU = [];
-let datasetGPU = [];
-let datasetRAM = [];
-let datasetNetwork = [];
+let dataset = [];
 
 let sessionInfor;
 API.getInfor().then(async data => {
@@ -211,23 +208,18 @@ $(document).ready(async () => {
 	} catch (err) {
 		// location.reload();
 	}
-	setDataForChart();
 	$('#analyticCPU').click(() => {
-		datasetNetwork = [11, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
-		setDataForChart('#1F3BB3');
+		setDataForChart('#1F3BB3', 'CPU', false);
 	});
 
 	$('#analyticGPU').click(() => {
-		datasetNetwork = [11, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 11, 51, 22, 40, 95, 43, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
-		setDataForChart('#52CDFF');
+		setDataForChart('#52CDFF', 'GPU', false);
 	})
 	$('#analyticRAM').click(() => {
-		datasetNetwork = [11, 51, 22, 40, 95, 43, 2, 30, , 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, , 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
-		setDataForChart('#eded68');
+		setDataForChart('#eded68', 'RAM', false);
 	})
 	$('#analyticNetwork').click(() => {
-		datasetNetwork = [29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
-		setDataForChart('#e65555');
+		setDataForChart('#e65555', "Network", false);
 	})
 
 
@@ -469,7 +461,32 @@ async function tutorial() {
 	});
 }
 
-function setDataForChart(color) {
+function setDataForChart(color, nameLabel, checkStateChange) {
+	if(checkStateChange){
+		document.getElementById('stateChange').innerHTML = "<canvas id=\"performaneLine\"></canvas>"
+	}
+	let datasetRAM = []
+	let datasetCPU = []
+	let datasetGPU = []
+	let datasetNetwork = []
+	switch (nameLabel) {
+		case 'RAM':
+			setDataForChart('52CDFF', 'FixState', true)
+			datasetRAM = [11, 51, 22, 40, 95, 43, 2, 30, 22, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 12, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
+			break;
+		case 'CPU':
+			setDataForChart('52CDFF', 'FixState', true)
+			datasetCPU = [11, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
+			break;
+		case 'GPU':
+			setDataForChart('52CDFF', 'FixState', true)
+			datasetGPU = [11, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 11, 51, 22, 40, 95, 43, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
+			break;
+		case 'Network':
+			setDataForChart('52CDFF', 'FixState', true)
+			datasetNetwork = [29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
+			break;
+	}
 	let isSetElement = false;
 	// for (let i = 0; i < 7; i++) {
 	// 	datasets[i] = 0;
@@ -481,79 +498,30 @@ function setDataForChart(color) {
 	for (let index = 0; index <= 60; index++) {
 		_lables.unshift(index);
 	}
+	var salesTopData = null;
 	if ($("#performaneLine").length) {
 		var graphGradient = document.getElementById("performaneLine").getContext('2d');
-		var graphGradient2 = document.getElementById("performaneLine").getContext('2d');
 		var saleGradientBg = graphGradient.createLinearGradient(5, 0, 5, 100);
 		saleGradientBg.addColorStop(0, 'rgba(0, 0, 0, 0)');
 		saleGradientBg.addColorStop(1, 'rgba(0, 0, 0, 0)');
-		var saleGradientBg2 = graphGradient2.createLinearGradient(100, 0, 50, 150);
-		saleGradientBg2.addColorStop(0, 'rgba(0, 0, 0, 0)');
-		saleGradientBg2.addColorStop(1, 'rgba(0, 0, 0, 0)');
-		var salesTopData = {
+		salesTopData = {
 			labels: _lables,
 			datasets: [{
-					label: 'CPU',
-					// data: datasets,
-					//data: [21, 20, 1, 51, 22, 40, 95, 43, 2, 30, 5, 16, 14, 49, 21, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 30, 15, 40, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 95, 12],
-					backgroundColor: saleGradientBg,
-					borderColor: [
-						color,
-					],
-					borderWidth: 1.5,
-					fill: true, // 3: no fill
-					pointBorderWidth: 1,
-					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-					pointBackgroundColor: ['#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3'],
-					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', ],
-				}, {
-					label: 'GPU',
-					//data: [21, 20, 30, 15, 40, 95, 16, 14, 49, 21, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 29, 45, 61, 25, 34, 61, 5, 3, 51, 4, 51, 24, 23, 6, 1, 16, 14, 49, 21, 29, 45, 61, 25, 34, 61, 5, 3],
-					backgroundColor: saleGradientBg2,
-					borderColor: [
-						color,
-					],
-					borderWidth: 1.5,
-					fill: true, // 3: no fill
-					pointBorderWidth: 1,
-					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-					pointBackgroundColor: ['#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF', '#52CDFF'],
-					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', ],
-				},
-				{
-					label: 'RAM',
-					//data: [43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 1, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 45, 61, 25, 3, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 6],
-					backgroundColor: saleGradientBg2,
-					borderColor: [
-						color,
-					],
-					borderWidth: 1.5,
-					fill: true, // 3: no fill
-					pointBorderWidth: 1,
-					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-					pointBackgroundColor: ['#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68', '#eded68'],
-					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', ],
-				},
-				{
-					label: 'Network',
-					data: datasetNetwork,
-					backgroundColor: saleGradientBg2,
-					borderColor: [
-						color,
-					],
-					borderWidth: 1.5,
-					fill: true, // 3: no fill
-					pointBorderWidth: 1,
-					tension: 0.1
-					//pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-					//pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-					//pointBackgroundColor: ['#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555'],
-					//pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-				}
-			]
+				label: nameLabel,
+				data: nameLabel == "RAM" ? datasetRAM : nameLabel == "CPU" ? datasetCPU : nameLabel == "GPU" ? datasetGPU : nameLabel == "Network" ? datasetNetwork: [],
+				backgroundColor: saleGradientBg,
+				borderColor: [
+					color,
+				],
+				borderWidth: 1.5,
+				fill: true, // 3: no fill
+				pointBorderWidth: 1,
+				tension: 0.1
+				//pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+				//pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+				//pointBackgroundColor: ['#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555'],
+				//pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
+			}]
 		};
 		var salesTopOptions = {
 			responsive: true,
@@ -605,18 +573,13 @@ function setDataForChart(color) {
 				backgroundColor: 'rgba(31, 59, 179, 1)',
 			}
 		}
-		var salesTop = isSetElement ? Chart(graphGradient, {
-				type: 'line',
-				data: salesTopData,
-				options: salesTopOptions
-			}) :
+		var salesTop =
 			new Chart(graphGradient, {
 				type: 'line',
 				data: salesTopData,
 				options: salesTopOptions
-			});
-		if (!isSetElement)
-			document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
+			})
+		document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
 	}
 }
 
