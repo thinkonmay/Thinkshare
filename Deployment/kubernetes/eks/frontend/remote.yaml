@@ -1,37 +1,38 @@
+
 apiVersion: v1
 kind: Service
 metadata:
-  name: resources
+  name: remote
   namespace: frontend
   labels:
-    app: resources
+    app: remote
 spec:
   type: ClusterIP
   ports:
   - port: 80    
   selector:
-   app: resources
+   app: remote
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: resources
+  name: remote
   namespace: frontend
 spec:
   selector:
     matchLabels:
-      app: resources
+      app: remote
   replicas: 1
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: resources
+        app: remote
     spec:
       containers:
-      - name: resources
-        image: pigeatgarlic/resources:latest
+      - name: remote
+        image: pigeatgarlic/remote:2021-12-16
         imagePullPolicy: Always
         resources:
           requests:
