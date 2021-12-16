@@ -22,6 +22,9 @@ API.getInfor().then(async data => {
 	$("#fullname").text(body.fullName)
 	$("#jobs").text(body.jobs)
 })
+
+
+
 $(document).ready(async () => {
 	let nameOfCluster;
 	let isPrivate;
@@ -159,10 +162,6 @@ $(document).ready(async () => {
 		})
 	})
 
-	$('#detailBtn').click(() => {
-		// pop up module details infor user
-	})
-
 	$('#logout').click(() => {
 		setCookie("logout", "true")
 		setCookie("token", null, 1)
@@ -255,6 +254,10 @@ $(document).ready(async () => {
 			let workerNodeId = data.at(i).id
 			let workerState = await (await API.getWorkerStateRoute()).json();
 			let state = workerState[workerNodeId]
+
+			dataLog[workerNodeId] = await (await API.getWorkerLog(workerNodeId)).json();
+
+
 			appendWorkerNode(data.at(i).os, data.at(i).cpu, data.at(i).gpu, data.at(i).id, data.at(i).raMcapacity, data.at(i).register, state)
 		}
 	}
@@ -462,7 +465,7 @@ async function tutorial() {
 }
 
 function setDataForChart(color, nameLabel, checkStateChange) {
-	if(checkStateChange){
+	if (checkStateChange) {
 		document.getElementById('stateChange').innerHTML = "<canvas id=\"performanceLine\"></canvas>"
 	}
 	let datasetRAM = []
@@ -508,7 +511,7 @@ function setDataForChart(color, nameLabel, checkStateChange) {
 			labels: _lables,
 			datasets: [{
 				label: nameLabel,
-				data: nameLabel == "RAM" ? datasetRAM : nameLabel == "CPU" ? datasetCPU : nameLabel == "GPU" ? datasetGPU : nameLabel == "Network" ? datasetNetwork: [],
+				data: nameLabel == "RAM" ? datasetRAM : nameLabel == "CPU" ? datasetCPU : nameLabel == "GPU" ? datasetGPU : nameLabel == "Network" ? datasetNetwork : [],
 				backgroundColor: saleGradientBg,
 				borderColor: [
 					color,

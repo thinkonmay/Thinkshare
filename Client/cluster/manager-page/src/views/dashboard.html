@@ -227,7 +227,7 @@
                           </div>
                         </div>
                       </div>
-                      <div id="popup1" class="overlay">
+                      <div id="popup1" class="overlay"  style="overflow-y: scroll;">
                         <div class="popup">
                           <a class="close" href="#">&times;</a>
                           <div class="col-lg-11 d-flex flex-column">
@@ -321,9 +321,8 @@
                                               </tr>
                                             </thead>
 
-                                            <tbody id="WorkerNode-Log">
-                                            </tbody>
-                                          </table
+                                            <tbody id="WorkerNode-Log"></tbody>
+                                          </table>
                                         </section>
                                       </div>
                                     </div>
@@ -488,8 +487,29 @@
   <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
-
   <!-- plugins:js -->
+  <script>
+    let dataLog = [];
+    function showDataLog(id) {
+      console.log(dataLog[id])
+      var logField = document.getElementById('WorkerNode-Log')
+      logField.innerHTML = '<p></p>'
+      for (let i = 0; i <= dataLog[9].length; i++)
+        logField.innerHTML = logField.innerHTML + `<tr>
+          <td>
+              <b>GPU: ${dataLog[id].at(i).id}</b>
+          </td>
+          <td>
+              <b>OS: ${dataLog[id].at(i).content}</b>
+          </td>
+          <td>
+            <b>OS: ${dataLog[id].at(i).logTime}</b>
+          </td>
+        </tr>`
+    }
+  </script>
+
+
   <script src="../../vendors/js/vendor.bundle.base.js"></script>
   <!-- endinject -->
   <!-- Plugin js for this page -->

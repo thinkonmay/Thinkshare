@@ -1,4 +1,5 @@
 var indexPost = 0
+import * as API from "./api.js"
 
 export function appendWorkerNode(os, cpu, gpu, id, raMcapacity, register, state) {
 
@@ -22,15 +23,16 @@ export function appendWorkerNode(os, cpu, gpu, id, raMcapacity, register, state)
         <b>${state}</b>
     </td>
     <td>
-        <a href="#popup1" id=detailBtn class="bn11">Detail</a>
+        <a onclick="showDataLog(${id})" href="#popup1" id="detailBtn${id}" class="bn11">Detail</a>
     </td>
     </tr>`);
+
+    
 
 }
 
 
-
-function append(id, html) {
+export function append(id, html) {
     $(`#${id}`).append(html)
 }
 $(document).ready(async () => {
