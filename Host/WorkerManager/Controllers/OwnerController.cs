@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WorkerManager.Interfaces;
 using System;
+using WorkerManager.Interfaces;
 using System.Net;
 using System.Threading.Tasks;
 using WorkerManager.Middleware;
@@ -302,6 +302,24 @@ namespace WorkerManager.Controllers
         {
             var result = await _cache.GetWorkerInfor(ID);
             return (result != null) ? Ok(result) : BadRequest("Worker not found");
+        }
+
+
+
+        [Owner]
+        [HttpGet("Cluster/Worker/Log")]
+        public async Task<IActionResult> GetLog(int WorkerID)
+        {
+            var worker = _db.Devices.Find(WorkerID);
+            return Ok(worker.Logs);
+        }
+
+        [Owner]
+        [HttpGet("Cluster/Worker/Log/Timestamp")]
+        public async Task<IActionResult> GetLog(int WorkerID, DateTime From, DateTime To)
+        {
+            var worker = _db.Devices.Find(WorkerID);
+            return Ok(worker.Logs.Where(x => x.LogTime > From && x.LogTime < To));
         }
     }
 }
