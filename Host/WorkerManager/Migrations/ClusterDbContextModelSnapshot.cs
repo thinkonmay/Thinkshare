@@ -65,6 +65,9 @@ namespace WorkerManager.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<int?>("ClusterWorkerNodeID")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
@@ -73,12 +76,9 @@ namespace WorkerManager.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
 
-                    b.Property<int?>("workerID")
-                        .HasColumnType("integer");
-
                     b.HasKey("ID");
 
-                    b.HasIndex("workerID");
+                    b.HasIndex("ClusterWorkerNodeID");
 
                     b.ToTable("Logs");
                 });
@@ -207,11 +207,9 @@ namespace WorkerManager.Migrations
 
             modelBuilder.Entity("DbSchema.LocalDb.Models.Log", b =>
                 {
-                    b.HasOne("DbSchema.LocalDb.Models.ClusterWorkerNode", "worker")
-                        .WithMany()
-                        .HasForeignKey("workerID");
-
-                    b.Navigation("worker");
+                    b.HasOne("DbSchema.LocalDb.Models.ClusterWorkerNode", null)
+                        .WithMany("Logs")
+                        .HasForeignKey("ClusterWorkerNodeID");
                 });
 
             modelBuilder.Entity("DbSchema.LocalDb.Models.OwnerCredential", b =>
@@ -240,6 +238,11 @@ namespace WorkerManager.Migrations
                     b.Navigation("Model");
 
                     b.Navigation("Worker");
+                });
+
+            modelBuilder.Entity("DbSchema.LocalDb.Models.ClusterWorkerNode", b =>
+                {
+                    b.Navigation("Logs");
                 });
 #pragma warning restore 612, 618
         }

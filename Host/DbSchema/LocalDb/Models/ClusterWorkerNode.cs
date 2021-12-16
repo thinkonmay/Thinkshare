@@ -55,6 +55,9 @@ namespace DbSchema.LocalDb.Models
         [JsonIgnore]
         public RestClient _agentClient { get; set; }
 
+        [JsonIgnore]
+        public virtual IList<Log> Logs {get;set;}
+
         public void RestoreWorkerNode ()
         {
             _coreClient = new RestClient("http://"+PrivateIP.ToString()+":3330/cluster");
