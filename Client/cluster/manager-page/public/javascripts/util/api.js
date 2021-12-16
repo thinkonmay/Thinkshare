@@ -26,6 +26,8 @@ const LoginRoute = `${host}/Owner/Login`
 let RegisterClusterRoute = `${host}/Owner/Register`
 const GetInforClusterRoute = `${host}/Owner/Cluster/Infor`
 const GetClusterTokenRoute = `${host}/Owner/Cluster/Token`
+const GetWorkerInfor = `${host}/Owner/Cluster/Worker/Infor`
+const GetWorkerLog = `${host}/Owner/Cluster/Worker/Log`
 const GetWorkerStateRoute = `${host}/Owner/Worker/State`
 const SetTurnRoute = `${host}/Owner/Cluster/TURN`
 const StartRoute = `${host}/Owner/Start`
@@ -128,6 +130,20 @@ export const getInforClusterRoute = () => {
 // save token for database to access 
 export const getClusterToken = () => {
 	return fetch(GetClusterTokenRoute, {
+		method: "GET",
+		headers: genHeaders(),
+	})
+}
+
+export const getWorkerInfor = (workerNodeId) => {
+	return fetch(GetWorkerInfor+`?ID=${workerNodeId}`, {
+		method: "POST",
+		headers: genHeaders(),
+	})
+}
+
+export const getWorkerLog = (workerNodeId) => {
+	return fetch(GetWorkerLog+`?WorkerID=${workerNodeId}`, {
 		method: "GET",
 		headers: genHeaders(),
 	})
