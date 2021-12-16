@@ -1,16 +1,7 @@
-
-// /**
-//  * Sets connection state
-//  * @param {String} state
-//  */
-// function 
-// setConnectionState(state) {
-//     if (app.onconnectionstatechange !== null) {
-//         app.onconnectionstatechange(state);
-//     }
-// }
-
-// ICE candidate received from peer, add it to the peer connection
+/**
+ * 
+ * @param {*} ice 
+ */
 function onIncomingICE(ice) {
     var candidate = new RTCIceCandidate(ice);
     app.Webrtc.addIceCandidate(candidate).catch(app.setError);
@@ -31,7 +22,7 @@ function onIncomingICE(ice) {
  *
  * @param {RTCSessionDescription} sdp
  */
- function onIncomingSDP(sdp) {
+function onIncomingSDP(sdp) {
     app.Webrtc.setRemoteDescription(sdp).then(() => {
         app.setStatus("Remote SDP set");
         if (sdp.type != "offer")
@@ -78,124 +69,52 @@ function onLocalDescription(desc) {
     
 
 
-
-
-
-
 /**
- * Sends message to peer data channel HID. 
- * @param {String} message
+ * Control data channel has been estalished, 
+ * start report stream stats to slave
+ * @param {Event} event 
  */
-function  
-SendHID(message) 
+function 
+onControlDataChannel(event)
 {
-    if (app.HidDC.readyState === 'open') 
-    {
-        app.HidDC.send(message);
-    } else {
-        app.setError("attempt to send data channel message before channel was open.");
-    }
+    app.ControlDC = event.channel;
+    app.ControlDC.onmessage = (event =>{
+        if(event.data == "ping") {
+            app.ControlDC.send("ping");
+        }
+    });
 }
 
-/**
- * Sends message to peer data channel control.
- */
-function    
-sendControlDC(opcode,to, message) 
+function
+onHidDataChannel(event)
 {
-    var message = 
-    {
-        "Opcode":opcode,
-        "From":Module.CLIENT_MODULE,
-        "To":to,
-        "Data":message
-    }
-    app.ControlDC.send(JSON.stringify(message));
+    app.HidDC = event.channel;
+    connectionDone();
 }
-
-
-
-/**
- * Returns promise that resolves with connection stats.
- */
-function    
-getConnectionStats() 
-{
-    var pc = app.Webrtc;
-
-    var connectionDetails = {};   // the final result object.
-
-    if (window.chrome) {  // checking if chrome
-
-        var reqFields = [
-            'googLocalCandidateType',
-            'googRemoteCandidateType',
-            'packetsReceived',
-            'packetsLost',
-            'bytesReceived',
-            'googFrameRateReceived',
-            'googFrameRateOutput',
-            'googCurrentDelayMs',
-            'googFrameHeightReceived',
-            'googFrameWidthReceived',
-            'codecImplementationName',
-            'googCodecName',
-            'googAvailableReceiveBandwidth'
-        ];
-
-        return new Promise(function (resolve, reject) {
-            pc.getStats(function (stats) {
-                var filteredVideo = stats.result().filter(function (e) {
-                    if ((e.id.indexOf('Conn-video') === 0 && e.stat('googActiveConnection') === 'true') ||
-                        (e.id.indexOf('ssrc_') === 0 && e.stat('mediaType') === 'video') ||
-                        (e.id == 'bweforvideo')) return true;
-                });
-                if (!filteredVideo) return reject('Something is wrong...');
-                filteredVideo.forEach((f) => {
-                    reqFields.forEach((e) => {
-                        var statValue = f.stat(e);
-                        if (statValue != "") {
-                            connectionDetails['video' + e.replace('goog', '')] = statValue;
-                        }
-                    });
-                });
-                var filteredAudio = stats.result().filter(function (e) {
-                    if ((e.id.indexOf('Conn-audio') === 0 && e.stat('googActiveConnection') === 'true') ||
-                        (e.id.indexOf('ssrc_') === 0 && e.stat('mediaType') === 'audio') ||
-                        (e.id == 'bweforaudio')) return true;
-                });
-                if (!filteredAudio) return reject('Something is wrong...');
-                filteredAudio.forEach((f) => {
-                    reqFields.forEach((e) => {
-                        var statValue = f.stat(e);
-                        if (statValue != "") {
-                            connectionDetails['audio' + e.replace('goog', '')] = statValue;
-                        }
-                    });
-                });
-                resolve(connectionDetails);
-            });
-        });
-
-    } else {
-        app.setError("unable to fetch connection stats for brower, only Chrome is supported.");
-    }
-}
-
-
-
 
 function
 ondatachannel(event)
 {
     if(event.channel.label === "HID"){
-        app.HidDC = event.channel;
-        app.HidDC.onopen = HidDCConnected;
+        onHidDataChannel(event);
     }else if(event.channel.label === "Control"){
         onControlDataChannel(event);
     }
 }
 
+
+function
+onICECandidates(event)
+{
+    // We have a candidate, send it to the remote party with the
+    // same uuid
+    if (event.candidate == null) {
+        console.log("ICE Candidate was null, done");
+        return;
+    }
+    app.setDebug("OFFER_ICE" + JSON.stringify({'ice': event.candidate}));
+    SignallingSend("OFFER_ICE",JSON.stringify({'ice': event.candidate}));
+}
 
 /**
  * Initiate connection to signalling server. 
@@ -210,17 +129,5 @@ WebrtcConnect()
     app.Webrtc = new RTCPeerConnection(config);
     app.Webrtc.ondatachannel = ondatachannel;    
     app.Webrtc.ontrack = onRemoteTrack;
-
-
-    //send ice dandidate to slave whenever icecandidate has been triggered on client
-    app.Webrtc.onicecandidate = (event) => {
-        // We have a candidate, send it to the remote party with the
-        // same uuid
-        if (event.candidate == null) {
-                console.log("ICE Candidate was null, done");
-                return;
-        }
-        app.setDebug("OFFER_ICE" + JSON.stringify({'ice': event.candidate}));
-        SignallingSend("OFFER_ICE",JSON.stringify({'ice': event.candidate}));
-    };
+    app.Webrtc.onicecandidate = onICECandidates;
 }

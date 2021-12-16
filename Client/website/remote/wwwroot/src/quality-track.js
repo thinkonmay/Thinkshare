@@ -1,6 +1,3 @@
-
-
-// Function to add timestamp to logs.
 var applyTimestamp = (msg) => {
     var now = new Date();
     var ts = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
@@ -164,18 +161,35 @@ windowCalculate()
 }
 
 
+
 /**
- * Control data channel has been estalished, 
- * start report stream stats to slave
- * @param {Event} event 
+ * get window resolution
+ * @returns 2 element list control screen width and height
  */
 function 
-onControlDataChannel(event)
+getWindowResolution() 
 {
-    app.ControlDC = event.channel;
-    app.ControlDC.onmessage = onClientMessage;
+    return [ /**/
+        parseInt(app.VideoElement.offsetWidth * window.devicePixelRatio),
+        parseInt(app.VideoElement.offsetHeight * window.devicePixelRatio)
+    ];
+}
 
 
+
+
+function 
+ResizeWindow()
+{
+    app.windowResolution = getWindowResolution();
+    app.logEntries.push(`Window size changed: ${app.windowResolution[0]}x${app.windowResolution[1]}`);
+}
+
+
+
+function
+get_stats()
+{
     /**
      * statstistic control variable
      */
@@ -251,8 +265,6 @@ onControlDataChannel(event)
              */         
             sendControlDC
             (
-                Opcode.QOE_REPORT,
-                Module.CORE_MODULE,
                 JSON.stringify(
                 {
                     "FrameRate": app.adaptive.Framerate,
@@ -274,32 +286,4 @@ onControlDataChannel(event)
         });
     };
     statsLoop();
-}
-
-
-/**
- * get window resolution
- * @returns 2 element list control screen width and height
- */
-function 
-getWindowResolution() 
-{
-    return [
-        /**/
-        parseInt(app.VideoElement.offsetWidth * window.devicePixelRatio),
-        parseInt(app.VideoElement.offsetHeight * window.devicePixelRatio)
-    ];
-}
- 
-
-
-
-
-
-
-function 
-ResizeWindow()
-{
-    app.windowResolution = getWindowResolution();
-    app.logEntries.push(`Window size changed: ${app.windowResolution[0]}x${app.windowResolution[1]}`);
 }

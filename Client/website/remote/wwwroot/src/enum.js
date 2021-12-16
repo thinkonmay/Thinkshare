@@ -1,10 +1,3 @@
-var 
-applyTimestamp = (msg) => {
-    var now = new Date();
-    var ts = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
-    return "[" + ts + "]" + " " + msg;
-}
-
 
 var Module = 
 {
