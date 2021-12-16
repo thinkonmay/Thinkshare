@@ -215,7 +215,7 @@
                                       <th>CPU/GPU</th>
                                       <th>RAM/Register Date</th>
                                       <th>Status</th>
-                                      <th>Information</th>  
+                                      <th>Information</th>
                                     </tr>
                                   </thead>
 
@@ -235,58 +235,81 @@
                               <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
                                 <div class="card card-rounded">
                                   <div class="card-body">
-                                    <div class="d-sm-flex justify-content-between align-items-start">
-                                      <div>
-                                        <h4 class="card-title card-title-dash">Monitor Worker Node
-                                        </h4>
-                                        <h5 class="card-subtitle card-subtitle-dash"> $nameOfWorkerNode
-                                        </h5>
+                                    <div class="tabs">
+                                      <input type="radio" id="tab1" name="tab-control" checked>
+                                      <input type="radio" id="tab2" name="tab-control">
+                                      <ul>
+                                        <li title="Features"><label for="tab1"
+                                            role="button"><br><span>Monitor</span></label></li>
+                                        <li title="Delivery Contents"><label for="tab2"
+                                            role="button"><br><span>Logs</span></label></li>
+                                      </ul>
+                                      <div class="slider">
+                                        <div class="indicator"></div>
                                       </div>
-                                      <div id="performance-line-legend"></div>
-                                    </div>
-                                    <div class="form-group row">
-                                      <div class="col-sm-3">
-                                        <div class="form-check" id="remoteCoreOption1">
-                                          <label class="form-check-label">
-                                            <input name="optionsRemoteCore" type="radio" class="form-check-input"
-                                              id="analyticCPU">
-                                            CPU
-                                            <i class="input-helper"></i><i class="input-helper"></i></label>
-                                        </div>
+                                      <div class="content" style="overflow: hidden;">
+                                        <section>
+                                          <div class="d-sm-flex justify-content-between align-items-start">
+                                            <div>
+                                              <h4 class="card-title card-title-dash">Monitor Worker Node
+                                              </h4>
+                                              <h5 class="card-subtitle card-subtitle-dash"> $nameOfWorkerNode
+                                              </h5>
+                                            </div>
+                                            <div id="performance-line-legend"></div>
+                                          </div>
+                                          <div class="form-group row">
+                                            <div class="col-sm-3">
+                                              <div class="form-check" id="remoteCoreOption1">
+                                                <label class="form-check-label">
+                                                  <input name="optionsRemoteCore" type="radio" class="form-check-input"
+                                                    id="analyticCPU">
+                                                  CPU
+                                                  <i class="input-helper"></i><i class="input-helper"></i></label>
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                              <div class="form-check" id="remoteCoreOption2">
+                                                <label class="form-check-label">
+                                                  <input name="optionsRemoteCore" type="radio" class="form-check-input"
+                                                    id="analyticGPU">
+                                                  GPU
+                                                  <i class="input-helper"></i><i class="input-helper"></i></label>
+                                                </p>
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                              <div class="form-check" id="remoteCoreOption3">
+                                                <label class="form-check-label">
+                                                  <input name="optionsRemoteCore" type="radio" class="form-check-input"
+                                                    id="analyticRAM">
+                                                  RAM
+                                                  <i class="input-helper"></i><i class="input-helper"></i></label>
+                                                </p>
+                                              </div>
+                                            </div>
+                                            <div class="col-sm-3">
+                                              <div class="form-check" id="remoteCoreOption2">
+                                                <label class="form-check-label">
+                                                  <input name="optionsRemoteCore" type="radio" class="form-check-input"
+                                                    id="analyticNetwork">
+                                                  Network
+                                                  <i class="input-helper"></i><i class="input-helper"></i></label>
+                                                </p>
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div id="stateChange" class="chartjs-wrapper mt-5">
+                                            <canvas id="performanceLine"></canvas>
+                                          </div>
+                                        </section>
+                                        <section>
+                                          <h2>Delivery Contents</h2>
+                                          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem quas adipisci
+                                          a accusantium eius ut voluptatibus ad impedit nulla, ipsa qui. Quasi
+                                          temporibus eos commodi aliquid impedit amet, similique nulla.
+                                        </section>
                                       </div>
-                                      <div class="col-sm-3">
-                                        <div class="form-check" id="remoteCoreOption2">
-                                          <label class="form-check-label">
-                                            <input name="optionsRemoteCore" type="radio" class="form-check-input"
-                                              id="analyticGPU">
-                                            GPU
-                                            <i class="input-helper"></i><i class="input-helper"></i></label>
-                                          </p>
-                                        </div>
-                                      </div>
-                                      <div class="col-sm-3">
-                                        <div class="form-check" id="remoteCoreOption3">
-                                          <label class="form-check-label">
-                                            <input name="optionsRemoteCore" type="radio" class="form-check-input"
-                                              id="analyticRAM">
-                                            RAM
-                                            <i class="input-helper"></i><i class="input-helper"></i></label>
-                                          </p>
-                                        </div>
-                                      </div>
-                                      <div class="col-sm-3">
-                                        <div class="form-check" id="remoteCoreOption2">
-                                          <label class="form-check-label">
-                                            <input name="optionsRemoteCore" type="radio" class="form-check-input"
-                                              id="analyticNetwork">
-                                            Network
-                                            <i class="input-helper"></i><i class="input-helper"></i></label>
-                                          </p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div id="stateChange" class="chartjs-wrapper mt-5">
-                                      <canvas id="performanceLine"></canvas>
                                     </div>
                                   </div>
                                 </div>
