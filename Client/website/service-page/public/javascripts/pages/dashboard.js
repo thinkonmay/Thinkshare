@@ -354,9 +354,9 @@ async function setDataForChart() {
 		}
 		countDay++;
 	}
-	if ($("#performaneLine").length) {
-		var graphGradient = document.getElementById("performaneLine").getContext('2d');
-		var graphGradient2 = document.getElementById("performaneLine").getContext('2d');
+	if ($("#performanceLine").length) {
+		var graphGradient = document.getElementById("performanceLine").getContext('2d');
+		var graphGradient2 = document.getElementById("performanceLine").getContext('2d');
 		var saleGradientBg = graphGradient.createLinearGradient(5, 0, 5, 100);
 		saleGradientBg.addColorStop(0, 'rgba(26, 115, 232, 0.18)');
 		saleGradientBg.addColorStop(1, 'rgba(26, 115, 232, 0.02)');

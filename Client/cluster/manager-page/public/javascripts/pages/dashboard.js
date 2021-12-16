@@ -463,7 +463,7 @@ async function tutorial() {
 
 function setDataForChart(color, nameLabel, checkStateChange) {
 	if(checkStateChange){
-		document.getElementById('stateChange').innerHTML = "<canvas id=\"performaneLine\"></canvas>"
+		document.getElementById('stateChange').innerHTML = "<canvas id=\"performanceLine\"></canvas>"
 	}
 	let datasetRAM = []
 	let datasetCPU = []
@@ -499,8 +499,8 @@ function setDataForChart(color, nameLabel, checkStateChange) {
 		_lables.unshift(index);
 	}
 	var salesTopData = null;
-	if ($("#performaneLine").length) {
-		var graphGradient = document.getElementById("performaneLine").getContext('2d');
+	if ($("#performanceLine").length) {
+		var graphGradient = document.getElementById("performanceLine").getContext('2d');
 		var saleGradientBg = graphGradient.createLinearGradient(5, 0, 5, 100);
 		saleGradientBg.addColorStop(0, 'rgba(0, 0, 0, 0)');
 		saleGradientBg.addColorStop(1, 'rgba(0, 0, 0, 0)');
