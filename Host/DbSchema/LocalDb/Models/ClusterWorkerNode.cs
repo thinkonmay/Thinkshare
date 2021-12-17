@@ -118,7 +118,7 @@ namespace DbSchema.LocalDb.Models
             var request = new RestRequest("ping");
             request.Method = Method.POST;
 
-            var result = await _agentClient.ExecuteAsync(request);
+            var result = await _coreClient.ExecuteAsync(request);
             if(result.StatusCode == HttpStatusCode.OK) { return true; }
             else { return false; }
         }
@@ -171,10 +171,10 @@ namespace DbSchema.LocalDb.Models
         {
             foreach (var model in models)
             {
-                var request = new RestRequest("Shell")
-                    .AddJsonBody(model.Script);
-                request.Method = Method.GET;
+                var request = new RestRequest("Shell");
+                request.AddParameter("application/json", model.Script, ParameterType.RequestBody);
 
+                request.Method = Method.POST;
                 var result = await _agentClient.ExecuteAsync(request);
                 if(result.StatusCode == HttpStatusCode.OK) 
                 { 

@@ -86,7 +86,6 @@ namespace WorkerManager.Services
                     {
                         Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                         continue;
-
                     }
 
                     foreach (var item in worker_list)
@@ -114,12 +113,9 @@ namespace WorkerManager.Services
 
 
 
-                        if(worker.sessionFailedPing > 5)
+                        if(worker.sessionFailedPing > 7)
                         {
-                            if (item.Value == WorkerState.OnSession)
-                            {
-                                await _cache.SetWorkerState(item.Key, WorkerState.OffRemote);
-                            }
+                            await _cache.SetWorkerState(item.Key, WorkerState.OffRemote);
                         }
                     }
                     Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
@@ -208,7 +204,7 @@ namespace WorkerManager.Services
                     worker.RestoreWorkerNode();
                     worker.GetWorkerMetric(_db,model_list);
                 }
-                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
+                Thread.Sleep(((int)TimeSpan.FromSeconds(60).TotalMilliseconds));
             }
         }
 
@@ -218,10 +214,6 @@ namespace WorkerManager.Services
             while (true)
             {
                 var CachedSession = _db.CachedSession.All(x => true);
-                // var client = new RestClient();
-                
-                // var request = new RestRequest()
-                //     .AddJsonBody(CachedSession);
 
                 Thread.Sleep((int)TimeSpan.FromDays(1).TotalMilliseconds);
                 currentTime.AddDays(1);

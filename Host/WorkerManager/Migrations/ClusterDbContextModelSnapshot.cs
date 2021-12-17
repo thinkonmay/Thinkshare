@@ -131,33 +131,6 @@ namespace WorkerManager.Migrations
                     b.ToTable("Clusters");
                 });
 
-            modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("CPU")
-                        .HasColumnType("text");
-
-                    b.Property<string>("GPU")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OS")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("RAMcapacity")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("Register")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("WorkerNode");
-                });
-
             modelBuilder.Entity("SharedHost.Models.Shell.ScriptModel", b =>
                 {
                     b.Property<int>("ID")
@@ -181,13 +154,13 @@ namespace WorkerManager.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("ModelID")
+                    b.Property<int?>("ClusterWorkerNodeID")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ModelID")
                         .HasColumnType("integer");
 
                     b.Property<string>("Output")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Script")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Time")
@@ -195,14 +168,11 @@ namespace WorkerManager.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
 
-                    b.Property<int>("WorkerID")
-                        .HasColumnType("integer");
-
                     b.HasKey("ID");
 
-                    b.HasIndex("ModelID");
+                    b.HasIndex("ClusterWorkerNodeID");
 
-                    b.HasIndex("WorkerID");
+                    b.HasIndex("ModelID");
 
                     b.ToTable("CachedSession");
                 });
@@ -225,26 +195,22 @@ namespace WorkerManager.Migrations
 
             modelBuilder.Entity("SharedHost.Models.Shell.ShellSession", b =>
                 {
+                    b.HasOne("DbSchema.LocalDb.Models.ClusterWorkerNode", null)
+                        .WithMany("Shells")
+                        .HasForeignKey("ClusterWorkerNodeID");
+
                     b.HasOne("SharedHost.Models.Shell.ScriptModel", "Model")
                         .WithMany()
-                        .HasForeignKey("ModelID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SharedHost.Models.Device.WorkerNode", "Worker")
-                        .WithMany()
-                        .HasForeignKey("WorkerID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ModelID");
 
                     b.Navigation("Model");
-
-                    b.Navigation("Worker");
                 });
 
             modelBuilder.Entity("DbSchema.LocalDb.Models.ClusterWorkerNode", b =>
                 {
                     b.Navigation("Logs");
+
+                    b.Navigation("Shells");
                 });
 #pragma warning restore 612, 618
         }
