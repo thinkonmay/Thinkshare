@@ -27,6 +27,7 @@ namespace DbSchema.LocalDb
             base.OnModelCreating(builder);
 
             builder.Entity<ClusterWorkerNode>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
+            builder.Entity<ShellSession>().Property(u => u.Time).HasDefaultValueSql("current_timestamp");
             builder.Entity<LocalCluster>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
             builder.Entity<Log>().Property(u => u.LogTime).HasDefaultValueSql("current_timestamp");
         }

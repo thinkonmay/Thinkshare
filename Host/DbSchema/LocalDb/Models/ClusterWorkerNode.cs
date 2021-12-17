@@ -58,6 +58,9 @@ namespace DbSchema.LocalDb.Models
         [JsonIgnore]
         public virtual IList<Log> Logs {get;set;}
 
+        [JsonIgnore]
+        public virtual IList<ShellSession> Shells {get;set;}
+
         public void RestoreWorkerNode ()
         {
             _coreClient = new RestClient("http://"+PrivateIP.ToString()+":3330/cluster");
@@ -121,11 +124,11 @@ namespace DbSchema.LocalDb.Models
         }
 
 
-        public async Task<bool> PingWorker(ClusterDbContext db, List<ScriptModel> model_list)
+        public async Task<bool> PingWorker()
         {
             using (var timeoutCancellation = new CancellationTokenSource())
             {
-                var originalTask = Ping(db,model_list);
+                var originalTask = Ping();
                 var delayTask = Task.Delay(TimeSpan.FromMilliseconds(100));
                 var completedTask = await Task.WhenAny(originalTask, delayTask);
                 // Cancel timeout to stop either task:
@@ -146,7 +149,7 @@ namespace DbSchema.LocalDb.Models
             }
         } 
 
-        async Task<bool> Ping(ClusterDbContext db, List<ScriptModel> model_list)
+        async Task<bool> Ping()
         {
             var request = new RestRequest("ping");
             request.Method = Method.POST;
@@ -164,22 +167,26 @@ namespace DbSchema.LocalDb.Models
 
 
 
-        private async Task GetWorkerMetric(ClusterDbContext db, List<ScriptModel> models)
+        public async Task GetWorkerMetric(ClusterDbContext db, List<ScriptModel> models)
         {
             foreach (var model in models)
             {
-                var session = new ShellSession { Script = model.Script, ModelID = model.ID };
                 var request = new RestRequest("Shell")
-                    .AddJsonBody(session.Script);
-                request.Method = Method.POST;
+                    .AddJsonBody(model.Script);
+                request.Method = Method.GET;
 
                 var result = await _agentClient.ExecuteAsync(request);
                 if(result.StatusCode == HttpStatusCode.OK) 
                 { 
+                    var session = new ShellSession();                
+                    session.Model  = model;
                     session.Output = result.Content;
-                    session.WorkerID = ID;
-                    session.Time = DateTime.Now;
-                    db.CachedSession.Add(session);
+
+                    var device = db.Devices.Find(ID);
+                    device.Shells.Add(session);
+                    db.Update(device);
+
+                    await db.SaveChangesAsync();
                 }
             }
         }

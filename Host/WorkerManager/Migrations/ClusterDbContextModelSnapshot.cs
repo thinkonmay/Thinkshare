@@ -191,7 +191,9 @@ namespace WorkerManager.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Time")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("current_timestamp");
 
                     b.Property<int>("WorkerID")
                         .HasColumnType("integer");

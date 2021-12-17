@@ -8,7 +8,9 @@ using DbSchema.SystemDb.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 using SharedHost.Auth.ThinkmayAuthProtocol;
+using SharedHost.Models.User;
 
 namespace Conductor.Controllers
 {
@@ -20,21 +22,20 @@ namespace Conductor.Controllers
     public class ShellController : Controller
     {
         private readonly IWorkerCommnader _slmsocket;
-
+        private readonly UserManager<UserAccount> _userManager;
         private readonly GlobalDbContext _db;
 
-        public ShellController(IWorkerCommnader slmSocket, GlobalDbContext db)
+        public ShellController(UserManager<UserAccount> userManager,
+                            IWorkerCommnader slmSocket, 
+                            GlobalDbContext db )
         {
             _slmsocket = slmSocket;
+            _userManager = userManager;
             _db = db;
         }
 
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         [HttpGet("Model/All")]
         public IActionResult Model()
         {
@@ -42,16 +43,26 @@ namespace Conductor.Controllers
             return Ok(model);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+
         [Manager]
-        [HttpPost("Model/Update")]
-        public async Task<IActionResult> Update([FromBody] List<ShellSession> session)
+        [HttpPost("Add")]
+        public async Task<IActionResult> UpdateShellSession([FromBody] List<ShellSession> session, int WorkerID, string ClusterName)
         {
-            _db.ShellSession.AddRange(session);
+            var UserID = HttpContext.Items["UserID"];
+            var manager = await _userManager.FindByIdAsync(UserID.ToString());
+            var cluster = manager.ManagedCluster.Where(x => x.Name == ClusterName).First();
+            var worker = cluster.WorkerNode.Where(x => x.ID == WorkerID).First();
+
+            if (worker == null)
+            {
+                return BadRequest();
+            }
+
+            worker.Shells.Union(session);
+            _db.Update(worker);
+
             await _db.SaveChangesAsync();
+
             return Ok();
         }
     }
