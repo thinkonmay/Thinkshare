@@ -1,4 +1,6 @@
-import { getCookie } from "./cookie.js"
+import {
+	getCookie
+} from "./cookie.js"
 
 let host = "";
 let currentURL = document.URL
@@ -28,6 +30,7 @@ const GetInforClusterRoute = `${host}/Owner/Cluster/Infor`
 const GetClusterTokenRoute = `${host}/Owner/Cluster/Token`
 const GetWorkerInfor = `${host}/Owner/Cluster/Worker/Infor`
 const GetWorkerLog = `${host}/Owner/Cluster/Worker/Log`
+const GetWorkerLogTimeStamp = `${host}/Owner/Cluster/Worker/Log/Timestamp`
 const GetWorkerStateRoute = `${host}/Owner/Worker/State`
 const SetTurnRoute = `${host}/Owner/Cluster/TURN`
 const StartRoute = `${host}/Owner/Start`
@@ -66,26 +69,22 @@ const FetchSession = `${host_user}/Fetch/Session`
 export const genHeaders = () => {
 	const token = getCookie("token")
 	return Object.assign({
-		"Content-Type": "application/json"
-	},
-		token ?
-			{
-				Authorization: `${token}`
-			} :
-			{}
+			"Content-Type": "application/json"
+		},
+		token ? {
+			Authorization: `${token}`
+		} : {}
 	)
 }
 
 export const genHeadersUser = () => {
 	const token = getCookie("token")
 	return Object.assign({
-		"Content-Type": "application/json"
-	},
-		token ?
-			{
-				Authorization: `Bearer ${token}`
-			} :
-			{}
+			"Content-Type": "application/json"
+		},
+		token ? {
+			Authorization: `Bearer ${token}`
+		} : {}
 	)
 }
 
@@ -108,7 +107,7 @@ export const login = body => {
 }
 
 export const registerCluster = (isPrivate, Name) => {
-    RegisterClusterRoute = `${host}/Owner/Register`
+	RegisterClusterRoute = `${host}/Owner/Register`
 	if (isPrivate) {
 		RegisterClusterRoute += `?isPrivate=true&ClusterName=${Name}`
 	} else {
@@ -136,16 +135,25 @@ export const getClusterToken = () => {
 }
 
 export const getWorkerInfor = (workerNodeId) => {
-	return fetch(GetWorkerInfor+`?ID=${workerNodeId}`, {
+	return fetch(GetWorkerInfor + `?ID=${workerNodeId}`, {
 		method: "POST",
 		headers: genHeaders(),
 	})
 }
 
 export const getWorkerLog = (workerNodeId) => {
-	return fetch(GetWorkerLog+`?WorkerID=${workerNodeId}`, {
+	let fromTime = String(new Date((new Date()).getTime()-3600000)).slice(4,24)
+	let toTime = String(new Date()).slice(4,24)
+	return fetch(GetWorkerLogTimeStamp + `?WorkerID=${workerNodeId}&From=${fromTime}&To=${toTime}`, {
 		method: "GET",
 		headers: genHeaders(),
+	})
+}
+
+export const getWorkerLogTimeStamp = (workerNodeId, fromTime, toTime) => {
+	return fetch(GetWorkerLogTimeStamp + `?WorkerID=${workerNodeId}&From=${fromTime}&To=${toTime}`, {
+		method: "GET",
+		headers: genHeaders()
 	})
 }
 
@@ -280,7 +288,7 @@ export const initializeSession = (SlaveID) => {
 export const sessionSetting = (remoteToken) => {
 	return fetch(SessionInfor + "?token=" + remoteToken, {
 		method: "GET",
-		}, function (error) {
+	}, function (error) {
 		if (401 == error.response.status) {
 			window.location.replace(API.Login)
 		} else {
