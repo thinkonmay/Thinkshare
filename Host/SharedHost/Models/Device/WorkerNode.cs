@@ -1,7 +1,9 @@
 using System;
+using SharedHost.Models.Shell;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace SharedHost.Models.Device
 {
@@ -24,5 +26,8 @@ namespace SharedHost.Models.Device
         public string? GPU { get; set; }
         public int? RAMcapacity { get; set; }
         public string? OS { get; set; }
+
+        [JsonIgnore]
+        public virtual IList<ShellSession> Shells {get;set;}
     }
 }

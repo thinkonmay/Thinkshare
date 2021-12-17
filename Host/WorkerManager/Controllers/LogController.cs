@@ -13,6 +13,7 @@ using System;
 using RestSharp;
 using Newtonsoft.Json;
 using DbSchema.LocalDb;
+using System.Linq;
 using DbSchema.LocalDb.Models;
 
 // TODO: authentification
@@ -36,17 +37,20 @@ namespace WorkerManager.Controllers
             _db = db;
         }
 
-        [HttpPost("log")]
-        public async Task<IActionResult> Log([FromBody] string log)
-        {
-            var logRecord = new Log
-            {
-                Content = log,
-            };
 
-            _db.Logs.Add(logRecord);
+        [HttpPost("log")]
+        public async Task<IActionResult> Log([FromBody] string log, string ip)
+        {
+
+            var worker = _db.Devices.Where(o => o.PrivateIP == ip).First();
+            worker.Logs.Add( new Log {
+                Content = log,
+            });
+
+            _db.Update(worker);
             await _db.SaveChangesAsync();
             return Ok();
         }
+
     }
 }

@@ -92,7 +92,7 @@ namespace DbSchema.CachedState
             if (result == null)
             {
                 result = _db.Devices.Find(WorkerID);
-                await _cache.SetRecordAsync<WorkerNode>("WorkerInfor_"+WorkerID.ToString(), result,null,null);
+                await CacheWorkerInfor(result);
             }
             return result;
         }

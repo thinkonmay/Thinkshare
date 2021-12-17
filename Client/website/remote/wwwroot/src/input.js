@@ -3,7 +3,7 @@
  * @param {Event} event 
  */
 function 
-HidDCConnected(event)  
+connectionDone()  
 {
     document.getElementById("loading").innerHTML = " ";
     AttachEvent();
@@ -25,7 +25,7 @@ mouseButtonUp(event)
             "button":   event.button,
         }
     
-        SendHID(JSON.stringify(INPUT));
+        app.HidDC.send(JSON.stringify(INPUT));
     }else
     {
         var mousePosition_X = clientToServerX(event.clientX);
@@ -39,7 +39,7 @@ mouseButtonUp(event)
             "dY":       mousePosition_Y,
         }
     
-        SendHID(JSON.stringify(INPUT));
+        app.HidDC.send(JSON.stringify(INPUT));
     }
 }
 
@@ -58,7 +58,7 @@ mouseButtonDown(event)
             "button":   event.button,
         }
     
-        SendHID(JSON.stringify(INPUT));
+        app.HidDC.send(JSON.stringify(INPUT));
     }
     else
     {
@@ -73,7 +73,7 @@ mouseButtonDown(event)
             "dY":       mousePosition_Y
         }
     
-        SendHID(JSON.stringify(INPUT));
+        app.HidDC.send(JSON.stringify(INPUT));
     }
 }
 
@@ -102,7 +102,7 @@ mouseButtonMovement(event)
         "dX":       mousePosition_X,
         "dY":       mousePosition_Y,
     }
-    SendHID(JSON.stringify(INPUT));
+    app.HidDC.send(JSON.stringify(INPUT));
 }
 
 /**
@@ -123,7 +123,7 @@ mouseWheel(event)
         "WheeldY":  event.deltaY
     }
 
-    SendHID(JSON.stringify(INPUT));
+    app.HidDC.send(JSON.stringify(INPUT));
 }
 
 function 
@@ -143,7 +143,7 @@ reset_mouse()
             "dY":mousePosition_Y,
         }
 
-        SendHID(JSON.stringify(INPUT));
+        app.HidDC.send(JSON.stringify(INPUT));
     });
 }
 
@@ -166,7 +166,7 @@ reset_keyboard()
             "Opcode":HidOpcode.KEYUP,
             "wVk": element,
         }
-        SendHID(JSON.stringify(INPUT));
+        app.HidDC.send(JSON.stringify(INPUT));
     });
 }
 
@@ -186,7 +186,7 @@ function keyup(event)
         "wVk":event.code,
     }
 
-    SendHID(JSON.stringify(Keyboard));
+    app.HidDC.send(JSON.stringify(Keyboard));
 
     // disable problematic browser shortcuts
     if (event.code === 'F5' && event.ctrlKey ||
@@ -235,7 +235,7 @@ keydown(event)
         "wVk":event.code,
     }
 
-    SendHID(JSON.stringify(Keyboard));
+    app.HidDC.send(JSON.stringify(Keyboard));
 
     // disable problematic browser shortcuts
     if (event.code === 'F5' && event.ctrlKey ||
@@ -390,7 +390,7 @@ function pointerLock() {
             "Opcode":HidOpcode.POINTER_LOCK,
             "Value":true
         }
-        SendHID(JSON.stringify(INPUT));
+        app.HidDC.send(JSON.stringify(INPUT));
     } else {        
         app.Mouse.relativeMouse = false;
         var INPUT =
@@ -398,7 +398,7 @@ function pointerLock() {
             "Opcode":HidOpcode.POINTER_LOCK,
             "Value":false
         }
-        SendHID(JSON.stringify(INPUT));
+        app.HidDC.send(JSON.stringify(INPUT));
     }
 }
 

@@ -22,11 +22,13 @@ namespace DbSchema.CachedState
     }
     public class LocalStateStore : ILocalStateStore
     {
+        private readonly ClusterDbContext _db;
         private IDistributedCache _cache;
 
         public LocalStateStore(IDistributedCache cache, ClusterDbContext db)
         {
             _cache = cache;
+            _db = db;
             var nodes = db.Devices.ToList();
             var initState = new Dictionary<int,string>();
             nodes.ForEach(x => initState.Add(x.ID,WorkerState.Disconnected));
@@ -62,15 +64,13 @@ namespace DbSchema.CachedState
         }
         public async Task<ClusterWorkerNode?> GetWorkerInfor(int PrivateID)
         {
-            var cachedValue = await _cache.GetRecordAsync<ClusterWorkerNode?>("Worker_" + PrivateID.ToString());
-            if (cachedValue != null)
+            var worker = await _cache.GetRecordAsync<ClusterWorkerNode?>("Worker_" + PrivateID.ToString());
+            if(worker == null)
             {
-                return cachedValue;
+                worker = _db.Devices.Find(PrivateID);
+                await CacheWorkerInfor(worker);
             }
-            else
-            {
-                return null;
-            }
+            return worker;
         }
     }
 }

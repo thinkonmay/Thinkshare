@@ -24,6 +24,8 @@ namespace WorkerManager.Services
 
         private Task _sessionHeartBeat;
 
+        private Task _workerShell;
+
         private bool isRunning;
 
         public WorkerNodePool(IConductorSocket socket, 
@@ -43,6 +45,7 @@ namespace WorkerManager.Services
                 isRunning = true;
                 _systemHeartBeat =  Task.Run(() => SystemHeartBeat());
                 _sessionHeartBeat = Task.Run(() => SessionHeartBeat());
+                _workerShell =      Task.Run(() => GetWorkerMetric());
                 return true;
             }
             else
@@ -95,15 +98,8 @@ namespace WorkerManager.Services
 
                         // find is cache first, the find in sqldb if not present on redis
                         ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                        if (worker == null)
-                        {
-                            worker = _db.Devices.Find(item.Key);
-                            await _cache.CacheWorkerInfor(worker);
-                        }
-
                         worker.RestoreWorkerNode();
-                        var result = await worker.PingSession();
-                        if(result)
+                        if(await worker.PingSession())
                         {
                             worker.sessionFailedPing = 0;
                             continue;
@@ -112,6 +108,11 @@ namespace WorkerManager.Services
                         {
                             worker.sessionFailedPing++;
                         }
+                        await _cache.CacheWorkerInfor(worker);
+                        
+
+
+
 
                         if(worker.sessionFailedPing > 5)
                         {
@@ -136,7 +137,6 @@ namespace WorkerManager.Services
 
         public async Task SystemHeartBeat()
         {
-            var _model_list = _db.ScriptModels.ToList();
             try
             {
                 while(true)
@@ -156,15 +156,8 @@ namespace WorkerManager.Services
                     foreach (var keyValue in worker_list)
                     {
                         ClusterWorkerNode worker = await _cache.GetWorkerInfor(keyValue.Key);
-                        if(worker == null)
-                        {
-                            worker = _db.Devices.Find(keyValue.Key);
-                            await _cache.CacheWorkerInfor(worker);
-                        }
-
                         worker.RestoreWorkerNode();
-                        var success = await worker.PingWorker(_db,_model_list);
-                        if(success)
+                        if(await worker.PingWorker())
                         {
                             worker.agentFailedPing = 0;
                             if(keyValue.Value == WorkerState.Disconnected)
@@ -177,6 +170,10 @@ namespace WorkerManager.Services
                             worker.agentFailedPing++;
                         }
                         await _cache.CacheWorkerInfor(worker);
+
+
+
+
 
                         if(worker.agentFailedPing > 5)
                         {
@@ -192,6 +189,26 @@ namespace WorkerManager.Services
                 Serilog.Log.Information(ex.StackTrace);
                 Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 await SystemHeartBeat();
+            }
+        }
+
+        async Task GetWorkerMetric()
+        {
+            var model_list = _db.ScriptModels.ToList();
+            while (true)
+            {
+                if(!isRunning)
+                {
+                    return;
+                }
+                var worker_list = await _cache.GetClusterState();
+                foreach (var item in worker_list.Where(x => x.Value != WorkerState.Disconnected))
+                {
+                    ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
+                    worker.RestoreWorkerNode();
+                    worker.GetWorkerMetric(_db,model_list);
+                }
+                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
             }
         }
 
