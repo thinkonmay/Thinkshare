@@ -28,22 +28,22 @@ namespace SharedHost.Models.Shell
         }
         public string GetCpuUsage() 
         {
-            return System.IO.File.ReadAllText(System.IO.Path.Combine(_env.WebRootPath,@".\GetCPUUsage.ps1"));
+            return System.IO.File.ReadAllText(System.IO.Path.Combine(_env.WebRootPath,"GetCPUUsage.ps1"));
         }
     
         public string GetRamUsage ()
         {
-            return System.IO.File.ReadAllText(System.IO.Path.Combine(_env.WebRootPath,@".\GetRAMUsage.ps1"));
+            return System.IO.File.ReadAllText(System.IO.Path.Combine(_env.WebRootPath,"GetRAMUsage.ps1"));
         }
 
         public string GetStorageState () 
         {
-            return System.IO.File.ReadAllText(System.IO.Path.Combine(_env.WebRootPath,@".\GetStorage.ps1"));
+            return System.IO.File.ReadAllText(System.IO.Path.Combine(_env.WebRootPath,"GetStorage.ps1"));
         }
 
         public string GetGPUusage ()
         {
-            return System.IO.File.ReadAllText(System.IO.Path.Combine(_env.WebRootPath,@".\GetGPUUsage.ps1"));
+            return System.IO.File.ReadAllText(System.IO.Path.Combine(_env.WebRootPath,"GetGPUUsage.ps1"));
         } 
 
     }
