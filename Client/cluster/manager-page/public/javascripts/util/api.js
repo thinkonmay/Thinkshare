@@ -28,6 +28,7 @@ const GetInforClusterRoute = `${host}/Owner/Cluster/Infor`
 const GetClusterTokenRoute = `${host}/Owner/Cluster/Token`
 const GetWorkerInfor = `${host}/Owner/Cluster/Worker/Infor`
 const GetWorkerLog = `${host}/Owner/Cluster/Worker/Log`
+const GetWorkerLogTimeStamp = `${host}/Owner/Cluster/Worker/Log/Timestamp`
 const GetWorkerStateRoute = `${host}/Owner/Worker/State`
 const SetTurnRoute = `${host}/Owner/Cluster/TURN`
 const StartRoute = `${host}/Owner/Start`
@@ -146,6 +147,13 @@ export const getWorkerLog = (workerNodeId) => {
 	return fetch(GetWorkerLog+`?WorkerID=${workerNodeId}`, {
 		method: "GET",
 		headers: genHeaders(),
+	})
+}
+
+export const getWorkerLogTimeStamp = (workerNodeId, fromTime, toTime) => {
+	return fetch(GetWorkerLogTimeStamp + `?WorkerID=${workerNodeId}&From=${fromTime}&To=${toTime}`, {
+		method: "GET",
+		headers: genHeaders()
 	})
 }
 
