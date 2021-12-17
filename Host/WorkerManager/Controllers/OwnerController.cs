@@ -316,10 +316,18 @@ namespace WorkerManager.Controllers
 
         [Owner]
         [HttpGet("Cluster/Worker/Log/Timestamp")]
-        public async Task<IActionResult> GetLog(int WorkerID, DateTime From, DateTime To)
+        public async Task<IActionResult> GetLogWithOptions(int WorkerID, DateTime From, DateTime To)
         {
             var worker = _db.Devices.Find(WorkerID);
-            return Ok(worker.Logs.Where(x => x.LogTime > From && x.LogTime < To));
+            var array = worker.Logs.Where(x => x.LogTime > From && x.LogTime < To).OrderBy(x => x.LogTime).ToArray();
+            if(array.Count() > 60)
+            {
+                return Ok(array.Take(60));
+            }
+            else
+            {
+                return Ok(array);
+            }
         }
     }
 }
