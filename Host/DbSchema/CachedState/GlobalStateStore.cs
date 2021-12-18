@@ -145,7 +145,7 @@ namespace DbSchema.CachedState
             var sessionWorker = new SessionWorker
             {
                 signallingurl = config.SignallingWs,
-                turn = "turn://" + cluster.turnUSER + ":" + cluster.turnPASSWORD + "@turn:" + cluster.turnIP + ":3478",
+                turn = "turn://" + cluster.TurnUser + ":" + cluster.TurnPassword + "@turn:" + cluster.TurnIp + ":3478",
 
                 clientdevice = defaultSetting.device,
                 clientengine = defaultSetting.engine,
@@ -160,9 +160,9 @@ namespace DbSchema.CachedState
             var sessionClient = new SessionClient
             {
                 signallingurl = config.SignallingWs,
-                turnip =  "turn:"+cluster.turnIP + ":3478",
-                turnuser = cluster.turnUSER,
-                turnpassword = cluster.turnPASSWORD,
+                turnip =  "turn:"+cluster.TurnIp + ":3478",
+                turnuser = cluster.TurnUser,
+                turnpassword = cluster.TurnPassword,
                 audiocodec = defaultSetting.audioCodec,
                 videocodec = defaultSetting.videoCodec,
                 stuns = config.STUNlist

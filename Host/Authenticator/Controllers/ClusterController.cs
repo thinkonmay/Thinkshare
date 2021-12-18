@@ -158,9 +158,9 @@ namespace Authenticator.Controllers
 
 
 
-            cluster.turnIP = turnIP;
-            cluster.turnUSER = turnUSER;
-            cluster.turnPASSWORD = turnPASSWORD;    
+            cluster.TurnIp = turnIP;
+            cluster.TurnUser = turnUSER;
+            cluster.TurnPassword = turnPASSWORD;    
             _db.Update(cluster);
             await _db.SaveChangesAsync();
             return Ok();

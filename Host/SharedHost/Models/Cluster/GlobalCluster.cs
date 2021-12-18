@@ -28,17 +28,17 @@ namespace SharedHost.Models.Cluster
         /// 
         /// </summary>
         /// <value></value>
-        public string turnIP { get; set; }
+        public string TurnIp { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string turnUSER { get; set; }
+        public string TurnUser { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public string turnPASSWORD { get;set;}
+        public string TurnPassword { get;set;}
         /// <summary>
         /// 
         /// </summary>
