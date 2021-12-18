@@ -12,8 +12,6 @@ namespace WorkerManager.Services
 {
     public class WorkerNodePool : IWorkerNodePool
     {
-        private readonly IConductorSocket _socket;
-
         private readonly ILocalStateStore _cache;
 
         private readonly ClusterDbContext _db;
@@ -28,12 +26,10 @@ namespace WorkerManager.Services
 
         private bool isRunning;
 
-        public WorkerNodePool(IConductorSocket socket, 
-                              ILocalStateStore cache,
+        public WorkerNodePool(ILocalStateStore cache,
                               ClusterDbContext db)
         {
             _cache = cache;
-            _socket = socket;
             isRunning = false;
             _db = db;
         }
@@ -59,6 +55,7 @@ namespace WorkerManager.Services
             if(isRunning)
             {
                 isRunning = false;
+                _workerShell.Wait();
                 _systemHeartBeat.Wait();
                 _sessionHeartBeat.Wait();
                 return true;
