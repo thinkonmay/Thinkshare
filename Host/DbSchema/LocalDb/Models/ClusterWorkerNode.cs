@@ -113,22 +113,13 @@ namespace DbSchema.LocalDb.Models
 
 
 
-        public async Task<bool> PingSession()
-        {
-            var request = new RestRequest("ping");
-            request.Method = Method.POST;
-
-            var result = await _coreClient.ExecuteAsync(request);
-            if(result.StatusCode == HttpStatusCode.OK) { return true; }
-            else { return false; }
-        }
 
 
-        public async Task<bool> PingWorker()
+        public async Task<bool> PingWorker(Module module)
         {
             using (var timeoutCancellation = new CancellationTokenSource())
             {
-                var originalTask = Ping();
+                var originalTask = Ping(module);
                 var delayTask = Task.Delay(TimeSpan.FromMilliseconds(100));
                 var completedTask = await Task.WhenAny(originalTask, delayTask);
                 // Cancel timeout to stop either task:
@@ -149,18 +140,30 @@ namespace DbSchema.LocalDb.Models
             }
         } 
 
-        async Task<bool> Ping()
+        async Task<bool> Ping(Module module)
         {
+            IRestResponse result;
             var request = new RestRequest("ping");
             request.Method = Method.POST;
 
-            var result = await _agentClient.ExecuteAsync(request);
+            if(module == Module.CORE_MODULE)
+            {
+                result = await _coreClient.ExecuteAsync(request);
+            }
+            else if (module == Module.AGENT_MODULE)
+            {
+                result = await _agentClient.ExecuteAsync(request);
+            }
+            else
+            {
+                return false;
+            }
+
             if(result.StatusCode == HttpStatusCode.OK) { 
                 return true; 
             } else { 
                 return false; 
             }
-
         }
 
 

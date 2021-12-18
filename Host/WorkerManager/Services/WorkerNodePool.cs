@@ -82,40 +82,32 @@ namespace WorkerManager.Services
                     }
                     
                     var worker_list = await _cache.GetClusterState();
-                    if(worker_list == null)
-                    {
-                        Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
-                        continue;
-                    }
-
                     foreach (var item in worker_list)
                     {
-                        if(item.Value != WorkerState.OnSession)
+                        var workerState = await _cache.GetWorkerState(item.Key);
+                        if(workerState == WorkerState.OnSession)
                         {
-                            continue;
-                        }
+                            // find is cache first, the find in sqldb if not present on redis
+                            ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
+                            worker.RestoreWorkerNode();
+                            if(await worker.PingWorker(Module.CORE_MODULE))
+                            {
+                                worker.sessionFailedPing = 0;
+                            }
+                            else
+                            {
+                                worker.sessionFailedPing++;
+                            }
+                            await _cache.CacheWorkerInfor(worker);
 
-                        // find is cache first, the find in sqldb if not present on redis
-                        ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                        worker.RestoreWorkerNode();
-                        if(await worker.PingSession())
-                        {
-                            worker.sessionFailedPing = 0;
-                            continue;
-                        }
-                        else
-                        {
-                            worker.sessionFailedPing++;
-                        }
-                        await _cache.CacheWorkerInfor(worker);
-                        
-
-
-
-
-                        if(worker.sessionFailedPing > 7)
-                        {
-                            await _cache.SetWorkerState(item.Key, WorkerState.OffRemote);
+                            if(worker.sessionFailedPing > 5)
+                            {
+                                var workerStateConfirm = await _cache.GetWorkerState(item.Key);
+                                if(workerStateConfirm == WorkerState.OnSession)
+                                {
+                                    await _cache.SetWorkerState(item.Key, WorkerState.OffRemote);
+                                }
+                            }
                         }
                     }
                     Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
@@ -143,17 +135,11 @@ namespace WorkerManager.Services
                     }
 
                     var worker_list = await _cache.GetClusterState();
-                    if(worker_list == null)
-                    {
-                        Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
-                        continue;
-
-                    }
                     foreach (var keyValue in worker_list)
                     {
                         ClusterWorkerNode worker = await _cache.GetWorkerInfor(keyValue.Key);
                         worker.RestoreWorkerNode();
-                        if(await worker.PingWorker())
+                        if(await worker.PingWorker(Module.AGENT_MODULE))
                         {
                             worker.agentFailedPing = 0;
                             if(keyValue.Value == WorkerState.Disconnected)
@@ -171,7 +157,7 @@ namespace WorkerManager.Services
 
 
 
-                        if(worker.agentFailedPing > 5)
+                        if(worker.agentFailedPing > 10)
                         {
                             await _cache.SetWorkerState(keyValue.Key, WorkerState.Disconnected);
                         }
