@@ -170,17 +170,17 @@ namespace Authenticator.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
 
+                    b.Property<string>("TurnIp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TurnPassword")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TurnUser")
+                        .HasColumnType("text");
+
                     b.Property<int?>("UserAccountId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("turnIP")
-                        .HasColumnType("text");
-
-                    b.Property<string>("turnPASSWORD")
-                        .HasColumnType("text");
-
-                    b.Property<string>("turnUSER")
-                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
