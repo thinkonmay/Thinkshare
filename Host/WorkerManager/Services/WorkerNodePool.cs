@@ -99,15 +99,6 @@ namespace WorkerManager.Services
                                 worker.sessionFailedPing++;
                             }
                             await _cache.CacheWorkerInfor(worker);
-
-                            if(worker.sessionFailedPing > 5)
-                            {
-                                var workerStateConfirm = await _cache.GetWorkerState(item.Key);
-                                if(workerStateConfirm == WorkerState.OnSession)
-                                {
-                                    await _cache.SetWorkerState(item.Key, WorkerState.OffRemote);
-                                }
-                            }
                         }
                     }
                     Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
