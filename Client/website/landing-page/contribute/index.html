@@ -4,7 +4,7 @@
       <meta charset="utf-8">
       <meta name="description" content="">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>Scribbler - a codding landing page template for codrops</title>
+      <title>Thinkmay - contributor</title>
       <link rel="shortcut icon" href="../assets/images/logo_thinkmay_none.png" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
       <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,600,700,800,900" rel="stylesheet">
@@ -15,69 +15,105 @@
   </head>
   <body>
     <nav>
-      <div class="logo"></div>
+      <div href="../assets/images/logo_thinkmay_none.png" class="logo"></div>
       <ul class="menu">
         <div class="menu__item toggle"><span></span></div>
-        <li class="menu__item"><a href="doc.html" class="link link--dark"><i class="fa fa-book"></i> Documentation</a></li>
-        <li class="menu__item"><a href="https://github.com/pigeatgarlic/Thinkmay-worker" class="link link--dark"><i class="fa fa-github"></i> Github</a></li>
-        <li class="menu__item"><a href="https://join.slack.com/t/thinkmayworkspace/shared_invite/zt-ywglslgj-fQb4Po4JagVaHbZ8wwiqpg" class="link link--dark"><i class="fa fa-slack"></i></i> Slack</a></li>
-        <li class="menu__item"><a href="" class="link link--dark"> <img style="width: 1rem;" src="https://miro.com/static/favicons/favicon.ico?cbh=29b45061748a5faabb42beed5d529ef9"/>   Miro</a></li>
+        <li class="menu__item"><a href="../index.html" class="link link--dark"><i class="fa fa-home"></i> Home</a></li>
+        <li class="menu__item"><a href="https://github.com/thinkonmay/personal-cloud-computing" class="link link--dark"><i class="fa fa-github"></i>Github</a></li>
+        <li class="menu__item"><a href="https://thinkonmay.notion.site/personal-cloud-computing-393f8183ddca4c33a919ce906ebd2d1c" class="link link--dark"><i class="fa fa-book"></i> Documentation</a></li>
+        <li class="menu__item"><a href="https://join.slack.com/t/thinkmayworkspace/shared_invite/zt-ywglslgj-fQb4Po4JagVaHbZ8wwiqpg" class="link link--dark"><i class="fa fa-slack"></i></i>Communication</a></li>
+        <li class="menu__item"><a href="https://miro.com/app/board/o9J_lTKComc=/?invite_link_id=202014558866" class="link link--dark"> <img style="width: 1rem;" src="https://miro.com/static/favicons/favicon.ico?cbh=29b45061748a5faabb42beed5d529ef9"/>Architecture</a></li>
       </ul>
     </nav>
-    <div class="hero">
-      <h1 class="hero__title">Thinkmay</h1>
-      <p class="hero__description">a platform allow you to hire personal computer from the other</p>
+    <div style="padding-bottom: 200px; " class="hero">
+      <h1 class="hero__title">Personal cloud computing</h1>
+      <p class="hero__description">The technology stack to access a computer remotely</p>
     </div>
+
+
+
+
+
+
     <div class="hero__terminal">
+        <div class="tab__container">
+          <ul class="tab__menu">
+            <li class="tab" data-tab="build" style="color: black;">build</li>
+            <li class="tab active" data-tab="run"style="color: black;">run</li>
+            <li class="tab" data-tab="host"style="color: black;">host</li>
+            <li class="tab" data-tab="test"style="color: black;">test</li>
+          </ul>
+        </div>
       <pre>
         <!-- Place your demo code here -->
-        <code class="shell-session demo">hyperyolo ~ $ </code>
+        <code class="shell-session">thinkmay ~ $ 
+          <code id="demo">
+          </code>
+        </code>
       </pre>
     </div>
     <div class="wrapper">
-      <div class="installation">
-        <h3 class="section__title">Installation</h3>
-        <div class="tab__container">
-          <ul class="tab__menu">
-            <li class="tab active" data-tab="mac">mac</li>
-            <li class="tab" data-tab="linux">linux</li>
-            <li class="tab" data-tab="win">win</li>
-          </ul>
-          <pre class="nohighlight code">
-            <code class="tab__pane active mac">$  brew install scribbler</code>
-            <code class="tab__pane linux">$  apt-get install scribbler</code>
-            <code class="tab__pane win">$  gem install scribbler</code>
-          </pre>
-        </div>
-      </div>
+
+
+
+      <h1 style="margin-top: 100px;">Feature</h1>
       <div class="feature">
         <div class="feature__item">
-          <h3 class="section__title">Fast & Light</h3>
-          <p>Start writing your notes immediately in any terminal! No more time wasted on navigating and opening your text editor.</p>
+          <h3 class="section__title">WebRTC</h3>
+          <p>WebRTC is optimized for video streaming with sub-300ms latency</p>
         </div>
         <div class="feature__item">
-          <h3 class="section__title">File Syncing</h3>
-          <p>User personal data is save on AWS S3 bucket so that you can access to it from anywhere.</p>
+          <h3 class="section__title">HEVC</h3>
+          <p>H265 codec is enabled for the better video latency and image quality</p>
         </div>
         <div class="feature__item">
-          <h3 class="section__title">Secure</h3>
-          <p>Encrypt your notes optionally. No one can get to your secrets! </p>
+          <h3 class="section__title">4K</h3>
+          <p>Up to 4K video streaming</p>
         </div>
         <div class="feature__item">
-          <h3 class="section__title">Configuration</h3>
-          <p>Cluster configuration is store inside a postgresql database together with worker node information
-            <!-- <span class="code code--inline">config.json</span> -->
-            . Cluster manager is in control of their hardware.</p>
+          <h3 class="section__title">GPU accelerated</h3>
+          <p>GPU video encoding are superior in term of quality and latency</p>
         </div>
         <div class="feature__item">
-          <h3 class="section__title">Highlightings</h3>
-          <p>For better readability, scribbler has a clean, beautiful color scheme allow you to scan files fast.</p>
+          <h3 class="section__title">Multiple platform</h3>
+          <p>We support both progressive webapp for quick accession and native app for maximum quality</p>
         </div>
         <div class="feature__item">
-          <h3 class="section__title">Keybindings</h3>
-          <p>You can expect common keybindings for scribbler. Customize 
-            <!-- <span class="code code--inline">bindings.json</span>  -->
-            for your own liking! </p>
+          <h3 class="section__title">Community based</h3>
+          <p>Open source means quick bug report and adaptation</p>
+        </div>
+      </div>
+
+      <h1>Dependencies</h1>
+      <h5 >Gstreamer</h5>
+      <p>Core multimedia framework <br>
+      <a href="https://gstreamer.freedesktop.org/data/pkg/windows/1.19.2/msvc/gstreamer-1.0-msvc-x86_64-1.19.2.msi" style="color:rgb(5, 81, 121); font-size:small;">Download binary</a><br>
+      <a href="https://gstreamer.freedesktop.org/data/pkg/windows/1.19.2/msvc/gstreamer-1.0-devel-msvc-x86_64-1.19.2.msi" style="color:rgb(5, 81, 121); font-size:small;">Download development kit</a>
+      </p>
+
+      <h5>Visual Studio</h5>
+      <p>For building application on window.<br>
+      <a href="https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=17#install" style="color:rgb(7, 107, 160); font-size:small;">Download site</a>
+      </p>
+
+      <h5>CABLE VB Audio</h5>
+      <p>For capturing audio input device<br>
+      <a href="https://download.vb-audio.com/Download_MAC/VBCable_MACDriver_Pack108.zip" style="color:rgb(5, 81, 121); font-size:small;">Download driver</a>
+      </p>
+
+      <div class="installation">
+        <h4 class="section__title">Verify</h4>
+        <div class="tab__container">
+          <ul class="tab__menu">
+            <li class="tab active" data-tab="win">win</li>
+            <li class="tab" data-tab="linux">linux</li>
+            <li class="tab" data-tab="mac">mac</li>
+          </ul>
+          <pre class="nohighlight code">
+            <code class="tab__pane active win">$ ./bin/videotesting.exe</code>
+            <code class="tab__pane mac">$ not available yet </code>
+            <code class="tab__pane linux">$ not available yet</code>
+          </pre>
         </div>
       </div>
       <!-- <div class="keybinding">
@@ -98,7 +134,7 @@
       </div> -->
       <div class="callout">
         <p>Read our detailed documentation on notion</p>
-        <a href="https://www.notion.so/invite/d8ab5a15ff6ca0f4df12c3e6b292456dfb9a83b9" class="button--primary">Documentation</a>
+        <a href="https://thinkonmay.notion.site/personal-cloud-computing-393f8183ddca4c33a919ce906ebd2d1c" class="button--primary">Documentation</a>
       </div>
     </div>
     <div class="changelog">
@@ -107,24 +143,35 @@
 
         <div class="changelog__item">
           <div class="changelog__meta">
+            <h4 class="changelog__title">v1.0</h4>
+            <small class="changelog__date">18/12/2021</small>
+          </div>
+          <div class="changelog__detail">
+            <ul>
+              <li>Form into the only repository <a href="https://github.com/thinkonmay/personal-cloud-computing">personal-cloud-computing</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="changelog__item">
+          <div class="changelog__meta">
             <h4 class="changelog__title">v0.8</h4>
             <small class="changelog__date">17/11/2021</small>
           </div>
           <div class="changelog__detail">
             <ul>
-              <li>Initialize github repo, resparate from host source code</li>
+              <li>Separate from thinkmay personal-cloud-computing-server repository</li>
             </ul>
           </div>
         </div>
-
         
 
-        <div class="changelog__callout">
+        <!-- <div class="changelog__callout">
           <a href="#" class="button--secondary">Checkout Full Log</a>
-        </div>
+        </div> -->
       </div>
     </div>
-    <footer class="footer">Scribbler is a free HTML template created exclusively for <a href="https://tympanus.net/codrops/" target="_blank" class="link link--light">Codrops</a>.</footer>
+    <footer class="footer"> </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <script src="scribbler.js"></script>
