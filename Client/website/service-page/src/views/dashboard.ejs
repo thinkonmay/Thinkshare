@@ -8,55 +8,10 @@
   </title>
   <% include partials/head %>
     <style>
-      .navbar1 {
-        overflow: hidden;
-        background-color: rgb(0 0 0 / 86%);
-        position: fixed;
-        bottom: 0;
-      }
-
-      .navbar1 a {
-        display: block;
-        color: #f2f2f2;
-        text-align: center;
-        padding: 26px;
-        text-decoration: none;
-        font-size: 22px;
-        float: right;
-      }
-
-      .navbar1 a:hover {
-        background: #f1f1f1;
-        color: rgb(255, 255, 255);
-      }
-
-      .navbar1 a.active {
-        background-color: #4CAF50;
-        color: #fff;
-      }
-
-      #content {
-        position: relative;
-      }
-
-      #content img {
-        position: absolute;
-        top: 0px;
-        right: 0px;
-      }
-
-      #content1 {
-        position: absolute;
-        /* position: relative; */
-        left: 0px;
-        top: 0px;
-      }
     </style>
 
 </head>
-
 <body>
-
 
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
@@ -83,6 +38,12 @@
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
+          <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+            <h3 class="welcome-sub-text">
+              If you don't see any devices, let's book!
+              <a target="_blank" href="https://forms.gle/4m8cr9J84nnrDarR9">Click here!</a>
+            </h3>
+          </li>
           <!-- <a href="/dashboard/vi"><img src="images/vietnam.png" width="32" height="32" /></a>
           <span style="padding: 5px;"></span>
           <a href="/dashboard/en"><img src="images/united-states.png" width="32" height="32" /></a>
@@ -296,42 +257,6 @@
                                     </div>
                                     <canvas class="my-auto" id="doughnutChart" height="200"></canvas>
                                     <div id="doughnut-chart-legend" class="mt-5 text-center"></div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-
-                          <div class="col-md-6 col-lg-12 grid-margin stretch-card">
-                            <div class="card card-rounded">
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col-sm-6">
-                                    <div class="d-flex justify-content-between align-items-center mb-2 mb-sm-0">
-                                      <div class="circle-progress-width">
-                                        <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
-                                      </div>
-                                      <div>
-                                        <p class="text-small mb-2">
-                                          <%=right_body_content1%>
-                                        </p>
-                                        <h4 class="mb-0 fw-bold">26.80%</h4>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-6">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                      <div class="circle-progress-width">
-                                        <div id="visitperday" class="progressbar-js-circle pr-2"></div>
-                                      </div>
-                                      <div>
-                                        <p class="text-small mb-2">
-                                          <%=right_body_content2%>
-                                        </p>
-                                        <h4 class="mb-0 fw-bold">9065</h4>
-                                      </div>
-                                    </div>
                                   </div>
                                 </div>
                               </div>

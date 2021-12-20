@@ -144,7 +144,7 @@ export const getWorkerInfor = (workerNodeId) => {
 export const getWorkerLog = (workerNodeId) => {
 	let fromTime = String(new Date((new Date()).getTime()-3600000)).slice(4,24)
 	let toTime = String(new Date()).slice(4,24)
-	return fetch(GetWorkerLogTimeStamp + `?WorkerID=${workerNodeId}&From=${fromTime}&To=${toTime}`, {
+	return fetch(GetWorkerLogTimeStamp + `?WorkerID=${workerNodeId}&From=${fromTime}}&To=${toTime}`, {
 		method: "GET",
 		headers: genHeaders(),
 	})
