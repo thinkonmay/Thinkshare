@@ -25,6 +25,8 @@ API.getInfor().then(async data => {
 
 
 
+
+
 $(document).ready(async () => {
 	let nameOfCluster;
 	let isPrivate;
@@ -32,6 +34,41 @@ $(document).ready(async () => {
 	let turnIP
 	let turnUSER
 	let turnPASSWORD
+
+	let timeStampFrom = $("#stamp-time-from").val()
+	let timeStampTo = $("#stamp-time-to").val()
+
+
+	setCurrentDateTimeLog()
+	$("#stamp-time-from").on("change", function () {
+		timeStampFrom = $("#stamp-time-from").val()
+	})
+	$("#stamp-time-to").on("change", function () {
+		timeStampTo = $("#stamp-time-to").val()
+	})
+
+
+	$("#getLogWithTime").click(() => {
+		API.getWorkerLogTimeStamp(logViewId, String(new Date(timeStampFrom)).slice(4,24), String(new Date(timeStampTo)).slice(4,24)).then(async data => {
+			let body = await data.json();
+			dataLog[logViewId] = body;
+			append('WorkerNode-Log', `<p></p>`)
+			for (let i = 0; i <= dataLog[logViewId].length; i++)
+				append('WorkerNode-Log', `
+				<tr>
+				<td>
+					<b>${dataLog[logViewId].at(i).id}</b>
+				</td> 
+				<td>
+					<b>${dataLog[logViewId].at(i).content}</b>
+				</td>
+				<td>
+				  <b>${dataLog[logViewId].at(i).logTime}</b>
+				</td>
+			  </tr>
+				`)
+		})
+	})
 
 	API.isRegistered().then(async data => {
 		if (data.status == 200) {
@@ -263,6 +300,22 @@ $(document).ready(async () => {
 	}
 
 })
+
+function setCurrentDateTimeLog() {
+	let currentDate = String(new Date().toISOString()).slice(0, 16)
+	let minDate = String(new Date((new Date()).getTime() - 86400000).toISOString()).slice(0, 16)
+	let defaultDate = String(new Date((new Date()).getTime() - 3600).toISOString()).slice(0, 16)
+	$('#stamp-time-from').attr({
+		"max": currentDate,
+		"min": minDate,
+		"value": defaultDate
+	});
+	$('#stamp-time-to').attr({
+		"max": currentDate,
+		"min": minDate,
+		"value": defaultDate
+	});
+}
 
 function onClientHubEvent(event) {
 	try {

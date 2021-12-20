@@ -1,5 +1,14 @@
+label {
+    display: block;
+    font: 1rem 'Fira Sans', sans-serif;
+}
+
+input,
+label {
+    margin: .4rem 0;
+}
+
 /* Tab bar /////////////////////////////////////////////////////////////////////*/
-@import "bourbon";
 @import 'https://fonts.googleapis.com/css?family=Montserrat:400,700|Raleway:300,400';
 /* colors */
 /* tab setting */
