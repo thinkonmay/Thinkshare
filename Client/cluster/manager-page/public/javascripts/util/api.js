@@ -116,6 +116,12 @@ export const registerCluster = (isPrivate, Name) => {
 	return fetch(RegisterClusterRoute, {
 		method: "POST",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -123,6 +129,12 @@ export const getInforClusterRoute = () => {
 	return fetch(GetInforClusterRoute, {
 		method: "GET",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -131,6 +143,12 @@ export const getClusterToken = () => {
 	return fetch(GetClusterTokenRoute, {
 		method: "GET",
 		headers: genHeaders(),
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -138,6 +156,12 @@ export const getWorkerInfor = (workerNodeId) => {
 	return fetch(GetWorkerInfor + `?ID=${workerNodeId}`, {
 		method: "POST",
 		headers: genHeaders(),
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -147,6 +171,12 @@ export const getWorkerLog = (workerNodeId) => {
 	return fetch(GetWorkerLogTimeStamp + `?WorkerID=${workerNodeId}&From=${fromTime}}&To=${toTime}`, {
 		method: "GET",
 		headers: genHeaders(),
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -154,6 +184,12 @@ export const getWorkerLogTimeStamp = (workerNodeId, fromTime, toTime) => {
 	return fetch(GetWorkerLogTimeStamp + `?WorkerID=${workerNodeId}&From=${fromTime}&To=${toTime}`, {
 		method: "GET",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -161,6 +197,12 @@ export const getWorkerStateRoute = () => {
 	return fetch(GetWorkerStateRoute, {
 		method: "GET",
 		headers: genHeaders(),
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -168,6 +210,12 @@ export const setTurn = (ip, username, password) => {
 	return fetch(SetTurnRoute + `?turnIP=${ip}&turnUSER=${username}&turnPASSWORD${password}`, {
 		method: 'POST',
 		headers: genHeaders(),
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -175,6 +223,12 @@ export const start = () => {
 	return fetch(StartRoute, {
 		method: "POST",
 		headers: genHeaders(),
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -183,6 +237,12 @@ export const stop = () => {
 	return fetch(StopRoute, {
 		method: "POST",
 		headers: genHeaders(),
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -191,6 +251,12 @@ export const isRegistered = () => {
 	return fetch(IsRegisteredRoute, {
 		method: "POST",
 		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
