@@ -12,8 +12,6 @@ namespace WorkerManager.Services
 {
     public class WorkerNodePool : IWorkerNodePool
     {
-        private readonly IConductorSocket _socket;
-
         private readonly ILocalStateStore _cache;
 
         private readonly ClusterDbContext _db;
@@ -28,12 +26,10 @@ namespace WorkerManager.Services
 
         private bool isRunning;
 
-        public WorkerNodePool(IConductorSocket socket, 
-                              ILocalStateStore cache,
+        public WorkerNodePool(ILocalStateStore cache,
                               ClusterDbContext db)
         {
             _cache = cache;
-            _socket = socket;
             isRunning = false;
             _db = db;
         }
@@ -59,6 +55,7 @@ namespace WorkerManager.Services
             if(isRunning)
             {
                 isRunning = false;
+                _workerShell.Wait();
                 _systemHeartBeat.Wait();
                 _sessionHeartBeat.Wait();
                 return true;
@@ -82,44 +79,23 @@ namespace WorkerManager.Services
                     }
                     
                     var worker_list = await _cache.GetClusterState();
-                    if(worker_list == null)
-                    {
-                        Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
-                        continue;
-
-                    }
-
                     foreach (var item in worker_list)
                     {
-                        if(item.Value != WorkerState.OnSession)
+                        var workerState = await _cache.GetWorkerState(item.Key);
+                        if(workerState == WorkerState.OnSession)
                         {
-                            continue;
-                        }
-
-                        // find is cache first, the find in sqldb if not present on redis
-                        ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                        worker.RestoreWorkerNode();
-                        if(await worker.PingSession())
-                        {
-                            worker.sessionFailedPing = 0;
-                            continue;
-                        }
-                        else
-                        {
-                            worker.sessionFailedPing++;
-                        }
-                        await _cache.CacheWorkerInfor(worker);
-                        
-
-
-
-
-                        if(worker.sessionFailedPing > 5)
-                        {
-                            if (item.Value == WorkerState.OnSession)
+                            // find is cache first, the find in sqldb if not present on redis
+                            ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
+                            worker.RestoreWorkerNode();
+                            if(await worker.PingWorker(Module.CORE_MODULE))
                             {
-                                await _cache.SetWorkerState(item.Key, WorkerState.OffRemote);
+                                worker.sessionFailedPing = 0;
                             }
+                            else
+                            {
+                                worker.sessionFailedPing++;
+                            }
+                            await _cache.CacheWorkerInfor(worker);
                         }
                     }
                     Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
@@ -147,17 +123,11 @@ namespace WorkerManager.Services
                     }
 
                     var worker_list = await _cache.GetClusterState();
-                    if(worker_list == null)
-                    {
-                        Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
-                        continue;
-
-                    }
                     foreach (var keyValue in worker_list)
                     {
                         ClusterWorkerNode worker = await _cache.GetWorkerInfor(keyValue.Key);
                         worker.RestoreWorkerNode();
-                        if(await worker.PingWorker())
+                        if(await worker.PingWorker(Module.AGENT_MODULE))
                         {
                             worker.agentFailedPing = 0;
                             if(keyValue.Value == WorkerState.Disconnected)
@@ -175,7 +145,7 @@ namespace WorkerManager.Services
 
 
 
-                        if(worker.agentFailedPing > 5)
+                        if(worker.agentFailedPing > 10)
                         {
                             await _cache.SetWorkerState(keyValue.Key, WorkerState.Disconnected);
                         }
@@ -208,7 +178,7 @@ namespace WorkerManager.Services
                     worker.RestoreWorkerNode();
                     worker.GetWorkerMetric(_db,model_list);
                 }
-                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
+                Thread.Sleep(((int)TimeSpan.FromSeconds(60).TotalMilliseconds));
             }
         }
 
@@ -218,10 +188,6 @@ namespace WorkerManager.Services
             while (true)
             {
                 var CachedSession = _db.CachedSession.All(x => true);
-                // var client = new RestClient();
-                
-                // var request = new RestRequest()
-                //     .AddJsonBody(CachedSession);
 
                 Thread.Sleep((int)TimeSpan.FromDays(1).TotalMilliseconds);
                 currentTime.AddDays(1);

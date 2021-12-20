@@ -164,6 +164,7 @@ namespace WorkerManager.Services
         {
             try
             {
+                await Stop();
                 if(exception != null)
                 {
                     Serilog.Log.Information("Error when connect to sytemhub: " + exception.Message);
@@ -179,7 +180,6 @@ namespace WorkerManager.Services
                 var success = await Start();
                 if(!success)
                 {
-                    if(!isRunning){return;}
                     await RestoreConnection(null);
                 }
 
@@ -210,7 +210,7 @@ namespace WorkerManager.Services
             try
             {
                 await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-            } catch { }
+            } catch (Exception ex) { }
         }
 
 
