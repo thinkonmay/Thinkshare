@@ -19,6 +19,17 @@ spec:
             port:
               number: 80
 
+  - host: www.thinkmay.net
+    http:
+      paths:
+      - path: /document/
+        pathType: Prefix
+        backend:
+          service:
+            name: document
+            port:
+              number: 80
+
   - host: service.thinkmay.net
     http:
       paths:
