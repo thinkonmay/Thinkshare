@@ -27,6 +27,15 @@ spec:
       labels:
         app: postgres
     spec:
+      initContainers:
+      - name: fix-volume
+        image: busybox
+        command: ["sh", "-c", "rm -rf /var/lib/postgresql/data/lost+found"]
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
       containers:
       - name: postgres
         image: postgres:latest
@@ -37,7 +46,7 @@ spec:
         - containerPort: 5432
           name: postgresdb
         volumeMounts:
-        - name: pv-data
+        - name: data
           mountPath: /var/lib/postgresql/data
         resources:
           requests:
@@ -46,11 +55,14 @@ spec:
           limits:
             memory: "2500Mi"
             cpu: "1500m"
-        
       volumes:
-      - name: pv-data
-        persistentVolumeClaim:
-          claimName: pvc-systemdb
+      - name: data
+        awsElasticBlockStore:        
+          volumeID: "vol-055163cce533c94fc"
+          fsType: ext4
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1b
+        
 ---
 apiVersion: v1
 kind: Service
