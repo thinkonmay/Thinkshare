@@ -97,6 +97,12 @@ export const tokenExchange = body => {
 			token: body.token,
 			Validator: body.Validator
 		})
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -283,6 +289,12 @@ export const setInfor = (body) => {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({ body })
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 
@@ -299,6 +311,12 @@ export const setSetting = (body) => {
 			screenWidth: body.screenWidth,
 			screenHeight: body.screenHeight
 		})
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
 

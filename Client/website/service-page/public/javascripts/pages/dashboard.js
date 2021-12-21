@@ -1,6 +1,10 @@
 import * as API from "../util/api.js"
 import * as RemotePage from "../util/remote.js"
-import { getCookie, setCookie, deleteCookie } from "../util/cookie.js"
+import {
+	getCookie,
+	setCookie,
+	deleteCookie
+} from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
 
@@ -12,48 +16,13 @@ API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
-async function prepare_user_infor()
-{
-	try
-	{
-		const userinfor = await (await API.getInfor()).json()
-		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
-	} catch{
-		(new Promise(resolve => setTimeout(resolve, 5000)))
-		.then(() => {
-			prepare_user_infor();
-		});
-	}
-
-}
-
-async function prepare_worker_dashboard()
-{
-	try {
-		document.getElementById("slavesInUses").innerHTML = " ";
-		document.getElementById("availableSlaves").innerHTML = " ";
-		const sessions = await (await API.fetchSession()).json()
-		const slaves = await (await API.fetchSlave()).json()
-
-
-		for (var worker in sessions) {
-			createSlave(worker,sessions[worker], "slavesInUses");
-		}
-		for (var worker in slaves) {
-			createSlave(worker,slaves[worker], "availableSlaves");
-		}
-	} catch (err) {
-		(new Promise(resolve => setTimeout(resolve, 5000)))
-		.then(() => {
-			prepare_worker_dashboard();
-		});
-	}
-}
-
-
-
-
 $(document).ready(async () => {
+
+
+	if (CheckDevice.isElectron()) {
+		$('#downloadApp').css("display", "none")
+	}
+
 	$('#logout').click(() => {
 		setCookie("logout", "true")
 		setCookie("token", null, 1)
@@ -93,15 +62,52 @@ $(document).ready(async () => {
 })
 
 
-async function connectToClientHub()
-{
+async function prepare_user_infor() {
+	try {
+		const userinfor = await (await API.getInfor()).json()
+		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
+	} catch {
+		(new Promise(resolve => setTimeout(resolve, 5000)))
+		.then(() => {
+			prepare_user_infor();
+		});
+	}
+
+}
+
+async function prepare_worker_dashboard() {
+	try {
+		document.getElementById("slavesInUses").innerHTML = " ";
+		document.getElementById("availableSlaves").innerHTML = " ";
+		const sessions = await (await API.fetchSession()).json()
+		const slaves = await (await API.fetchSlave()).json()
+
+
+		for (var worker in sessions) {
+			createSlave(worker, sessions[worker], "slavesInUses");
+		}
+		for (var worker in slaves) {
+			createSlave(worker, slaves[worker], "availableSlaves");
+		}
+	} catch (err) {
+		(new Promise(resolve => setTimeout(resolve, 5000)))
+		.then(() => {
+			prepare_worker_dashboard();
+		});
+	}
+}
+
+
+
+
+async function connectToClientHub() {
 	// using websocket to connect to systemhub
 	const Websocket = new WebSocket(API.UserHub + `?token=${getCookie("token")}`)
 	Websocket.addEventListener('open', onWebsocketOpen);
 	Websocket.addEventListener('message', onClientHubEvent);
 	Websocket.addEventListener('error', onWebsocketClose);
 	Websocket.addEventListener('close', onWebsocketClose);
-	
+
 }
 
 function onClientHubEvent(event) {
@@ -119,38 +125,39 @@ function onClientHubEvent(event) {
 	if (message_json.EventName === "ReportSessionDisconnected") {
 		var workerID = parseInt(message_json.Message)
 
-		createSlave(workerID,"OFF_REMOTE","slavesInUses");
+		createSlave(workerID, "OFF_REMOTE", "slavesInUses");
 	}
 	if (message_json.EventName === "ReportSessionReconnected") {
 		var workerID = parseInt(message_json.Message)
 
-		createSlave(workerID,"ON_SESSION","slavesInUses");
+		createSlave(workerID, "ON_SESSION", "slavesInUses");
 	}
 	if (message_json.EventName === "ReportSessionTerminated") {
 		var workerID = parseInt(message_json.Message)
 
-		createSlave(workerID,null,null);
+		createSlave(workerID, null, null);
 	}
 	if (message_json.EventName === "ReportSessionOn") {
 		var workerID = parseInt(message_json.Message)
 
-		createSlave(workerID,"ON_SESSION","slavesInUses")
+		createSlave(workerID, "ON_SESSION", "slavesInUses")
 	}
 	if (message_json.EventName === "ReportSlaveObtained") {
 		var workerID = parseInt(message_json.Message)
 
-		createSlave(workerID,null,null);
+		createSlave(workerID, null, null);
 	}
 	if (message_json.EventName === "ReportNewSlaveAvailable") {
 		var workerID = parseInt(message_json.Message)
 
-		createSlave(workerID,"DEVICE_OPEN","availableSlaves")
+		createSlave(workerID, "DEVICE_OPEN", "availableSlaves")
 	}
 }
 
 function onWebsocketOpen() {
 	console.log("connected to client hub");
 }
+
 function onWebsocketClose(event) {
 	(new Promise(resolve => setTimeout(resolve, 5000)))
 	.then(() => {
@@ -159,27 +166,25 @@ function onWebsocketClose(event) {
 };
 
 async function createSlave(workerID, workerState, queue) {
-	var queues = ["slavesInUses","availableSlaves"]
-	for(var item in queues)	
-	{
+	var queues = ["slavesInUses", "availableSlaves"]
+	for (var item in queues) {
 		var worker = document.getElementById(`${queues[item]}${workerID}`);
-		if(worker != null)
-		{
+		if (worker != null) {
 			worker.remove();
 		}
 	}
 
-	if(queue == null)
+	if (queue == null)
 		return;
 
 	try {
-		var slave = await(await API.fetchInfor(workerID)).json();
+		var slave = await (await API.fetchInfor(workerID)).json();
 	} catch (error) {
 		(new Promise(resolve => setTimeout(resolve, 5000)))
 		.then(async () => {
-			await createSlave(workerID,workerState,queue);
+			await createSlave(workerID, workerState, queue);
 		});
-		
+
 	}
 
 	append(queue, `
@@ -204,7 +209,7 @@ async function createSlave(workerID, workerState, queue) {
         </div>
       </div>
     </div>`)
-	setState(workerState, slave.id,queue);
+	setState(workerState, slave.id, queue);
 }
 
 
@@ -276,8 +281,8 @@ function serialize(obj, prefix) {
 				v = obj[p]
 			str.push(
 				v !== null && typeof v === "object" ?
-					serialize(v, k) :
-					encodeURIComponent(k) + "=" + encodeURIComponent(v)
+				serialize(v, k) :
+				encodeURIComponent(k) + "=" + encodeURIComponent(v)
 			)
 		}
 	}
@@ -326,7 +331,7 @@ async function setDataForChart() {
 	try {
 		sessionInfor = await (await API.getSession()).json()
 	} catch (error) {
-		await setDataForChart();		
+		await setDataForChart();
 	}
 	for (let i = 0; i < 7; i++) {
 		datasets[i] = 0;
@@ -340,13 +345,27 @@ async function setDataForChart() {
 	let _lables = [];
 	while (countDay <= 6) {
 		switch (day) {
-			case 0: _lables.unshift("SUN"); break;
-			case 1: _lables.unshift("MON"); break;
-			case 2: _lables.unshift("TUE"); break;
-			case 3: _lables.unshift("WED"); break;
-			case 4: _lables.unshift("THU"); break;
-			case 5: _lables.unshift("FRI"); break;
-			case 6: _lables.unshift("SAT"); break;
+			case 0:
+				_lables.unshift("SUN");
+				break;
+			case 1:
+				_lables.unshift("MON");
+				break;
+			case 2:
+				_lables.unshift("TUE");
+				break;
+			case 3:
+				_lables.unshift("WED");
+				break;
+			case 4:
+				_lables.unshift("THU");
+				break;
+			case 5:
+				_lables.unshift("FRI");
+				break;
+			case 6:
+				_lables.unshift("SAT");
+				break;
 		}
 		day--;
 		if (day < 0) {
@@ -366,20 +385,20 @@ async function setDataForChart() {
 		var salesTopData = {
 			labels: _lables,
 			datasets: [{
-				label: 'This week',
-				data: datasets,
-				backgroundColor: saleGradientBg,
-				borderColor: [
-					'#1F3BB3',
-				],
-				borderWidth: 1.5,
-				fill: true, // 3: no fill
-				pointBorderWidth: 1,
-				pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-				pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-				pointBackgroundColor: ['#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)'],
-				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-			},
+					label: 'This week',
+					data: datasets,
+					backgroundColor: saleGradientBg,
+					borderColor: [
+						'#1F3BB3',
+					],
+					borderWidth: 1.5,
+					fill: true, // 3: no fill
+					pointBorderWidth: 1,
+					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+					pointBackgroundColor: ['#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)'],
+					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', ],
+				},
 				//  {
 				// 	label: 'Last week',
 				// 	data: [30, 150, 190, 250, 120, 150, 130],
@@ -554,5 +573,4 @@ async function setDataForChart() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-(function ($) {
-})(jQuery);
+(function ($) {})(jQuery);
