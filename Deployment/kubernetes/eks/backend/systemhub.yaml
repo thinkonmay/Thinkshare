@@ -32,14 +32,14 @@ spec:
     spec:
       containers:
       - name: systemhub
-        image: pigeatgarlic/systemhub:2021-12-21
+        image: pigeatgarlic/systemhub:2021-12-22
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "500Mi"
-            cpu: "300m"
+            memory: "1000Mi"
+            cpu: "1000m"
           limits:
-            memory: "700Mi"
-            cpu: "500m"
+            memory: "l500Mi"
+            cpu: "1500m"
         ports:
         - containerPort: 80

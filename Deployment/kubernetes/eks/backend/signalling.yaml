@@ -31,14 +31,14 @@ spec:
     spec:
       containers:
       - name: signalling
-        image: pigeatgarlic/signalling:2021-12-21
+        image: pigeatgarlic/signalling:2021-12-22
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "500Mi"
-            cpu: "300m"
-          limits:
             memory: "700Mi"
             cpu: "500m"
+          limits:
+            memory: "1000Mi"
+            cpu: "7000m"
         ports:
         - containerPort: 80
