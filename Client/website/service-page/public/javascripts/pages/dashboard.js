@@ -19,6 +19,26 @@ API.getInfor().then(async data => {
 $(document).ready(async () => {
 
 
+	$(".next-tab").click(() => {
+		let value = null;
+		if ($("#HowToUse").attr('checked') == 'checked') {
+			value = 'ShorcutKey';
+			$("#HowToUse").attr('checked', false)
+		}
+		if ($("#ShorcutKey").attr('checked') == 'checked') {
+			value = 'Setting';
+			$("#ShorcutKey").attr('checked', false)
+		}
+		if ($("#Setting").attr('checked') == 'checked') {
+			value = 'HowToUse';
+			$("#Setting").attr('checked', false)
+		}
+		if (value != null) {
+			value = '#' + value
+			$(`${value}`).attr('checked', true)
+		}
+	})
+
 	if (CheckDevice.isElectron()) {
 		$('#downloadApp').css("display", "none")
 	}
@@ -61,6 +81,9 @@ $(document).ready(async () => {
 
 })
 
+function handleCheckedTab() {
+
+}
 
 async function prepare_user_infor() {
 	try {
@@ -184,9 +207,7 @@ async function createSlave(workerID, workerState, queue) {
 		.then(async () => {
 			await createSlave(workerID, workerState, queue);
 		});
-
 	}
-
 	append(queue, `
     <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
       <div class="card bg-light d-flex flex-fill">
@@ -240,6 +261,7 @@ function setState(serviceState, slaveID, queue) {
 	if (serviceState === "DEVICE_OPEN") {
 		var connbutt = document.getElementById(`connect${slaveID}`)
 		connbutt.addEventListener("click", async function () {
+			window.location.hash = '#demo-modal'
 			RemotePage.sessionInitialize(slaveID)
 		});
 	}
