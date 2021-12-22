@@ -168,6 +168,7 @@ function onWebsocketClose(event) {
 async function createSlave(workerID, workerState, queue) {
 	var queues = ["slavesInUses", "availableSlaves"]
 	for (var item in queues) {
+		
 		var worker = document.getElementById(`${queues[item]}${workerID}`);
 		if (worker != null) {
 			worker.remove();
@@ -182,11 +183,13 @@ async function createSlave(workerID, workerState, queue) {
 	} catch (error) {
 		(new Promise(resolve => setTimeout(resolve, 5000)))
 		.then(async () => {
-			await createSlave(workerID, workerState, queue);
+			if(document.getElementById(`${queue}${workerID}`) == null)
+				await createSlave(workerID, workerState, queue);
 		});
 
 	}
 
+	if(document.getElementById(`${queue}${workerID}`) == null)
 	append(queue, `
     <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
       <div class="card bg-light d-flex flex-fill">

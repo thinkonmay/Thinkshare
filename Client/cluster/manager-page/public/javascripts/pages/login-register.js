@@ -3,6 +3,7 @@ import * as Validates from "../validates/index.js"
 import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 const MINUTES59 = 59 * 60 * 1000;
+const HOUR5 = 5 * 60 * 60 * 1000;
 
 
 function serializeArrToObject(serializeArr) {
@@ -23,7 +24,7 @@ function login(body) {
 					const response = await data.json()
 					if (data.status == 200) {
 						if (response.errors == null) {
-							setCookie("token", response, MINUTES59)
+							setCookie("token", response, HOUR5)
 							window.location.replace(API.Dashboard)
 						} else {
 							console.log(response.error);
