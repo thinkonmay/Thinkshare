@@ -65,7 +65,8 @@ namespace WorkerManager.Controllers
                 x.CPU == agent_register.CPU &&
                 x.GPU == agent_register.GPU &&
                 x.RAMcapacity == (int)agent_register.RAMcapacity &&
-                x.OS == agent_register.OS );
+                x.OS == agent_register.OS);
+
             if(!cachednode.Any())
             {
                 var client = new RestClient();
