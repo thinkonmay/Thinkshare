@@ -21,7 +21,7 @@ spec:
   selector:
     matchLabels:
       app: conductor
-  replicas: 3
+  replicas: 2
   strategy:
     type: Recreate
   template:

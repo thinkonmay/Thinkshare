@@ -22,7 +22,7 @@ spec:
   selector:
     matchLabels:
       app: authenticator
-  replicas: 3
+  replicas: 2
   strategy:
     type: Recreate
   template:
