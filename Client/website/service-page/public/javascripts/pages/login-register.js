@@ -2,6 +2,7 @@ import * as API from "../util/api.js"
 import * as Validates from "../validates/index.js"
 import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
+const HOUR5 = 5 * 60 * 60 * 1000;
 const MINUTES59 = 59 * 60 * 1000;
 
 function serializeArrToObject(serializeArr) {
@@ -21,7 +22,7 @@ function login(body) {
 					const response = await data.json()
 					if (data.status == 200) {
 						if (response.errors == null) {
-							setCookie("token", response.token, MINUTES59)
+							setCookie("token", response.token, HOUR5)
 							window.location.replace(API.Dashboard)
 						} else {
 							console.log(response.error);
@@ -48,7 +49,7 @@ function register(body, status) {
 					const response = await data.json()
 					if (data.status == 200) {
 						if (response.errors == null) {
-							setCookie("token", response.token, MINUTES59)
+							setCookie("token", response.token, HOUR5)
 							Utils.newSwal.fire({
 								title: "Thành công!",
 								text: "Chuyển hướng tới bảng điều khiển sau 2s",
@@ -114,7 +115,7 @@ const googleLoginUser = async (userForm) => {
 					const response = await data.json()
 					if (data.status == 200) {
 						if (response.errors == null) {
-							setCookie("token", response.token, MINUTES59)
+							setCookie("token", response.token, HOUR5)
 							window.location.replace(API.Dashboard)
 						} else {
 							console.log(response.error);
