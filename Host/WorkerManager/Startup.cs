@@ -53,7 +53,7 @@ namespace WorkerManager
 
                 services.AddDbContext<ClusterDbContext>(options =>
                     options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                    ServiceLifetime.Singleton
+                    ServiceLifetime.Transient
                 );
                 services.AddStackExchangeRedisCache(options =>
                 {
@@ -70,7 +70,7 @@ namespace WorkerManager
                         "Username="+POSTGRES_USER+";"+                    
                         "Password="+POSTGRES_PASSWORD+";"
                     ),
-                    ServiceLifetime.Singleton
+                    ServiceLifetime.Transient
                 );
                 services.AddStackExchangeRedisCache(options =>
                 {
@@ -121,10 +121,10 @@ namespace WorkerManager
             });
             services.Configure<ClusterConfig>(Configuration.GetSection("ClusterConfig"));
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
-            services.AddSingleton<ILocalStateStore, LocalStateStore>();
+            services.AddTransient<ITokenGenerator,TokenGenerator>();
+            services.AddTransient<ILocalStateStore, LocalStateStore>();
             services.AddSingleton<IConductorSocket,ConductorSocket>();
             services.AddSingleton<IWorkerNodePool,WorkerNodePool>();
-            services.AddTransient<ITokenGenerator,TokenGenerator>();
             services.AddMvc();
         
         }

@@ -130,17 +130,19 @@ function onClientHubEvent(event) {
 	if (message_json.EventName === "ReportSessionReconnected") {
 		var workerID = parseInt(message_json.Message)
 
+		RemotePage.check_remote_condition(workerID,null);
 		createSlave(workerID, "ON_SESSION", "slavesInUses");
+	}
+	if (message_json.EventName === "ReportSessionOn") {
+		var workerID = parseInt(message_json.Message)
+
+		RemotePage.check_remote_condition(workerID,null);
+		createSlave(workerID, "ON_SESSION", "slavesInUses")
 	}
 	if (message_json.EventName === "ReportSessionTerminated") {
 		var workerID = parseInt(message_json.Message)
 
 		createSlave(workerID, null, null);
-	}
-	if (message_json.EventName === "ReportSessionOn") {
-		var workerID = parseInt(message_json.Message)
-
-		createSlave(workerID, "ON_SESSION", "slavesInUses")
 	}
 	if (message_json.EventName === "ReportSlaveObtained") {
 		var workerID = parseInt(message_json.Message)
@@ -221,6 +223,7 @@ function setState(serviceState, slaveID, queue) {
 	button.innerHTML = slaveState(serviceState, slaveID);
 
 	if (serviceState === "ON_SESSION") {
+
 		var initbutt = document.getElementById(`disconnect${slaveID}`)
 		initbutt.addEventListener("click", async function () {
 			await API.disconnectSession(slaveID)

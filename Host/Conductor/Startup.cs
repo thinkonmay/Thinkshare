@@ -94,7 +94,7 @@ namespace Conductor
             });
             services.AddMvc();
             services.AddTransient<IClientHub,ClientHub>();
-            services.AddSingleton<IWorkerCommnader,WorkerCommander>();
+            services.AddTransient<IWorkerCommnader,WorkerCommander>();
             services.AddTransient<IGlobalStateStore,GlobalStateStore>();
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
         }

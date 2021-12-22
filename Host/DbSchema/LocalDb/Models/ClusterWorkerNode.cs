@@ -92,7 +92,7 @@ namespace DbSchema.LocalDb.Models
 
         public async Task<bool> SessionDisconnect(string token)
         {
-            var request = new RestRequest("Disconnect")
+            var request = new RestRequest("Terminate")
                 .AddHeader("Authorization", token);
             request.Method = Method.POST;
 
@@ -102,7 +102,7 @@ namespace DbSchema.LocalDb.Models
 
         public async Task<bool> SessionReconnect(string token)
         {
-            var request = new RestRequest("Reconnect")
+            var request = new RestRequest("Initialize")
                 .AddHeader("Authorization", token);
             request.Method = Method.POST;
 

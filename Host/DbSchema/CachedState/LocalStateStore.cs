@@ -29,10 +29,6 @@ namespace DbSchema.CachedState
         {
             _cache = cache;
             _db = db;
-            var nodes = db.Devices.ToList();
-            var initState = new Dictionary<int,string>();
-            nodes.ForEach(x => initState.Add(x.ID,WorkerState.Disconnected));
-            _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", initState, null,null).Wait();
         }
 
         public async Task SetWorkerState(int WorkerID, string? node)

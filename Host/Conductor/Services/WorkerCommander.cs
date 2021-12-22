@@ -26,7 +26,9 @@ namespace Conductor.Services
 
         private readonly IGlobalStateStore _cache;
 
-        public WorkerCommander(IOptions<SystemConfig> config, GlobalDbContext dbContext, IGlobalStateStore cache)
+        public WorkerCommander(IOptions<SystemConfig> config, 
+                                GlobalDbContext dbContext, 
+                                IGlobalStateStore cache)
         {
             _db = dbContext;
             _cache = cache;

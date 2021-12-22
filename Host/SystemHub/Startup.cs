@@ -53,7 +53,7 @@ namespace SystemHub
 
             services.AddDbContext<GlobalDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                ServiceLifetime.Singleton
+                ServiceLifetime.Transient
             );
             services.AddStackExchangeRedisCache(options =>
             {
@@ -62,7 +62,7 @@ namespace SystemHub
             });
 
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
-            services.AddSingleton<IGlobalStateStore,GlobalStateStore>();
+            services.AddTransient<IGlobalStateStore,GlobalStateStore>();
             services.AddSingleton<IClusterSocketPool, ClusterSocketPool>();
             services.AddSingleton<IUserSocketPool, UserSocketPool>();
             services.AddMvc();

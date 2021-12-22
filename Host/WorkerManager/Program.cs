@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Distributed;
+using SharedHost.Models.Device;
 using System;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
@@ -12,6 +14,7 @@ using DbSchema.SystemDb;
 using SharedHost.Models.Shell;
 using System.Net;
 using SharedHost;
+using DbSchema.CachedState;
 using System.Linq;
 using Newtonsoft.Json;
 using RestSharp;
@@ -79,6 +82,12 @@ namespace WorkerManager
                 var _db = scope.ServiceProvider.GetRequiredService<ClusterDbContext>();
                 var conductor = scope.ServiceProvider.GetRequiredService<IConductorSocket>();
                 var pool      = scope.ServiceProvider.GetRequiredService<IWorkerNodePool>();
+                var _cache    = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+
+                var nodes = _db.Devices.ToList();
+                var initState = new Dictionary<int,string>();
+                nodes.ForEach(x => initState.Add(x.ID,WorkerState.Disconnected));
+                _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", initState, null,null).Wait();
 
                 if(_db.Owner.First().token != null &&
                 _db.Clusters.First().Token != null)
