@@ -162,7 +162,7 @@ namespace Authenticator.Controllers
                 {
                     user = new UserAccount
                     {
-                        UserName = Randoms.Next().ToString(),
+                        UserName = payload.Email,
                         Email = payload.Email,
                         Avatar = payload.Picture,
                         FullName = payload.Name,

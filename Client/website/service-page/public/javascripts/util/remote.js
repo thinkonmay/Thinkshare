@@ -100,7 +100,7 @@ const RemotePageUrl = "https://remote.thinkmay.net/Remote"
 
 export const getRemotePage = (token, engine) => {
     if (engine == CoreEngine('GSTREAMER')) {
-        window.location.assign(`thinkmay://token=${token.token}/`);
+        window.location.assign(`thinkmay://token=${token}/`);
     } else {
         window.open(RemotePageUrl+"?token="+token, "__blank");
     }
