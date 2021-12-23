@@ -147,7 +147,6 @@ namespace Authenticator.Controllers
         [Route("ExchangeToken")]
         public async Task<IActionResult> Request(AuthenticationRequest request)
         {
-
             try
             {
                 var validationSettings = new GoogleJsonWebSignature.ValidationSettings
@@ -157,7 +156,6 @@ namespace Authenticator.Controllers
 
                 var payload = await GoogleJsonWebSignature.ValidateAsync(request.token, validationSettings);
                 var user = await _userManager.FindByEmailAsync(payload.Email);
-
                 if (user == null)
                 {
                     user = new UserAccount

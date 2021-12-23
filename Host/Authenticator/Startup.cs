@@ -53,7 +53,7 @@ namespace Authenticator
             //for postgresql
             services.AddDbContext<GlobalDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                ServiceLifetime.Transient
+                ServiceLifetime.Scoped
             );
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -113,7 +113,7 @@ namespace Authenticator
                 options.Password.RequireUppercase = false;
             });
 
-            services.AddTransient<IGlobalStateStore, GlobalStateStore>();
+            services.AddScoped<IGlobalStateStore, GlobalStateStore>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
             services.AddMvc();
         }
