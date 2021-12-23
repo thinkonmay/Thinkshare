@@ -66,7 +66,7 @@ namespace Signalling.Services
             if(core.Count() == 2)
             {
                 var sessionCore = core.Where(o => o.Key.Module == Module.CORE_MODULE).First();
-                var initMessage =JsonConvert.SerializeObject(new WebSocketMessage{RequestType = WebSocketMessageResult.REQUEST_STREAM, Content = " "})
+                var initMessage =JsonConvert.SerializeObject(new WebSocketMessage{RequestType = WebSocketMessageResult.REQUEST_STREAM, Content = " "});
                 await SendMessage(sessionCore.Value,initMessage);
             }
 
