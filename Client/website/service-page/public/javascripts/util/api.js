@@ -12,7 +12,10 @@ export const Dashboard = "/dashboard"
 // Account API
 const Login = `${host}/Account/Login`
 const Register = `${host}/Account/Register`
-const Token = `${host}/Account/ExchangeToken`
+
+const externalLoginRoute = `${host}/Account/ExchangeToken/Login`
+const externalRegisterRoute = `${host}/Account/ExchangeToken/Register`
+
 const Infor = `${host}/Account/Infor`
 const Session = `${host}/Account/History`
 
@@ -89,8 +92,24 @@ export const register = body => {
 
 
 
-export const tokenExchange = body => {
-	return fetch(Token, {
+export const externalRegister = body => {
+	return fetch(externalRegisterRoute, {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({
+			token: body.token,
+			Validator: body.Validator
+		})
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+export const externalLogin = body => {
+	return fetch(externalLoginRoute, {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({

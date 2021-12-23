@@ -141,11 +141,9 @@ namespace Authenticator.Controllers
             return AuthResponse.GenerateFailure(model.Email, ret);
         }
 
-
-
         [HttpPost]
-        [Route("ExchangeToken")]
-        public async Task<IActionResult> Request(AuthenticationRequest request)
+        [Route("ExchangeToken/Login")]
+        public async Task<AuthResponse> LoginGoogle(AuthenticationRequest request)
         {
             try
             {
@@ -155,44 +153,79 @@ namespace Authenticator.Controllers
                 };
 
                 var payload = await GoogleJsonWebSignature.ValidateAsync(request.token, validationSettings);
-                var user = await _userManager.FindByEmailAsync(payload.Email);
-                if (user == null)
-                {
-                    user = new UserAccount
-                    {
-                        UserName = Randoms.Next().ToString(),
-                        Email = payload.Email,
-                        Avatar = payload.Picture,
-                        FullName = payload.Name,
-                        DateOfBirth = DateTime.Now,
-                        PhoneNumber = "0123456789",
-                        Jobs = "DefaultJob"
-                    };
-
-                    var result = await _userManager.CreateAsync(user);
-                    if (result.Succeeded)
-                    {
-                        UserAccount u = await _userManager.FindByEmailAsync(payload.Email);
-                        await _userManager.AddToRoleAsync(u, RoleSeeding.USER);
-                    }
-                }
-
-                // Add a login (i.e insert a row for the user in AspNetUserLogins table)
-                await _signInManager.SignInAsync(user, isPersistent: false);
-
+                UserAccount user = await _userManager.FindByNameAsync(payload.Email);
                 string token = await _tokenGenerator.GenerateUserJwt(user);
-                var resp = new AuthenticationRequest
-                {
-                    token = token,
-                    Validator = "host.thinkmay.net"
-                };
-                return Ok(resp);
+                return AuthResponse.GenerateSuccessful(payload.Email, token, DateTime.Now.AddHours(1));
             }
             catch (Exception ex)
             {
                 Serilog.Log.Information(ex.Message);
                 Serilog.Log.Information(ex.StackTrace);
-                return BadRequest();
+                var ret =  new List<IdentityError>
+                {
+                    new IdentityError{
+                    Code = "Error",
+                    Description = "Some error happend while registering"
+                }};
+                return AuthResponse.GenerateFailure(" ", ret);
+            }
+        }
+
+
+        [HttpPost]
+        [Route("ExchangeToken/Register")]
+        public async Task<AuthResponse> RegisterGoogle(AuthenticationRequest request)
+        {
+            try
+            {
+                var validationSettings = new GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = new string[] { _config.GoogleOauthID }
+                };
+
+                var payload = await GoogleJsonWebSignature.ValidateAsync(request.token, validationSettings);
+
+                var user = new UserAccount
+                {
+                    UserName = Randoms.Next().ToString(),
+                    Email = payload.Email,
+                    Avatar = payload.Picture,
+                    FullName = payload.Name,
+                    DateOfBirth = DateTime.Now,
+                    PhoneNumber = "0123456789",
+                    Jobs = "DefaultJob"
+                };
+
+                var result = await _userManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    UserAccount u = await _userManager.FindByEmailAsync(payload.Email);
+                    await _userManager.AddToRoleAsync(u, RoleSeeding.USER);
+                    string token = await _tokenGenerator.GenerateUserJwt(u);
+                    return AuthResponse.GenerateSuccessful(payload.Email, token, DateTime.Now);
+                }
+                else
+                {
+                    var ret =  new List<IdentityError>
+                    {
+                        new IdentityError{
+                        Code = "Error",
+                        Description = "Some error happend while registering"
+                    }};
+                    return AuthResponse.GenerateFailure(" ", ret);
+                }
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
+                var ret =  new List<IdentityError>
+                {
+                    new IdentityError{
+                    Code = "Error",
+                    Description = "Some error happend while registering"
+                }};
+                return AuthResponse.GenerateFailure(" ", ret);
             }
         }
 
