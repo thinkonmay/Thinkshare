@@ -130,13 +130,13 @@ function onClientHubEvent(event) {
 	if (message_json.EventName === "ReportSessionReconnected") {
 		var workerID = parseInt(message_json.Message)
 
-		RemotePage.check_remote_condition(workerID,null);
+		RemotePage.check_remote_condition(workerID,null,null);
 		createSlave(workerID, "ON_SESSION", "slavesInUses");
 	}
 	if (message_json.EventName === "ReportSessionOn") {
 		var workerID = parseInt(message_json.Message)
 
-		RemotePage.check_remote_condition(workerID,null);
+		RemotePage.check_remote_condition(workerID,null,null);
 		createSlave(workerID, "ON_SESSION", "slavesInUses")
 	}
 	if (message_json.EventName === "ReportSessionTerminated") {

@@ -49,11 +49,7 @@ export const sessionInitialize = async (SlaveID) => {
             getSetting().then(async _data => {
                 let _body = await _data.json();
 
-                if (_body.engine == CoreEngine('GSTREAMER')) {
-                    window.location.assign(`thinkmay://token=${token.token}/`);
-                } else {
-                    check_remote_condition(SlaveID,token.token);
-                }
+                check_remote_condition(SlaveID,token.token,_body.engine);
             })
         } else {
         }
@@ -69,11 +65,7 @@ export const sessionReconnect = async (SlaveID) => {
             getSetting().then(async _data => {
                 let _body = await _data.json();
 
-                if (_body.engine == CoreEngine('GSTREAMER')) {
-                    window.location.assign(`thinkmay://token=${token.token}/`);
-                } else {
-                    check_remote_condition(SlaveID,token.token);
-                }
+                check_remote_condition(SlaveID,token.token,_body.engine);
             })
         } else {
         }
@@ -81,19 +73,19 @@ export const sessionReconnect = async (SlaveID) => {
 }
 
 var session_queue = [];
-export function check_remote_condition(workerID, token)
+export function check_remote_condition(workerID, token, engine)
 {
 	var item = session_queue.find( x => x.id == workerID);
 	if(item == undefined)
 	{
-		session_queue.push({id: workerID, token: token});
+		session_queue.push({id: workerID, token: token, engine});
 	}
 	else
 	{
         if(token == null && item.token != null) {
-            getRemotePage(item.token);
+            getRemotePage(item.token,item.engine);
         } else if (token != null && item.token == null) {
-            getRemotePage(token);
+            getRemotePage(token,engine);
         }
 
         for( var i = 0; i < session_queue.length; i++){ 
@@ -106,6 +98,10 @@ export function check_remote_condition(workerID, token)
 
 const RemotePageUrl = "https://remote.thinkmay.net/Remote"
 
-export const getRemotePage = (token) => {
-    window.open(RemotePageUrl+"?token="+token, "__blank");
+export const getRemotePage = (token, engine) => {
+    if (engine == CoreEngine('GSTREAMER')) {
+        window.location.assign(`thinkmay://token=${token.token}/`);
+    } else {
+        window.open(RemotePageUrl+"?token="+token, "__blank");
+    }
 }
