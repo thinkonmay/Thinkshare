@@ -90,9 +90,9 @@ export function check_remote_condition(workerID, token)
 	}
 	else
 	{
-        if(token == null) {
+        if(token == null && item.token != null) {
             getRemotePage(item.token);
-        } else {
+        } else if (token != null && item.token == null) {
             getRemotePage(token);
         }
 
