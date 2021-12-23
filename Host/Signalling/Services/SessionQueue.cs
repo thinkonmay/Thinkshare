@@ -49,6 +49,11 @@ namespace Signalling.Services
                         Serilog.Log.Information(ex.StackTrace);
                     }
                 }
+                Serilog.Log.Information("Current session :");
+                foreach (var item in onlineList)
+                {
+                    Serilog.Log.Information($"SessionID: ${item.Key.ID}, Module: "+((item.Key.Module == Module.CLIENT_MODULE) ? "CLIENT" : "WORKER"));
+                }
                 Thread.Sleep((int)TimeSpan.FromSeconds(20).TotalMilliseconds);
             }
         }
@@ -61,7 +66,8 @@ namespace Signalling.Services
             if(core.Count() == 2)
             {
                 var sessionCore = core.Where(o => o.Key.Module == Module.CORE_MODULE).First();
-                SendMessage(sessionCore.Value,JsonConvert.SerializeObject(new WebSocketMessage{RequestType = WebSocketMessageResult.REQUEST_STREAM, Content = " "}));
+                var initMessage =JsonConvert.SerializeObject(new WebSocketMessage{RequestType = WebSocketMessageResult.REQUEST_STREAM, Content = " "})
+                await SendMessage(sessionCore.Value,initMessage);
             }
 
 
