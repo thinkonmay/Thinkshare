@@ -153,7 +153,7 @@ namespace Authenticator.Controllers
                 };
 
                 var payload = await GoogleJsonWebSignature.ValidateAsync(request.token, validationSettings);
-                UserAccount user = await _userManager.FindByNameAsync(payload.Email);
+                UserAccount user = await _userManager.FindByEmailAsync(payload.Email);
                 string token = await _tokenGenerator.GenerateUserJwt(user);
                 return AuthResponse.GenerateSuccessful(payload.Email, token, DateTime.Now.AddHours(1));
             }
@@ -165,7 +165,7 @@ namespace Authenticator.Controllers
                 {
                     new IdentityError{
                     Code = "Error",
-                    Description = "Some error happend while registering"
+                    Description = "Some error happend while login"
                 }};
                 return AuthResponse.GenerateFailure(" ", ret);
             }
@@ -187,7 +187,7 @@ namespace Authenticator.Controllers
 
                 var user = new UserAccount
                 {
-                    UserName = Randoms.Next().ToString(),
+                    UserName = payload.Email, 
                     Email = payload.Email,
                     Avatar = payload.Picture,
                     FullName = payload.Name,
@@ -206,13 +206,7 @@ namespace Authenticator.Controllers
                 }
                 else
                 {
-                    var ret =  new List<IdentityError>
-                    {
-                        new IdentityError{
-                        Code = "Error",
-                        Description = "Some error happend while registering"
-                    }};
-                    return AuthResponse.GenerateFailure(" ", ret);
+                    return AuthResponse.GenerateFailure(" ", result.Errors);
                 }
             }
             catch (Exception ex)
