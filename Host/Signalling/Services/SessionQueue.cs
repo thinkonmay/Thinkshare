@@ -139,7 +139,10 @@ namespace Signalling.Services
         {
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
-            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            try
+            {
+                await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            } catch { Serilog.Log.Information("Fail to send websocket to client"); }
         }
 
 
@@ -154,14 +157,12 @@ namespace Signalling.Services
                         if(accession.Module == Module.CLIENT_MODULE &&
                            item.Key.Module == Module.CORE_MODULE)
                         {
-                            await SendMessage(item.Value, JsonConvert.SerializeObject(msg));
-                            return;
+                            SendMessage(item.Value, JsonConvert.SerializeObject(msg));
                         }
                         if(accession.Module == Module.CORE_MODULE &&
                            item.Key.Module == Module.CLIENT_MODULE)
                         {
-                            await SendMessage(item.Value, JsonConvert.SerializeObject(msg));
-                            return;
+                            SendMessage(item.Value, JsonConvert.SerializeObject(msg));
                         }
                     }
                 }

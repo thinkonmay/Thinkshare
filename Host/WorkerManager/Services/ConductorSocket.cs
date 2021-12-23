@@ -210,7 +210,7 @@ namespace WorkerManager.Services
             try
             {
                 await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-            } catch (Exception ex) { }
+            } catch { Serilog.Log.Information("Fail to send message to websocket client"); }
         }
 
 
