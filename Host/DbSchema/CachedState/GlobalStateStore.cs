@@ -145,7 +145,7 @@ namespace DbSchema.CachedState
             var sessionWorker = new SessionWorker
             {
                 signallingurl = config.SignallingWs,
-                turn = "turn://" + cluster.TurnUser + ":" + cluster.TurnPassword + "@turn:" + cluster.TurnIp + ":3478",
+                turn = "turn://" + cluster.TurnUser + ":" + cluster.TurnPassword + "@" + cluster.TurnIp + ":3478",
 
                 clientdevice = defaultSetting.device,
                 clientengine = defaultSetting.engine,
