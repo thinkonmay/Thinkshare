@@ -119,7 +119,7 @@ const googleLoginUser = async (userForm) => {
 							window.location.replace(API.Dashboard)
 						} else {
 							console.log(response.error);
-							Utils.responseError("Lỗi!", "Sai email hoặc mật khẩu", "error")
+							Utils.responseError("Error!", "There is some error happen :< you may want to try again", "error")
 						}
 					} else Utils.responseErrorHandler(response)
 				})
