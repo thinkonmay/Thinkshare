@@ -73,17 +73,6 @@ function register(body, status) {
 	})
 }
 
-async function GoogleRegister() {
-	var myParams = {
-		'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
-		'cookiepolicy': 'none',
-		'callback': registerCallback,
-		'approvalprompt': 'force',
-		'scope': 'profile email openid',
-	};
-	await gapi.auth.signIn(myParams)
-}
-
 async function GoogleLogin() {
 	var myParams = {
 		'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
@@ -92,27 +81,8 @@ async function GoogleLogin() {
 		'approvalprompt': 'force',
 		'scope': 'profile email openid',
 	};
-	await gapi.auth.signIn(myParams)
-}
 
-function registerCallback(result) {
-	console.log(result)
-	if (result['status']['signed_in']) {
-		try {
-			const loginForm = {
-				token: result.id_token,
-				Validator: "authenticator"
-			}
-			var logout = getCookie("logout");
-			if (logout == "false" || logout == undefined || logout == "") {
-				googleRegisterUser(loginForm)
-			}
-		} catch (error) {
-			console.log(error)
-		}
-	} else{
-		onFailure();
-	}
+	await gapi.auth.signIn(myParams)
 }
 
 function loginCallback(result) {
@@ -135,35 +105,12 @@ function loginCallback(result) {
 	}
 }
 
-const googleRegisterUser = async (userForm) => {
-	Utils.newSwal.fire({
-		title: "Đang đăng nhập",
-		text: "Vui lòng chờ . . .",
-		didOpen: () => {
-			API.externalRegister(userForm)
-				.then(async data => {
-					const response = await data.json()
-					if (data.status == 200) {
-						if (response.errors == null) {
-							setCookie("token", response.token, HOUR5)
-							window.location.replace(API.Dashboard)
-						} else {
-							console.log(response.error);
-							Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
-						}
-					} else Utils.responseErrorHandler(response)
-				})
-				.catch(Utils.fetchErrorHandler)
-		}
-	})
-}
-
 const googleLoginUser = async (userForm) => {
 	Utils.newSwal.fire({
 		title: "Đang đăng nhập",
 		text: "Vui lòng chờ . . .",
 		didOpen: () => {
-			API.externalLogin(userForm)
+			API.tokenExchange(userForm)
 				.then(async data => {
 					const response = await data.json()
 					if (data.status == 200) {
@@ -172,11 +119,11 @@ const googleLoginUser = async (userForm) => {
 							window.location.replace(API.Dashboard)
 						} else {
 							console.log(response.error);
-							Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
+							Utils.responseError("Error!", "There is some error happen :< you may want to try again", "error")
 						}
 					} else Utils.responseErrorHandler(response)
 				})
-				.catch(Utils.fetchErrorHandler)
+
 		}
 	})
 }
@@ -188,14 +135,9 @@ function onFailure() {
 
 $(document).ready(() => {
 
-	$('#gSignin').click(() => {
+	$('#gSignIn').click(() => {
 		setCookie("logout", "false", 0)
 		GoogleLogin();
-	})
-
-	$('#gRegister').click(() => {
-		setCookie("logout", "false", 0)
-		GoogleRegister();
 	})
 
 	$('#login').click(() => {
