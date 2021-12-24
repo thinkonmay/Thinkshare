@@ -54,5 +54,14 @@ namespace WorkerManager.Controllers
                 Validator = "WorkerManager",
             });
         }
+
+        [Worker]
+        [HttpGet("continue")]
+        public async Task<IActionResult> shouldContinue()
+        {
+            var workerID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
+            var currentState = await _cache.GetWorkerState(workerID);
+            return (currentState == WorkerState.OnSession)? Ok() : BadRequest();
+        }
     }
 }

@@ -20,6 +20,9 @@ namespace SharedHost.Models.Session
         public string turnpassword{ get; set; }
 
         [Required]
+        public string turn{ get; set; }
+
+        [Required]
         public List<string> stuns { get; set; }
 
         [Required]
