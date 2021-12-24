@@ -190,7 +190,6 @@ namespace Conductor.Controllers
             var UserID = HttpContext.Items["UserID"];
             var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
 
-
             // get session from database
             var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID  
                                             && s.ClientId == Int32.Parse((string)UserID)
@@ -201,7 +200,6 @@ namespace Conductor.Controllers
             // return bad request if session is not found in database
             if (ses == null) return BadRequest();
             var workerState = await _Cluster.GetWorkerState(ses.WorkerID);
-
             /*slavepool send terminate session signal*/
             if (workerState == WorkerState.OnSession)
             {
@@ -229,15 +227,10 @@ namespace Conductor.Controllers
             var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID&& 
                                                s.ClientId == Int32.Parse(UserID.ToString())&& 
                                               !s.EndTime.HasValue);
+
+
             if (!ses.Any()) { return BadRequest(); }
-
-
             var userSetting = await _cache.GetUserSetting(Int32.Parse((string)UserID));
-
-
-            _db.Update(ses.First());
-            await _db.SaveChangesAsync();
-
             var clientTokenRequest = new RestRequest(new Uri(_config.SessionTokenGrantor))
                 .AddJsonBody(new SessionAccession
                 {

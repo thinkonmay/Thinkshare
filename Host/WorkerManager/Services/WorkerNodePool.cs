@@ -86,7 +86,6 @@ namespace WorkerManager.Services
                         {
                             // find is cache first, the find in sqldb if not present on redis
                             ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                            worker.RestoreWorkerNode();
                             if(await worker.PingWorker(Module.CORE_MODULE))
                             {
                                 worker.sessionFailedPing = 0;
@@ -126,7 +125,6 @@ namespace WorkerManager.Services
                     foreach (var keyValue in worker_list)
                     {
                         ClusterWorkerNode worker = await _cache.GetWorkerInfor(keyValue.Key);
-                        worker.RestoreWorkerNode();
                         if(await worker.PingWorker(Module.AGENT_MODULE))
                         {
                             worker.agentFailedPing = 0;
@@ -175,7 +173,6 @@ namespace WorkerManager.Services
                 foreach (var item in worker_list.Where(x => x.Value != WorkerState.Disconnected))
                 {
                     ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                    worker.RestoreWorkerNode();
                     worker.GetWorkerMetric(_db,model_list);
                 }
                 Thread.Sleep(((int)TimeSpan.FromSeconds(60).TotalMilliseconds));

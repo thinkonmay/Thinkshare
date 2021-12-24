@@ -53,7 +53,7 @@ namespace WorkerManager
 
                 services.AddDbContext<ClusterDbContext>(options =>
                     options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                    ServiceLifetime.Transient
+                    ServiceLifetime.Singleton
                 );
                 services.AddStackExchangeRedisCache(options =>
                 {

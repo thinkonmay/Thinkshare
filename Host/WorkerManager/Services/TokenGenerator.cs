@@ -33,15 +33,14 @@ namespace WorkerManager.Services
             claims.Add(new Claim("GPU", node.GPU));
             claims.Add(new Claim("OS", node.OS));
             claims.Add(new Claim("RAMcapacity", node.RAMcapacity.ToString()));
-
-
+            claims.Add(new Claim("IPAddress", node.PrivateIP));
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwt.Key);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("ip", node.PrivateIP.ToString()) }),
+                Subject = new ClaimsIdentity(new[] { new Claim("ID", node.ID.ToString()) }),
                 Expires = DateTime.Now.AddDays(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
@@ -71,8 +70,8 @@ namespace WorkerManager.Services
                 }, out SecurityToken validatedToken);
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
-                var ip = jwtToken.Claims.First(x => x.Type == "ip").Value;
-                var node = _db.Devices.Where(o => o.PrivateIP == ip).FirstOrDefault();
+                var ID = Int32.Parse(jwtToken.Claims.First(x => x.Type == "ID").Value.ToString());
+                var node = _db.Devices.Find(ID);
                 return node;
             }
             catch 

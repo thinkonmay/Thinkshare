@@ -318,16 +318,10 @@ namespace WorkerManager.Services
                 OS = model.OS,
             };
 
-            var workers = _db.Devices.ToList();
+            var workers = await _cache.GetClusterState();
             foreach (var item in workers)
             {
-                await _cache.SetWorkerState(item.ID,WorkerState.Disconnected);
-                if(item.RemoteToken != null)
-                {
-                    item.RemoteToken = null;
-                    _db.Devices.Update(item);
-                    await _db.SaveChangesAsync();
-                }
+                await _cache.SetWorkerState(item.Key,WorkerState.Disconnected);
             }
 
 
@@ -347,7 +341,6 @@ namespace WorkerManager.Services
 
                 _db.Devices.Add(model);
                 await _db.SaveChangesAsync();
-                await _cache.CacheWorkerInfor(model);
                 await _cache.SetWorkerState(model.ID, WorkerState.Open);
                 return true;
             }
@@ -366,26 +359,26 @@ namespace WorkerManager.Services
 
 
 
+        
 
 
 
 
         public async Task Initialize(int ID, string remoteToken)
         {
-            var worker = _db.Devices.Where(o => o.ID == ID).First();
-            worker.RestoreWorkerNode();
+            var worker = await _cache.GetWorkerInfor(ID);
 
-            worker.RemoteToken = remoteToken;
-            _db.Update(worker);
-            await _db.SaveChangesAsync();
+            await _cache.SetWorkerRemoteToken(ID,remoteToken);
 
             var workerToken = await _generator.GenerateWorkerToken(worker);
             if (await worker.SessionInitialize(workerToken))
             {
+                Serilog.Log.Information("initialize session done");
                 await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
             }
             else 
             {
+                Serilog.Log.Information("Fail to initialize session");
                 await _cache.SetWorkerState(worker.ID, WorkerState.OffRemote);
             }
         }
@@ -394,37 +387,36 @@ namespace WorkerManager.Services
 
         public async Task Terminate(int GlobalID)
         {
-            var worker = _db.Devices.Where(o => o.ID == GlobalID).First();
-            worker.RestoreWorkerNode();
+            var worker = await _cache.GetWorkerInfor(GlobalID);
+            await _cache.SetWorkerRemoteToken(GlobalID,"none");
 
-            worker.RemoteToken = null;
             var workerToken = await _generator.GenerateWorkerToken(worker);
             if(await worker.SessionTerminate(workerToken))
             {
+                Serilog.Log.Information("Terminate session success");
                 await _cache.SetWorkerState(worker.ID, WorkerState.Open);
             }
-            await _db.SaveChangesAsync();
+            else
+            {
+                Serilog.Log.Information("Fail to terminate session");
+            }
         }
 
 
         public async Task Disconnect(int GlobalID)
         {
-            var worker = _db.Devices.Where(o => o.ID == GlobalID).First();
-            worker.RestoreWorkerNode();
+            var worker = await _cache.GetWorkerInfor(GlobalID);
 
             var workerToken = await _generator.GenerateWorkerToken(worker);
             if (await worker.SessionDisconnect(workerToken))
             {
                 await _cache.SetWorkerState(worker.ID,WorkerState.OffRemote);
             }
-            await _db.SaveChangesAsync();
         }
 
         public async Task Reconnect(int GlobalID)
         {
-            var worker = _db.Devices.Where(o => o.ID == GlobalID).First();
-
-            worker.RestoreWorkerNode();
+            var worker = await _cache.GetWorkerInfor(GlobalID);
 
             var workerToken = await _generator.GenerateWorkerToken(worker);
             if (await worker.SessionReconnect(workerToken))
@@ -432,6 +424,5 @@ namespace WorkerManager.Services
                 await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
             }
         }
-
     }
 }
