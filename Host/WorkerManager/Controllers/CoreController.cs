@@ -37,6 +37,7 @@ namespace WorkerManager.Controllers
         {
             _db = db;
             _config = config.Value;
+            _cache = cache;
         }
 
 
@@ -44,13 +45,23 @@ namespace WorkerManager.Controllers
         [HttpGet("token")]
         public async Task<IActionResult> Session()
         {
-            var PrivateID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
-            var Node = _db.Devices.Find(PrivateID);
+            var workerID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
+            Serilog.Log.Information("Worker node get remote token: "+ workerID);
+            var remoteToken = await _cache.GetWorkerRemoteToken(workerID);
 
             return Ok(new AuthenticationRequest{
-                token = Node.RemoteToken,
+                token = remoteToken,
                 Validator = "WorkerManager",
             });
+        }
+
+        [Worker]
+        [HttpGet("continue")]
+        public async Task<IActionResult> shouldContinue()
+        {
+            var workerID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
+            var currentState = await _cache.GetWorkerState(workerID);
+            return (currentState == WorkerState.OnSession)? Ok() : BadRequest();
         }
     }
 }

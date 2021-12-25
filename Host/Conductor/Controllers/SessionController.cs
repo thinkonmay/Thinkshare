@@ -92,8 +92,8 @@ namespace Conductor.Controllers
             /*create new session with gevin session request from user*/
             var sess = new RemoteSession()
             {
-                Client = await _userManager.FindByIdAsync(UserID.ToString()),
-                Worker = _db.Devices.Find(SlaveID)
+                ClientId = Int32.Parse((string)UserID),
+                WorkerID = SlaveID 
             };
 
 
@@ -105,7 +105,7 @@ namespace Conductor.Controllers
                 .AddJsonBody(new SessionAccession
                 {
                     ClientID = Int32.Parse((string)UserID),
-                    WorkerID = sess.Worker.ID,
+                    WorkerID = sess.WorkerID,
                     ID = sess.ID,
                     Module = Module.CORE_MODULE
                 });
@@ -114,7 +114,7 @@ namespace Conductor.Controllers
                 .AddJsonBody(new SessionAccession
                 {
                     ClientID = Int32.Parse((string)UserID),
-                    WorkerID = sess.Worker.ID,
+                    WorkerID = sess.WorkerID,
                     ID = sess.ID,
                     Module = Module.CLIENT_MODULE
                 });
@@ -134,7 +134,7 @@ namespace Conductor.Controllers
             await _Cluster.SessionInitialize(SlaveID, workerToken.token);
 
             // return view for user
-            Serilog.Log.Information("Remote session between user "+sess.Client.FullName+" and worker "+SlaveID+" reconnected");
+            Serilog.Log.Information("Remote session between user "+UserID.ToString()+" and worker "+SlaveID+" reconnected");
             return Ok(clientToken);
         }
 
@@ -151,14 +151,13 @@ namespace Conductor.Controllers
         public async Task<IActionResult> Terminate(int SlaveID)
         {
             var UserID = HttpContext.Items["UserID"];
-            var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
 
             var device = _db.Devices.Find(SlaveID);
 
             string workerState = await _Cluster.GetWorkerState(SlaveID);
             // get session information in database
-            var ses = _db.RemoteSessions.Where(s => s.Worker == device && 
-                                               s.Client == userAccount && 
+            var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID && 
+                                               s.ClientId == Int32.Parse(UserID.ToString())&& 
                                               !s.EndTime.HasValue);
 
             // return badrequest if session is not available in database
@@ -173,7 +172,7 @@ namespace Conductor.Controllers
                 await _Cluster.SessionTerminate(ses.First().WorkerID);
                 return Ok();
             }
-            Serilog.Log.Information("Start remote session between user "+userAccount.FullName+" and worker "+SlaveID);
+            Serilog.Log.Information("Start remote session between user "+UserID.ToString()+" and worker "+SlaveID);
             return BadRequest("Cannot send terminate session signal to slave");            
         }
 
@@ -191,26 +190,24 @@ namespace Conductor.Controllers
             var UserID = HttpContext.Items["UserID"];
             var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
 
-
             // get session from database
             var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID  
-                                               && s.Client == userAccount 
-                                              && !s.EndTime.HasValue).FirstOrDefault();
+                                            && s.ClientId == Int32.Parse((string)UserID)
+                                            && !s.EndTime.HasValue).FirstOrDefault();
 
 
 
             // return bad request if session is not found in database
             if (ses == null) return BadRequest();
             var workerState = await _Cluster.GetWorkerState(ses.WorkerID);
-
             /*slavepool send terminate session signal*/
             if (workerState == WorkerState.OnSession)
             {
                 // send disconnect signal to slave
-                await _Cluster.SessionDisconnect(ses.Worker.ID);
+                await _Cluster.SessionDisconnect(SlaveID);
                 return Ok();
             }
-            Serilog.Log.Information("Remote session between user "+userAccount.FullName+" and worker "+SlaveID+" disconnected");
+            Serilog.Log.Information("Remote session between user "+(string)UserID+" and worker "+SlaveID+" disconnected");
             return BadRequest("Device not in session");            
         }
 
@@ -225,28 +222,20 @@ namespace Conductor.Controllers
         {
             // get ClientId from user request
             var UserID = HttpContext.Items["UserID"];
-            var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
-
-            var device = _db.Devices.Find(SlaveID);
 
             // get session from database
-            var ses = _db.RemoteSessions.Where(s => s.Worker == device && 
-                                               s.Client == userAccount && 
+            var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID&& 
+                                               s.ClientId == Int32.Parse(UserID.ToString())&& 
                                               !s.EndTime.HasValue);
+
+
             if (!ses.Any()) { return BadRequest(); }
-
-
             var userSetting = await _cache.GetUserSetting(Int32.Parse((string)UserID));
-
-
-            _db.Update(ses.First());
-            await _db.SaveChangesAsync();
-
             var clientTokenRequest = new RestRequest(new Uri(_config.SessionTokenGrantor))
                 .AddJsonBody(new SessionAccession
                 {
                     ClientID = Int32.Parse((string)UserID),
-                    WorkerID = device.ID,
+                    WorkerID = SlaveID,
                     ID = ses.First().ID,
                     Module = Module.CLIENT_MODULE
                 });
@@ -268,7 +257,7 @@ namespace Conductor.Controllers
                 // return view to client 
                 return Ok(clientToken);
             }
-            Serilog.Log.Information("Remote session between user "+userAccount.FullName+" and worker "+SlaveID+" reconnected");
+            Serilog.Log.Information("Remote session between user "+(string)UserID+" and worker "+SlaveID+" reconnected");
             return BadRequest("Device not in off remote");            
         }
 

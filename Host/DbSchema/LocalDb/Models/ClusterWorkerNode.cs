@@ -37,8 +37,6 @@ namespace DbSchema.LocalDb.Models
         [Required]
         public DateTime Register { get;set; }
 
-        public string? RemoteToken { get; set; }
-
         [NotMapped]
         [Required]
         public int agentFailedPing {get;set;}
@@ -61,7 +59,7 @@ namespace DbSchema.LocalDb.Models
         [JsonIgnore]
         public virtual IList<ShellSession> Shells {get;set;}
 
-        public void RestoreWorkerNode ()
+        void RestoreWorkerNode ()
         {
             _coreClient = new RestClient("http://"+PrivateIP.ToString()+":3330/cluster");
             _agentClient = new RestClient("http://"+PrivateIP.ToString()+":2220/cluster");
@@ -72,6 +70,8 @@ namespace DbSchema.LocalDb.Models
         /*state dependent method*/
         public async Task<bool> SessionInitialize(string token)
         {
+            Serilog.Log.Information("Intializing worker "+ID.ToString()+" on IP address "+PrivateIP);
+            RestoreWorkerNode();
             var request = new RestRequest("Initialize")
                 .AddHeader("Authorization", token);
             request.Method = Method.POST;
@@ -82,6 +82,8 @@ namespace DbSchema.LocalDb.Models
 
         public async Task<bool> SessionTerminate(string token)
         {
+            Serilog.Log.Information("Terminating worker "+ID.ToString()+" on IP address "+PrivateIP);
+            RestoreWorkerNode();
             var request = new RestRequest("Terminate")
                 .AddHeader("Authorization", token);
             request.Method = Method.POST;
@@ -92,7 +94,9 @@ namespace DbSchema.LocalDb.Models
 
         public async Task<bool> SessionDisconnect(string token)
         {
-            var request = new RestRequest("Disconnect")
+            Serilog.Log.Information("Disconnect worker "+ID.ToString()+" on IP address "+PrivateIP);
+            RestoreWorkerNode();
+            var request = new RestRequest("Terminate")
                 .AddHeader("Authorization", token);
             request.Method = Method.POST;
 
@@ -102,7 +106,9 @@ namespace DbSchema.LocalDb.Models
 
         public async Task<bool> SessionReconnect(string token)
         {
-            var request = new RestRequest("Reconnect")
+            Serilog.Log.Information("Reconnect worker "+ID.ToString()+" on IP address "+PrivateIP);
+            RestoreWorkerNode();
+            var request = new RestRequest("Initialize")
                 .AddHeader("Authorization", token);
             request.Method = Method.POST;
 
@@ -146,6 +152,7 @@ namespace DbSchema.LocalDb.Models
             var request = new RestRequest("ping");
             request.Method = Method.POST;
 
+            RestoreWorkerNode();
             if(module == Module.CORE_MODULE)
             {
                 result = await _coreClient.ExecuteAsync(request);
@@ -178,6 +185,7 @@ namespace DbSchema.LocalDb.Models
                 request.AddParameter("application/json", model.Script, ParameterType.RequestBody);
 
                 request.Method = Method.POST;
+                RestoreWorkerNode();
                 var result = await _agentClient.ExecuteAsync(request);
                 if(result.StatusCode == HttpStatusCode.OK) 
                 { 

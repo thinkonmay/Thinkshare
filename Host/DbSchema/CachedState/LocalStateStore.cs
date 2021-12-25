@@ -19,6 +19,10 @@ namespace DbSchema.CachedState
         Task<ClusterWorkerNode?> GetWorkerInfor(int PrivateID);
 
         Task CacheWorkerInfor(ClusterWorkerNode Worker);
+
+        Task SetWorkerRemoteToken(int WorkerID, string token);
+
+        Task<string> GetWorkerRemoteToken (int WorkerID);
     }
     public class LocalStateStore : ILocalStateStore
     {
@@ -29,10 +33,6 @@ namespace DbSchema.CachedState
         {
             _cache = cache;
             _db = db;
-            var nodes = db.Devices.ToList();
-            var initState = new Dictionary<int,string>();
-            nodes.ForEach(x => initState.Add(x.ID,WorkerState.Disconnected));
-            _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", initState, null,null).Wait();
         }
 
         public async Task SetWorkerState(int WorkerID, string? node)
@@ -71,6 +71,19 @@ namespace DbSchema.CachedState
                 await CacheWorkerInfor(worker);
             }
             return worker;
+        }
+
+        public async Task SetWorkerRemoteToken(int WorkerID, string token)
+        {
+            Serilog.Log.Information("Caching remote token "+ token + " from WorkerNode: " + WorkerID);
+            await _cache.SetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString(), token, null,null);
+        }
+
+        public async Task<string> GetWorkerRemoteToken (int WorkerID)
+        {
+            var cachedValue = await _cache.GetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString());
+            Serilog.Log.Information("Getting remote token "+ cachedValue + " from WorkerNode: " + WorkerID);
+            return cachedValue;
         }
     }
 }

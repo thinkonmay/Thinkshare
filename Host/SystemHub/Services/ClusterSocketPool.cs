@@ -310,7 +310,10 @@ namespace SystemHub.Services
         {
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
-            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            try
+            {
+                await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            } catch { Serilog.Log.Information("Fail to send websocket to client"); }
         }
     }
 }

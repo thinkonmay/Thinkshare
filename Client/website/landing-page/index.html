@@ -656,17 +656,25 @@
 
       <div class="row no-gutters" style="padding-top: 10px;">
         <div class="col-4">
-          <a href="https://github.com/thinkonmay/personal-cloud-computing/releases/download/v1.0.0/personal-cloud-computing-window.msi">
-            <img src="./assets/images/windows10.png" alt="">
-          </a>
+          <ul class="navigation">
+            <img onclick="WindowsVersion()" src="./assets/images/windows10.png" alt="" width="128px" height="128px">
+            <div id="WindowsTagName"></div>
+            <!-- <li class="n1"><a href="#">item #1</a></li>
+            <li class="n2"><a href="#">item #2</a></li>
+            <li class="n3"><a href="#">item #3</a></li>
+            <li class="n4"><a href="#">item #4</a></li>
+            <li class="n5"><a href="#">item #5</a></li> -->
+          </ul>
+          <!-- <a href="https://github.com/thinkonmay/personal-cloud-computing/releases/download/v1.0.0/personal-cloud-computing-window.msi">
+          </a> -->
         </div>
         <div class="col-4">
-          <img src="./assets/images/linux.png" alt="" >
+          <img src="./assets/images/linux.png" alt="">
           <p style="color: rgb(220, 104, 162);">(comming soon)</p>
         </div>
         <div class="col-4">
           <img src="./assets/images/apple.png" alt="">
-          <p style="color: rgb(220, 104, 162);">(comming soon)</p>
+          <p style="color: rgb(220, 104, 162);">(Linux comming)</p>
         </div>
       </div>
       <a href="#" class="modal__close"><h3>x</h3></a>
@@ -769,6 +777,26 @@
       for (key in en)
         document.getElementById(key).innerHTML = en[key];
     });
+  </script>
+  <script>
+    function WindowsVersion() {
+      let value;
+      fetch('https://api.github.com/repos/thinkonmay/personal-cloud-computing/releases?page=1&per_page=100/assets/')
+        .then(response => response.json())
+        .then(data => {
+          value = data
+          document.getElementById('WindowsTagName').innerHTML = ``
+          for (let i in value) {
+            let url = `https://github.com/thinkonmay/personal-cloud-computing/releases/download/${value[i].tag_name}/personal-cloud-computing-window.msi`
+            if (i == 0)
+              document.getElementById('WindowsTagName').innerHTML += `<li class="n1"> <a href="${url}"> ${value[i].tag_name} (Highly Recommended) </a></li>`
+            else
+              document.getElementById('WindowsTagName').innerHTML += `<li class="n1"> <a href="${url}"> ${value[i].tag_name} </a></li>`
+
+          }
+        });
+
+    }
   </script>
 
   <!--====== Javascript Files ======-->

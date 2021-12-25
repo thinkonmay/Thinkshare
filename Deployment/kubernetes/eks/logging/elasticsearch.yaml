@@ -68,5 +68,8 @@ spec:
           privileged: true
       volumes:
       - name: data
-        persistentVolumeClaim:
-          claimName: pvc-logging
+        awsElasticBlockStore:        
+          volumeID: "vol-0d0818c9e8f0563d1"
+          fsType: ext4
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1b

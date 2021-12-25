@@ -19,6 +19,9 @@ API.getInfor().then(async data => {
 
 
 $(document).ready(async () => {
+	await connectToClientHub();
+	document.querySelector(".preloader").style.opacity = "0";
+	document.querySelector(".preloader").style.display = "none";
 
 	if (getCookie("show-tutorial") == "true") {
 		$('#checkboxTutorial').attr("checked", true)
@@ -165,7 +168,6 @@ $(document).ready(async () => {
 	await prepare_user_infor();
 	await prepare_worker_dashboard();
 	await setDataForChart();
-	await connectToClientHub();
 
 
 	// set data for chart to anaylize hour used
@@ -244,17 +246,19 @@ function onClientHubEvent(event) {
 	if (message_json.EventName === "ReportSessionReconnected") {
 		var workerID = parseInt(message_json.Message)
 
+		RemotePage.check_remote_condition(workerID,null,null);
 		createSlave(workerID, "ON_SESSION", "slavesInUses");
+	}
+	if (message_json.EventName === "ReportSessionOn") {
+		var workerID = parseInt(message_json.Message)
+
+		RemotePage.check_remote_condition(workerID,null,null);
+		createSlave(workerID, "ON_SESSION", "slavesInUses")
 	}
 	if (message_json.EventName === "ReportSessionTerminated") {
 		var workerID = parseInt(message_json.Message)
 
 		createSlave(workerID, null, null);
-	}
-	if (message_json.EventName === "ReportSessionOn") {
-		var workerID = parseInt(message_json.Message)
-
-		createSlave(workerID, "ON_SESSION", "slavesInUses")
 	}
 	if (message_json.EventName === "ReportSlaveObtained") {
 		var workerID = parseInt(message_json.Message)
@@ -282,6 +286,7 @@ function onWebsocketClose(event) {
 async function createSlave(workerID, workerState, queue) {
 	var queues = ["slavesInUses", "availableSlaves"]
 	for (var item in queues) {
+		
 		var worker = document.getElementById(`${queues[item]}${workerID}`);
 		if (worker != null) {
 			worker.remove();
@@ -296,9 +301,12 @@ async function createSlave(workerID, workerState, queue) {
 	} catch (error) {
 		(new Promise(resolve => setTimeout(resolve, 5000)))
 		.then(async () => {
-			await createSlave(workerID, workerState, queue);
+			if(document.getElementById(`${queue}${workerID}`) == null)
+				await createSlave(workerID, workerState, queue);
 		});
 	}
+
+	if(document.getElementById(`${queue}${workerID}`) == null)
 	append(queue, `
     <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
       <div class="card bg-light d-flex flex-fill">
@@ -330,6 +338,7 @@ function setState(serviceState, slaveID, queue) {
 	button.innerHTML = slaveState(serviceState, slaveID);
 
 	if (serviceState === "ON_SESSION") {
+
 		var initbutt = document.getElementById(`disconnect${slaveID}`)
 		initbutt.addEventListener("click", async function () {
 			await API.disconnectSession(slaveID)

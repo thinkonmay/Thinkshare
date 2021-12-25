@@ -38,11 +38,6 @@ namespace SharedHost.Models.Device
         HIGH_CONST,
         VERY_HIGH_CONST,
         ULTRA_HIGH_CONST,
-
-        SEGMENTED_ADAPTIVE_BITRATE,
-        NON_OVER_SAMPLING_ADAPTIVE_BITRATE,
-        OVER_SAMPLING_ADAPTIVE_BITRATE,
-        PREDICTIVE_ADAPTIVE_BITRATE
     }
 
     public class UserSetting

@@ -40,7 +40,7 @@ namespace Conductor
             //for postgresql
             services.AddDbContext<GlobalDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                ServiceLifetime.Singleton
+                ServiceLifetime.Transient
             );
             services.AddStackExchangeRedisCache(options =>
             {
@@ -94,8 +94,8 @@ namespace Conductor
             });
             services.AddMvc();
             services.AddTransient<IClientHub,ClientHub>();
-            services.AddSingleton<IWorkerCommnader,WorkerCommander>();
-            services.AddSingleton<IGlobalStateStore,GlobalStateStore>();
+            services.AddTransient<IWorkerCommnader,WorkerCommander>();
+            services.AddTransient<IGlobalStateStore,GlobalStateStore>();
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
         }
 

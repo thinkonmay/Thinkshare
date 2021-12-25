@@ -145,26 +145,32 @@ namespace DbSchema.CachedState
             var sessionWorker = new SessionWorker
             {
                 signallingurl = config.SignallingWs,
-                turn = "turn://" + cluster.TurnUser + ":" + cluster.TurnPassword + "@turn:" + cluster.TurnIp + ":3478",
+                turn = "turn://" + cluster.TurnUser + ":" + cluster.TurnPassword + "@" + cluster.TurnIp + ":3478",
 
                 clientdevice = defaultSetting.device,
                 clientengine = defaultSetting.engine,
 
                 screenheight = defaultSetting.screenHeight,
                 screenwidth = defaultSetting.screenWidth,
+
                 audiocodec = defaultSetting.audioCodec,
                 videocodec = defaultSetting.videoCodec,
+
                 mode = defaultSetting.mode,
                 stuns = config.STUNlist
             };
             var sessionClient = new SessionClient
             {
                 signallingurl = config.SignallingWs,
+                turn = "turn://" + cluster.TurnUser + ":" + cluster.TurnPassword + "@" + cluster.TurnIp + ":3478",
+
                 turnip =  "turn:"+cluster.TurnIp + ":3478",
                 turnuser = cluster.TurnUser,
                 turnpassword = cluster.TurnPassword,
+
                 audiocodec = defaultSetting.audioCodec,
                 videocodec = defaultSetting.videoCodec,
+
                 stuns = config.STUNlist
             };
 

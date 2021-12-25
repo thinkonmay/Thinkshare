@@ -50,9 +50,6 @@ namespace WorkerManager.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
 
-                    b.Property<string>("RemoteToken")
-                        .HasColumnType("text");
-
                     b.HasKey("ID");
 
                     b.ToTable("Devices");

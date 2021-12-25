@@ -4,11 +4,7 @@ import { initializeSession } from "./api.js"
 import { isElectron } from "./checkdevice.js"
 import { Codec, CoreEngine, DeviceType } from "../pages/setting.js"
 
-
-
 ////////////// setting
-
-
 async function setupDevice() {
     let deviceCurrent;
     // 1: chrome, 2: gstreamer
@@ -53,11 +49,7 @@ export const sessionInitialize = async (SlaveID) => {
             getSetting().then(async _data => {
                 let _body = await _data.json();
 
-                if (_body.engine == CoreEngine('GSTREAMER')) {
-                    window.location.assign(`thinkmay://token=${token.token}/`);
-                } else {
-                    getRemotePage(token.token);
-                }
+                check_remote_condition(SlaveID,token.token,_body.engine);
             })
         } else {
         }
@@ -73,19 +65,47 @@ export const sessionReconnect = async (SlaveID) => {
             getSetting().then(async _data => {
                 let _body = await _data.json();
 
-                if (_body.engine == CoreEngine('GSTREAMER')) {
-                    window.location.assign(`thinkmay://token=${token.token}/`);
-                } else {
-                    getRemotePage(token.token);
-                }
+                check_remote_condition(SlaveID,token.token,_body.engine);
             })
         } else {
         }
     })
 }
 
+var session_queue = [];
+export function check_remote_condition(workerID, token, engine)
+{
+	var item = session_queue.find( x => x.id == workerID);
+	if(item == undefined)
+	{
+		session_queue.push({id: workerID, token: token, engine});
+	}
+	else
+	{
+        if(token == null && item.token != null) {
+            getRemotePage(item.token,item.engine);
+        } else if (token != null && item.token == null) {
+            getRemotePage(token,engine);
+        }
+
+        for( var i = 0; i < session_queue.length; i++){ 
+            if ( session_queue[i].id === workerID) { 
+                session_queue.splice(i, 1); 
+            }
+        }
+	}
+}
+
 const RemotePageUrl = "https://remote.thinkmay.net/Remote"
 
-const getRemotePage = (token) => {
-    window.open(RemotePageUrl+"?token="+token, "__blank");
+export const getRemotePage = (token, engine) => {
+    if (engine == CoreEngine('GSTREAMER')) {
+        window.location.assign(`thinkmay://token=${token}/`);
+    } else {
+        var width = window.innerWidth * 0.66 ;
+        // define the height in
+        var height = width * window.innerHeight / window.innerWidth ;
+        // Ratio the hight to the width as the user screen ratio
+        window.open(RemotePageUrl+"?token="+token, 'newwindow', 'width=' + width + ', height=' + height + ', top=' + ((window.innerHeight - height) / 2) + ', left=' + ((window.innerWidth - width) / 2));
+    }
 }

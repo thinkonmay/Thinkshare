@@ -110,6 +110,7 @@ onICECandidates(event)
     // same uuid
     if (event.candidate == null) {
         console.log("ICE Candidate was null, done");
+        document.getElementById("loading").innerHTML = " ";
         return;
     }
     app.setDebug("OFFER_ICE" + JSON.stringify({'ice': event.candidate}));
