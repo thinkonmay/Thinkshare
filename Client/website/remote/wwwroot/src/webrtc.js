@@ -61,7 +61,6 @@ function onLocalDescription(desc) {
  function onRemoteTrack(event) {
     if (app.VideoElement.srcObject !== event.streams[0]) {
         console.log('Incoming stream');
-        document.getElementById("loading").innerHTML = " ";
         app.VideoElement.srcObject = event.streams[0];
     }
 }
@@ -111,6 +110,7 @@ onICECandidates(event)
     // same uuid
     if (event.candidate == null) {
         console.log("ICE Candidate was null, done");
+        document.getElementById("loading").innerHTML = " ";
         return;
     }
     app.setDebug("OFFER_ICE" + JSON.stringify({'ice': event.candidate}));
