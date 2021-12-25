@@ -16,7 +16,15 @@ let sessionInfor;
 API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
-
+API.getSetting().then(async data => {
+	var body = await data.json()
+	$(`[value=${Setting.DecodeCoreEngine(parseInt(body.engine))}]`).attr('checked', true);
+	$(`[value=${Setting.DecodeCodec(parseInt(body.audioCodec))}]`).attr('checked', true);
+	$(`[value=${Setting.DecodeCodec(parseInt(body.videoCodec))}]`).attr('checked', true);
+	$(`[value=${Setting.DecodeDeviceType(parseInt(body.device))}]`).attr('checked', true);
+	$(`[value=${Setting.DecodeQoeMode(parseInt(body.mode))}]`).attr('checked', true);
+	$(`[value=${Setting.DecodeResolution(body)}]`).attr('checked', true);
+})
 
 $(document).ready(async () => {
 	await connectToClientHub();
@@ -52,54 +60,55 @@ $(document).ready(async () => {
 	// Remote Core
 	$('[name="remote"]').click(async function () {
 		var display = await (await API.getSetting()).json();
-		if ($(this).attr('checked') == 'checked') {
 			var value = $(this).val();
 			display.engine = Setting.CoreEngine(value);
 			await Setting.updateSetting(display);
-		}
 	})
 
-	// Resolution
-	$('[name="resolution"]').click(async function () {
+	// Remote control bitrate
+	$('[name="bitrate"]').click(async function () {
 		var display = await (await API.getSetting()).json();
-		if ($(this).attr('checked') == 'checked') {
 			var value = $(this).val();
-			switch (value) {
-				case "FullHD":
-					display.screenWidth = 1920;
-					display.screenHeight = 1080;
-					break;
-				case "2K":
-					display.screenWidth = 2560;
-					display.screenHeight = 1440;
-					break;
-				case "4K":
-					display.screenWidth = 3840;
-					display.screenHeight = 2160;
-					break;
-			}
+			display.mode = Setting.QoEMode(value);
 			await Setting.updateSetting(display);
+	});
+
+	// Resolution
+	$('[name="res"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+		var value = $(this).attr("value");
+		switch (value) {
+			case "FullHD":
+				display.screenWidth = 1920;
+				display.screenHeight = 1080;
+				break;
+			case "2K":
+				display.screenWidth = 2560;
+				display.screenHeight = 1440;
+				break;
+			case "4K":
+				display.screenWidth = 3840;
+				display.screenHeight = 2160;
+				break;
 		}
+		await Setting.updateSetting(display);
+		
 	})
 
 	// VideoCodec
 	$('[name="video"]').click(async function () {
 		var display = await (await API.getSetting()).json();
-		if ($(this).attr('checked') == 'checked') {
 			var value = $(this).val();
 			display.videoCodec = Setting.Codec(value);
 			await Setting.updateSetting(display);
-		}
 	});
 
 	// Remote control bitrate
 	$('[name="bitrate"]').click(async function () {
 		var display = await (await API.getSetting()).json();
-		if ($(this).attr('checked') == 'checked') {
-			var value = $(this).val();
-			display.mode = Setting.QoEMode(value);
-			await Setting.updateSetting(display);
-		}
+		var value = $(this).val();
+		display.mode = Setting.QoEMode(value);
+		await Setting.updateSetting(display);
 	});
 
 	// AudioCodec

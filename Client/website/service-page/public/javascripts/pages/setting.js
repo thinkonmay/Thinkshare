@@ -106,14 +106,6 @@ export function QoEMode(key) {
             return 4;
         case "ULTRA_HIGH_CONST":
             return 5;
-        case "SEGMENTED_ADAPTIVE_BITRATE":
-            return 6;
-        case "NON_OVER_SAMPLING_ADAPTIVE_BITRATE":
-            return 7;
-        case "OVER_SAMPLING_ADAPTIVE_BITRATE":
-            return 8;
-        case "PREDICTIVE_ADAPTIVE_BITRATE":
-            return 9;
     }
 }
 
@@ -131,16 +123,29 @@ export function DecodeQoeMode(key) {
             return "VERY_HIGH_CONST"
         case 5:
             return "ULTRA_HIGH_CONST"
-        case 6:
-            return "SEGMENTED_ADAPTIVE_BITRATE"
-        case 7:
-            "NON_OVER_SAMPLING_ADAPTIVE_BITRATE"
-        case 8:
-            "OVER_SAMPLING_ADAPTIVE_BITRATE"
-        case 9:
-            "PREDICTIVE_ADAPTIVE_BITRATE"
     }
 }
+
+
+export function DecodeResolution(display) {
+    if(display.screenWidth == 1920 &&
+       display.screenHeight == 1080)
+    {
+        return "FullHD";
+    }
+    else if(display.screenWidth == 2560 &&
+            display.screenHeight == 1440)
+    {
+        return "2K";
+    }
+    else if(display.screenWidth == 3840 &&
+            display.screenHeight == 2160)
+    {
+        return "4K";
+    }
+}
+
+
 export async function updateSetting(display) {
     API.setSetting(display)
         .then(async data => {
