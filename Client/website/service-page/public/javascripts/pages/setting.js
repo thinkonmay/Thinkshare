@@ -78,7 +78,7 @@ export function QoEMode  (key)
         return 9;
     }
 }
-async function updateSetting(display)
+export async function updateSetting(display)
 {
     API.setSetting(display)
         .then(async data => {
@@ -130,9 +130,6 @@ $(document).ready(async () => {
     })
 
     
-
-
-
     
     $('[name="resolutionOptions"]').click(async function () {
         var display = await (await API.getSetting()).json();
@@ -153,7 +150,7 @@ $(document).ready(async () => {
         }
         await updateSetting(display);
     });
-    $('[name="bitrateOptions"]').click(async function () {
+    $('[name="bitrate"]').click(async function () {
         var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         display.mode = QoEMode(value);

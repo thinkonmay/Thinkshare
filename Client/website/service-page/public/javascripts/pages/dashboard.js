@@ -7,6 +7,7 @@ import {
 } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
+import * as Setting from "./setting.js"
 
 
 
@@ -16,8 +17,95 @@ API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
+
 $(document).ready(async () => {
 
+	if (getCookie("show-tutorial") == "true") {
+		$('#checkboxTutorial').attr("checked", true)
+	}
+	if (getCookie("show-tutorial") != "true") {
+		window.location = '/dashboard#demo-modal'
+	}
+	$('#showTutorial').click(function () {
+		window.location = '/dashboard#demo-modal'
+	})
+
+	$('.modal__checkbox').click(function () {
+		if ($('#checkboxTutorial').attr("checked") == 'checked') {
+			// have been click this checkbox
+			document.getElementById('checkboxTutorial').removeAttribute("checked")
+			// $('#checkboxTutorial').removeAttr("checked")
+			setCookie("show-tutorial", "false")
+		} else
+		if ($('#checkboxTutorial').attr("checked") != 'checked') {
+			// click checkbox
+			$('#checkboxTutorial').attr("checked", true)
+			setCookie("show-tutorial", "true")
+		}
+	})
+
+
+
+	// Remote Core
+	$('[name="remote"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+		if ($(this).attr('checked') == 'checked') {
+			var value = $(this).val();
+			display.engine = Setting.CoreEngine(value);
+			await Setting.updateSetting(display);
+		}
+	})
+
+	// Resolution
+	$('[name="resolution"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+		if ($(this).attr('checked') == 'checked') {
+			var value = $(this).val();
+			switch (value) {
+				case "FullHD":
+					display.screenWidth = 1920;
+					display.screenHeight = 1080;
+					break;
+				case "2K":
+					display.screenWidth = 2560;
+					display.screenHeight = 1440;
+					break;
+				case "4K":
+					display.screenWidth = 3840;
+					display.screenHeight = 2160;
+					break;
+			}
+			await Setting.updateSetting(display);
+		}
+	})
+
+	// VideoCodec
+	$('[name="video"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+		if ($(this).attr('checked') == 'checked') {
+			var value = $(this).val();
+			display.videoCodec = Setting.Codec(value);
+			await Setting.updateSetting(display);
+		}
+	});
+
+	// Remote control bitrate
+	$('[name="bitrate"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+		if ($(this).attr('checked') == 'checked') {
+			var value = $(this).val();
+			display.mode = Setting.QoEMode(value);
+			await Setting.updateSetting(display);
+		}
+	});
+
+	// AudioCodec
+	$('[name="audio"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+		var value = $(this).val();
+		display.audioCodec = Setting.Codec(value)
+		await Setting.updateSetting(display);
+	});
 
 	$(".next-tab").click(() => {
 		let value = null;
@@ -30,6 +118,7 @@ $(document).ready(async () => {
 			$("#ShorcutKey").attr('checked', false)
 		}
 		if ($("#Setting").attr('checked') == 'checked') {
+			window.location = "#"
 			value = 'HowToUse';
 			$("#Setting").attr('checked', false)
 		}
@@ -40,7 +129,10 @@ $(document).ready(async () => {
 	})
 
 	if (CheckDevice.isElectron()) {
+
 		$('#downloadApp').css("display", "none")
+		$('#remoteApp2').removeAttr("disabled")
+		$('#videoCodec3').removeAttr("disabled")
 	}
 
 	$('#logout').click(() => {
@@ -57,7 +149,6 @@ $(document).ready(async () => {
 		}
 	})
 
-	tutorial()
 
 	if (CheckDevice.isElectron()) {
 		// desktop app
@@ -327,27 +418,6 @@ function popUpTurorial(id, name_shortcut, excute_shortcut, src_shortcut) {
 
 }
 
-async function tutorial() {
-
-	$('#tutorialButton').click(() => {
-		$('#content').show()
-	})
-
-	$('#exitButton').click(() => {
-		$('#content').hide()
-	})
-
-	await popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'Hidden_Mouse_x2.5')
-	await popUpTurorial('#fullScreen', 'Full Screen', 'Ctrl + Shift + F', 'Full_Screen_x2.5')
-
-
-	$('.popup-close').click(function (e) {
-		$('.popup-wrap').fadeOut(500);
-		$('.popup-box').removeClass('transform-in').addClass('transform-out');
-
-		e.preventDefault();
-	});
-}
 
 async function setDataForChart() {
 	try {

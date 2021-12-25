@@ -170,7 +170,7 @@
             </a>
           </li>
           <li class="nav-item" id="tutorialButton">
-            <a href="#demo-modal" class="nav-link">
+            <a id="showTutorial" class="nav-link">
               <i class="menu-icon mdi mdi-lightbulb-on-outline"></i>
               <span class="menu-title">
                 Tutorial
@@ -328,6 +328,9 @@
                                 <a class="next-tab">
                                   <h3>▶</h3>
                                 </a>
+                                <a class="modal__checkbox">
+                                  <input id="checkboxTutorial" type="checkbox" /> Don't show again
+                                </a>
                                 <div class="col-lg-11 d-flex flex-column">
                                   <div class="row flex-grow">
                                     <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
@@ -366,20 +369,107 @@
                                               </section>
                                               <section>
                                                 <div class="form-group row">
-                                                  <div class="col-sm-6" style="padding-left: 40px;">
-                                                    <img width="300" height="192"
-                                                      src="videos/Hidden_Mouse_x2.5.gif" />
-                                                      <p><b>Hidden Mouse:</b> Press it now to quickly hide your mouse and focus on your work</p>
+                                                  <div class="col-sm-6" style="padding-left: 80px;">
+                                                    <img width="300" height="192" src="videos/Hidden_Mouse_x2.5.gif" />
+                                                    <p><b>Hidden Mouse:</b> Press it now to quickly hide your mouse and
+                                                      focus on your work</p>
                                                   </div>
                                                   <div class="col-sm-6">
-                                                    <img width="300" height="192"
-                                                      src="videos/Full_Screen_x2.5.gif" />
-                                                      <p><b>Full Screen:</b> Using your device with best experience</p>
+                                                    <img width="300" height="192" src="videos/Full_Screen_x2.5.gif" />
+                                                    <p><b>Full Screen:</b> Using your device with best experience</p>
                                                   </div>
                                                 </div>
                                               </section>
                                               <section>
-                                                
+                                                <div class="form-group row">
+                                                  <div class="col-sm-6" style="padding-left: 92px;">
+
+                                                    <h4>Remote Core: </h4>
+                                                    <label class="control control--radio"> Chrome (not recommend)
+                                                      <input type="radio" name="remoteCore" checked="checked"
+                                                        value="CHROME" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                    <label class="control control--radio"> Gstreamer (just available on
+                                                      <a href="https://www.thinkmay.net/#demo-modal">Thinkmay App</a>)
+                                                      <input type="radio" name="remoteCore" disabled="disabled"
+                                                        value="GSTREAMER" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+
+                                                    <h4>Resolution: </h4>
+                                                    <label class="control control--radio"> 4K (not recommend)
+                                                      <input type="radio" name="resolution" checked="checked"
+                                                        value="4K" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                    <label class="control control--radio"> 2K (not recommend)
+                                                      <input type="radio" name="resolution" value="2K" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                    <label class="control control--radio"> Full HD
+                                                      <input type="radio" name="resolution" value="FullHD" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+
+                                                    <h4>VideoCodec: </h4>
+                                                    <label class="control control--radio"> vp9
+                                                      <input type="radio" name="video" checked="checked" value="VP9" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                    <label class="control control--radio"> h264
+                                                      <input type="radio" name="video" value="H264" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                    <label class="control control--radio"> h265 (just available on <a
+                                                        href="https://www.thinkmay.net/#demo-modal">Thinkmay App</a>)
+                                                      <input type="radio" name="video" disabled="disabled"
+                                                        value="H265" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                  </div>
+
+                                                  <div class="col-sm-6" style="padding-left: 80px;">
+                                                    <h4>Remote control bitrate: </h4>
+                                                    <label class="control control--radio">Ultra low
+                                                      <input type="radio" name="bitrate" checked="checked"
+                                                        value="ULTRA_LOW_CONST" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                    <label class="control control--radio">Low
+                                                      <input type="radio" name="bitrate" checked="checked"
+                                                        value="LOW_CONST" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                    <label class="control control--radio">Medium (Recommend)
+                                                      <input type="radio" name="bitrate" checked="checked"
+                                                        value="MEDIUM_CONST" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                    <label class="control control--radio">Very high
+                                                      <input type="radio" name="bitrate" checked="checked"
+                                                        value="HIGH_CONST" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                    <label class="control control--radio">Ultra high
+                                                      <input type="radio" name="bitrate" checked="checked"
+                                                        value="ULTRA_HIGH_CONST" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+
+                                                    <h4>AudioCodec: </h4>
+                                                    <label class="control control--radio">opus
+                                                      <input type="radio" name="audio" checked="checked" value="OPUS" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                    <label class="control control--radio">mp3
+                                                      <input type="radio" name="audio" disabled="disabled"
+                                                        value="MP3" />
+                                                      <div class="control__indicator"></div>
+                                                    </label>
+                                                  </div>
+                                                </div>
+
                                               </section>
                                             </div>
                                           </div>
