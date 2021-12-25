@@ -2,88 +2,149 @@ import * as API from "../util/api.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
 
-var body ;
+var body;
 body = await (await API.getInfor()).json();
 
-export function Codec (key)
-{
+export function Codec(key) {
     switch (key) {
-    
-    case "H265":
-        return 0
-    case "H264":
-        return 1
-    case "VP8":
-        return 2
-    case "VP9":
-        return 3
-    case "OPUS":
-        return 4
-    case "MP3":
-        return 5
+
+        case "H265":
+            return 0
+        case "H264":
+            return 1
+        case "VP8":
+            return 2
+        case "VP9":
+            return 3
+        case "OPUS":
+            return 4
+        case "MP3":
+            return 5
     }
 };
 
-export function CoreEngine(key)  
-{
+export function DecodeCodec(key) {
     switch (key) {
-    case "GSTREAMER":
-        return 0
-    case "CHROME":
-        return 1
-    }
-};
-
-
-export function DeviceType(key) 
-{
-    switch (key) {
-    case "WEB_APP":
-        return 0
-    case "WINDOW_APP":
-        return 1
-    case "LINUX_APP":
-        return 2
-    case "MAC_OS_APP":
-        return 3
-    case "ANDROID_APP":
-        return 4
-    case "IOS_APP":
-        return 5
-    }
-};
-
-export function QoEMode  (key)
-{
-    switch (key) {
-    case "ULTRA_LOW_CONST":
-        return 0;
-    case "LOW_CONST":
-        return 1;
-    case "MEDIUM_CONST":
-        return 2;
-    case "HIGH_CONST":
-        return 3;
-    case "VERY_HIGH_CONST":
-        return 4;
-    case "ULTRA_HIGH_CONST":
-        return 5;
-    case "SEGMENTED_ADAPTIVE_BITRATE":
-        return 6;
-    case "NON_OVER_SAMPLING_ADAPTIVE_BITRATE":
-        return 7;
-    case "OVER_SAMPLING_ADAPTIVE_BITRATE":
-        return 8;
-    case "PREDICTIVE_ADAPTIVE_BITRATE":
-        return 9;
+        case 0:
+            return "H265"
+        case 1:
+            return "H264"
+        case 2:
+            return "VP8"
+        case 3:
+            return "VP9"
+        case 4:
+            return "OPUS"
+        case 5:
+            return "MP3"
     }
 }
-export async function updateSetting(display)
-{
+
+export function CoreEngine(key) {
+    switch (key) {
+        case "GSTREAMER":
+            return 0
+        case "CHROME":
+            return 1
+    }
+};
+
+export function DecodeCoreEngine(key) {
+    switch (key) {
+        case 0:
+            return "GSTREAMER"
+        case 1:
+            return "CHROME"
+    }
+}
+
+export function DeviceType(key) {
+    switch (key) {
+        case "WEB_APP":
+            return 0
+        case "WINDOW_APP":
+            return 1
+        case "LINUX_APP":
+            return 2
+        case "MAC_OS_APP":
+            return 3
+        case "ANDROID_APP":
+            return 4
+        case "IOS_APP":
+            return 5
+    }
+};
+
+export function DecodeDeviceType(key) {
+    switch (key) {
+        case 0:
+            return "WEB_APP"
+        case 1:
+            return "WINDOW_APP"
+        case 2:
+            return "LINUX_APP"
+        case 3:
+            return "MAC_OS_APP"
+        case 4:
+            return "ANDROID_APP"
+        case 5:
+            return "IOS_APP"
+    }
+}
+
+export function QoEMode(key) {
+    switch (key) {
+        case "ULTRA_LOW_CONST":
+            return 0;
+        case "LOW_CONST":
+            return 1;
+        case "MEDIUM_CONST":
+            return 2;
+        case "HIGH_CONST":
+            return 3;
+        case "VERY_HIGH_CONST":
+            return 4;
+        case "ULTRA_HIGH_CONST":
+            return 5;
+        case "SEGMENTED_ADAPTIVE_BITRATE":
+            return 6;
+        case "NON_OVER_SAMPLING_ADAPTIVE_BITRATE":
+            return 7;
+        case "OVER_SAMPLING_ADAPTIVE_BITRATE":
+            return 8;
+        case "PREDICTIVE_ADAPTIVE_BITRATE":
+            return 9;
+    }
+}
+
+export function DecodeQoeMode(key) {
+    switch (key) {
+        case 0:
+            return "ULTRA_LOW_CONST"
+        case 1:
+            return "LOW_CONST"
+        case 2:
+            return "MEDIUM_CONST"
+        case 3:
+            return "HIGH_CONST"
+        case 4:
+            return "VERY_HIGH_CONST"
+        case 5:
+            return "ULTRA_HIGH_CONST"
+        case 6:
+            return "SEGMENTED_ADAPTIVE_BITRATE"
+        case 7:
+            "NON_OVER_SAMPLING_ADAPTIVE_BITRATE"
+        case 8:
+            "OVER_SAMPLING_ADAPTIVE_BITRATE"
+        case 9:
+            "PREDICTIVE_ADAPTIVE_BITRATE"
+    }
+}
+export async function updateSetting(display) {
     API.setSetting(display)
         .then(async data => {
-            if (data.status == 200) {
-            } else {
+            if (data.status == 200) {} else {
                 Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
             }
         })
@@ -117,34 +178,34 @@ $(document).ready(async () => {
         body.dob = (this.value)
         body.dob = new Date(body.dob).toISOString().substring(0, 10)
     })
-    $("#avatarCtrler").on("change", function() {
+    $("#avatarCtrler").on("change", function () {
         body.avatar = this.value
     })
 
-    $("#langVN").on("change", function() {
+    $("#langVN").on("change", function () {
         window.location = '/dashboard/vi'
     })
 
-    $("#langEN").on("change", function() {
+    $("#langEN").on("change", function () {
         window.location = '/dashboard/en'
     })
 
-    
-    
+
+
     $('[name="resolutionOptions"]').click(async function () {
         var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         switch (value) {
-            case "FullHD": 
-                display.screenWidth= 1920;
-                display.screenHeight= 1080;
+            case "FullHD":
+                display.screenWidth = 1920;
+                display.screenHeight = 1080;
                 break;
             case "2K":
                 display.screenWidth = 2560;
                 display.screenHeight = 1440;
                 break;
             case "4K":
-                display.screenWidth= 3840;
+                display.screenWidth = 3840;
                 display.screenHeight = 2160;
                 break;
         }
@@ -204,8 +265,7 @@ $(document).ready(async () => {
         Utils.newSwal.fire({
             title: "Đang đăng kí",
             text: "Vui lòng chờ . . .",
-            didOpen: () => {
-            }
+            didOpen: () => {}
         })
     });
 
