@@ -168,19 +168,12 @@ $(document).ready(async () => {
         display.videoCodec = Codec(value);
         await updateSetting(display);
     });
-    $('#remoteCoreOption1').click(async function () {
+    $('[name="optionsRemoteCore"]').click(async function () {
         var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         display.engine = CoreEngine(value);
         await updateSetting(display);
     })
-    $('#remoteCoreOption2').click(async function () {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        display.engine = CoreEngine(value);
-        await updateSetting(display);
-    })
-
 
     $('#submitChangeInfoCtrler').click(() => {
         Utils.newSwal.fire({
