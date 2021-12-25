@@ -61,6 +61,7 @@ function onLocalDescription(desc) {
  function onRemoteTrack(event) {
     if (app.VideoElement.srcObject !== event.streams[0]) {
         console.log('Incoming stream');
+        document.getElementById("loading").innerHTML = " ";
         app.VideoElement.srcObject = event.streams[0];
     }
 }

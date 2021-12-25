@@ -5,7 +5,6 @@
 function 
 connectionDone()  
 {
-    document.getElementById("loading").innerHTML = " ";
     AttachEvent();
 }
 

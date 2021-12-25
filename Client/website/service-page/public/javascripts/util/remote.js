@@ -102,6 +102,10 @@ export const getRemotePage = (token, engine) => {
     if (engine == CoreEngine('GSTREAMER')) {
         window.location.assign(`thinkmay://token=${token}/`);
     } else {
-        window.open(RemotePageUrl+"?token="+token, "__blank");
+        var width = window.innerWidth * 0.66 ;
+        // define the height in
+        var height = width * window.innerHeight / window.innerWidth ;
+        // Ratio the hight to the width as the user screen ratio
+        window.open(RemotePageUrl+"?token="+token, 'newwindow', 'width=' + width + ', height=' + height + ', top=' + ((window.innerHeight - height) / 2) + ', left=' + ((window.innerWidth - width) / 2));
     }
 }

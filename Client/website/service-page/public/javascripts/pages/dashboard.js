@@ -17,6 +17,9 @@ API.getInfor().then(async data => {
 })
 
 $(document).ready(async () => {
+	await connectToClientHub();
+	document.querySelector(".preloader").style.opacity = "0";
+	document.querySelector(".preloader").style.display = "none";
 
 
 	if (CheckDevice.isElectron()) {
@@ -54,7 +57,6 @@ $(document).ready(async () => {
 	await prepare_user_infor();
 	await prepare_worker_dashboard();
 	await setDataForChart();
-	await connectToClientHub();
 
 
 	// set data for chart to anaylize hour used

@@ -7,12 +7,28 @@
     <%=title%>
   </title>
   <% include partials/head %>
-    <style>
-    </style>
-
 </head>
 
 <body>
+
+  <!--====== PRELOADER PART START ======-->
+  <div class="preloader">
+    <div class="loader">
+      <div class="spinner">
+        <div class="spinner-container">
+          <div class="spinner-rotator">
+            <div class="spinner-left">
+              <div class="spinner-circle"></div>
+            </div>
+            <div class="spinner-right">
+              <div class="spinner-circle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--====== PRELOADER PART ENDS ======-->
 
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
@@ -31,7 +47,7 @@
         <ul class="navbar-nav">
           <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
             <h1 class="welcome-text">
-              <%=welcome%> <span class="text-black fw-bold" id="WelcomeUsername">Full_Name</span>
+              <%=welcome%> <span class="text-black fw-bold" id="WelcomeUsername"></span>
             </h1>
             <h3 class="welcome-sub-text">
               <%=welcome_desc%>
