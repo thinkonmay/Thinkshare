@@ -38,12 +38,12 @@ $(document).ready(async () => {
 			// have been click this checkbox
 			document.getElementById('checkboxTutorial').removeAttribute("checked")
 			// $('#checkboxTutorial').removeAttr("checked")
-			setCookie("show-tutorial", "false")
+			setCookie("show-tutorial", "false", 99999999999999)
 		} else
 		if ($('#checkboxTutorial').attr("checked") != 'checked') {
 			// click checkbox
 			$('#checkboxTutorial').attr("checked", true)
-			setCookie("show-tutorial", "true")
+			setCookie("show-tutorial", "true", 99999999999999)
 		}
 	})
 
