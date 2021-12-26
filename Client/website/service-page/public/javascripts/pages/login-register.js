@@ -3,6 +3,7 @@ import * as Validates from "../validates/index.js"
 import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import { isElectron } from "../util/checkdevice.js"
+import { ReceiveToken } from "./copy-token.js"
 const HOUR5 = 5 * 60 * 60 * 1000;
 const MINUTES59 = 59 * 60 * 1000;
 
@@ -51,6 +52,7 @@ function register(body, status) {
                     if (data.status == 200) {
                         if (response.errors == null) {
                             setCookie("token", response.token, HOUR5)
+                            ReceiveToken(response.token)
                             Utils.newSwal.fire({
                                 title: "Thành công!",
                                 text: "Chuyển hướng tới bảng điều khiển sau 2s",
@@ -74,7 +76,7 @@ function register(body, status) {
     })
 }
 
-async function GoogleLogin() {
+export async function GoogleLogin() {
     var myParams = {
         'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
         'cookiepolicy': 'none',
@@ -117,7 +119,11 @@ const googleLoginUser = async(userForm) => {
                     if (data.status == 200) {
                         if (response.errors == null) {
                             setCookie("token", response.token, HOUR5)
-                            window.location.replace(API.Dashboard)
+                            ReceiveToken(response.token)
+                            if (isElectron()) {
+                                window.location.href = 'https://service.thinkmay.net/copy-auth'
+                            } else
+                                window.location.replace(API.Dashboard)
                         } else {
                             console.log(response.error);
                             Utils.responseError("Error!", "There is some error happen :< you may want to try again", "error")
@@ -143,7 +149,8 @@ $(document).ready(() => {
     $('#gSignIn').click(() => {
         setCookie("logout", "false", 0)
         if (isElectron()) {
-            openLinkInIE("https://google.com")
+            openLinkInIE("https://service.thinkmay.net/token-auth")
+                /// create box to set token id
         } else
             GoogleLogin();
     })

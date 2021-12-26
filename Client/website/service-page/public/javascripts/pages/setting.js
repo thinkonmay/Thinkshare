@@ -128,19 +128,14 @@ export function DecodeQoeMode(key) {
 
 
 export function DecodeResolution(display) {
-    if(display.screenWidth == 1920 &&
-       display.screenHeight == 1080)
-    {
+    if (display.screenWidth == 1920 &&
+        display.screenHeight == 1080) {
         return "FullHD";
-    }
-    else if(display.screenWidth == 2560 &&
-            display.screenHeight == 1440)
-    {
+    } else if (display.screenWidth == 2560 &&
+        display.screenHeight == 1440) {
         return "2K";
-    }
-    else if(display.screenWidth == 3840 &&
-            display.screenHeight == 2160)
-    {
+    } else if (display.screenWidth == 3840 &&
+        display.screenHeight == 2160) {
         return "4K";
     }
 }
@@ -155,7 +150,7 @@ export async function updateSetting(display) {
         })
 }
 
-$(document).ready(async () => {
+$(document).ready(async() => {
 
     $("#usernameCtrler").attr("placeholder", body.userName)
     $("#fullnameCtrler").attr("placeholder", body.fullName)
@@ -164,40 +159,40 @@ $(document).ready(async () => {
     $("#genderCtrler").val(body.gender)
     $("#dobCtrler").val((body.dateOfBirth).substring(0, 10))
 
-    $("#usernameCtrler").on("change", function () {
+    $("#usernameCtrler").on("change", function() {
         body.username = this.value;
     });
-    $("#fullnameCtrler").on("change", function () {
+    $("#fullnameCtrler").on("change", function() {
         body.fullname = this.value;
     })
-    $("#jobsCtrler").on("change", function () {
+    $("#jobsCtrler").on("change", function() {
         body.jobs = this.value;
     })
-    $("#phonenumberCtrler").on("change", function () {
+    $("#phonenumberCtrler").on("change", function() {
         body.phonenumber = this.value
     })
-    $("#genderCtrler").on("change", function () {
+    $("#genderCtrler").on("change", function() {
         body.gender = this.value
     })
-    $("#dobCtrler").on("change", function () {
+    $("#dobCtrler").on("change", function() {
         body.dob = (this.value)
         body.dob = new Date(body.dob).toISOString().substring(0, 10)
     })
-    $("#avatarCtrler").on("change", function () {
+    $("#avatarCtrler").on("change", function() {
         body.avatar = this.value
     })
 
-    $("#langVN").on("change", function () {
+    $("#langVN").on("change", function() {
         window.location = '/dashboard/vi'
     })
 
-    $("#langEN").on("change", function () {
+    $("#langEN").on("change", function() {
         window.location = '/dashboard/en'
     })
 
 
 
-    $('[name="resolutionOptions"]').click(async function () {
+    $('[name="resolutionOptions"]').click(async function() {
         var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         switch (value) {
@@ -216,25 +211,25 @@ $(document).ready(async () => {
         }
         await updateSetting(display);
     });
-    $('[name="bitrate"]').click(async function () {
+    $('[name="bitrate"]').click(async function() {
         var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         display.mode = QoEMode(value);
         await updateSetting(display);
     });
-    $('[name="audioOptions"]').click(async function () {
+    $('[name="audioOptions"]').click(async function() {
         var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         display.audioCodec = Codec(value)
         await updateSetting(display);
     });
-    $('[name="videoOptions"]').click(async function () {
+    $('[name="videoOptions"]').click(async function() {
         var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         display.videoCodec = Codec(value);
         await updateSetting(display);
     });
-    $('[name="optionsRemoteCore"]').click(async function () {
+    $('[name="optionsRemoteCore"]').click(async function() {
         var display = await (await API.getSetting()).json();
         var value = $(this).find("input").val();
         display.engine = CoreEngine(value);
