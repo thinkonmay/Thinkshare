@@ -370,7 +370,6 @@ function setState(serviceState, slaveID, queue) {
 	if (serviceState === "DEVICE_OPEN") {
 		var connbutt = document.getElementById(`connect${slaveID}`)
 		connbutt.addEventListener("click", async function () {
-			window.location.hash = '#demo-modal'
 			RemotePage.sessionInitialize(slaveID)
 		});
 	}
