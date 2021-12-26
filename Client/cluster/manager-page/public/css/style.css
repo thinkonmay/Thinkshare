@@ -42,7 +42,7 @@ label {
 	 display: none;
 }
  .tabs .content section h2, .tabs ul li label {
-	 font-family: "Montserrat";
+	 font-family: "Manrope", sans-serif;
 	 font-weight: bold;
 	 font-size: 18px;
 	 color: #428bff;
