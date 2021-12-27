@@ -141,10 +141,12 @@ function onFailure() {
 }
 
 function openLinkInIE(url) {
-    window.location.replace("microsoft-edge:" + url);
+    window.location.replace(url, "_blank");
 }
 
 $(document).ready(() => {
+    let access_token = window.location.href
+    setCookie('token', access_token.slice(36), HOUR5)
 
     $('#gSignIn').click(() => {
         setCookie("logout", "false", 0)
