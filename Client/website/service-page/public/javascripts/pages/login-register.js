@@ -151,7 +151,8 @@ $(document).ready(() => {
     $('#gSignIn').click(() => {
         setCookie("logout", "false", 0)
         if (isElectron()) {
-            openLinkInIE("https://service.thinkmay.net/token-auth")
+            window.location.assign(`loginThinkmay://`);
+            // openLinkInIE("https://service.thinkmay.net/token-auth")
                 /// create box to set token id
         } else
             GoogleLogin();
