@@ -147,6 +147,9 @@ function openLinkInIE(url) {
 $(document).ready(() => {
     let access_token = window.location.href
     setCookie('token', access_token.slice(36), HOUR5)
+    if(String(access_token).length > 50){
+        window.location.replace(API.Dashboard)
+    }
 
     $('#gSignIn').click(() => {
         setCookie("logout", "false", 0)
