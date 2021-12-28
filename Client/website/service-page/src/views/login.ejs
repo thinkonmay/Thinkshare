@@ -22,32 +22,49 @@
 					<span class="login100-form-title">
 						Member Login
 					</span>
-					<label class="error" for="userName"></label>
-					<div class="wrap-input100 validate-input" data-validate="Your user name">
-						<input class="input100" type="username" name="username" placeholder="UserName">
-						<span class="focus-input100"></span>
-						<span class="symbol-input100">
-							<i class="fa fa-envelope" aria-hidden="true"></i>
-						</span>
-					</div>
-					<label class="error" for="password"></label>
-					<div class="wrap-input100 validate-input"
-						data-validate="Minimum character is 6 and maximum character is 50">
-						<input class="input100" type="password" name="password" placeholder="Password">
-						<span class="focus-input100"></span>
-						<span class="symbol-input100">
-							<i class="fa fa-lock" aria-hidden="true"></i>
-						</span>
-					</div>
+					<div id="formLogin">
+						<label class="error" for="userName"></label>
+						<div class="wrap-input100 validate-input" data-validate="Your user name">
+							<input class="input100" type="username" name="username" placeholder="UserName">
+							<span class="focus-input100"></span>
+							<span class="symbol-input100">
+								<i class="fa fa-envelope" aria-hidden="true"></i>
+							</span>
+						</div>
+						<label class="error" for="password"></label>
+						<div class="wrap-input100 validate-input"
+							data-validate="Minimum character is 6 and maximum character is 50">
+							<input class="input100" type="password" name="password" placeholder="Password">
+							<span class="focus-input100"></span>
+							<span class="symbol-input100">
+								<i class="fa fa-lock" aria-hidden="true"></i>
+							</span>
+						</div>
 
-					<div class="container-login100-form-btn">
-						<button class="login100-form-btn" id="login">
-							Login
-						</button>
+						<div class="container-login100-form-btn">
+							<button class="login100-form-btn" id="login">
+								Login
+							</button>
+						</div>
+						<div class="container-login100-form-btn">
+							<p>Or</p>
+						</div>
 					</div>
-					<div class="container-login100-form-btn">
-						<p>Or</p>
-
+					<div id="authorizeForm" style="display: none;">
+						<div class="wrap-input100 validate-input"
+							data-validate="Minimum character is 6 and maximum character is 50">
+							<input id="accessToken" class="input100" type="text" placeholder="Access Token">
+							<span class="focus-input100"></span>
+							<span class="symbol-input100">
+								<i class="fa fa-address-card" aria-hidden="true"></i>
+							</span>
+						</div>
+						<div class="container-login100-form-btn">
+							<button class="login100-form-btn" id="authorize"
+								style="background: linear-gradient(-135deg, #2677f1, #0066ff)">
+								Authorize
+							</button>
+						</div>
 					</div>
 					<div class="container-login100-form-btn">
 						<div style="border-radius: 30px;" id="gSignIn">

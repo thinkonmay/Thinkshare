@@ -3,9 +3,9 @@ import * as Validates from "../validates/index.js"
 import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import { isElectron } from "../util/checkdevice.js"
-import { ReceiveToken } from "./copy-token.js"
 const HOUR5 = 5 * 60 * 60 * 1000;
 const MINUTES59 = 59 * 60 * 1000;
+let authorizeElectron = false;
 
 function serializeArrToObject(serializeArr) {
     const obj = {}
@@ -47,36 +47,37 @@ function register(body, status) {
             body.dob = body.dob ? date.toISOString() : "1990-01-01T00:00:00.000Z"; //will return an ISO representation of the date
             body.jobs = body.jobs == null ? "nosetJobs" : body.jobs,
                 API.register(body)
-                .then(async data => {
-                    const response = await data.json()
-                    if (data.status == 200) {
-                        if (response.errors == null) {
-                            setCookie("token", response.token, HOUR5)
-                            ReceiveToken(response.token)
-                            Utils.newSwal.fire({
-                                title: "Thành công!",
-                                text: "Chuyển hướng tới bảng điều khiển sau 2s",
-                                icon: "success",
-                                didOpen: () => {
-                                    setTimeout(() => {
-                                        window.location.href = "/dashboard"
-                                    }, 2000)
-                                }
-                            })
+                    .then(async data => {
+                        const response = await data.json()
+                        if (data.status == 200) {
+                            if (response.errors == null) {
+                                setCookie("token", response.token, HOUR5)
+                                ReceiveToken(response.token)
+                                Utils.newSwal.fire({
+                                    title: "Thành công!",
+                                    text: "Chuyển hướng tới bảng điều khiển sau 2s",
+                                    icon: "success",
+                                    didOpen: () => {
+                                        setTimeout(() => {
+                                            window.location.href = "/dashboard"
+                                        }, 2000)
+                                    }
+                                })
+                            } else {
+                                Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
+                            }
                         } else {
-                            Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
+                            if (status)
+                                Utils.responseErrorHandler(response)
                         }
-                    } else {
-                        if (status)
-                            Utils.responseErrorHandler(response)
-                    }
-                })
-                .catch(status ? Utils.fetchErrorHandler : "")
+                    })
+                    .catch(status ? Utils.fetchErrorHandler : "")
         }
     })
 }
 
-export async function GoogleLogin() {
+export async function GoogleLogin(fromElectron) {
+    authorizeElectron =  fromElectron
     var myParams = {
         'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
         'cookiepolicy': 'none',
@@ -108,7 +109,7 @@ function loginCallback(result) {
     }
 }
 
-const googleLoginUser = async(userForm) => {
+const googleLoginUser = async (userForm) => {
     Utils.newSwal.fire({
         title: "Đang đăng nhập",
         text: "Vui lòng chờ . . .",
@@ -119,9 +120,8 @@ const googleLoginUser = async(userForm) => {
                     if (data.status == 200) {
                         if (response.errors == null) {
                             setCookie("token", response.token, HOUR5)
-                            ReceiveToken(response.token)
-                            if (isElectron()) {
-                                window.location.href = 'https://service.thinkmay.net/copy-auth'
+                            if (authorizeElectron ==  true) {
+                                window.location.href = `https://service.thinkmay.net/copy-token?=${response.token}`
                             } else
                                 window.location.replace(API.Dashboard)
                         } else {
@@ -146,8 +146,8 @@ function openLinkInIE(url) {
 
 $(document).ready(() => {
     let access_token = window.location.href
-    setCookie('token', access_token.slice(36), HOUR5)
-    if(String(access_token).length > 50){
+    setCookie('token', access_token.slice(access_token.slice(access_token.indexOf('=')+1)), HOUR5)
+    if (String(access_token).length > 50) {
         window.location.replace(API.Dashboard)
     }
 
@@ -155,13 +155,23 @@ $(document).ready(() => {
         setCookie("logout", "false", 0)
         if (isElectron()) {
             window.location.assign(`loginThinkmay://`);
+            $('#gSignIn').html('')
+            $('#formLogin').attr('style', 'display: none')
+            $('#authorizeForm ').removeAttr('style')
             // openLinkInIE("https://service.thinkmay.net/token-auth")
-                /// create box to set token id
+            /// create box to set token id
         } else
-            GoogleLogin();
+            GoogleLogin(false);
+    })
+
+    $('#authorize').click(() =>{
+        let token = $('#accessToken').val()
+        setCookie('token', token, HOUR5)
+        window.location.replace(API.Dashboard)
     })
 
     $('#login').click(() => {
+        $("form").validate(window.login ? Validates.login : Validates.register)
         $("form").submit(event => {
             event.preventDefault()
             if ($("form").valid()) {
@@ -181,11 +191,10 @@ $(document).ready(() => {
             }
         })
     })
-    $("form").validate(window.login ? Validates.login : Validates.register)
 
     const $textInputs = $("input")
     const $submit = $(".submit")
-    const handler = function() {
+    const handler = function () {
         const $validTextInputs = $("input:valid")
         if ($textInputs.length === $validTextInputs.length) {
             $submit.attr("disabled", null)
@@ -196,7 +205,7 @@ $(document).ready(() => {
     $("form :input").keyup(handler)
     $("form :input").change(handler)
 
-    $("#dateOfBirth").focus(function() {
+    $("#dateOfBirth").focus(function () {
         $(this).attr("type", "date")
     })
 })
