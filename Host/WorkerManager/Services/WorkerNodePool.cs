@@ -26,12 +26,10 @@ namespace WorkerManager.Services
 
         private bool isRunning;
 
-        public WorkerNodePool(ILocalStateStore cache,
-                              ClusterDbContext db)
+        public WorkerNodePool(ILocalStateStore cache)
         {
             _cache = cache;
             isRunning = false;
-            _db = db;
         }
 
         public bool Start()

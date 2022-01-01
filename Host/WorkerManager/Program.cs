@@ -53,24 +53,20 @@ namespace WorkerManager
         {
             using (var scope = host.Services.CreateScope())
             {
-                var _db = scope.ServiceProvider.GetRequiredService<ClusterDbContext>();
                 var _config = scope.ServiceProvider.GetRequiredService<IOptions<ClusterConfig>>().Value;
                 Console.WriteLine(_config.ClusterHub);
 
-                if(!_db.ScriptModels.Any())
-                {
-                    var _client = new RestClient();
-                    var request = new RestRequest(new Uri(_config.ScriptModelUrl));
-                    request.Method = Method.GET;
+                var _client = new RestClient();
+                var request = new RestRequest(new Uri(_config.ScriptModelUrl));
+                request.Method = Method.GET;
 
-                    var result = await _client.ExecuteAsync(request);
-                    if(result.StatusCode == HttpStatusCode.OK)
-                    {
-                        var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
-                        var defaultModel = allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
-                        _db.ScriptModels.AddRange(defaultModel);
-                        await _db.SaveChangesAsync();
-                    }
+                var result = await _client.ExecuteAsync(request);
+                if(result.StatusCode == HttpStatusCode.OK)
+                {
+                    var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
+                    var defaultModel = allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
+                    _db.ScriptModels.AddRange(defaultModel);
+                    await _db.SaveChangesAsync();
                 }
             }
         }
@@ -79,12 +75,11 @@ namespace WorkerManager
         {
             using (var scope = host.Services.CreateScope())
             {
-                var _db = scope.ServiceProvider.GetRequiredService<ClusterDbContext>();
                 var conductor = scope.ServiceProvider.GetRequiredService<IConductorSocket>();
                 var pool      = scope.ServiceProvider.GetRequiredService<IWorkerNodePool>();
                 var _cache    = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
 
-                var nodes = _db.Devices.ToList();
+                var nodes = _cache.
                 var initState = new Dictionary<int,string>();
                 nodes.ForEach(x => initState.Add(x.ID,WorkerState.Disconnected));
                 _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", initState, null,null).Wait();

@@ -26,13 +26,11 @@ namespace DbSchema.CachedState
     }
     public class LocalStateStore : ILocalStateStore
     {
-        private readonly ClusterDbContext _db;
         private IDistributedCache _cache;
 
-        public LocalStateStore(IDistributedCache cache, ClusterDbContext db)
+        public LocalStateStore(IDistributedCache cache)
         {
             _cache = cache;
-            _db = db;
         }
 
         public async Task SetWorkerState(int WorkerID, string? node)
@@ -83,6 +81,75 @@ namespace DbSchema.CachedState
         {
             var cachedValue = await _cache.GetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString());
             Serilog.Log.Information("Getting remote token "+ cachedValue + " from WorkerNode: " + WorkerID);
+            return cachedValue;
+        }
+
+
+
+
+
+
+
+
+        public async Task SetClusterCredential(int WorkerID, string token)
+        {
+            Serilog.Log.Information("Caching remote token "+ token + " from WorkerNode: " + WorkerID);
+            await _cache.SetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString(), token, null,null);
+        }
+
+        public async Task<string> GetClusterCredential (int WorkerID)
+        {
+            var cachedValue = await _cache.GetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString());
+            Serilog.Log.Information("Getting remote token "+ cachedValue + " from WorkerNode: " + WorkerID);
+            return cachedValue;
+        }
+
+
+
+
+
+
+        public async Task SetClusterCredential(int WorkerID, string token)
+        {
+            Serilog.Log.Information("Caching remote token "+ token + " from WorkerNode: " + WorkerID);
+            await _cache.SetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString(), token, null,null);
+        }
+
+        public async Task<string> GetClusterCredential (int WorkerID)
+        {
+            var cachedValue = await _cache.GetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString());
+            Serilog.Log.Information("Getting remote token "+ cachedValue + " from WorkerNode: " + WorkerID);
+            return cachedValue;
+        }
+
+
+
+
+
+
+        public async Task CacheShellSession(int WorkerID, ShellSession token)
+        {
+            await _cache.SetRecordAsync<string>("Shell_Session_" + WorkerID.ToString(), token, null,null);
+        }
+
+        public async Task<string> GetCachedShellSession(int WorkerID)
+        {
+            var cachedValue = await _cache.GetRecordAsync<ShellSession>("Shell_Session_" + WorkerID.ToString());
+            return cachedValue;
+        }
+
+
+
+
+
+        public async Task GetLog(int WorkerID, Log token)
+        {
+            await _cache.SetRecordAsync<string>("Worker_Log_" + WorkerID.ToString(), token, null,null);
+        }
+
+        public async Task<Log> LogWorker(int WorkerID, DateTime? Start, DateTime? End)
+        {
+            var cachedValue = await _cache.GetRecordAsync<Log>("Worker_Log_" + WorkerID.ToString());
             return cachedValue;
         }
     }
