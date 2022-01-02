@@ -75,25 +75,25 @@ export const sessionReconnect = async (SlaveID) => {
 var session_queue = [];
 export function check_remote_condition(workerID, token, engine)
 {
-	var item = session_queue.find( x => x.id == workerID);
-	if(item == undefined)
-	{
-		session_queue.push({id: workerID, token: token, engine});
-	}
-	else
-	{
-        if(token == null && item.token != null) {
-            getRemotePage(item.token,item.engine);
-        } else if (token != null && item.token == null) {
-            getRemotePage(token,engine);
-        }
+    getRemotePage(token,engine);
+	// var item = session_queue.find( x => x.id == workerID);
+	// if(item == undefined)
+	// {
+	// 	session_queue.push({id: workerID, token: token, engine});
+	// }
+	// else
+	// {
+    //     if(token == null && item.token != null) {
+    //         getRemotePage(item.token,item.engine);
+    //     } else if (token != null && item.token == null) {
+    //     }
 
-        for( var i = 0; i < session_queue.length; i++){ 
-            if ( session_queue[i].id === workerID) { 
-                session_queue.splice(i, 1); 
-            }
-        }
-	}
+    //     for( var i = 0; i < session_queue.length; i++){ 
+    //         if ( session_queue[i].id === workerID) { 
+    //             session_queue.splice(i, 1); 
+    //         }
+    //     }
+	// }
 }
 
 const RemotePageUrl = "https://remote.thinkmay.net/Remote"

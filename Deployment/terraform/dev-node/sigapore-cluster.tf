@@ -34,6 +34,11 @@ module "ec2_instance" {
   instance_type          = "c5a.xlarge"
   key_name = module.key_pair.key_pair_key_name
   monitoring             = true
+  root_block_device = [{
+    delete_on_termination = false
+    device_name = "/dev/sda1"
+    volume_id = aws_ebs_volume.root.id
+  }]
 
 
   tags = {
@@ -41,9 +46,23 @@ module "ec2_instance" {
   }
 }
 
-
-
+resource "aws_volume_attachment" "ebs_att" {
+  device_name = "/dev/sdt"
+  volume_id   = aws_ebs_volume.epitchi.id
+  instance_id = module.ec2_instance.id
+}
 
 output "ip" {
-  value = module.ec2_instance.public_dns
+  value = module.ec2_instance.public_ip
 }
+
+resource "aws_ebs_volume" "epitchi" {
+  availability_zone =    "${var.region}a"
+  size              = 10
+}
+
+resource "aws_ebs_volume" "root" {
+  availability_zone =    "${var.region}a"
+  size              = 20
+}
+
