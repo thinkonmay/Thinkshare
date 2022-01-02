@@ -26,8 +26,6 @@ namespace WorkerManager.Services
     {
         private readonly ClusterConfig clusterConfig;
 
-        private readonly ClusterDbContext _db;
-
         private ClientWebSocket _clientWebSocket;
 
         private RestClient _scriptmodel;
@@ -38,19 +36,20 @@ namespace WorkerManager.Services
         
         private readonly ITokenGenerator _generator;
 
+        private readonly ClusterCredential _cluster;
+
         private bool isRunning;
 
         public ConductorSocket(IOptions<ClusterConfig> cluster, 
                                ITokenGenerator generator,
-                               ClusterDbContext db,
                                ILocalStateStore cache)
         {
-            _db = db;
             isRunning = false;
             _generator = generator;
             _cache = cache;
             _config = cluster.Value;
             _scriptmodel = new RestClient();
+            _cluster = _cache.GetClusterInfor().Result;
         }
 
         public async Task<bool> Start()
@@ -58,7 +57,7 @@ namespace WorkerManager.Services
             try
             {
                 if (isRunning) { return false; }
-                var token = (string)_db.Clusters.First().Token;
+                var token = (await _cache.GetClusterInfor()).ClusterToken;
                 _clientWebSocket = new ClientWebSocket();
                 await _clientWebSocket.ConnectAsync(
                     new Uri(_config.ClusterHub+"?token=" + token), 
@@ -326,12 +325,12 @@ namespace WorkerManager.Services
 
 
 
-            var ClusterName = _db.Clusters.First().Name;
+            var ClusterName = _cluster.ClusterToken;
             var client = new RestClient();
             var request = new RestRequest(_config.WorkerRegisterUrl)
                 .AddQueryParameter("ClusterName",ClusterName)
                 .AddJsonBody(node)
-                .AddHeader("Authorization","Bearer "+_db.Owner.First().token);
+                .AddHeader("Authorization","Bearer "+_cluster.OwnerToken);
 
             var result = await client.ExecuteAsync(request);
             if(result.StatusCode == HttpStatusCode.OK)
@@ -339,8 +338,7 @@ namespace WorkerManager.Services
                 IDAssign id = JsonConvert.DeserializeObject<IDAssign>(result.Content);
                 model.ID = id.GlobalID;
 
-                _db.Devices.Add(model);
-                await _db.SaveChangesAsync();
+                await _cache.CacheWorkerInfor(model);
                 await _cache.SetWorkerState(model.ID, WorkerState.Open);
                 return true;
             }

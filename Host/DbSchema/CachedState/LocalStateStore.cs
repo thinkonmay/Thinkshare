@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
-using SharedHost.Models.Device;
+using SharedHost.Models.Cluster;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using DbSchema.LocalDb.Models;
+using SharedHost.Models.Shell;
 using DbSchema.LocalDb;
+using System;
 
 namespace DbSchema.CachedState
 {
@@ -16,14 +18,37 @@ namespace DbSchema.CachedState
 
         Task<Dictionary<int, string>?> GetClusterState();
 
+        Task<Dictionary<int, string>?> SetClusterState(Dictionary<int, string> state);
+
         Task<ClusterWorkerNode?> GetWorkerInfor(int PrivateID);
 
         Task CacheWorkerInfor(ClusterWorkerNode Worker);
 
+
+        Task<ClusterCredential?> GetClusterInfor();
+
+        Task CacheClusterInfor(ClusterCredential Worker);
+
+
         Task SetWorkerRemoteToken(int WorkerID, string token);
 
         Task<string> GetWorkerRemoteToken (int WorkerID);
+
+
+        Task CacheScriptModel(List<ScriptModel> models);
+
+        Task<List<ScriptModel>> GetScriptModel();
+
+        Task Log(int WorkerID, Log token);
+
+        Task<Log> GetLog(int WorkerID, DateTime? Start, DateTime? End);
     }
+
+
+
+
+
+
     public class LocalStateStore : ILocalStateStore
     {
         private IDistributedCache _cache;
@@ -55,21 +80,39 @@ namespace DbSchema.CachedState
             var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterWorkerCache");
             return cachedValue;
         }
+        public async Task SetClusterState(Dictionary<int,string> state)
+        {
+            await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterWorkerCache",state,null,null);
+        }
+
+
+
+
 
         public async Task CacheWorkerInfor(ClusterWorkerNode Worker)
         {
-            await _cache.SetRecordAsync<ClusterWorkerNode>("Worker_" + Worker.ID.ToString(), Worker, null,null);
-        }
-        public async Task<ClusterWorkerNode?> GetWorkerInfor(int PrivateID)
-        {
-            var worker = await _cache.GetRecordAsync<ClusterWorkerNode?>("Worker_" + PrivateID.ToString());
-            if(worker == null)
+            var cluster = await GetClusterInfor();
+            foreach (var item in cluster.WorkerNodes)
             {
-                worker = _db.Devices.Find(PrivateID);
-                await CacheWorkerInfor(worker);
+                if(item.ID == Worker.ID)
+                {
+                    cluster.WorkerNodes.Remove(item);
+                }
             }
-            return worker;
+
+            cluster.WorkerNodes.Add(Worker);
+            await SetClusterInfor(cluster);
+            return;
         }
+        public async Task<ClusterWorkerNode?> GetWorkerInfor(int ID)
+        {
+            var cluster = await GetClusterInfor();
+            return cluster.WorkerNodes.Where(x => x.ID == ID).First();
+        }
+
+
+
+
 
         public async Task SetWorkerRemoteToken(int WorkerID, string token)
         {
@@ -91,36 +134,18 @@ namespace DbSchema.CachedState
 
 
 
-        public async Task SetClusterCredential(int WorkerID, string token)
+        public async Task SetClusterInfor(ClusterCredential cred)
         {
-            Serilog.Log.Information("Caching remote token "+ token + " from WorkerNode: " + WorkerID);
-            await _cache.SetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString(), token, null,null);
+            await _cache.SetRecordAsync<ClusterCredential>("Cluster_Infor", cred, null,null);
         }
 
-        public async Task<string> GetClusterCredential (int WorkerID)
+        public async Task<ClusterCredential> GetClusterInfor()
         {
-            var cachedValue = await _cache.GetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString());
-            Serilog.Log.Information("Getting remote token "+ cachedValue + " from WorkerNode: " + WorkerID);
+            var cachedValue = await _cache.GetRecordAsync<ClusterCredential>("Cluster_Infor");
             return cachedValue;
         }
 
 
-
-
-
-
-        public async Task SetClusterCredential(int WorkerID, string token)
-        {
-            Serilog.Log.Information("Caching remote token "+ token + " from WorkerNode: " + WorkerID);
-            await _cache.SetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString(), token, null,null);
-        }
-
-        public async Task<string> GetClusterCredential (int WorkerID)
-        {
-            var cachedValue = await _cache.GetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString());
-            Serilog.Log.Information("Getting remote token "+ cachedValue + " from WorkerNode: " + WorkerID);
-            return cachedValue;
-        }
 
 
 
@@ -129,10 +154,12 @@ namespace DbSchema.CachedState
 
         public async Task CacheShellSession(int WorkerID, ShellSession token)
         {
-            await _cache.SetRecordAsync<string>("Shell_Session_" + WorkerID.ToString(), token, null,null);
+            var sessions = await _cache.GetRecordAsync<List<ShellSession>>("Shell_Session_" + WorkerID.ToString());
+            sessions.Add(token);
+            await _cache.SetRecordAsync<List<ShellSession>>("Shell_Session_" + WorkerID.ToString(), sessions, null,null);
         }
 
-        public async Task<string> GetCachedShellSession(int WorkerID)
+        public async Task<ShellSession> GetCachedShellSession(int WorkerID)
         {
             var cachedValue = await _cache.GetRecordAsync<ShellSession>("Shell_Session_" + WorkerID.ToString());
             return cachedValue;
@@ -142,15 +169,33 @@ namespace DbSchema.CachedState
 
 
 
-        public async Task GetLog(int WorkerID, Log token)
+        public async Task Log(Log log, int WorkerID)
         {
-            await _cache.SetRecordAsync<string>("Worker_Log_" + WorkerID.ToString(), token, null,null);
+            var sessions = await _cache.GetRecordAsync<List<Log>>("Shell_Session_" + WorkerID.ToString());
+            sessions.Add(log);
+            await _cache.SetRecordAsync<List<Log>>("Shell_Session_" + WorkerID.ToString(), sessions, null,null);
         }
 
-        public async Task<Log> LogWorker(int WorkerID, DateTime? Start, DateTime? End)
+        public async Task<Log> GetLog(int WorkerID, DateTime? Start, DateTime? End)
         {
-            var cachedValue = await _cache.GetRecordAsync<Log>("Worker_Log_" + WorkerID.ToString());
+            var cachedValue = await _cache.GetRecordAsync<Log>("Log_"+Log.ID);
+            if(Start != null && End != null)
+            {
+
+            }
+
             return cachedValue;
+        }
+
+
+        public async Task CacheScriptModel(List<ScriptModel> models)
+        {
+            await _cache.SetRecordAsync<List<ScriptModel>>("Script_Model", models, null,null);
+        }
+
+        public async Task<List<ScriptModel>> GetScriptModel()
+        {
+            return await _cache.GetRecordAsync<List<ScriptModel>>("Script_Model");
         }
     }
 }

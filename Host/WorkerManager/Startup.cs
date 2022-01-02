@@ -36,25 +36,13 @@ namespace WorkerManager
                     builder => builder.AllowAnyOrigin());
             });
 
-            var POSTGRES_USER =  Environment.GetEnvironmentVariable("POSTGRES_USER");
-            var POSTGRES_PASSWORD =  Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
-            var POSTGRES_DATABASE =  Environment.GetEnvironmentVariable("POSTGRES_DATABASE");
-            var POSTGRES_IP =  Environment.GetEnvironmentVariable("POSTGRES_IP");
             var REDIS_IP =  Environment.GetEnvironmentVariable("POSTGRES_IP");
 
-            if( POSTGRES_USER == null ||
-                POSTGRES_PASSWORD == null ||
-                POSTGRES_DATABASE == null ||
-                POSTGRES_IP == null ||
-                REDIS_IP == null)
+            if(REDIS_IP == null)
             {
                 Console.WriteLine("Missing environment variable");
                 Console.WriteLine("Using default connection string");
 
-                services.AddDbContext<ClusterDbContext>(options =>
-                    options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                    ServiceLifetime.Singleton
-                );
                 services.AddStackExchangeRedisCache(options =>
                 {
                     options.Configuration = Configuration.GetConnectionString("Redis");
@@ -63,15 +51,6 @@ namespace WorkerManager
             }
             else
             {
-                services.AddDbContext<ClusterDbContext>(options =>
-                    options.UseNpgsql(
-                        "Host="+POSTGRES_IP+";Port=5432;"+                    
-                        "Database="+POSTGRES_DATABASE+";"+                    
-                        "Username="+POSTGRES_USER+";"+                    
-                        "Password="+POSTGRES_PASSWORD+";"
-                    ),
-                    ServiceLifetime.Transient
-                );
                 services.AddStackExchangeRedisCache(options =>
                 {
                     options.Configuration = REDIS_IP+":6379";

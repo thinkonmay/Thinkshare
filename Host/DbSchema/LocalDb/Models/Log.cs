@@ -5,10 +5,11 @@ namespace DbSchema.LocalDb.Models
 {
     public class Log
     {
-        [Key]
         public int ID {get;set;}
 
-        public string Content{get;set;}
+        public int WorkerID {get;set;}
+
+        public string Content {get;set;}
 
         public DateTime LogTime {get;set;}
     }

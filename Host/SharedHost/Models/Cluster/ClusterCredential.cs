@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using SharedHost.Models.Device;
+using System.Linq;
 
 namespace SharedHost.Models.Cluster
 {
     public class ClusterCredential
     {
-        public int ID { get; set; }
+        public string ClusterToken {get;set;}
 
-        public string ClusterName {get;set;}
+        public string OwnerToken {get;set;}
 
-        public int OwnerID {get;set;}
+        public List<ClusterWorkerNode> WorkerNodes  {get;set;}
     }
 }
