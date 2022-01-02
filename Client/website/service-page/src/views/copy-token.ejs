@@ -2,21 +2,21 @@
 <html>
 
 <head>
-    <title>Thinkmay for Thinkmay App</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta http-equiv="content-language" content="en-gb">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="icon" type="image/x-icon" href="https://service.thinkmay.net/images/logo-thinkmay-white.ico">
-    <link href="/css/fonts/roboto.css" rel="stylesheet">
-    <link rel="stylesheet" href="primer.css">
-    <link href="style.css" rel="stylesheet">
+    <% include login-register-partials/head %>
+
+        <title>Thinkmay for Thinkmay App</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="content-language" content="en-gb">
+        <link rel="icon" type="image/x-icon" href="https://service.thinkmay.net/images/logo-thinkmay-white.ico">
+        <link rel="stylesheet" href="css/token/primer.css">
+        <link rel="stylesheet" href="css/token/style.css">
+
 </head>
 
 <body class="height-full">
     <header>
         <div class="d-flex justify-content-center py-6">
-            <h1 class="mx-auto"> <img src="https://service.thinkmay.net/images/logo-thinkmay-black.png" alt="GitHub for VS Code" height="84"> </h1>
+            <h1 class="mx-auto"> <img src="https://service.thinkmay.net/images/logo-thinkmay-black.png" height="84"> </h1>
         </div>
     </header>
     <main role="main">
@@ -29,9 +29,9 @@
                     <div class="token-did-copy"> ✅ Copied </div>
                 </div>
                 <ol>
-                    <li>Copy the token. </li>
+                    <li><b>Click</b> to copy the token. </li>
                     <li>Switch back to Thinkmay App. </li>
-                    <li>Paste the token and hit <b>enter</b>.</li>
+                    <li>Paste the token and hit <b>Authorize</b>.</li>
                 </ol>
             </div>
         </div>
@@ -52,9 +52,10 @@
             }
         })
     </script>
-    <!-- <script nonce="">
-        window.location.href = 'vscode://vscode.github-authentication/did-authenticate?windowid=3&code=6237c304f1c9defbfb1a&state=0a992d50-6e60-474d-b49f-8eb043fb690a';
-    </script> -->
+    <% include login-register-partials/dep %>
+
+        <script type="module" src="javascripts/pages/copy-token.js"></script>
 </body>
+
 
 </html>

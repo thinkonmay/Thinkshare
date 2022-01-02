@@ -14,23 +14,21 @@ async function setupDevice() {
         deviceCurrent = DeviceType("WEB_APP");
     }
 
-    var body = await(await  getSetting()).json();
+    var body = await (await getSetting()).json();
 
 
     // onlly 
     body.device = deviceCurrent;
 
     // only window app are capable of handling gstreamer
-    if(deviceCurrent == DeviceType("WEB_APP")&&
-        body.engine == CoreEngine("GSTREAMER"))
-    {
+    if (deviceCurrent == DeviceType("WEB_APP") &&
+        body.engine == CoreEngine("GSTREAMER")) {
         body.engine = CoreEngine("CHROME");
     }
-    
+
     // only gstreamer are capable of handling h265 video
-    if(body.engine == CoreEngine("CHROME") &&
-       body.videoCodec == Codec("H265"))
-    {
+    if (body.engine == CoreEngine("CHROME") &&
+        body.videoCodec == Codec("H265")) {
         body.videoCodec = Codec("H264");
 
     }
@@ -40,7 +38,7 @@ async function setupDevice() {
 }
 
 
-export const sessionInitialize = async (SlaveID) => {
+export const sessionInitialize = async(SlaveID) => {
     await setupDevice();
 
     initializeSession(parseInt(SlaveID)).then(async response => {
@@ -49,14 +47,13 @@ export const sessionInitialize = async (SlaveID) => {
             getSetting().then(async _data => {
                 let _body = await _data.json();
 
-                check_remote_condition(SlaveID,token.token,_body.engine);
+                check_remote_condition(SlaveID, token.token, _body.engine);
             })
-        } else {
-        }
+        } else {}
     })
 }
 
-export const sessionReconnect = async (SlaveID) => {
+export const sessionReconnect = async(SlaveID) => {
     await setupDevice();
 
     reconnectSession(parseInt(SlaveID)).then(async response => {
@@ -65,35 +62,34 @@ export const sessionReconnect = async (SlaveID) => {
             getSetting().then(async _data => {
                 let _body = await _data.json();
 
-                check_remote_condition(SlaveID,token.token,_body.engine);
+                check_remote_condition(SlaveID, token.token, _body.engine);
             })
-        } else {
-        }
+        } else {}
     })
 }
 
 var session_queue = [];
-export function check_remote_condition(workerID, token, engine)
-{
-    getRemotePage(token,engine);
-	// var item = session_queue.find( x => x.id == workerID);
-	// if(item == undefined)
-	// {
-	// 	session_queue.push({id: workerID, token: token, engine});
-	// }
-	// else
-	// {
-    //     if(token == null && item.token != null) {
-    //         getRemotePage(item.token,item.engine);
-    //     } else if (token != null && item.token == null) {
-    //     }
-
-    //     for( var i = 0; i < session_queue.length; i++){ 
-    //         if ( session_queue[i].id === workerID) { 
-    //             session_queue.splice(i, 1); 
-    //         }
-    //     }
-	// }
+export function check_remote_condition(workerID, token, engine) {
+    var item = session_queue.find(x => x.id == workerID);
+    if (item == undefined) {
+        session_queue.push({ id: workerID, token: token, engine: engine });
+    } else {
+        if (token == null && item.token != null) {
+            getRemotePage(item.token, item.engine);
+            for (var i = 0; i < session_queue.length; i++) {
+                if (session_queue[i].id === workerID) {
+                    session_queue.splice(i, 1);
+                }
+            }
+        } else if (token != null && item.token == null) {
+            getRemotePage(token, engine);
+            for (var i = 0; i < session_queue.length; i++) {
+                if (session_queue[i].id === workerID) {
+                    session_queue.splice(i, 1);
+                }
+            }
+        }
+    }
 }
 
 const RemotePageUrl = "https://remote.thinkmay.net/Remote"
@@ -102,10 +98,10 @@ export const getRemotePage = (token, engine) => {
     if (engine == CoreEngine('GSTREAMER')) {
         window.location.assign(`thinkmay://token=${token}/`);
     } else {
-        var width = window.innerWidth * 0.66 ;
+        var width = window.innerWidth * 0.66;
         // define the height in
-        var height = width * window.innerHeight / window.innerWidth ;
+        var height = width * window.innerHeight / window.innerWidth;
         // Ratio the hight to the width as the user screen ratio
-        window.open(RemotePageUrl+"?token="+token, 'newwindow', 'width=' + width + ', height=' + height + ', top=' + ((window.innerHeight - height) / 2) + ', left=' + ((window.innerWidth - width) / 2));
+        window.open(RemotePageUrl + "?token=" + token, 'newwindow', 'width=' + width + ', height=' + height + ', top=' + ((window.innerHeight - height) / 2) + ', left=' + ((window.innerWidth - width) / 2));
     }
 }
