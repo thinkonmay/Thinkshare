@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using WorkerManager.Middleware;
 using System.Linq;
-using DbSchema.CachedState;
+using WorkerManager;
 using Microsoft.Extensions.Options;
 using SharedHost;
-using DbSchema.LocalDb;
-using DbSchema.LocalDb.Models;
+
+using WorkerManager.Models;
 
 namespace WorkerManager.Controllers
 {
@@ -25,19 +25,15 @@ namespace WorkerManager.Controllers
     {
         private readonly ITokenGenerator _tokenGenerator;
 
-        private readonly ClusterDbContext _db;
-
         private readonly ILocalStateStore _cache;
 
         private readonly ClusterConfig _config;
 
-        public AgentController( ClusterDbContext db, 
-                                ITokenGenerator token,
+        public AgentController( ITokenGenerator token,
                                 ILocalStateStore cache,
                                 IOptions<ClusterConfig> config)
         {
             _cache = cache;
-            _db = db;
             _config = config.Value;
             _tokenGenerator = token;
         }
@@ -52,15 +48,13 @@ namespace WorkerManager.Controllers
         [HttpPost]
         public async Task<IActionResult> PostInfor([FromBody]WorkerRegisterModel agent_register)
         {
-            var Cluster = _db.Clusters.First();
+            var Cluster = await _cache.GetClusterInfor();
             if(Cluster == null)
             {
                 return BadRequest("Cluster haven't been registered yet");
             }
-            var ClusterName = Cluster.Name;
 
-
-            var cachednode = _db.Devices.Where(x => 
+            var cachednode = Cluster.WorkerNodes.Where(x => 
                 x.PrivateIP == agent_register.LocalIP &&
                 x.CPU == agent_register.CPU &&
                 x.GPU == agent_register.GPU &&
@@ -71,9 +65,9 @@ namespace WorkerManager.Controllers
             {
                 var client = new RestClient();
                 var request = new RestRequest(_config.WorkerRegisterUrl)
-                    .AddQueryParameter("ClusterName",ClusterName)
+                    .AddQueryParameter("ClusterName",Cluster.Name)
                     .AddJsonBody(agent_register)
-                    .AddHeader("Authorization","Bearer "+_db.Owner.First().token);
+                    .AddHeader("Authorization","Bearer "+ Cluster.OwnerToken);
                 request.Method = Method.POST;
 
                 var result = await client.ExecuteAsync(request);
@@ -91,8 +85,6 @@ namespace WorkerManager.Controllers
                         OS = agent_register.OS,
                     };
 
-                    _db.Devices.Add(node);
-                    await _db.SaveChangesAsync();
                     await _cache.CacheWorkerInfor(node);
                     await _cache.SetWorkerState(node.ID, WorkerState.Open);
                     var Token = await _tokenGenerator.GenerateWorkerToken(node);

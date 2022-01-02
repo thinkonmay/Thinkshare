@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using WorkerManager.Middleware;
 using System.Linq;
-using DbSchema.CachedState;
+using WorkerManager;
 using Microsoft.Extensions.Options;
 using SharedHost;
-using DbSchema.LocalDb;
-using DbSchema.LocalDb.Models;
+
+using WorkerManager.Models;
 
 namespace WorkerManager.Controllers
 {
@@ -26,19 +26,15 @@ namespace WorkerManager.Controllers
     {
         private readonly ITokenGenerator _tokenGenerator;
 
-        private readonly ClusterDbContext _db;
-
         private readonly ILocalStateStore _cache;
 
         private readonly ClusterConfig _config;
 
-        public TokenController( ClusterDbContext db, 
-                                ITokenGenerator token,
+        public TokenController( ITokenGenerator token,
                                 ILocalStateStore cache,
                                 IOptions<ClusterConfig> config)
         {
             _cache = cache;
-            _db = db;
             _config = config.Value;
             _tokenGenerator = token;
         }

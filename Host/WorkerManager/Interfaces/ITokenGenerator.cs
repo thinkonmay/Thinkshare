@@ -1,4 +1,4 @@
-﻿using DbSchema.LocalDb.Models;
+﻿using WorkerManager.Models;
 using System.Threading.Tasks;
 
 namespace WorkerManager.Interfaces

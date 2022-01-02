@@ -8,8 +8,9 @@ using Microsoft.AspNetCore.Http.Features;
 using WorkerManager.Interfaces;
 using SharedHost.Models.User;
 using SharedHost;
-using DbSchema.LocalDb;
-using DbSchema.LocalDb.Models;
+
+using WorkerManager;
+using WorkerManager.Models;
 
 namespace WorkerManager.Middleware
 {
@@ -19,19 +20,19 @@ namespace WorkerManager.Middleware
         
         private readonly ITokenGenerator _generator;
 
-        private readonly ClusterDbContext _db;
+        private readonly ILocalStateStore _cache;
 
         private readonly RestClient _token;
 
         private readonly ClusterConfig _config;
 
         public ClusterJwtMiddleware(RequestDelegate next,
+                            ILocalStateStore cache,
                             IOptions<ClusterConfig> config,
-                            ITokenGenerator generator,
-                            ClusterDbContext db)
+                            ITokenGenerator generator)
         {
-            _db = db;
             _next = next;
+            _cache = cache;
             _generator = generator;
             _config = config.Value;
             _token = new RestClient();
@@ -71,7 +72,8 @@ namespace WorkerManager.Middleware
                         var jsonResult = JsonConvert.DeserializeObject<UserInforModel>(result.Content);
                         if(jsonResult != null)
                         {
-                            if(_db.Owner.Where(o => o.Name == jsonResult.UserName).Any())
+                            var Cluster = await _cache.GetClusterInfor();
+                            if(Cluster.OwnerName == jsonResult.UserName)
                             {
                                 context.Items.Add("IsOwner", "true");
                             }

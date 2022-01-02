@@ -4,17 +4,15 @@ using WorkerManager.Interfaces;
 using System.Threading.Tasks;
 using SharedHost.Models.Session;
 using SharedHost;
+using System.Linq;
 using WorkerManager.Middleware;
-using DbSchema.SystemDb;
 using SharedHost.Models.Device;
-using DbSchema.CachedState;
+using WorkerManager;
 using SharedHost.Models.Cluster;
 using System;
 using RestSharp;
 using Newtonsoft.Json;
-using DbSchema.LocalDb;
-using System.Linq;
-using DbSchema.LocalDb.Models;
+using WorkerManager.Models;
 
 // TODO: authentification
 
@@ -24,33 +22,28 @@ namespace WorkerManager.Controllers
     [Produces("application/json")]
     public class LogController : Controller
     {
-        private readonly ClusterDbContext _db;
-
         private readonly ILocalStateStore _cache;
 
         private readonly RestClient _sessionClient;
 
         public LogController(IOptions<ClusterConfig> config,
-                              ClusterDbContext db,
                               ILocalStateStore cache)
         {
-            _db = db;
         }
 
 
         [HttpPost("log")]
         public async Task<IActionResult> Log([FromBody] string log, string ip)
         {
-
-            var worker = _db.Devices.Where(o => o.PrivateIP == ip).First();
-            worker.Logs.Add( new Log {
+            var cluster = await _cache.GetClusterInfor();
+            var worker = cluster.WorkerNodes.Where(x => x.PrivateIP == ip).First();
+            _cache.Log(worker.ID,new Log
+            {
+                WorkerID = worker.ID,
                 Content = log,
+                LogTime = DateTime.Now,
             });
-
-            _db.Update(worker);
-            await _db.SaveChangesAsync();
             return Ok();
         }
-
     }
 }

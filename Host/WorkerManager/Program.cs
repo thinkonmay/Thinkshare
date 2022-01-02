@@ -10,15 +10,14 @@ using System.Threading.Tasks;
 using WorkerManager.Interfaces;
 using WorkerManager.Services;
 using System.Collections.Generic;
-using DbSchema.SystemDb;
 using SharedHost.Models.Shell;
 using System.Net;
 using SharedHost;
-using DbSchema.CachedState;
+using WorkerManager;
 using System.Linq;
 using Newtonsoft.Json;
 using RestSharp;
-using DbSchema.LocalDb;
+
 
 namespace WorkerManager
 {
@@ -53,24 +52,19 @@ namespace WorkerManager
         {
             using (var scope = host.Services.CreateScope())
             {
-                var _db = scope.ServiceProvider.GetRequiredService<ClusterDbContext>();
                 var _config = scope.ServiceProvider.GetRequiredService<IOptions<ClusterConfig>>().Value;
+                var _cache  = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
                 Console.WriteLine(_config.ClusterHub);
+                var _client = new RestClient();
+                var request = new RestRequest(new Uri(_config.ScriptModelUrl));
+                request.Method = Method.GET;
 
-                if(!_db.ScriptModels.Any())
+                var result = await _client.ExecuteAsync(request);
+                if(result.StatusCode == HttpStatusCode.OK)
                 {
-                    var _client = new RestClient();
-                    var request = new RestRequest(new Uri(_config.ScriptModelUrl));
-                    request.Method = Method.GET;
-
-                    var result = await _client.ExecuteAsync(request);
-                    if(result.StatusCode == HttpStatusCode.OK)
-                    {
-                        var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
-                        var defaultModel = allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
-                        _db.ScriptModels.AddRange(defaultModel);
-                        await _db.SaveChangesAsync();
-                    }
+                    var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
+                    var defaultModel = allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
+                    await _cache.CacheScriptModel(defaultModel);
                 }
             }
         }
@@ -79,18 +73,18 @@ namespace WorkerManager
         {
             using (var scope = host.Services.CreateScope())
             {
-                var _db = scope.ServiceProvider.GetRequiredService<ClusterDbContext>();
                 var conductor = scope.ServiceProvider.GetRequiredService<IConductorSocket>();
                 var pool      = scope.ServiceProvider.GetRequiredService<IWorkerNodePool>();
-                var _cache    = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+                var _cache    = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
+                var _cluster  = await _cache.GetClusterInfor();
 
-                var nodes = _db.Devices.ToList();
+                var nodes = _cluster.WorkerNodes;
                 var initState = new Dictionary<int,string>();
                 nodes.ForEach(x => initState.Add(x.ID,WorkerState.Disconnected));
-                _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", initState, null,null).Wait();
+                await _cache.SetClusterState(initState);
 
-                if(_db.Owner.First().token != null &&
-                _db.Clusters.First().Token != null)
+                if(_cluster.ClusterToken != null &&
+                   _cluster.OwnerToken != null)
                 {
                     if(await conductor.Start())
                     {

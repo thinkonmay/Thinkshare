@@ -4,9 +4,9 @@ using System.Linq;
 using WorkerManager.Interfaces;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
-using DbSchema.CachedState;
-using DbSchema.LocalDb;
-using DbSchema.LocalDb.Models;
+using WorkerManager;
+
+using WorkerManager.Models;
 
 namespace WorkerManager.Services
 {
@@ -14,8 +14,6 @@ namespace WorkerManager.Services
     {
         private readonly ILocalStateStore _cache;
 
-        private readonly ClusterDbContext _db;
-        
         private Task _stateStyncing;
         
         private Task _systemHeartBeat;
@@ -26,12 +24,10 @@ namespace WorkerManager.Services
 
         private bool isRunning;
 
-        public WorkerNodePool(ILocalStateStore cache,
-                              ClusterDbContext db)
+        public WorkerNodePool(ILocalStateStore cache)
         {
             _cache = cache;
             isRunning = false;
-            _db = db;
         }
 
         public bool Start()
@@ -162,7 +158,7 @@ namespace WorkerManager.Services
 
         async Task GetWorkerMetric()
         {
-            var model_list = _db.ScriptModels.ToList();
+            var model_list = await _cache.GetScriptModel();
             while (true)
             {
                 if(!isRunning)
@@ -173,7 +169,7 @@ namespace WorkerManager.Services
                 foreach (var item in worker_list.Where(x => x.Value != WorkerState.Disconnected))
                 {
                     ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                    worker.GetWorkerMetric(_db,model_list);
+                    worker.GetWorkerMetric(_cache,model_list);
                 }
                 Thread.Sleep(((int)TimeSpan.FromSeconds(60).TotalMilliseconds));
             }
@@ -184,8 +180,6 @@ namespace WorkerManager.Services
             DateTime currentTime = DateTime.Now;
             while (true)
             {
-                var CachedSession = _db.CachedSession.All(x => true);
-
                 Thread.Sleep((int)TimeSpan.FromDays(1).TotalMilliseconds);
                 currentTime.AddDays(1);
             }

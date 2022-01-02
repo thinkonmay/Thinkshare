@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using WorkerManager.Models;
 using WorkerManager.Interfaces;
 using System.Net;
 using System.Threading.Tasks;
@@ -10,10 +11,8 @@ using RestSharp;
 using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
 using Microsoft.Extensions.Options;
-using DbSchema.CachedState;
+using WorkerManager;
 using SharedHost;
-using DbSchema.LocalDb;
-using DbSchema.LocalDb.Models;
 
 namespace WorkerManager.Controllers
 {
@@ -25,8 +24,6 @@ namespace WorkerManager.Controllers
 
         private readonly ClusterConfig _config;
 
-        private readonly ClusterDbContext _db;
-
         private readonly RestClient _client;
 
         private readonly IConductorSocket _conductor;
@@ -35,13 +32,11 @@ namespace WorkerManager.Controllers
 
         private ILocalStateStore _cache;
 
-        public OwnerController(ClusterDbContext db, 
-                                ILocalStateStore cache,
+        public OwnerController( ILocalStateStore cache,
                                 IConductorSocket socket,
                                 IWorkerNodePool workerPool,
                                 IOptions<ClusterConfig> config)
         {
-            _db = db;
             _cache = cache;
             _conductor = socket;
             _workerNodePool = workerPool;
@@ -50,11 +45,6 @@ namespace WorkerManager.Controllers
 
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="login"></param>
-        /// <returns></returns>
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
@@ -68,31 +58,14 @@ namespace WorkerManager.Controllers
 
             if(jsonresult.Errors == null)
             {
-                if(_db.Owner.Any())
+                var cluster = await _cache.GetClusterInfor();
+                if(cluster.OwnerName == null && cluster.OwnerToken == null)
                 {
-                    var owner = _db.Owner.First();
-                    if(owner.Name == jsonresult.UserName)
-                    {
-                        owner.token = jsonresult.Token;
-                        _db.Update(owner);
-                        await _db.SaveChangesAsync();
-                        return Ok(jsonresult.Token);
-                    }
-                    else
-                    {
-                        return BadRequest("Wrong user");
-                    }
+                    cluster.OwnerToken = jsonresult.Token;
+                    cluster.OwnerName = jsonresult.UserName;
                 }
-                else
-                {
-                    _db.Owner.Add(new OwnerCredential 
-                    {   Name = jsonresult.UserName, 
-                        Description = "Primary owner of the cluster", 
-                        token = jsonresult.Token
-                    });
-                    await _db.SaveChangesAsync();
-                    return Ok(jsonresult.Token);
-                }
+                await _cache.SetClusterInfor(cluster);
+                return Ok(jsonresult.Token);
             }
             else
             {
@@ -101,24 +74,14 @@ namespace WorkerManager.Controllers
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="isPrivate"></param>
-        /// <returns></returns>
         [Owner]
         [HttpPost("Register")]
         public async Task<IActionResult> Register(bool isPrivate, string ClusterName)
         {
-            if(_db.Clusters.Any())
-            {
-                return BadRequest("cluster is already registered");
-            }
+            var cluster = await _cache.GetClusterInfor();
 
-
-            var token = _db.Owner.First().token;
             var request = new RestRequest(_config.ClusterRegisterUrl)
-                .AddHeader("Authorization","Bearer "+token)
+                .AddHeader("Authorization","Bearer "+cluster.OwnerToken)
                 .AddQueryParameter("ClusterName", ClusterName)
                 .AddQueryParameter("Private", isPrivate.ToString());
 
@@ -128,15 +91,8 @@ namespace WorkerManager.Controllers
 
             if (result.StatusCode == HttpStatusCode.OK)
             {
-                var cluster = new LocalCluster
-                {
-                    Name = ClusterName,
-                    Token = result.Content,
-                    Register = DateTime.Now
-                };
-
-                _db.Clusters.Add(cluster);
-                await _db.SaveChangesAsync();
+                cluster.Name = ClusterName;
+                await _cache.SetClusterInfor(cluster);
                 return Ok();
             }
             else
@@ -150,11 +106,11 @@ namespace WorkerManager.Controllers
         [HttpGet("Cluster/Infor")]
         public async Task<IActionResult> Infor()
         {
-            var ClusterName = _db.Clusters.First().Name;
-            var token = _db.Owner.First().token;
+            var cluster = await _cache.GetClusterInfor();
+
             var request = new RestRequest(_config.ClusterInforUrl)
-                .AddHeader("Authorization","Bearer "+token)
-                .AddQueryParameter("ClusterName", ClusterName);
+                .AddHeader("Authorization","Bearer "+cluster.ClusterToken)
+                .AddQueryParameter("ClusterName", cluster.Name);
             request.Method = Method.GET;
 
             var result = await _client.ExecuteAsync(request);
@@ -174,24 +130,18 @@ namespace WorkerManager.Controllers
         [HttpGet("Cluster/Token")]
         public async Task<IActionResult> Token()
         {
-            var ClusterName = _db.Clusters.First().Name;
-            var token = _db.Owner.First().token;
+            var Cluster = await _cache.GetClusterInfor();
             var request = new RestRequest(_config.ClusterTokenUrl)
-                .AddHeader("Authorization","Bearer "+token)
-                .AddQueryParameter("ClusterName", ClusterName);
+                .AddHeader("Authorization","Bearer "+ Cluster.OwnerToken)
+                .AddQueryParameter("ClusterName", Cluster.Name);
             request.Method = Method.GET;
 
             var result = await _client.ExecuteAsync(request);
 
             if (result.StatusCode == HttpStatusCode.OK)
             {
-                if(_db.Clusters.Any())
-                {
-                    var cluster = _db.Clusters.First();
-                    cluster.Token = JsonConvert.DeserializeObject<string>(result.Content);
-                    _db.Update(cluster);
-                    await _db.SaveChangesAsync();
-                }
+                Cluster.ClusterToken = JsonConvert.DeserializeObject<string>(result.Content);
+                _cache.SetClusterInfor(Cluster);
                 return Ok();
             }
             else
@@ -222,11 +172,10 @@ namespace WorkerManager.Controllers
                                                  string turnUSER, 
                                                  string turnPASSWORD)
         {
-            var cluster = _db.Clusters.First();
-            var owner = _db.Owner.First();
+            var cluster = await _cache.GetClusterInfor();
 
             var request = new RestRequest(_config.ClusterTURNUrl)
-                .AddHeader("Authorization","Bearer "+owner.token)
+                .AddHeader("Authorization","Bearer "+cluster.OwnerToken)
                 .AddQueryParameter("ClusterName",cluster.Name)
                 .AddQueryParameter("turnIP",turnIP)
                 .AddQueryParameter("turnUSER",turnUSER)
@@ -285,7 +234,7 @@ namespace WorkerManager.Controllers
         [HttpPost("Cluster/isRegistered")]
         public async Task<IActionResult> isRegistered()
         {
-            if(_db.Clusters.Any())
+            if((await _cache.GetClusterInfor()).ClusterToken != null)
             {
                 return Ok();
             }
@@ -310,16 +259,14 @@ namespace WorkerManager.Controllers
         [HttpGet("Cluster/Worker/Log")]
         public async Task<IActionResult> GetLog(int WorkerID)
         {
-            var worker = _db.Devices.Find(WorkerID);
-            return Ok(worker.Logs);
+            return Ok(await _cache.GetLog(WorkerID,null,null));
         }
 
         [Owner]
         [HttpGet("Cluster/Worker/Log/Timestamp")]
         public async Task<IActionResult> GetLogWithOptions(int WorkerID, DateTime From, DateTime To)
         {
-            var worker = _db.Devices.Find(WorkerID);
-            var array = worker.Logs.Where(x => x.LogTime > From && x.LogTime < To).OrderBy(x => x.LogTime).ToArray();
+            var array = await _cache.GetLog(WorkerID,From,To);
             if(array.Count() > 60)
             {
                 return Ok(array.Take(60));
