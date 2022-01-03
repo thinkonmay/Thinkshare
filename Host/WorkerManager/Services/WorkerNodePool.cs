@@ -18,8 +18,6 @@ namespace WorkerManager.Services
         
         private Task _systemHeartBeat;
 
-        private Task _sessionHeartBeat;
-
         private Task _workerShell;
 
         private bool isRunning;
@@ -36,7 +34,6 @@ namespace WorkerManager.Services
             {
                 isRunning = true;
                 _systemHeartBeat =  Task.Run(() => SystemHeartBeat());
-                _sessionHeartBeat = Task.Run(() => SessionHeartBeat());
                 _workerShell =      Task.Run(() => GetWorkerMetric());
                 return true;
             }
@@ -53,7 +50,6 @@ namespace WorkerManager.Services
                 isRunning = false;
                 _workerShell.Wait();
                 _systemHeartBeat.Wait();
-                _sessionHeartBeat.Wait();
                 return true;
             }
             else
@@ -62,49 +58,6 @@ namespace WorkerManager.Services
             }
         }
 
-
-        public async Task SessionHeartBeat()
-        {
-            try
-            {
-                while(true)
-                {
-                    if(!isRunning)
-                    {
-                        return;
-                    }
-                    
-                    var worker_list = await _cache.GetClusterState();
-                    foreach (var item in worker_list)
-                    {
-                        var workerState = await _cache.GetWorkerState(item.Key);
-                        if(workerState == WorkerState.OnSession)
-                        {
-                            // find is cache first, the find in sqldb if not present on redis
-                            ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                            if(await worker.PingWorker(Module.CORE_MODULE))
-                            {
-                                worker.sessionFailedPing = 0;
-                            }
-                            else
-                            {
-                                worker.sessionFailedPing++;
-                            }
-                            await _cache.CacheWorkerInfor(worker);
-                        }
-                    }
-                    Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
-                }
-            }
-            catch (Exception ex)
-            {
-                Serilog.Log.Information("ping session failed");
-                Serilog.Log.Information(ex.Message);
-                Serilog.Log.Information(ex.StackTrace);
-                Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
-                await SessionHeartBeat();
-            }
-        }
 
         public async Task SystemHeartBeat()
         {

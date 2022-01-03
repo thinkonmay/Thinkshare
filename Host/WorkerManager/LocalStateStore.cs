@@ -63,29 +63,29 @@ namespace WorkerManager
 
         public async Task SetWorkerState(int WorkerID, string? node)
         {
-            var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterWorkerCache");
+            var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("CLUSTER_STATE_CACHE");
             cachedValue.Remove(WorkerID);
             if(node != null)
             {
                 cachedValue.Add(WorkerID, node);
             }
-            await _cache.SetRecordAsync<Dictionary<int,string>>("ClusterWorkerCache", cachedValue, null,null);
+            await _cache.SetRecordAsync<Dictionary<int,string>>("CLUSTER_STATE_CACHE", cachedValue, null,null);
             return;
         }
         public async Task<string?> GetWorkerState(int WorkerID)
         {
-            var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterWorkerCache");
+            var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("CLUSTER_STATE_CACHE");
             bool success = cachedValue.TryGetValue(WorkerID, out var result);
             return success ? result : null;
         }
         public async Task<Dictionary<int, string>?> GetClusterState()
         {
-            var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("ClusterWorkerCache");
+            var cachedValue = await _cache.GetRecordAsync<Dictionary<int, string>>("CLUSTER_STATE_CACHE");
             return cachedValue;
         }
         public async Task SetClusterState(Dictionary<int,string> state)
         {
-            await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterWorkerCache",state,null,null);
+            await _cache.SetRecordAsync<Dictionary<int, string>>("CLUSTER_STATE_CACHE",state,null,null);
         }
 
 
@@ -175,16 +175,20 @@ namespace WorkerManager
 
         public async Task Log(int WorkerID,Log log)
         {
-            var sessions = await _cache.GetRecordAsync<List<Log>>("Log_" + WorkerID.ToString());
+            var sessions = await _cache.GetRecordAsync<List<Log>>("Log_" + WorkerID.ToString()+log.LogTime.Day);
             sessions.Add(log);
-            await _cache.SetRecordAsync<List<Log>>("Log_" + WorkerID.ToString(), sessions, null,null);
+            await _cache.SetRecordAsync<List<Log>>("Log_" + WorkerID.ToString()+log.LogTime.Day, sessions, null,null);
         }
 
         public async Task<List<Log>> GetLog(int WorkerID, DateTime? Start, DateTime? End)
         {
-            var cachedValue = await _cache.GetRecordAsync<List<Log>>("Log_"+WorkerID);
+            var cachedValue = await _cache.GetRecordAsync<List<Log>>("Log_"+WorkerID.ToString()+Start.Value.Day);
             return cachedValue;
         }
+
+
+
+
 
 
         public async Task CacheScriptModel(List<ScriptModel> models)

@@ -325,10 +325,9 @@ namespace WorkerManager.Services
 
 
 
-            var ClusterName = _cluster.ClusterToken;
             var client = new RestClient();
             var request = new RestRequest(_config.WorkerRegisterUrl)
-                .AddQueryParameter("ClusterName",ClusterName)
+                .AddQueryParameter("ClusterName",_cluster.Name)
                 .AddJsonBody(node)
                 .AddHeader("Authorization","Bearer "+_cluster.OwnerToken);
 

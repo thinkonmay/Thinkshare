@@ -74,9 +74,11 @@ namespace WorkerManager
                 var _cache  = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
                 var cluster = await _cache.GetClusterInfor();
 
-                if(cluster == null)
+                if(cluster == null || cluster.WorkerNodes == null)
                 {
-                    await _cache.SetClusterInfor(new Models.ClusterKey());
+                    var initcluster  = new Models.ClusterKey();
+                    initcluster.WorkerNodes = new List<Models.ClusterWorkerNode>();
+                    await _cache.SetClusterInfor(initcluster);
                 }
             }
         }

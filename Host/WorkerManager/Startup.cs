@@ -42,8 +42,8 @@ namespace WorkerManager
 
                 services.AddStackExchangeRedisCache(options =>
                 {
-                    options.Configuration = Configuration.GetConnectionString("localhost:6379");
-                    options.InstanceName = "Test";
+                    options.Configuration = "localhost:6379";
+                    options.InstanceName = "Cluster";
                 });
             }
             else

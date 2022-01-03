@@ -109,18 +109,18 @@ namespace WorkerManager.Controllers
             var cluster = await _cache.GetClusterInfor();
 
             var request = new RestRequest(_config.ClusterInforUrl)
-                .AddHeader("Authorization","Bearer "+cluster.ClusterToken)
+                .AddHeader("Authorization","Bearer "+cluster.OwnerToken)
                 .AddQueryParameter("ClusterName", cluster.Name);
             request.Method = Method.GET;
 
             var result = await _client.ExecuteAsync(request);
             if(result.StatusCode == HttpStatusCode.OK)            
             {
-                return Ok(result.Content);
+                return Ok(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
             }
             else
             {
-                return BadRequest(result.Content);
+                return BadRequest(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
             }
         }
 
