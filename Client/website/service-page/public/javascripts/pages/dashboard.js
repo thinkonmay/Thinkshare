@@ -27,7 +27,6 @@ API.getSetting().then(async data => {
 })
 
 $(document).ready(async () => {
-	await connectToClientHub();
 	document.querySelector(".preloader").style.opacity = "0";
 	document.querySelector(".preloader").style.display = "none";
 
@@ -174,6 +173,7 @@ $(document).ready(async () => {
 		// Macintosh (MacOS)
 	}
 
+	await connectToClientHub();
 	await prepare_user_infor();
 	await prepare_worker_dashboard();
 	await setDataForChart();
