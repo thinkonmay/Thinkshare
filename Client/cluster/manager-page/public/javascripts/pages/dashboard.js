@@ -267,10 +267,9 @@ $(document).ready(async () => {
 	// Websocket.addEventListener('error', onWebsocketClose);
 	// Websocket.addEventListener('close', onWebsocketClose);
 
-	let ClusterInfor = await (await API.getInforClusterRoute()).json()
+	let _ClusterInfor = await (await API.getInforClusterRoute()).json()
 	// for (let i = 0; i < ClusterInfor["workerNode"].length; i++)
-	if (ClusterInfor != undefined) {
-		let _ClusterInfor = JSON.parse(String(ClusterInfor))
+	if (_ClusterInfor != undefined) {
 		let data = _ClusterInfor["workerNode"];
 		var date = new Date(_ClusterInfor["register"])
 		append('Cluster-Infor', `
