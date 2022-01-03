@@ -26,11 +26,9 @@ namespace WorkerManager
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
+            InitLocalStateStore(host).Wait();
             GetDefaultModel(host).Wait();
-            // if(Environment.GetEnvironmentVariable("AUTO_START") == "true")
-            // {
-                AutoStart(host).Wait();
-            // }
+            AutoStart(host).Wait();
             host.Run();
         }
 
@@ -54,7 +52,6 @@ namespace WorkerManager
             {
                 var _config = scope.ServiceProvider.GetRequiredService<IOptions<ClusterConfig>>().Value;
                 var _cache  = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
-                Console.WriteLine(_config.ClusterHub);
                 var _client = new RestClient();
                 var request = new RestRequest(new Uri(_config.ScriptModelUrl));
                 request.Method = Method.GET;
@@ -65,6 +62,21 @@ namespace WorkerManager
                     var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
                     var defaultModel = allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
                     await _cache.CacheScriptModel(defaultModel);
+                }
+            }
+        }
+
+        static async Task InitLocalStateStore(IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var _config = scope.ServiceProvider.GetRequiredService<IOptions<ClusterConfig>>().Value;
+                var _cache  = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
+                var cluster = await _cache.GetClusterInfor();
+
+                if(cluster == null)
+                {
+                    await _cache.SetClusterInfor(new Models.ClusterKey());
                 }
             }
         }

@@ -33,7 +33,7 @@ namespace WorkerManager
                     builder => builder.AllowAnyOrigin());
             });
 
-            var REDIS_IP =  Environment.GetEnvironmentVariable("POSTGRES_IP");
+            var REDIS_IP =  Environment.GetEnvironmentVariable("REDIS_IP");
 
             if(REDIS_IP == null)
             {
@@ -42,8 +42,8 @@ namespace WorkerManager
 
                 services.AddStackExchangeRedisCache(options =>
                 {
-                    options.Configuration = Configuration.GetConnectionString("Redis");
-                    options.InstanceName = "Cluster";
+                    options.Configuration = Configuration.GetConnectionString("localhost:6379");
+                    options.InstanceName = "Test";
                 });
             }
             else
