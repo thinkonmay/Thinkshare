@@ -4,9 +4,9 @@ using System.Linq;
 using WorkerManager.Interfaces;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
-using DbSchema.CachedState;
-using DbSchema.LocalDb;
-using DbSchema.LocalDb.Models;
+using WorkerManager;
+
+using WorkerManager.Models;
 
 namespace WorkerManager.Services
 {
@@ -14,24 +14,18 @@ namespace WorkerManager.Services
     {
         private readonly ILocalStateStore _cache;
 
-        private readonly ClusterDbContext _db;
-        
         private Task _stateStyncing;
         
         private Task _systemHeartBeat;
-
-        private Task _sessionHeartBeat;
 
         private Task _workerShell;
 
         private bool isRunning;
 
-        public WorkerNodePool(ILocalStateStore cache,
-                              ClusterDbContext db)
+        public WorkerNodePool(ILocalStateStore cache)
         {
             _cache = cache;
             isRunning = false;
-            _db = db;
         }
 
         public bool Start()
@@ -40,7 +34,6 @@ namespace WorkerManager.Services
             {
                 isRunning = true;
                 _systemHeartBeat =  Task.Run(() => SystemHeartBeat());
-                _sessionHeartBeat = Task.Run(() => SessionHeartBeat());
                 _workerShell =      Task.Run(() => GetWorkerMetric());
                 return true;
             }
@@ -57,7 +50,6 @@ namespace WorkerManager.Services
                 isRunning = false;
                 _workerShell.Wait();
                 _systemHeartBeat.Wait();
-                _sessionHeartBeat.Wait();
                 return true;
             }
             else
@@ -66,49 +58,6 @@ namespace WorkerManager.Services
             }
         }
 
-
-        public async Task SessionHeartBeat()
-        {
-            try
-            {
-                while(true)
-                {
-                    if(!isRunning)
-                    {
-                        return;
-                    }
-                    
-                    var worker_list = await _cache.GetClusterState();
-                    foreach (var item in worker_list)
-                    {
-                        var workerState = await _cache.GetWorkerState(item.Key);
-                        if(workerState == WorkerState.OnSession)
-                        {
-                            // find is cache first, the find in sqldb if not present on redis
-                            ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                            if(await worker.PingWorker(Module.CORE_MODULE))
-                            {
-                                worker.sessionFailedPing = 0;
-                            }
-                            else
-                            {
-                                worker.sessionFailedPing++;
-                            }
-                            await _cache.CacheWorkerInfor(worker);
-                        }
-                    }
-                    Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
-                }
-            }
-            catch (Exception ex)
-            {
-                Serilog.Log.Information("ping session failed");
-                Serilog.Log.Information(ex.Message);
-                Serilog.Log.Information(ex.StackTrace);
-                Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
-                await SessionHeartBeat();
-            }
-        }
 
         public async Task SystemHeartBeat()
         {
@@ -162,7 +111,7 @@ namespace WorkerManager.Services
 
         async Task GetWorkerMetric()
         {
-            var model_list = _db.ScriptModels.ToList();
+            var model_list = await _cache.GetScriptModel();
             while (true)
             {
                 if(!isRunning)
@@ -173,7 +122,7 @@ namespace WorkerManager.Services
                 foreach (var item in worker_list.Where(x => x.Value != WorkerState.Disconnected))
                 {
                     ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                    worker.GetWorkerMetric(_db,model_list);
+                    worker.GetWorkerMetric(_cache,model_list);
                 }
                 Thread.Sleep(((int)TimeSpan.FromSeconds(60).TotalMilliseconds));
             }
@@ -184,8 +133,6 @@ namespace WorkerManager.Services
             DateTime currentTime = DateTime.Now;
             while (true)
             {
-                var CachedSession = _db.CachedSession.All(x => true);
-
                 Thread.Sleep((int)TimeSpan.FromDays(1).TotalMilliseconds);
                 currentTime.AddDays(1);
             }

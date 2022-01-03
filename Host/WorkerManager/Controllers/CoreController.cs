@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using SharedHost.Models.Session;
 using SharedHost;
 using WorkerManager.Middleware;
-using DbSchema.SystemDb;
 using SharedHost.Models.Device;
-using DbSchema.CachedState;
+using WorkerManager;
 using System;
 using RestSharp;
 using Newtonsoft.Json;
-using DbSchema.LocalDb;
+
 
 // TODO: authentification
 
@@ -23,8 +22,6 @@ namespace WorkerManager.Controllers
     [Produces("application/json")]
     public class CoreController : Controller
     {
-        private readonly ClusterDbContext _db;
-
         private readonly ILocalStateStore _cache;
 
         private readonly RestClient _sessionClient;
@@ -32,10 +29,8 @@ namespace WorkerManager.Controllers
         private readonly ClusterConfig _config;
 
         public CoreController(IOptions<ClusterConfig> config,
-                              ClusterDbContext db,
                               ILocalStateStore cache)
         {
-            _db = db;
             _config = config.Value;
             _cache = cache;
         }

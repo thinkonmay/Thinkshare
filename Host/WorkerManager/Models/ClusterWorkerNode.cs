@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Threading;
 using System.Collections.Generic;
-using DbSchema.SystemDb;
+using WorkerManager;
 using System.Threading.Tasks;
 using System;
 using SharedHost.Models.Device;
@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using SharedHost.Models.Session;
 using System.Net;
 
-namespace DbSchema.LocalDb.Models
+namespace WorkerManager.Models
 {
     public class ClusterWorkerNode 
     {
@@ -177,7 +177,7 @@ namespace DbSchema.LocalDb.Models
 
 
 
-        public async Task GetWorkerMetric(ClusterDbContext db, List<ScriptModel> models)
+        public async Task GetWorkerMetric(ILocalStateStore cache, List<ScriptModel> models)
         {
             foreach (var model in models)
             {
@@ -193,11 +193,7 @@ namespace DbSchema.LocalDb.Models
                     session.Model  = model;
                     session.Output = result.Content;
 
-                    var device = db.Devices.Find(ID);
-                    device.Shells.Add(session);
-                    db.Update(device);
-
-                    await db.SaveChangesAsync();
+                    await cache.CacheShellSession(ID,session);
                 }
             }
         }

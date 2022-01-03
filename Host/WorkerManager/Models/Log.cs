@@ -1,14 +1,13 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace DbSchema.LocalDb.Models
+namespace WorkerManager.Models
 {
     public class Log
     {
-        [Key]
-        public int ID {get;set;}
+        public int WorkerID {get;set;}
 
-        public string Content{get;set;}
+        public string Content {get;set;}
 
         public DateTime LogTime {get;set;}
     }
