@@ -29,6 +29,7 @@ namespace WorkerManager.Controllers
         public LogController(IOptions<ClusterConfig> config,
                               ILocalStateStore cache)
         {
+            _cache =cache;
         }
 
 

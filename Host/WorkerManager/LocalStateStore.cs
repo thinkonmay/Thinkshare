@@ -95,14 +95,7 @@ namespace WorkerManager
         public async Task CacheWorkerInfor(ClusterWorkerNode Worker)
         {
             var cluster = await GetClusterInfor();
-            foreach (var item in cluster.WorkerNodes)
-            {
-                if(item.ID == Worker.ID)
-                {
-                    cluster.WorkerNodes.Remove(item);
-                }
-            }
-
+            cluster.WorkerNodes.RemoveAll(x => x.ID == Worker.ID);
             cluster.WorkerNodes.Add(Worker);
             await SetClusterInfor(cluster);
             return;
@@ -175,14 +168,14 @@ namespace WorkerManager
 
         public async Task Log(int WorkerID,Log log)
         {
-            var sessions = await _cache.GetRecordAsync<List<Log>>("Log_" + WorkerID.ToString()+log.LogTime.Day);
+            var sessions = await _cache.GetRecordAsync<List<Log>>("Log_" + WorkerID.ToString()+log.LogTime.DayOfYear+log.LogTime.Hour);
             sessions.Add(log);
             await _cache.SetRecordAsync<List<Log>>("Log_" + WorkerID.ToString()+log.LogTime.Day, sessions, null,null);
         }
 
         public async Task<List<Log>> GetLog(int WorkerID, DateTime? Start, DateTime? End)
         {
-            var cachedValue = await _cache.GetRecordAsync<List<Log>>("Log_"+WorkerID.ToString()+Start.Value.Day);
+            var cachedValue = await _cache.GetRecordAsync<List<Log>>("Log_"+WorkerID.ToString()+Start.Value.DayOfYear+Start.Value.Hour);
             return cachedValue;
         }
 
