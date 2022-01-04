@@ -206,10 +206,16 @@ namespace WorkerManager.Services
         {
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
+
             try
             {
                 await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-            } catch { Serilog.Log.Information("Fail to send message to websocket client"); }
+            } catch (Exception ex)
+            { 
+                Serilog.Log.Information("Fail to send message to websocket client"); 
+                Thread.Sleep(1000);
+                await SendMessage(msg);
+            }
         }
 
 

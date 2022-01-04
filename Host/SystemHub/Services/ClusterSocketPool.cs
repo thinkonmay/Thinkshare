@@ -284,10 +284,7 @@ namespace SystemHub.Services
 
 
             Serilog.Log.Information("State syncing done, after syncing: ");
-            foreach (var item in syncedSnapshoot)
-            {
-                Serilog.Log.Information("WorkerID: "+item.Key.ToString()+" | State: "+item.Value);
-            }
+            foreach (var item in syncedSnapshoot) { Serilog.Log.Information("WorkerID: "+item.Key.ToString()+" | State: "+item.Value); }
             await SendToCluster(cred.ID,reply);
         }
 
@@ -313,7 +310,12 @@ namespace SystemHub.Services
             try
             {
                 await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-            } catch { Serilog.Log.Information("Fail to send websocket to client"); }
+            } catch (Exception ex)
+            { 
+                Serilog.Log.Information("Fail to send websocket to client"); 
+                Thread.Sleep(1000);
+                await SendMessage(ws,msg);
+            }
         }
     }
 }
