@@ -61,6 +61,7 @@ namespace Authenticator.Controllers
             {
                 return BadRequest("Choose a different name");
             }
+
             var cluster = new GlobalCluster
             {
                 Name = ClusterName,

@@ -23,13 +23,10 @@ namespace Authenticator.Controllers
     public class AdminController : ControllerBase
     {
         private readonly UserManager<UserAccount> _userManager;
-        private readonly GlobalDbContext _db;
-        public AdminController(
-            UserManager<UserAccount> userManager,
-            GlobalDbContext db)
+
+        public AdminController( UserManager<UserAccount> userManager)
         {
             _userManager = userManager;
-            _db = db;
         }
 
 
