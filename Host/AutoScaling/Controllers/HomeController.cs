@@ -8,15 +8,17 @@ using Microsoft.Extensions.Logging;
 
 using Amazon.EC2;
 using Amazon.EC2.Model;
-
+using AutoScaling.Interfaces;
 
 namespace AutoScaling.Controllers
 {
     [Route("/Instance")]
     public class InstanceController : Controller
     {
-        public InstanceController()
+        private readonly IEC2Service  _ec2;
+        public InstanceController(IEC2Service ec2)
         {
+            _ec2 = ec2;
         }
 
         [HttpPost("/Cluster/Create")]

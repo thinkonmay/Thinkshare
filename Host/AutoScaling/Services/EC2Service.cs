@@ -3,36 +3,150 @@ using System.Threading.Tasks;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using System.Collections.Generic;
+using System.Linq;
+using SharedHost.Models.AWS;
+using Renci.SshNet;
+using AutoScaling.Interfaces;
 
 namespace AutoScaling.Services
 {
-    public class EC2Service
+    public class EC2Service : IEC2Service
     {
         private readonly AmazonEC2Client _ec2Client;
-        public EC2Service ()
+
+
+
+        public EC2Service()
         {
             _ec2Client = new AmazonEC2Client();
+        }
 
+
+
+
+        public async Task<EC2Instance> LaunchInstances()
+        {
+            var response = await _ec2Client.RunInstancesAsync(new RunInstancesRequest
+            {
+                BlockDeviceMappings = new List<BlockDeviceMapping> {
+                    new BlockDeviceMapping {
+                        DeviceName = "/dev/sdh",
+                        Ebs = new EbsBlockDevice { VolumeSize = 10 }
+                    }
+                },
+
+                ImageId = "ami-055d15d9cfddf7bd3",
+                InstanceType = "t3.micro",
+                KeyName = "cluster_key",
+                MaxCount = 1,
+                MinCount = 1,
+                TagSpecifications = new List<TagSpecification> {
+                    new TagSpecification {
+                        ResourceType = "instance",
+                        Tags = new List<Tag> {
+                            new Tag {
+                                Key = "Purpose",
+                                Value = "test"
+                            }
+                        }
+                    }
+                }
+            });
+
+
+
+            return new EC2Instance
+            {
+                IPAdress = response.Reservation.Instances.First().PublicIpAddress,
+
+                InstanceID = response.Reservation.Instances.First().InstanceId,
+
+                PrivateIP = response.Reservation.Instances.First().PrivateIpAddress,
+            };
+        }
+
+
+
+
+        public async Task<bool> EC2TerminateInstances(string ID)
+        {
+            var response = await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
+            {
+                InstanceIds = new List<string> {
+                    ID
+                }
+            });
+
+            List<InstanceStateChange> terminatingInstances = response.TerminatingInstances;
+
+            foreach (var instance in terminatingInstances)
+            {
+                if (instance.CurrentState.Name == InstanceStateName.Terminated &&
+                   instance.InstanceId == ID)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public async Task<ClusterInstance> SetupCoturnService()
+        {
+            var instance = await LaunchInstances();
+            var result = new ClusterInstance
+            {
+                instance = instance,
+                TurnUser = (new Random()).Next().ToString(),
+                TurnPassword = (new Random()).Next().ToString(),
+            };
+            var success = await AccessEC2Instance(result.instance, new List<string>
+            {
+                SetupCoturnScript(
+                    result.TurnUser,
+                    result.TurnPassword)
+            });
+
+            return result;
 
         }
 
-        public async Task<List<string>> LaunchInstances(RunInstancesRequest requestLaunch)
+
+        public async Task<bool> AccessEC2Instance (EC2Instance ec2Instance, List<string> commands)
         {
-            var instanceIds = new List<string>();
 
-            RunInstancesResponse responseLaunch =
-                await _ec2Client.RunInstancesAsync(new RunInstancesRequest{
-                    
-                });
+            var pk = new PrivateKeyFile("/secret/key");
+            var keyFiles = new[] { pk };
 
-            Console.WriteLine("\nNew instances have been created.");
-            foreach (Instance item in responseLaunch.Reservation.Instances)
+            var methods = new List<AuthenticationMethod>();
+            methods.Add(new PrivateKeyAuthenticationMethod("ubuntu", keyFiles));
+
+            var con = new ConnectionInfo(ec2Instance.IPAdress, 22, "ubuntu", methods.ToArray());
+
+            var _client = new SshClient(con);
+            _client.Connect();
+
+            if(_client.IsConnected == false)
             {
-                instanceIds.Add(item.InstanceId);
-                Console.WriteLine($"  New instance: {item.InstanceId}");
+                return false;
             }
 
-            return instanceIds;
+            foreach (var command in commands)
+            {
+                _client.RunCommand(command);
+            }
+
+            return true;
+        }
+
+
+        public string SetupCoturnScript(string user, string password)
+        {
+            var script =
+            $"sudo apt-get -y update\n" +
+            $"sudo apt-get install coturn\n" +
+            $"echo \"TURNSERVER_ENABLED = 1\" >> sudo vi /etc/default/coturn\n" +
+            $"turnserver -a -o -v -n -u {user}:{password} -p 3478 -r someRealm --no-dtls --no-tls";
+            return script;
         }
     }
 }

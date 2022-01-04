@@ -39,10 +39,16 @@ namespace SharedHost.Models.Cluster
         /// 
         /// </summary>
         public string TurnPassword { get;set;}
+
         /// <summary>
         /// 
         /// </summary>
         public DateTime Register { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateTime Unregister { get; set; }
 
         /// <summary>
         /// 
