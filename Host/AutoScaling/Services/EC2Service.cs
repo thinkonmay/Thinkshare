@@ -26,6 +26,7 @@ namespace AutoScaling.Services
 
         public async Task<EC2Instance> LaunchInstances()
         {
+            
             var response = await _ec2Client.RunInstancesAsync(new RunInstancesRequest
             {
                 BlockDeviceMappings = new List<BlockDeviceMapping> {
@@ -37,7 +38,8 @@ namespace AutoScaling.Services
 
                 ImageId = "ami-055d15d9cfddf7bd3",
                 InstanceType = "t3.micro",
-                KeyName = "cluster_key",
+                KeyName = "test",
+                
                 MaxCount = 1,
                 MinCount = 1,
                 TagSpecifications = new List<TagSpecification> {
@@ -53,16 +55,29 @@ namespace AutoScaling.Services
                 }
             });
 
-
-
-            return new EC2Instance
+            var result = new EC2Instance
             {
-                IPAdress = response.Reservation.Instances.First().PublicIpAddress,
+                InstanceName = response.Reservation.Instances.First().KeyName,
 
                 InstanceID = response.Reservation.Instances.First().InstanceId,
 
                 PrivateIP = response.Reservation.Instances.First().PrivateIpAddress,
             };
+
+
+            while (true)
+            {
+                var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { response.Reservation.Instances.First().InstanceId } });
+                if (infor.Reservations.First().Instances.First().State.Name == InstanceStateName.Running &&
+                    infor.Reservations.First().Instances.First().PublicIpAddress != null)
+                {
+                    result.IPAdress = infor.Reservations.First().Instances.First().PublicIpAddress;
+                    break;
+                }
+                System.Threading.Thread.Sleep(100);
+            }
+
+            return result;
         }
 
 
@@ -70,6 +85,13 @@ namespace AutoScaling.Services
 
         public async Task<bool> EC2TerminateInstances(string ID)
         {
+            var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { ID } });
+
+            if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
+            {
+                return false;
+            }
+
             var response = await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
             {
                 InstanceIds = new List<string> {
@@ -77,17 +99,17 @@ namespace AutoScaling.Services
                 }
             });
 
-            List<InstanceStateChange> terminatingInstances = response.TerminatingInstances;
 
-            foreach (var instance in terminatingInstances)
+            while(true)
             {
-                if (instance.CurrentState.Name == InstanceStateName.Terminated &&
-                   instance.InstanceId == ID)
+                var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { ID } });
+
+                if (infor.Reservations.First().Instances.First().State.Name == InstanceStateName.Terminated )
                 {
                     return true;
                 }
+                System.Threading.Thread.Sleep(100);
             }
-            return false;
         }
 
         public async Task<ClusterInstance> SetupCoturnService()
@@ -99,13 +121,18 @@ namespace AutoScaling.Services
                 TurnUser = (new Random()).Next().ToString(),
                 TurnPassword = (new Random()).Next().ToString(),
             };
-            var success = await AccessEC2Instance(result.instance, new List<string>
+            try
             {
-                SetupCoturnScript(
-                    result.TurnUser,
-                    result.TurnPassword)
-            });
-
+                var success = await AccessEC2Instance(result.instance, new List<string>
+                {
+                    SetupCoturnScript(
+                        result.TurnUser,
+                        result.TurnPassword)
+                });
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             return result;
 
         }
@@ -114,7 +141,7 @@ namespace AutoScaling.Services
         public async Task<bool> AccessEC2Instance (EC2Instance ec2Instance, List<string> commands)
         {
 
-            var pk = new PrivateKeyFile("/secret/key");
+            var pk = new PrivateKeyFile("C:/Users/huyho/Desktop/pcc/private/personal-cloud-computing/Host/AutoScaling/key.txt");
             var keyFiles = new[] { pk };
 
             var methods = new List<AuthenticationMethod>();

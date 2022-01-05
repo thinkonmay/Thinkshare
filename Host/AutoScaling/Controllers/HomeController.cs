@@ -21,11 +21,16 @@ namespace AutoScaling.Controllers
             _ec2 = ec2;
         }
 
-        [HttpPost("/Cluster/Create")]
+        [HttpGet("/Cluster/Create")]
         public async Task<IActionResult> Cluster()
         {
-            return Ok();
+            return Ok(await _ec2.SetupCoturnService());
+        }
 
+        [HttpGet("/Cluster/Terminate")]
+        public async Task<IActionResult> Cluster(string ID)
+        {
+            return Ok(await _ec2.EC2TerminateInstances(ID));
         }
     }
 }

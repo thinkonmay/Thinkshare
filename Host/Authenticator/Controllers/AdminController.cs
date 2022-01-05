@@ -24,7 +24,7 @@ namespace Authenticator.Controllers
     {
         private readonly UserManager<UserAccount> _userManager;
 
-        public AdminController( UserManager<UserAccount> userManager)
+        public AdminController(UserManager<UserAccount> userManager)
         {
             _userManager = userManager;
         }
