@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SharedHost.Models.Hub
+namespace SharedHost.Models.Message
 {
     public class EventModel
     {

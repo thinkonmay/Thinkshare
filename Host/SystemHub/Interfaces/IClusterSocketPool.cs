@@ -1,6 +1,6 @@
 ﻿using SharedHost.Auth;
 using SharedHost.Models.Cluster;
-using SharedHost.Models.Hub;
+using SharedHost.Models.Message;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;

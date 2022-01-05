@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using SharedHost;
 using RestSharp;
-using SharedHost.Models.Hub;
+using SharedHost.Models.Message;
 using DbSchema.CachedState;
 using Newtonsoft.Json;
 
