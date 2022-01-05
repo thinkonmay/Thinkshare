@@ -141,30 +141,5 @@ namespace Authenticator.Controllers
                 return Ok(cluster.First());
             }
         }
-
-        [Manager]
-        [HttpPost("Turn")]
-        public async Task<IActionResult> GetTURN(string ClusterName, 
-                                                string turnIP, 
-                                                string turnUSER, 
-                                                string turnPASSWORD)
-        {
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).FirstOrDefault();
-            if (cluster == null)
-            {
-                return BadRequest("Cluster not found");
-            }
-
-
-
-            cluster.TurnIp = turnIP;
-            cluster.TurnUser = turnUSER;
-            cluster.TurnPassword = turnPASSWORD;    
-            _db.Update(cluster);
-            await _db.SaveChangesAsync();
-            return Ok();
-        }
     }
 }

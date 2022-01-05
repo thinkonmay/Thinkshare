@@ -114,24 +114,26 @@ namespace AutoScaling.Services
             }
         }
 
-        public async Task<ClusterInstance> SetupCoturnService()
+        public async Task<ClusterInstance> SetupClusterManager()
         {
-            var result = new ClusterInstance
-            {
-                TurnUser = (new Random()).Next().ToString(),
-                TurnPassword = (new Random()).Next().ToString(),
-            };
-            result.instance = await LaunchInstances();
+            var result = (await LaunchInstances()) as ClusterInstance;
+
+            result.TurnUser = (new Random()).Next().ToString();
+            result.TurnPassword = (new Random()).Next().ToString();
 
 
             // wait for coturn server to boot up until setup coturn script
             System.Threading.Thread.Sleep(30*1000);
-            var script = SetupCoturnScript(result.TurnUser,result.TurnPassword);
-            await AccessEC2Instance(result.instance,script);
+
+            var coturn = SetupCoturnScript(result.TurnUser,result.TurnPassword);
+            await AccessEC2Instance(result.IPAdress ,coturn);
+
+            var cluster = SetupClusterScript();
+            await AccessEC2Instance(result.IPAdress,cluster);
             return result;
         }
 
-        public async Task<List<string>?> AccessEC2Instance (EC2Instance ec2Instance, List<string> commands)
+        public async Task<List<string>?> AccessEC2Instance (string IP, List<string> commands)
         {
 
             var pk = new PrivateKeyFile("/home/huyhoang/.ssh/coturn.pem");
@@ -140,7 +142,7 @@ namespace AutoScaling.Services
             var methods = new List<AuthenticationMethod>();
             methods.Add(new PrivateKeyAuthenticationMethod("ubuntu", keyFiles));
 
-            var con = new ConnectionInfo(ec2Instance.IPAdress, 22, "ubuntu", methods.ToArray());
+            var con = new ConnectionInfo(IP, 22, "ubuntu", methods.ToArray());
 
             var _client = new SshClient(con);
             _client.Connect();
@@ -172,12 +174,12 @@ namespace AutoScaling.Services
             return script;
         }
 
-        public List<string> SetupRedisScript(string password)
+        public List<string> SetupClusterScript()
         {
             var script = new List<string>
             {
+                "curl https://www.thinkmay.net/script/setup.sh > setup.sh && sudo sh setup.sh && rm setup.sh"
             };
-
             return script;
         }
     }

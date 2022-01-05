@@ -6,9 +6,9 @@ namespace SharedHost.Models.AWS
 {
     public class EC2Instance
     {
-        public string IPAdress { set; get; }
-
         public string Key { set; get; }
+
+        public string IPAdress { set; get; }
 
         public string InstanceID { get; set; }
 

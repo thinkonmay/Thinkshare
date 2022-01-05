@@ -23,31 +23,31 @@ namespace AutoScaling.Controllers
             _ec2 = ec2;
         }
 
-        [HttpGet("/Cluster/Create")]
+        [HttpGet("/Create")]
         public async Task<IActionResult> Cluster()
         {
-            return Ok(await _ec2.SetupCoturnService());
+            return Ok(await _ec2.LaunchInstances());
         }
 
-        [HttpGet("/Cluster/Terminate")]
+        [HttpGet("/Terminate")]
         public async Task<IActionResult> Cluster(string ID)
         {
             return Ok(await _ec2.EC2TerminateInstances(ID));
         }
 
         [HttpPost("/SSH")]
-        public async Task<IActionResult> SSH( EC2Instance instance,[FromBody] List<string> commands)
+        public async Task<IActionResult> SSH( string IP,[FromBody] List<string> commands)
         {
             return Ok(
-                await _ec2.AccessEC2Instance(instance ,commands)
+                await _ec2.AccessEC2Instance(IP ,commands)
             );
         }
 
-        [HttpGet("/coturn")]
+        [HttpGet("/Cluster")]
         public async Task<IActionResult> Coturn()
         {
             return Ok(
-                await _ec2.SetupCoturnService()
+                await _ec2.SetupClusterManager()
             );
         }
     }

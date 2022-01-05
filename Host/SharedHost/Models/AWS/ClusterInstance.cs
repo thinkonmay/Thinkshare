@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace SharedHost.Models.AWS
 {
-    public class ClusterInstance
+    public class ClusterInstance : EC2Instance
     {
-        public EC2Instance instance { get; set; }
+        [Key]
+        public int ID {get;set;}
 
         public string TurnUser {get;set;}
 
