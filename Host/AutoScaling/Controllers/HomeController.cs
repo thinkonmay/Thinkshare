@@ -24,8 +24,8 @@ namespace AutoScaling.Controllers
         [HttpPost("/Cluster/Create")]
         public async Task<IActionResult> Cluster()
         {
-            return Ok();
-
+            var result = await _ec2.SetupCoturnService();
+            return Ok(result);
         }
     }
 }
