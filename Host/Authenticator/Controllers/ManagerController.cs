@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,30 +18,30 @@ using SharedHost.Models.ResponseModel;
 namespace Authenticator.Controllers
 {
     [ApiController]
-    [Route("/Admin")]
-    public class AdminController : ControllerBase
+    [Route("/Manager")]
+    public class ManagerController : ControllerBase
     {
         private readonly UserManager<UserAccount> _userManager;
-
-        public AdminController(UserManager<UserAccount> userManager)
+        private readonly GlobalDbContext _db;
+        public ManagerController(
+            UserManager<UserAccount> userManager,
+            GlobalDbContext db)
         {
             _userManager = userManager;
+            _db = db;
         }
 
 
 
-        /// <summary>
-        /// add role to specific user
-        /// </summary>
-        /// <param name="UserID"></param>
-        /// <param name="Role"></param>
-        /// <returns></returns>
-        [Admin]
-        [HttpPost("Grant/Role")]
-        public async Task<IActionResult> GrantRole(string UserEmail, string Role)
+        [User]
+        [HttpPost("Request")]
+        public async Task<IActionResult> Request(string Description)
         {
-            var account = await _userManager.FindByEmailAsync(UserEmail);
-            await _userManager.AddToRoleAsync(account, Role);
+            var UserID = HttpContext.Items["UserID"];
+            var account = await _userManager.FindByIdAsync(UserID.ToString());
+
+            Serilog.Log.Information(UserID.ToString() + " want to elevate to manager, Description: "+Description);
+            await _userManager.AddToRoleAsync(account,RoleSeeding.MOD);
             return Ok();
         }
     }

@@ -26,6 +26,7 @@ namespace AutoScaling.Services
 
         public async Task<EC2Instance> LaunchInstances()
         {
+            string keyName = "coturn";
             var response = await _ec2Client.RunInstancesAsync(new RunInstancesRequest
             {
                 BlockDeviceMappings = new List<BlockDeviceMapping> {
@@ -37,7 +38,8 @@ namespace AutoScaling.Services
 
                 ImageId = "ami-055d15d9cfddf7bd3",
                 InstanceType = "t3.micro",
-                KeyName = "cluster_key",
+                KeyName = keyName,
+                
                 MaxCount = 1,
                 MinCount = 1,
                 TagSpecifications = new List<TagSpecification> {
@@ -50,19 +52,34 @@ namespace AutoScaling.Services
                             }
                         }
                     }
-                }
+                },
             });
 
-
-
-            return new EC2Instance
+            var result = new EC2Instance
             {
-                IPAdress = response.Reservation.Instances.First().PublicIpAddress,
+                InstanceName = response.Reservation.Instances.First().KeyName,
 
                 InstanceID = response.Reservation.Instances.First().InstanceId,
 
                 PrivateIP = response.Reservation.Instances.First().PrivateIpAddress,
+
+                Key = keyName
             };
+
+
+            while (true)
+            {
+                var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { response.Reservation.Instances.First().InstanceId } });
+                if (infor.Reservations.First().Instances.First().State.Name == InstanceStateName.Running &&
+                    infor.Reservations.First().Instances.First().PublicIpAddress != null)
+                {
+                    result.IPAdress = infor.Reservations.First().Instances.First().PublicIpAddress;
+                    break;
+                }
+                System.Threading.Thread.Sleep(100);
+            }
+
+            return result;
         }
 
 
@@ -70,6 +87,13 @@ namespace AutoScaling.Services
 
         public async Task<bool> EC2TerminateInstances(string ID)
         {
+            var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { ID } });
+
+            if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
+            {
+                return false;
+            }
+
             var response = await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
             {
                 InstanceIds = new List<string> {
@@ -77,44 +101,40 @@ namespace AutoScaling.Services
                 }
             });
 
-            List<InstanceStateChange> terminatingInstances = response.TerminatingInstances;
 
-            foreach (var instance in terminatingInstances)
+            while(true)
             {
-                if (instance.CurrentState.Name == InstanceStateName.Terminated &&
-                   instance.InstanceId == ID)
+                var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { ID } });
+
+                if (infor.Reservations.First().Instances.First().State.Name == InstanceStateName.Terminated )
                 {
                     return true;
                 }
+                System.Threading.Thread.Sleep(100);
             }
-            return false;
         }
 
         public async Task<ClusterInstance> SetupCoturnService()
         {
-            var instance = await LaunchInstances();
             var result = new ClusterInstance
             {
-                instance = instance,
                 TurnUser = (new Random()).Next().ToString(),
                 TurnPassword = (new Random()).Next().ToString(),
             };
-            var success = await AccessEC2Instance(result.instance, new List<string>
-            {
-                SetupCoturnScript(
-                    result.TurnUser,
-                    result.TurnPassword)
-            });
+            result.instance = await LaunchInstances();
 
+
+            // wait for coturn server to boot up until setup coturn script
+            System.Threading.Thread.Sleep(30*1000);
+            var script = SetupCoturnScript(result.TurnUser,result.TurnPassword);
+            await AccessEC2Instance(result.instance,script);
             return result;
-
         }
 
-
-        public async Task<bool> AccessEC2Instance (EC2Instance ec2Instance, List<string> commands)
+        public async Task<List<string>?> AccessEC2Instance (EC2Instance ec2Instance, List<string> commands)
         {
 
-            var pk = new PrivateKeyFile("/secret/key");
+            var pk = new PrivateKeyFile("/home/huyhoang/.ssh/coturn.pem");
             var keyFiles = new[] { pk };
 
             var methods = new List<AuthenticationMethod>();
@@ -127,25 +147,37 @@ namespace AutoScaling.Services
 
             if(_client.IsConnected == false)
             {
-                return false;
+                return null;
             }
 
+            var result = new List<string>();
             foreach (var command in commands)
             {
-                _client.RunCommand(command);
+                result.Add(_client.RunCommand(command).Result);
             }
 
-            return true;
+            return result;
         }
 
-
-        public string SetupCoturnScript(string user, string password)
+        public List<string> SetupCoturnScript(string user, string password)
         {
-            var script =
-            $"sudo apt-get -y update\n" +
-            $"sudo apt-get install coturn\n" +
-            $"echo \"TURNSERVER_ENABLED = 1\" >> sudo vi /etc/default/coturn\n" +
-            $"turnserver -a -o -v -n -u {user}:{password} -p 3478 -r someRealm --no-dtls --no-tls";
+            var script = new List<string>
+            {
+                "sudo apt-get -y update" ,
+                "sudo apt-get -y install coturn" ,
+                "echo \"TURNSERVER_ENABLED = 1\" >> sudo vi /etc/default/coturn" ,
+                $"turnserver -a -o -v -n -u {user}:{password} -p 3478 -r someRealm --no-dtls --no-tls"
+            };
+
+            return script;
+        }
+
+        public List<string> SetupRedisScript(string password)
+        {
+            var script = new List<string>
+            {
+            };
+
             return script;
         }
     }

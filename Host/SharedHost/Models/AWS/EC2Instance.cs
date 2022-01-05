@@ -8,6 +8,8 @@ namespace SharedHost.Models.AWS
     {
         public string IPAdress { set; get; }
 
+        public string Key { set; get; }
+
         public string InstanceID { get; set; }
 
         public string InstanceName {  set; get; } 
