@@ -24,24 +24,24 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\IDAssign.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\ClusterCredential.cs" />
 
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Hub\EventModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ResponseModel\GetSessionResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Message\EventModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\ScriptModel.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\Shell\ShellSession.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\WorkerNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Worker\WorkerNode.cs" />
 
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\WorkerRegisterModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\WorkerState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Worker\WorkerRegisterModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Worker\WorkerState.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionAccession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\RemoteSession.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StorageBlock.cs" />
 
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Device.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Device\Message.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Worker\Device.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Message\Message.cs" />
 
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\GetSessionResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionConstant.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionBase.cs" />
 

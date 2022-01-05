@@ -57,9 +57,12 @@ namespace Authenticator.Controllers
         {
             var ManagerID = HttpContext.Items["UserID"];
             UserAccount account =  await _userManager.FindByIdAsync((string)ManagerID);
-            if(account.ManagedCluster.Where(x => x.Name == ClusterName).Any())
+
+            var refreshCluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
+            if(refreshCluster.Any())
             {
-                return BadRequest("Choose a different name");
+                var refreshToken = await _token.GenerateClusterJwt((string)ManagerID,ClusterName,refreshCluster.First().ID);
+                return Ok(refreshToken);
             }
 
             var cluster = new GlobalCluster
@@ -71,28 +74,18 @@ namespace Authenticator.Controllers
             account.ManagedCluster.Add(cluster);
             await _userManager.UpdateAsync(account);
 
-            return Ok();
-        }
 
-        /// <summary>
-        /// Get list of available slave device, contain device information
-        /// </summary>
-        /// <returns></returns>
-        [Manager]
-        [HttpGet("Token")]
-        public async Task<IActionResult> GetToken(string ClusterName)
-        {
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
-            if(!cluster.Any())
-            {
-                return BadRequest("Cluster not found");
-            }
 
-            var token = await _token.GenerateClusterJwt((string)ManagerID,ClusterName,cluster.First().ID);
+
+
+
+
+
+
+            var token = await _token.GenerateClusterJwt((string)ManagerID,ClusterName,cluster.ID);
             return Ok(token);
         }
+
 
         [Manager]
         [HttpPost("Worker/Register")]

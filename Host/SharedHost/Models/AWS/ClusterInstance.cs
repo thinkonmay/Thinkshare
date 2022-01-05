@@ -13,5 +13,7 @@ namespace SharedHost.Models.AWS
         public string TurnUser {get;set;}
 
         public string TurnPassword {get;set;}
+
+        public DateTime? Registered {get;set;}
     }
 }
