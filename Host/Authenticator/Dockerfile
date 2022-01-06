@@ -7,29 +7,13 @@ EXPOSE 443
 
 
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildprod
+
+
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 
 COPY ["Authenticator/Authenticator.csproj", "Authenticator/"]
 COPY ["SharedHost/setting/prod/appsettings.json", "Authenticator/"]
-RUN dotnet restore "Authenticator/Authenticator.csproj"
-
-
-# copy setting from setting prod folder to workdir
-COPY . .
-WORKDIR "/src/Authenticator"
-RUN dotnet build "Authenticator.csproj" -c Release -o /app/build
-
-
-
-
-
-
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builddev
-WORKDIR /src
-
-COPY ["Authenticator/Authenticator.csproj", "Authenticator/"]
-COPY ["SharedHost/setting/dev/appsettings.json", "Authenticator/"]
 RUN dotnet restore "Authenticator/Authenticator.csproj"
 
 
@@ -41,10 +25,8 @@ RUN dotnet build "Authenticator.csproj" -c Release -o /app/build
 
 
 
-FROM builddev AS publishdev
-RUN dotnet publish "Authenticator.csproj" -c Release -o /app/publish
 
-FROM buildprod AS publishprod
+FROM build AS publish
 RUN dotnet publish "Authenticator.csproj" -c Release -o /app/publish
 
 
@@ -53,12 +35,7 @@ RUN dotnet publish "Authenticator.csproj" -c Release -o /app/publish
 
 
 # production and development image both base on base image
-FROM base AS dev
+FROM base AS final
 WORKDIR /app
-COPY --from=publishdev /app/publish .
-ENTRYPOINT ["dotnet", "Authenticator.dll"]
-
-FROM base AS prod
-WORKDIR /app
-COPY --from=publishprod /app/publish .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Authenticator.dll"]

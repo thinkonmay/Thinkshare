@@ -19,8 +19,8 @@ env:
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
   AUTHENTICATOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/authenticator:latest
   METRIC_COLLECTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/metric-collector:latest
-  AUTOSCALING_IMAGE_NAME : ${{ secrets.DOCKER_USERNAME }}/autoscaling:latest
-  SYSTEMHUB_IMAGE_NAME : ${{ secrets.DOCKER_USERNAME }}/systemhub:latest
+  AUTOSCALING_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/autoscaling:latest
+  SYSTEMHUB_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/systemhub:latest
   
 jobs:      
   build-signalling:
@@ -39,12 +39,11 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host  
-        target: dev
         file: Host/Signalling/Dockerfile
         push: true
         tags: ${{ env.SIGNALLING_IMAGE_NAME }}
 
-  build-workermanager:
+  build-slavemanager:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -56,12 +55,11 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: WorkerManager 
+    - name: SlaveManager
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host  
-        target: dev
-        file: Host/WorkerManager/Dockerfile
+        file: Host/SlaveManager/Dockerfile
         push: true
         tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
 
@@ -81,7 +79,6 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        target: dev
         file: Host/Conductor/Dockerfile
         push: true
         tags: ${{ env.CONDUCTOR_IMAGE_NAME }}
@@ -103,7 +100,6 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        target: dev
         file: Host/Authenticator/Dockerfile
         push: true
         tags: ${{ env.AUTHENTICATOR_IMAGE_NAME }}
@@ -124,12 +120,10 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        target: dev
         file: Host/MetricCollector/Dockerfile
         push: true
         tags: ${{ env.METRIC_COLLECTOR_IMAGE_NAME }}
         
-
   build-systemhub:
     runs-on: ubuntu-latest
     steps:
@@ -142,14 +136,13 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Systemhub
+    - name: MetricCollector
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        target: prod
         file: Host/SystemHub/Dockerfile
         push: true
-        tags: ${{ env.SYSTEMHUB_IMAGE_NAME}}
+        tags: ${{ env.SYSTEMHUB_IMAGE_NAME }}
 
   build-autoscaling:
     runs-on: ubuntu-latest
@@ -162,7 +155,7 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-
+        
     - name: AutoScaling
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:

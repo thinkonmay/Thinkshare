@@ -8,19 +8,32 @@ using SharedHost.Models.AWS;
 using Renci.SshNet;
 using AutoScaling.Interfaces;
 using Microsoft.Extensions.Options;
+using Amazon.Runtime;
+using Amazon;
+using Amazon.Runtime.CredentialManagement;
+
 
 namespace AutoScaling.Services
 {
     public class EC2Service : IEC2Service
     {
-        private readonly AmazonEC2Client _ec2Client;
-
         private readonly AWSSetting _aws;
+
+        private readonly RegionEndpoint _defaultRegion;
+
+        private readonly CredentialProfileStoreChain _cred;
+
+        private readonly string defaultProfile;
 
         public EC2Service(IOptions<AWSSetting> aws)
         {
-            _ec2Client = new AmazonEC2Client();
             _aws = aws.Value;
+
+            _defaultRegion = RegionEndpoint.APSoutheast1;
+
+            defaultProfile = "default";
+
+            _cred = new CredentialProfileStoreChain(_aws.CredentialPath);
         }
 
 
@@ -28,6 +41,17 @@ namespace AutoScaling.Services
 
         public async Task<EC2Instance> LaunchInstances()
         {
+            AmazonEC2Client _ec2Client;
+            if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
+            {
+                _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
+            }
+            else
+            {
+                return null;
+            }
+
+
             var response = await _ec2Client.RunInstancesAsync(new RunInstancesRequest
             {
                 BlockDeviceMappings = new List<BlockDeviceMapping> {
@@ -86,6 +110,16 @@ namespace AutoScaling.Services
 
         public async Task<bool> EC2TerminateInstances(string ID)
         {
+            AmazonEC2Client _ec2Client;
+            if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
+            {
+                _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
+            }
+            else
+            {
+                return false;
+            }
+
             var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { ID } });
 
             if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
@@ -115,7 +149,7 @@ namespace AutoScaling.Services
 
         public async Task<ClusterInstance> SetupClusterManager()
         {
-            var result = (await LaunchInstances()) as ClusterInstance;
+            var result = new ClusterInstance((await LaunchInstances()));
 
             result.TurnUser = (new Random()).Next().ToString();
             result.TurnPassword = (new Random()).Next().ToString();
@@ -135,7 +169,7 @@ namespace AutoScaling.Services
         public async Task<List<string>?> AccessEC2Instance (string IP, List<string> commands)
         {
 
-            var pk = new PrivateKeyFile("/home/huyhoang/.ssh/coturn.pem");
+            var pk = new PrivateKeyFile(_aws.SSHkeyPath);
             var keyFiles = new[] { pk };
 
             var methods = new List<AuthenticationMethod>();

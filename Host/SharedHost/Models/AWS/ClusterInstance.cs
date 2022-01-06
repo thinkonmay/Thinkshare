@@ -15,5 +15,14 @@ namespace SharedHost.Models.AWS
         public string TurnPassword {get;set;}
 
         public DateTime? Registered {get;set;}
+
+        public ClusterInstance(EC2Instance instance)
+        {
+            IPAdress = instance.IPAdress;
+            InstanceID = instance.InstanceID;
+            InstanceName = instance.InstanceName;
+            PrivateIP = instance.PrivateIP;
+        }
+        public ClusterInstance() { }
     }
 }
