@@ -114,14 +114,7 @@ namespace WorkerManager.Controllers
             request.Method = Method.GET;
 
             var result = await _client.ExecuteAsync(request);
-            if(result.StatusCode == HttpStatusCode.OK)            
-            {
-                return Ok(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
-            }
-            else
-            {
-                return BadRequest(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
-            }
+            return Ok(JsonConvert.DeserializeObject<GlobalCluster?>(result.Content));
         }
 
 

@@ -36,7 +36,7 @@ namespace AutoScaling.Controllers
         }
 
         [HttpPost("/SSH")]
-        public async Task<IActionResult> SSH( string IP,[FromBody] List<string> commands)
+        public async Task<IActionResult> SSH(string IP, [FromBody] List<string> commands)
         {
             return Ok(
                 await _ec2.AccessEC2Instance(IP ,commands)

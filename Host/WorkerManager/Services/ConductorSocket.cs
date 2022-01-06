@@ -340,7 +340,7 @@ namespace WorkerManager.Services
             var result = await client.ExecuteAsync(request);
             if(result.StatusCode == HttpStatusCode.OK)
             {
-                IDAssign id = JsonConvert.DeserializeObject<IDAssign>(result.Content);
+                int id = JsonConvert.DeserializeObject<int>(result.Content);
                 model.ID = id.GlobalID;
 
                 await _cache.CacheWorkerInfor(model);

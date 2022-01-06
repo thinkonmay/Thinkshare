@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DbSchema.SystemDb.Data;
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -7,13 +8,14 @@ using SharedHost.Models.User;
 using SharedHost.Models.Device;
 using SharedHost.Auth.ThinkmayAuthProtocol;
 using SharedHost.Models.Cluster;
-using Authenticator.Interfaces;
 using SharedHost;
 using RestSharp;
 using System.Linq;
 using DbSchema.CachedState;
+using AutoScaling.Interfaces;
+using Microsoft.Extensions.Options;
 
-namespace Authenticator.Controllers
+namespace AutoScaling.Controllers
 {
     /// <summary>
     /// Routes used by user to fetch information about the system
@@ -28,19 +30,26 @@ namespace Authenticator.Controllers
 
         private readonly GlobalDbContext _db;
 
-        private readonly ITokenGenerator _token;
-
         private readonly IGlobalStateStore _cache;
 
+        private readonly RestClient _client;
+
+        private readonly SystemConfig _config;
+
+        private readonly IEC2Service _ec2;
+
         public ClusterController(GlobalDbContext db,
+                                 IEC2Service ec2,
+                                 IOptions<SystemConfig> config,
                                  UserManager<UserAccount> userManager,
-                                 ITokenGenerator token,
                                  IGlobalStateStore cache)
         {
             _cache = cache;
             _db = db;
-            _token = token;
+            _client = new RestClient(config.Value.Authenticator);
             _userManager = userManager;
+            _config = config.Value;
+            _ec2 = ec2;
         }
 
 
@@ -55,35 +64,37 @@ namespace Authenticator.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> NewCluster(string ClusterName, bool Private)
         {
+            GlobalCluster cluster;
             var ManagerID = HttpContext.Items["UserID"];
             UserAccount account =  await _userManager.FindByIdAsync((string)ManagerID);
 
             var refreshCluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
-            if(refreshCluster.Any())
+            if(refreshCluster.Count() == 0)
             {
-                var refreshToken = await _token.GenerateClusterJwt((string)ManagerID,ClusterName,refreshCluster.First().ID);
-                return Ok(refreshToken);
+                cluster = new GlobalCluster
+                {
+                    Name = ClusterName,
+                    Register = DateTime.Now,
+                    Private = Private
+                };
+                account.ManagedCluster.Add(cluster);
+                await _userManager.UpdateAsync(account);
+            }
+            else
+            {
+                cluster = refreshCluster.First();
             }
 
-            var cluster = new GlobalCluster
-            {
-                Name = ClusterName,
-                Register = DateTime.Now,
-                Private = Private
-            };
-            account.ManagedCluster.Add(cluster);
-            await _userManager.UpdateAsync(account);
 
-
-
-
-
-
-
-
-
-            var token = await _token.GenerateClusterJwt((string)ManagerID,ClusterName,cluster.ID);
-            return Ok(token);
+            var request = new RestRequest(_config.ClusterTokenGrantor)
+                .AddQueryParameter("UserID",account.Id.ToString())
+                .AddQueryParameter("ClusterName",ClusterName)
+                .AddQueryParameter("ClusterID",cluster.ID.ToString());
+            request.Method = Method.POST;
+            
+            var result = await _client.ExecuteAsync(request);
+            var Token = JsonConvert.DeserializeObject<string>(result.Content);
+            return Ok(Token);
         }
 
 
@@ -103,19 +114,14 @@ namespace Authenticator.Controllers
                 RAMcapacity = body.RAMcapacity,
                 OS = body.OS
             };
+
             cluster.WorkerNode.Add(newWorker);
             _db.Clusters.Update(cluster);
             await _db.SaveChangesAsync();
 
             // get GlobalID and return to cluster
-            var result = new IDAssign
-            {
-                GlobalID = newWorker.ID,
-                ClusterID = cluster.ID,
-            };
-
             await _cache.CacheWorkerInfor(newWorker);
-            return Ok(result);
+            return Ok(newWorker.ID);
         }
 
         [Manager]
@@ -124,15 +130,8 @@ namespace Authenticator.Controllers
         {
             var ManagerID = HttpContext.Items["UserID"];
             UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
-            if (!cluster.Any())
-            {
-                return BadRequest("Cluster not found");
-            }
-            else
-            {
-                return Ok(cluster.First());
-            }
+            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
+            return Ok(cluster);
         }
     }
 }

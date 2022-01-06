@@ -12,9 +12,9 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using SharedHost.Models.Session;
-using SharedHost.Models.Device;
 using SharedHost.Models.Cluster;
 using DbSchema.SystemDb.Data;
+using SharedHost.Models.Device;
 
 namespace Authenticator.Services
 {

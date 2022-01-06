@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Authenticator.Interfaces;
 using SharedHost.Models.Auth;
 using SharedHost.Models.User;
 using SharedHost.Models.Device;
@@ -18,7 +17,7 @@ using DbSchema.SystemDb.Data;
 using SharedHost.Models.ResponseModel;
 using DbSchema.CachedState;
 
-namespace Authenticator.Controllers
+namespace Conductor.Controllers
 {
     [ApiController]
     [Route("/Setting")]
