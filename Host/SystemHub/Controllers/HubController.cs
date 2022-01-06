@@ -4,9 +4,11 @@ using System.Net;
 using SharedHost;
 using SystemHub.Interfaces;
 using RestSharp;
+using System;
 using SharedHost.Auth;
 using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
+using Microsoft.Extensions.Options;
 
 namespace SystemHub.Controllers
 {
@@ -17,25 +19,22 @@ namespace SystemHub.Controllers
     {
 
         private readonly IUserSocketPool _User;
-
         private readonly IClusterSocketPool _Cluster;
-
-        private readonly RestClient _client;
-
+        private readonly RestClient _TokenValidator;
         private readonly SystemConfig _config;
 
         public HubController(IClusterSocketPool cluster,
                             IUserSocketPool user,
-                            SystemConfig config)
+                            IOptions<SystemConfig> config)
         {
             _User = user;
             _Cluster = cluster;
-            _config = config;
-            _client = new RestClient(config.Authenticator+"/Token");
+            _config = config.Value;
+            _TokenValidator = new RestClient();
         }
 
         [HttpGet("User")]
-        public async Task<IActionResult> GetUser(string token)
+        public async Task GetUser(string token)
         {
             var context = ControllerContext.HttpContext;
 
@@ -44,65 +43,47 @@ namespace SystemHub.Controllers
                 var tokenRequest = new AuthenticationRequest
                 {
                     token = token,
-                    Validator = _config.Authenticator
+                    Validator = _config.UserTokenValidator
                 };
 
-                var request = new RestRequest("ChallangeUser")
+                var request = new RestRequest(new Uri(_config.UserTokenValidator))
                     .AddJsonBody(tokenRequest);
                 request.Method = Method.POST;
 
-                var result = _client.Execute(request);
+                var result = await _TokenValidator.ExecuteAsync(request);
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
                     var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(result.Content);
                     if(!claim.IsUser && !claim.IsManager & !claim.IsAdmin)
                     {
-                        return NotFound();
+                        return;
                     }
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                    _User.AddtoPool(claim, webSocket);
+                    await _User.AddtoPool(claim, webSocket);
                 }
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
             }
         }
 
-        [HttpGet("Worker")]
-        public async Task<IActionResult> GetWorker(string token)
+        [HttpGet("Cluster")]
+        public async Task GetWorker(string token)
         {
             var context = ControllerContext.HttpContext;
-
             if (context.WebSockets.IsWebSocketRequest)
             {
-                var tokenRequest = new AuthenticationRequest
-                {
-                    token = token,
-                    Validator = _config.Authenticator
-                };
-
-                var request = new RestRequest("ChallangeWorker")
-                    .AddJsonBody(tokenRequest);
+                var request = new RestRequest(_config.ClusterTokenValidator)
+                    .AddQueryParameter("token",token);
                 request.Method = Method.POST;
 
-                var result = _client.Execute(request);
+                var result = await _TokenValidator.ExecuteAsync(request);
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
                     var claim = JsonConvert.DeserializeObject<ClusterCredential>(result.Content);
                     var webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-                    _Cluster.AddtoPool(claim, webSocket);
+                    await _Cluster.AddtoPool(claim, webSocket);
                 }
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
             }
         }
-
     }
 }

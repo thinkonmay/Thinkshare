@@ -1,8 +1,13 @@
 import * as API from "../util/api.js"
-import * as RemotePage from "../util/remote-page-cookies.js"
-import { getCookie, setCookie, deleteCookie } from "../util/cookie.js"
+import * as RemotePage from "../util/remote.js"
+import {
+	getCookie,
+	setCookie,
+	deleteCookie
+} from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
+import * as Setting from "./setting.js"
 
 
 
@@ -11,7 +16,136 @@ let sessionInfor;
 API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
+API.getSetting().then(async data => {
+	var body = await data.json()
+	$(`[value=${Setting.DecodeCoreEngine(parseInt(body.engine))}]`).attr('checked', true);
+	$(`[value=${Setting.DecodeCodec(parseInt(body.audioCodec))}]`).attr('checked', true);
+	$(`[value=${Setting.DecodeCodec(parseInt(body.videoCodec))}]`).attr('checked', true);
+	$(`[value=${Setting.DecodeDeviceType(parseInt(body.device))}]`).attr('checked', true);
+	$(`[value=${Setting.DecodeQoeMode(parseInt(body.mode))}]`).attr('checked', true);
+	$(`[value=${Setting.DecodeResolution(body)}]`).attr('checked', true);
+})
+
 $(document).ready(async () => {
+	document.querySelector(".preloader").style.opacity = "0";
+	document.querySelector(".preloader").style.display = "none";
+
+	if (getCookie("show-tutorial") == "true") {
+		$('#checkboxTutorial').attr("checked", true)
+	}
+	if (getCookie("show-tutorial") != "true") {
+		window.location = '/dashboard#demo-modal'
+	}
+	$('#showTutorial').click(function () {
+		window.location = '/dashboard#demo-modal'
+	})
+
+	$('.modal__checkbox').click(function () {
+		if ($('#checkboxTutorial').attr("checked") == 'checked') {
+			// have been click this checkbox
+			document.getElementById('checkboxTutorial').removeAttribute("checked")
+			// $('#checkboxTutorial').removeAttr("checked")
+			setCookie("show-tutorial", "false", 99999999999999)
+		} else
+		if ($('#checkboxTutorial').attr("checked") != 'checked') {
+			// click checkbox
+			$('#checkboxTutorial').attr("checked", true)
+			setCookie("show-tutorial", "true", 99999999999999)
+		}
+	})
+
+
+
+	// Remote Core
+	$('[name="remote"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+			var value = $(this).val();
+			display.engine = Setting.CoreEngine(value);
+			await Setting.updateSetting(display);
+	})
+
+	// Remote control bitrate
+	$('[name="bitrate"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+			var value = $(this).val();
+			display.mode = Setting.QoEMode(value);
+			await Setting.updateSetting(display);
+	});
+
+	// Resolution
+	$('[name="res"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+		var value = $(this).attr("value");
+		switch (value) {
+			case "FullHD":
+				display.screenWidth = 1920;
+				display.screenHeight = 1080;
+				break;
+			case "2K":
+				display.screenWidth = 2560;
+				display.screenHeight = 1440;
+				break;
+			case "4K":
+				display.screenWidth = 3840;
+				display.screenHeight = 2160;
+				break;
+		}
+		await Setting.updateSetting(display);
+		
+	})
+
+	// VideoCodec
+	$('[name="video"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+			var value = $(this).val();
+			display.videoCodec = Setting.Codec(value);
+			await Setting.updateSetting(display);
+	});
+
+	// Remote control bitrate
+	$('[name="bitrate"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+		var value = $(this).val();
+		display.mode = Setting.QoEMode(value);
+		await Setting.updateSetting(display);
+	});
+
+	// AudioCodec
+	$('[name="audio"]').click(async function () {
+		var display = await (await API.getSetting()).json();
+		var value = $(this).val();
+		display.audioCodec = Setting.Codec(value)
+		await Setting.updateSetting(display);
+	});
+
+	$(".next-tab").click(() => {
+		let value = null;
+		if ($("#HowToUse").attr('checked') == 'checked') {
+			value = 'ShorcutKey';
+			$("#HowToUse").attr('checked', false)
+		}
+		if ($("#ShorcutKey").attr('checked') == 'checked') {
+			value = 'Setting';
+			$("#ShorcutKey").attr('checked', false)
+		}
+		if ($("#Setting").attr('checked') == 'checked') {
+			window.location = "#"
+			value = 'HowToUse';
+			$("#Setting").attr('checked', false)
+		}
+		if (value != null) {
+			value = '#' + value
+			$(`${value}`).attr('checked', true)
+		}
+	})
+
+	if (CheckDevice.isElectron()) {
+
+		$('#downloadApp').css("display", "none")
+		$('#remoteApp2').removeAttr("disabled")
+		$('#videoCodec3').removeAttr("disabled")
+	}
+
 	$('#logout').click(() => {
 		setCookie("logout", "true")
 		setCookie("token", null, 1)
@@ -26,7 +160,6 @@ $(document).ready(async () => {
 		}
 	})
 
-	tutorial()
 
 	if (CheckDevice.isElectron()) {
 		// desktop app
@@ -40,33 +173,67 @@ $(document).ready(async () => {
 		// Macintosh (MacOS)
 	}
 
-	try {
-		const userinfor = await (await API.getInfor()).json()
-		const sessions = await (await API.fetchSession()).json()
-		const slaves = await (await API.fetchSlave()).json()
-		sessionInfor = await (await API.getSession()).json()
-		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
+	await connectToClientHub();
+	await prepare_user_infor();
+	await prepare_worker_dashboard();
+	await setDataForChart();
 
-		for (const slave of sessions) {
-			createSlave(slave, "slavesInUses");
-		}
-		for (const slave of slaves) {
-			createSlave(slave, "availableSlaves");
-		}
-	} catch (err) {
-		location.reload();
-	}
 
 	// set data for chart to anaylize hour used
-	setDataForChart();
 
+})
+
+function handleCheckedTab() {
+
+}
+
+async function prepare_user_infor() {
+	try {
+		const userinfor = await (await API.getInfor()).json()
+		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
+	} catch {
+		(new Promise(resolve => setTimeout(resolve, 5000)))
+		.then(() => {
+			prepare_user_infor();
+		});
+	}
+
+}
+
+async function prepare_worker_dashboard() {
+	try {
+		document.getElementById("slavesInUses").innerHTML = " ";
+		document.getElementById("availableSlaves").innerHTML = " ";
+		const sessions = await (await API.fetchSession()).json()
+		const slaves = await (await API.fetchSlave()).json()
+
+
+		for (var worker in sessions) {
+			createSlave(worker, sessions[worker], "slavesInUses");
+		}
+		for (var worker in slaves) {
+			createSlave(worker, slaves[worker], "availableSlaves");
+		}
+	} catch (err) {
+		(new Promise(resolve => setTimeout(resolve, 5000)))
+		.then(() => {
+			prepare_worker_dashboard();
+		});
+	}
+}
+
+
+
+
+async function connectToClientHub() {
 	// using websocket to connect to systemhub
-	const Websocket = new WebSocket(`wss://host.thinkmay.net/Hub?token=${getCookie("token")}`)
+	const Websocket = new WebSocket(API.UserHub + `?token=${getCookie("token")}`)
 	Websocket.addEventListener('open', onWebsocketOpen);
 	Websocket.addEventListener('message', onClientHubEvent);
 	Websocket.addEventListener('error', onWebsocketClose);
 	Websocket.addEventListener('close', onWebsocketClose);
-})
+
+}
 
 function onClientHubEvent(event) {
 	try {
@@ -81,54 +248,76 @@ function onClientHubEvent(event) {
 	}
 
 	if (message_json.EventName === "ReportSessionDisconnected") {
-		var slaveId = message_json.Message
-		setState("OFF_REMOTE", slaveId)
+		var workerID = parseInt(message_json.Message)
+
+		createSlave(workerID, "OFF_REMOTE", "slavesInUses");
 	}
 	if (message_json.EventName === "ReportSessionReconnected") {
-		var slaveId = message_json.Message
-		setState("ON_SESSION", slaveId);
+		var workerID = parseInt(message_json.Message)
+
+		RemotePage.check_remote_condition(workerID,null,null);
+		createSlave(workerID, "ON_SESSION", "slavesInUses");
+	}
+	if (message_json.EventName === "ReportSessionOn") {
+		var workerID = parseInt(message_json.Message)
+
+		RemotePage.check_remote_condition(workerID,null,null);
+		createSlave(workerID, "ON_SESSION", "slavesInUses")
 	}
 	if (message_json.EventName === "ReportSessionTerminated") {
-		var slaveId = message_json.Message
-		var slave = document.getElementById(`slavesInUses${slaveId}`);
-		slave.remove()
+		var workerID = parseInt(message_json.Message)
+
+		createSlave(workerID, null, null);
 	}
 	if (message_json.EventName === "ReportSlaveObtained") {
-		var slaveId = message_json.Message
-		var slave = document.getElementById(`availableSlaves${slaveId}`);
-		slave.remove()
-	}
-	if (message_json.EventName === "ReportSessionInitialized") {
-		var device = JSON.parse(message_json.Message)
-		device.os = device.OS;
-		device.raMcapacity = device.RAMcapacity;
-		device.gpu = device.GPU;
-		device.id = device.ID;
-		device.cpu = device.CPU;
-		device.serviceState = "ON_SESSION";
-		createSlave(device, "slavesInUses")
+		var workerID = parseInt(message_json.Message)
+
+		createSlave(workerID, null, null);
 	}
 	if (message_json.EventName === "ReportNewSlaveAvailable") {
-		var device = JSON.parse(message_json.Message)
-		device.os = device.OS;
-		device.raMcapacity = device.RAMcapacity;
-		device.gpu = device.GPU;
-		device.id = device.ID;
-		device.cpu = device.CPU;
-		createSlave(device, "availableSlaves")
+		var workerID = parseInt(message_json.Message)
+
+		createSlave(workerID, "DEVICE_OPEN", "availableSlaves")
 	}
 }
 
 function onWebsocketOpen() {
 	console.log("connected to client hub");
 }
+
 function onWebsocketClose(event) {
-	location.reload();
+	(new Promise(resolve => setTimeout(resolve, 5000)))
+	.then(() => {
+		location.reload();
+	});
 };
 
-function createSlave(slave, queue) {
+async function createSlave(workerID, workerState, queue) {
+	var queues = ["slavesInUses", "availableSlaves"]
+	for (var item in queues) {
+		
+		var worker = document.getElementById(`${queues[item]}${workerID}`);
+		if (worker != null) {
+			worker.remove();
+		}
+	}
+
+	if (queue == null)
+		return;
+
+	try {
+		var slave = await (await API.fetchInfor(workerID)).json();
+	} catch (error) {
+		(new Promise(resolve => setTimeout(resolve, 5000)))
+		.then(async () => {
+			if(document.getElementById(`${queue}${workerID}`) == null)
+				await createSlave(workerID, workerState, queue);
+		});
+	}
+
+	if(document.getElementById(`${queue}${workerID}`) == null)
 	append(queue, `
-    <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${slave.id}">
+    <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
       <div class="card bg-light d-flex flex-fill">
         <div style="text-alignt: center" class="card-header text-muted border-bottom-0">
 		<img width="20px" height="20px" src="images/window-logo.png" alt="user-avatar" class="img-fluid">
@@ -145,19 +334,20 @@ function createSlave(slave, queue) {
           </div>
         </div>
         <div class="devicebutton">
-          <div class="row slaveState" id="button${slave.id}"></div>
+          <div class="row slaveState" id="${queue}button${slave.id}"></div>
         </div>
       </div>
     </div>`)
-	setState(slave.serviceState, slave.id);
+	setState(workerState, slave.id, queue);
 }
 
 
-function setState(serviceState, slaveID) {
-	var button = document.getElementById(`button${slaveID}`);
+function setState(serviceState, slaveID, queue) {
+	var button = document.getElementById(`${queue}button${slaveID}`);
 	button.innerHTML = slaveState(serviceState, slaveID);
 
 	if (serviceState === "ON_SESSION") {
+
 		var initbutt = document.getElementById(`disconnect${slaveID}`)
 		initbutt.addEventListener("click", async function () {
 			await API.disconnectSession(slaveID)
@@ -221,8 +411,8 @@ function serialize(obj, prefix) {
 				v = obj[p]
 			str.push(
 				v !== null && typeof v === "object" ?
-					serialize(v, k) :
-					encodeURIComponent(k) + "=" + encodeURIComponent(v)
+				serialize(v, k) :
+				encodeURIComponent(k) + "=" + encodeURIComponent(v)
 			)
 		}
 	}
@@ -245,30 +435,13 @@ function popUpTurorial(id, name_shortcut, excute_shortcut, src_shortcut) {
 
 }
 
-async function tutorial() {
 
-	$('#tutorialButton').click(() => {
-		$('#content').show()
-	})
-
-	$('#exitButton').click(() => {
-		$('#content').hide()
-	})
-
-	await popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'Hidden_Mouse_x2.5')
-	await popUpTurorial('#fullScreen', 'Full Screen', 'Ctrl + Shift + F', 'Full_Screen_x2.5')
-
-
-	$('.popup-close').click(function (e) {
-		$('.popup-wrap').fadeOut(500);
-		$('.popup-box').removeClass('transform-in').addClass('transform-out');
-
-		e.preventDefault();
-	});
-}
-
-function setDataForChart() {
-	console.log(sessionInfor)
+async function setDataForChart() {
+	try {
+		sessionInfor = await (await API.getSession()).json()
+	} catch (error) {
+		await setDataForChart();
+	}
 	for (let i = 0; i < 7; i++) {
 		datasets[i] = 0;
 	}
@@ -281,13 +454,27 @@ function setDataForChart() {
 	let _lables = [];
 	while (countDay <= 6) {
 		switch (day) {
-			case 0: _lables.unshift("SUN"); break;
-			case 1: _lables.unshift("MON"); break;
-			case 2: _lables.unshift("TUE"); break;
-			case 3: _lables.unshift("WED"); break;
-			case 4: _lables.unshift("THU"); break;
-			case 5: _lables.unshift("FRI"); break;
-			case 6: _lables.unshift("SAT"); break;
+			case 0:
+				_lables.unshift("SUN");
+				break;
+			case 1:
+				_lables.unshift("MON");
+				break;
+			case 2:
+				_lables.unshift("TUE");
+				break;
+			case 3:
+				_lables.unshift("WED");
+				break;
+			case 4:
+				_lables.unshift("THU");
+				break;
+			case 5:
+				_lables.unshift("FRI");
+				break;
+			case 6:
+				_lables.unshift("SAT");
+				break;
 		}
 		day--;
 		if (day < 0) {
@@ -295,9 +482,9 @@ function setDataForChart() {
 		}
 		countDay++;
 	}
-	if ($("#performaneLine").length) {
-		var graphGradient = document.getElementById("performaneLine").getContext('2d');
-		var graphGradient2 = document.getElementById("performaneLine").getContext('2d');
+	if ($("#performanceLine").length) {
+		var graphGradient = document.getElementById("performanceLine").getContext('2d');
+		var graphGradient2 = document.getElementById("performanceLine").getContext('2d');
 		var saleGradientBg = graphGradient.createLinearGradient(5, 0, 5, 100);
 		saleGradientBg.addColorStop(0, 'rgba(26, 115, 232, 0.18)');
 		saleGradientBg.addColorStop(1, 'rgba(26, 115, 232, 0.02)');
@@ -307,20 +494,20 @@ function setDataForChart() {
 		var salesTopData = {
 			labels: _lables,
 			datasets: [{
-				label: 'This week',
-				data: datasets,
-				backgroundColor: saleGradientBg,
-				borderColor: [
-					'#1F3BB3',
-				],
-				borderWidth: 1.5,
-				fill: true, // 3: no fill
-				pointBorderWidth: 1,
-				pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-				pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-				pointBackgroundColor: ['#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)'],
-				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-			},
+					label: 'This week',
+					data: datasets,
+					backgroundColor: saleGradientBg,
+					borderColor: [
+						'#1F3BB3',
+					],
+					borderWidth: 1.5,
+					fill: true, // 3: no fill
+					pointBorderWidth: 1,
+					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+					pointBackgroundColor: ['#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)'],
+					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', ],
+				},
 				//  {
 				// 	label: 'Last week',
 				// 	data: [30, 150, 190, 250, 120, 150, 130],
@@ -495,5 +682,4 @@ function setDataForChart() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-(function ($) {
-})(jQuery);
+(function ($) {})(jQuery);

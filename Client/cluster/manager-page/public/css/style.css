@@ -1,0 +1,340 @@
+label {
+    display: block;
+    font: 1rem 'Fira Sans', sans-serif;
+}
+
+input,
+label {
+    margin: .4rem 0;
+}
+
+/* Tab bar /////////////////////////////////////////////////////////////////////*/
+@import 'https://fonts.googleapis.com/css?family=Montserrat:400,700|Raleway:300,400';
+/* colors */
+/* tab setting */
+/* breakpoints */
+/* selectors relative to radio inputs */
+ html {
+	 width: 100%;
+	 height: 100%;
+}
+ body {
+	 background: #efefef;
+	 color: #333;
+		 height: 100%;
+}
+ body h1 {
+	 text-align: center;
+	 color: #428bff;
+	 font-weight: 300;
+	 padding: 40px 0 20px 0;
+	 margin: 0;
+}
+ .tabs {
+	 left: 50%;
+	 transform: translateX(-50%);
+	 position: relative;
+	 background: white;
+	 min-width: 240px;
+}
+ .tabs input[name="tab-control"] {
+	 display: none;
+}
+ .tabs .content section h2, .tabs ul li label {
+	 font-family: "Manrope", sans-serif;
+	 font-weight: bold;
+	 font-size: 18px;
+	 color: #428bff;
+}
+ .tabs ul {
+	 list-style-type: none;
+	 padding-left: 0;
+	 display: flex;
+	 flex-direction: row;
+	 margin-bottom: 10px;
+	 justify-content: space-between;
+	 align-items: flex-end;
+	 flex-wrap: wrap;
+}
+ .tabs ul li {
+	 box-sizing: border-box;
+	 flex: 1;
+	 width: 25%;
+	 padding: 0 10px;
+	 text-align: center;
+}
+ .tabs ul li label {
+	 transition: all 0.3s ease-in-out;
+	 color: #929daf;
+	 padding: 5px auto;
+	 overflow: hidden;
+	 text-overflow: ellipsis;
+	 display: block;
+	 cursor: pointer;
+	 transition: all 0.2s ease-in-out;
+	 white-space: nowrap;
+	 -webkit-touch-callout: none;
+}
+ .tabs ul li label br {
+	 display: none;
+}
+ .tabs ul li label svg {
+	 fill: #929daf;
+	 height: 1.2em;
+	 vertical-align: bottom;
+	 margin-right: 0.2em;
+	 transition: all 0.2s ease-in-out;
+}
+ .tabs ul li label:hover, .tabs ul li label:focus, .tabs ul li label:active {
+	 outline: 0;
+	 color: #bec5cf;
+}
+ .tabs ul li label:hover svg, .tabs ul li label:focus svg, .tabs ul li label:active svg {
+	 fill: #bec5cf;
+}
+ .tabs .slider {
+	 position: relative;
+	 width: 50%;
+	 transition: all 0.33s cubic-bezier(0.38, 0.8, 0.32, 1.07);
+}
+ .tabs .slider .indicator {
+	 position: relative;
+	 width: 50px;
+	 max-width: 100%;
+	 margin: 0 auto;
+	 height: 4px;
+	 background: #428bff;
+	 border-radius: 1px;
+}
+ .tabs .content {
+	 margin-top: 30px;
+}
+ .tabs .content section {
+	 display: none;
+	 animation-name: content;
+	 animation-direction: normal;
+	 animation-duration: 0.3s;
+	 animation-timing-function: ease-in-out;
+	 animation-iteration-count: 1;
+	 line-height: 1.4;
+}
+ .tabs .content section h2 {
+	 color: #428bff;
+	 display: none;
+}
+ .tabs .content section h2::after {
+	 content: "";
+	 position: relative;
+	 display: block;
+	 width: 30px;
+	 height: 3px;
+	 background: #428bff;
+	 margin-top: 5px;
+	 left: 1px;
+}
+ .tabs input[name="tab-control"]:nth-of-type(1):checked ~ ul > li:nth-child(1) > label {
+	 cursor: default;
+	 color: #428bff;
+}
+ .tabs input[name="tab-control"]:nth-of-type(1):checked ~ ul > li:nth-child(1) > label svg {
+	 fill: #428bff;
+}
+ @media (max-width: 600px) {
+	 .tabs input[name="tab-control"]:nth-of-type(1):checked ~ ul > li:nth-child(1) > label {
+		 background: rgba(0, 0, 0, 0.08);
+	}
+}
+ .tabs input[name="tab-control"]:nth-of-type(1):checked ~ .slider {
+	 transform: translateX(0%);
+}
+ .tabs input[name="tab-control"]:nth-of-type(1):checked ~ .content > section:nth-child(1) {
+	 display: block;
+}
+ .tabs input[name="tab-control"]:nth-of-type(2):checked ~ ul > li:nth-child(2) > label {
+	 cursor: default;
+	 color: #428bff;
+}
+ .tabs input[name="tab-control"]:nth-of-type(2):checked ~ ul > li:nth-child(2) > label svg {
+	 fill: #428bff;
+}
+ @media (max-width: 600px) {
+	 .tabs input[name="tab-control"]:nth-of-type(2):checked ~ ul > li:nth-child(2) > label {
+		 background: rgba(0, 0, 0, 0.08);
+	}
+}
+ .tabs input[name="tab-control"]:nth-of-type(2):checked ~ .slider {
+	 transform: translateX(100%);
+}
+ .tabs input[name="tab-control"]:nth-of-type(2):checked ~ .content > section:nth-child(2) {
+	 display: block;
+}
+ .tabs input[name="tab-control"]:nth-of-type(3):checked ~ ul > li:nth-child(3) > label {
+	 cursor: default;
+	 color: #428bff;
+}
+ .tabs input[name="tab-control"]:nth-of-type(3):checked ~ ul > li:nth-child(3) > label svg {
+	 fill: #428bff;
+}
+ @media (max-width: 600px) {
+	 .tabs input[name="tab-control"]:nth-of-type(3):checked ~ ul > li:nth-child(3) > label {
+		 background: rgba(0, 0, 0, 0.08);
+	}
+}
+ .tabs input[name="tab-control"]:nth-of-type(3):checked ~ .slider {
+	 transform: translateX(200%);
+}
+ .tabs input[name="tab-control"]:nth-of-type(3):checked ~ .content > section:nth-child(3) {
+	 display: block;
+}
+ .tabs input[name="tab-control"]:nth-of-type(4):checked ~ ul > li:nth-child(4) > label {
+	 cursor: default;
+	 color: #428bff;
+}
+ .tabs input[name="tab-control"]:nth-of-type(4):checked ~ ul > li:nth-child(4) > label svg {
+	 fill: #428bff;
+}
+ @media (max-width: 600px) {
+	 .tabs input[name="tab-control"]:nth-of-type(4):checked ~ ul > li:nth-child(4) > label {
+		 background: rgba(0, 0, 0, 0.08);
+	}
+}
+ .tabs input[name="tab-control"]:nth-of-type(4):checked ~ .slider {
+	 transform: translateX(300%);
+}
+ .tabs input[name="tab-control"]:nth-of-type(4):checked ~ .content > section:nth-child(4) {
+	 display: block;
+}
+ @keyframes content {
+	 from {
+		 opacity: 0;
+		 transform: translateY(5%);
+	}
+	 to {
+		 opacity: 1;
+		 transform: translateY(0%);
+	}
+}
+ @media (max-width: 1000px) {
+	 .tabs ul li label {
+		 white-space: initial;
+	}
+	 .tabs ul li label br {
+		 display: initial;
+	}
+	 .tabs ul li label svg {
+		 height: 1.5em;
+	}
+}
+ @media (max-width: 600px) {
+	 .tabs ul li label {
+		 padding: 5px;
+		 border-radius: 5px;
+	}
+	 .tabs ul li label span {
+		 display: none;
+	}
+	 .tabs .slider {
+		 display: none;
+	}
+	 .tabs .content {
+		 margin-top: 20px;
+	}
+	 .tabs .content section h2 {
+		 display: block;
+	}
+}
+/*////////////////////////////////////////////////////////////////////////*/
+
+
+#outer {
+  width:100%;
+  display: flex;
+  justify-content: center;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.7);
+  transition: opacity 50ms;
+  visibility: hidden;
+  opacity: 0;
+}
+.overlay:target {
+  visibility: visible;
+  opacity: 1;
+}
+
+.popup {
+  margin: 139px auto;
+  padding: 9px;
+  background: #fff;
+  border-radius: 5px;
+  width: 50%;
+  position: relative;
+  transition: all 1s ease-in-out;
+  border-color: #988d8d;
+  border-style: solid;
+}
+
+.popup h2 {
+  margin-top: 0;
+  color: #333;
+  font-family: Tahoma, Arial, sans-serif;
+}
+.popup .close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  transition: all 50ms;
+  font-size: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+}
+.popup .close:hover {
+  color: #06D85F;
+}
+.popup .content {
+  max-height: 50%;
+  overflow: auto;
+}
+a.bn11 {
+  display: inline-block;
+  padding: 0.5em 1.7em;
+  margin: 0 0.1em 0.1em 0;
+  border: 0.16em solid rgba(255, 255, 255, 0);
+  background-color: rgb(80, 10, 172);
+  border-radius: 2em;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  color: #ffffff;
+  text-shadow: 0 0.04em 0.04em rgba(0, 0, 0, 0.35);
+  text-align: center;
+  transition: all 0.2s;
+}
+a.bn11:hover {
+  border-color: rgb(255, 255, 255);
+}
+
+input:optional {
+  border-color: gray;
+}
+input:required:valid {
+  border-color: green;
+}
+input:invalid {
+  border-color: red;
+}
+input:required:focus:valid {
+  background: url("https://assets.digitalocean.com/labs/icons/hand-thumbs-up.svg") no-repeat 95% 50% lightgreen;
+  background-size: 25px;
+}
+input:focus:invalid {
+  background: url("https://assets.digitalocean.com/labs/icons/exclamation-triangle-fill.svg") no-repeat 95% 50% lightsalmon;
+  background-size: 25px;
+}

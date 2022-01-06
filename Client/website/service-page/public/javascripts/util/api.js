@@ -1,48 +1,39 @@
 import { getCookie } from "./cookie.js"
 
-// get environment as docker to match env
-/*
-	import @ from @
-	const host = @.{your_environment_you_wanna_use}
-*/
-let host;
 let currentURL = document.URL
 let subdomain = currentURL.slice(0, 28)
-// if (subdomain == 'https://service.thinkmay.net') {
-host = "https://host.thinkmay.net"
-// } else {
-// 	host = "http://hostdev.thinkmay.net"
-// }
+const host = "https://host.thinkmay.net"
 
 // local api
 export const Dashboard = "/dashboard"
-export const Initialize = "/initialize"
-export const Reconnect = "/reconnect"
+
 
 // thinkmay api
 // Account API
-export const Login = `${host}/Account/Login`
-export const Register = `${host}/Account/Register`
-export const Token = `${host}/Account/ExchangeToken`
-export const GrantRole = `${host}/Account/GrantRole`
-export const GetInfor = `${host}/Account/GetInfor`
-export const SetInfor = `${host}/Account/SetInfor`
-export const GetSession = `${host}/Account/GetSession`
+const Login = `${host}/Account/Login`
+const Register = `${host}/Account/Register`
+const Token = `${host}/Account/ExchangeToken`
+const Infor = `${host}/Account/Infor`
+const Session = `${host}/Account/History`
+
+
+const Setting = `${host}/Setting`
 
 // Session API
-export const InitializeSession = `${host}/Session/Initialize`
-export const TerminateSession = `${host}/Session/Terminate`
-export const DisconnectSession = `${host}/Session/Disconnect`
-export const ReconnectSession = `${host}/Session/Reconnect`
+const InitializeSession = `${host}/Session/Initialize`
+const TerminateSession = `${host}/Session/Terminate`
+const DisconnectSession = `${host}/Session/Disconnect`
+const ReconnectSession = `${host}/Session/Reconnect`
 
-// export const RejectDevice = `${host}/Device/Reject/`
-// export const DisconnectDevice = `${host}/Device/Disconnect`
+const SessionInfor = `${host}/Session/Setting`
+
+export const UserHub = `wss://host.thinkmay.net/Hub/User`
 
 // User API
-export const FetchSlave = `${host}/User/FetchSlave`
-export const FetchSession = `${host}/User/FetchSession`
+const FetchSlave = `${host}/Fetch/Node`
+const FetchSession = `${host}/Fetch/Session`
+const FetchInfor = `${host}/Fetch/Worker/Infor`
 
-export const QuerySession = `${host}/Query/Session`
 
 export const genHeaders = () => {
 	const token = getCookie("token")
@@ -85,6 +76,19 @@ export const register = body => {
 	})
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const tokenExchange = body => {
 	return fetch(Token, {
 		method: "POST",
@@ -93,14 +97,6 @@ export const tokenExchange = body => {
 			token: body.token,
 			Validator: body.Validator
 		})
-	})
-}
-
-
-export const getInfor = () => {
-	return fetch(GetInfor, {
-		method: "GET",
-		headers: genHeaders()
 	}, function (error) {
 		if (401 == error.response.status) {
 			window.location.replace(API.Login)
@@ -109,6 +105,8 @@ export const getInfor = () => {
 		}
 	})
 }
+
+
 
 export const fetchSlave = () => {
 	return fetch(FetchSlave, {
@@ -135,9 +133,20 @@ export const fetchSession = () => {
 		}
 	})
 }
+export const fetchInfor = (workerID) => {
+	return fetch(FetchInfor+"?WorkerID="+workerID, {
+		method: "GET",
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
 
 export const getSession = () => {
-	return fetch(GetSession, {
+	return fetch(Session, {
 		method: "GET",
 		headers: genHeaders()
 	}, function (error) {
@@ -151,44 +160,19 @@ export const getSession = () => {
 
 
 
-export const querySession = SlaveID => {
-	return fetch(QuerySession + "?SlaveID=" + SlaveID, {
-		method: "GET",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
 
-export const rejectDevice = SlaveID => {
-	return fetch(RejectDevice + "?SlaveID=" + SlaveID, {
-		method: "DELETE",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
 
-export const disconnectDevice = SlaveID => {
-	return fetch(DisconnectDevice + "?SlaveID=" + SlaveID, {
-		method: "DELETE",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
+
+
+
+
+
+
+
+
+
+
+
 
 export const terminateSession = SlaveID => {
 	return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
@@ -243,28 +227,97 @@ export const initializeSession = (SlaveID) => {
 	})
 }
 
-// User
-export const setInfor = (body) => {
-	return fetch(SetInfor, {
-		method: "POST",
-		headers: genHeaders(),
-		body: JSON.stringify({
-			userName: body.username ? body.username : null,
-			fullName: body.fullname ? body.fullname : null,
-			jobs: body.jobs ? body.jobs : null,
-			phoneNumber: body.phonenumber ? body.phonenumber : null,
-			gender: body.gender ? body.gender : null,
-			dateOfBirth: body.dob ? body.dob : null,
-			avatar: body.avatar ? body.avatar : null,
-			defaultSetting: {
-				id: body.defaultSetting_id != null ? body.defaultSetting_id : null,
-				device: body.defaultSetting_device != null ? body.defaultSetting_device : null,
-				audioCodec: body.defaultSetting_audioCodec != null ? body.defaultSetting_audioCodec : null,
-				videoCodec: body.defaultSetting_videoCodec != null ? body.defaultSetting_videoCodec : null,
-				mode: body.defaultSetting_mode != null ? body.defaultSetting_mode : null,
-				screenWidth: body.defaultSetting_screenWidth != null ? body.defaultSetting_screenWidth : null,
-				screenHeight: body.defaultSetting_screenHeight != null ? body.defaultSetting_screenHeight : null
-			}
-		})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * 
+ * @returns 
+ */
+export const getInfor = () => {
+	return fetch(Infor, {
+		method: "GET",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
 	})
 }
+
+export const getSetting = () => {
+	return fetch(Setting+"/Get", {
+		method: "GET",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+export const setInfor = (body) => {
+	return fetch(Infor, {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({ body })
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+export const setSetting = (body) => {
+	return fetch(Setting+"/Set", {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({ 
+			device: body.device,
+			engine: body.engine,
+			audioCodec: body.audioCodec,
+			videoCodec: body.videoCodec,
+			mode: body.mode,
+			screenWidth: body.screenWidth,
+			screenHeight: body.screenHeight
+		})
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+

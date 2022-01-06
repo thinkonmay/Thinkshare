@@ -7,20 +7,21 @@ using System.Threading;
 using SystemHub.Interfaces;
 using System.Threading.Tasks;
 using SharedHost.Auth;
-using SharedHost.Models.Hub;
+using SharedHost.Models.Message;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace SystemHub.Services
 {
     public class UserSocketPool : IUserSocketPool
     {
-        private readonly ConcurrentDictionary<AuthenticationResponse, WebSocket> _UserSocketsPool;        
+        private readonly List<KeyValuePair<AuthenticationResponse, WebSocket>> _UserSocketsPool;        
         
-        public UserSocketPool(SystemConfig config)
+        public UserSocketPool(IOptions<SystemConfig> config)
         {
-            _UserSocketsPool =    new ConcurrentDictionary<AuthenticationResponse, WebSocket>();
+            _UserSocketsPool =    new List<KeyValuePair<AuthenticationResponse, WebSocket>>();
 
             Task.Run(() => ConnectionHeartBeat());
             Task.Run(() => ConnectionStateCheck());
@@ -32,14 +33,17 @@ namespace SystemHub.Services
         {
             try
             {                
-                foreach (var socket in _UserSocketsPool)
+                while (true)
                 {
-                    if(socket.Value.State == WebSocketState.Open)
+                    foreach (var socket in _UserSocketsPool)
                     {
-                        SendMessage(socket.Value,"ping");
+                        if(socket.Value.State == WebSocketState.Open)
+                        {
+                            await SendMessage(socket.Value,"ping");
+                        }
                     }
+                    Thread.Sleep(30*1000);
                 }
-                Thread.Sleep(30*1000);
             }catch
             {
                 await ConnectionHeartBeat();
@@ -50,14 +54,17 @@ namespace SystemHub.Services
         {
             try
             {                
-                foreach (var socket in _UserSocketsPool)
+                while (true)
                 {
-                    if(socket.Value.State == WebSocketState.Closed) 
+                    foreach (var socket in _UserSocketsPool)
                     {
-                        _UserSocketsPool.TryRemove(socket);
+                        if(socket.Value.State == WebSocketState.Closed) 
+                        {
+                            _UserSocketsPool.Remove(socket);
+                        }
                     }
+                    Thread.Sleep(100);
                 }
-                Thread.Sleep(100);
             }catch
             {
                 await ConnectionStateCheck();
@@ -65,56 +72,58 @@ namespace SystemHub.Services
         }
 
 
-        public void AddtoPool(AuthenticationResponse resp,WebSocket session)
+        public async Task AddtoPool(AuthenticationResponse resp,WebSocket session)
         {
-            _UserSocketsPool.TryAdd(resp,session);
+            _UserSocketsPool.Add(new KeyValuePair<AuthenticationResponse,WebSocket>(resp,session));
+            await Handle(session);
+            _UserSocketsPool.Remove(new KeyValuePair<AuthenticationResponse,WebSocket>(resp, session));
         }
 
 
 
 
-        public void BroadcastClientEventById(int UserID, EventModel data)
+        public async Task BroadcastClientEventById(int UserID, EventModel data)
         {
             foreach (var item in _UserSocketsPool)
             {
                 if (item.Key.IsUser && item.Key.UserID == UserID.ToString())
                 {
-                    SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
                 }
             }
         }
 
 
-        public void BroadcastClientEvent(EventModel data)
+        public async Task BroadcastClientEvent(EventModel data)
         {
             foreach (var item in _UserSocketsPool)
             {
                 if (item.Key.IsUser)
                 {
-                    SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
                 }
             }
         }
 
 
-        public void BroadcastManagerEventByID(int ManagerID, EventModel data)
+        public async Task BroadcastManagerEventByID(int ManagerID, EventModel data)
         {
             foreach (var item in _UserSocketsPool)
             {
                 if (item.Key.IsManager && item.Key.UserID == ManagerID.ToString())
                 {
-                    SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
                 }
             }
         }
 
-        public void BroadcastAdminEvent(EventModel data)
+        public async Task BroadcastAdminEvent(EventModel data)
         {
             foreach(var item in _UserSocketsPool)
             {
                 if(item.Key.IsAdmin)
                 {
-                    SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
                 }
             }
         }
@@ -131,14 +140,14 @@ namespace SystemHub.Services
                     using (var memoryStream = new MemoryStream())
                     {
                         message = await ReceiveMessage(ws, memoryStream);
-                        if (message.Count > 0)
-                        {
-                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                        }
                     }
                 } while (message.MessageType != WebSocketMessageType.Close && ws.State == WebSocketState.Open);
-            } catch 
+                await Close(ws);
+            } catch (Exception ex)
             {
+                Serilog.Log.Information("Connection with client closed ");
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
                 return;
             }
         }
@@ -156,25 +165,20 @@ namespace SystemHub.Services
             return result;
         }
 
-        public void SendMessage(WebSocket ws, string msg)
+        public async Task SendMessage(WebSocket ws, string msg)
         {
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
-            ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            try
+            {
+                await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            } catch { Serilog.Log.Information("Fail to send to user"); }
         }
 
 
         public async Task Close(WebSocket ws)
         {
-            try
-            {
-                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                Serilog.Log.Information("Connection closed due to {reason}.", ex.Message);
-            }
-            return;
+           await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None); 
         }
     }
 }

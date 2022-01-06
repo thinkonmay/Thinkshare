@@ -1,161 +1,142 @@
-﻿using WorkerManager.SlaveDevices;
-using System;
+﻿using System;
 using System.Threading;
-using System.Collections.Generic;
 using System.Linq;
 using WorkerManager.Interfaces;
-using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
-using SharedHost;
-using WorkerManager.Data;
+using WorkerManager;
+
+using WorkerManager.Models;
 
 namespace WorkerManager.Services
 {
     public class WorkerNodePool : IWorkerNodePool
     {
-        private readonly IConductorSocket _socket;
+        private readonly ILocalStateStore _cache;
 
-        private List<ClusterWorkerNode> _systemSnapshot;
+        private Task _stateStyncing;
+        
+        private Task _systemHeartBeat;
 
-        private readonly ClusterDbContext _db;
+        private Task _workerShell;
 
-        public WorkerNodePool(IConductorSocket socket, ClusterDbContext db)
+        private bool isRunning;
+
+        public WorkerNodePool(ILocalStateStore cache)
         {
-            _db = db;
-            _socket = socket;
-            Task.Run(() => SystemHeartBeat());
-            Task.Run(() => StateSyncing());
-            Task.Run(() => SessionHeartBeat());
+            _cache = cache;
+            isRunning = false;
         }
 
-        public async Task SessionHeartBeat()
+        public bool Start()
         {
-            try
+            if(!isRunning)
             {
-                while(true)
-                {
-                    var devices = _db.Devices.Where(o => o._workerState == WorkerState.OnSession).ToList(); 
-                    foreach (var item in devices)
-                    {
-                        item.RestoreWorkerNode();
-                        var result = await item.PingSession();
-                        if(result)
-                        {
-                           item.sessionFailedPing = 0; 
-                        }
-                        else
-                        {
-                            item.sessionFailedPing++;
-                        }
-
-                        if(item.sessionFailedPing > 5)
-                        {
-                            item._workerState = WorkerState.OffRemote;
-                        }
-                    }
-                    await _db.SaveChangesAsync();
-                    Thread.Sleep(10*1000);
-                }
-            }catch
+                isRunning = true;
+                _systemHeartBeat =  Task.Run(() => SystemHeartBeat());
+                _workerShell =      Task.Run(() => GetWorkerMetric());
+                return true;
+            }
+            else
             {
-                await SessionHeartBeat();
+                return false;
             }
         }
+
+        public bool Stop()
+        {
+            if(isRunning)
+            {
+                isRunning = false;
+                _workerShell.Wait();
+                _systemHeartBeat.Wait();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
 
         public async Task SystemHeartBeat()
         {
             try
             {
-                var model_list = await _socket.GetDefaultModel();
                 while(true)
                 {
-                    foreach(var i in model_list)
+                    if(!isRunning)
                     {
-                        var devices = _db.Devices.ToList();
-                        foreach(var device in devices)
-                        {
-                            device.RestoreWorkerNode();
-                            var session = new ShellSession { Script = i.Script };
-                            var result = await device.PingWorker(session);
-                            if(result != null)
-                            {
-                                session.Output = result;
-                                session.ModelID = i.ID;
-                                session.WorkerID = device.PrivateID;
-                                session.Time = DateTime.Now;
-                                device.agentFailedPing = 0;
-                            }
-                            else
-                            {
-                                device.agentFailedPing++;
-                            }
+                        return;
+                    }
 
-                            if(device.agentFailedPing > 5)
+                    var worker_list = await _cache.GetClusterState();
+                    foreach (var keyValue in worker_list)
+                    {
+                        ClusterWorkerNode worker = await _cache.GetWorkerInfor(keyValue.Key);
+                        if(await worker.PingWorker(Module.AGENT_MODULE))
+                        {
+                            worker.agentFailedPing = 0;
+                            if(keyValue.Value == WorkerState.Disconnected)
                             {
-                                device._workerState = WorkerState.Disconnected;
+                                await _cache.SetWorkerState(keyValue.Key, WorkerState.Open);
                             }
-                            _db.CachedSession.Add(session);
+                        }
+                        else
+                        {
+                            worker.agentFailedPing++;
+                        }
+                        await _cache.CacheWorkerInfor(worker);
+
+
+
+
+
+                        if(worker.agentFailedPing > 10)
+                        {
+                            await _cache.SetWorkerState(keyValue.Key, WorkerState.Disconnected);
                         }
                     }
-                    await _db.SaveChangesAsync();
-                    Thread.Sleep(10 * 1000);
+                    Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
                 }
-            }catch
+            }catch (Exception ex)
             {
+                Serilog.Log.Information("ping worker failed");
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
+                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 await SystemHeartBeat();
             }
         }
 
-        public async Task StateSyncing()
+        async Task GetWorkerMetric()
         {
-            try
+            var model_list = await _cache.GetScriptModel();
+            while (true)
             {
-                while (true)
+                if(!isRunning)
                 {
-
-                    foreach ( var unsyncedDevice in _systemSnapshot)
-                    {
-
-                        var snapshotedDevice = _db.Devices.Find(unsyncedDevice.PrivateID);
-
-                        // if device is not available in database, then remove it from system snapshoot
-                        if(snapshotedDevice == null)
-                        {
-                            _systemSnapshot.Remove(unsyncedDevice);
-                            await _db.SaveChangesAsync();
-                        }
-
-                        // if device haven't been registered, register it
-                        if (snapshotedDevice._workerState == WorkerState.Unregister)
-                        {
-                            await _socket.ReportWorkerRegistered(snapshotedDevice);
-                            snapshotedDevice._workerState = WorkerState.Registering;
-                            await _db.SaveChangesAsync();
-                            continue;
-                        }
-
-                        // if device is registering, continue
-                        if (snapshotedDevice._workerState == WorkerState.Registering)
-                        {
-                            continue;
-                        }
-
-                        // otherwise, sync its state 
-                        if (snapshotedDevice._workerState != unsyncedDevice._workerState)
-                        {
-                            await _socket.WorkerStateSyncing((int)snapshotedDevice.GlobalID, snapshotedDevice._workerState);
-                            _systemSnapshot.Remove(unsyncedDevice);
-                            _systemSnapshot.Add(snapshotedDevice);
-                            continue;
-                        }
-                    }
+                    return;
                 }
-            }
-            catch
-            {
-                await StateSyncing();
+                var worker_list = await _cache.GetClusterState();
+                foreach (var item in worker_list.Where(x => x.Value != WorkerState.Disconnected))
+                {
+                    ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
+                    worker.GetWorkerMetric(_cache,model_list);
+                }
+                Thread.Sleep(((int)TimeSpan.FromSeconds(60).TotalMilliseconds));
             }
         }
+
+        async Task PushCachedShellSession()
+        {
+            DateTime currentTime = DateTime.Now;
+            while (true)
+            {
+                Thread.Sleep((int)TimeSpan.FromDays(1).TotalMilliseconds);
+                currentTime.AddDays(1);
+            }
+        }
+
     }
 }

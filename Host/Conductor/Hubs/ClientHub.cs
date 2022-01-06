@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.SignalR;
+using System.Linq;
+using DbSchema.SystemDb.Data;
+using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using SharedHost;
 using RestSharp;
-using SharedHost.Models.Hub;
+using SharedHost.Models.Message;
+using DbSchema.CachedState;
 using Newtonsoft.Json;
 
 namespace Conductor.Hubs
@@ -17,12 +21,7 @@ namespace Conductor.Hubs
         /// <returns></returns>
         Task ReportSlaveObtained(int slaveID);
 
-        /// <summary>
-        /// Slave device end session with another user => trigger this func => noti new slave available for all users
-        /// </summary>
-        /// <param name="device"></param>
-        /// <returns></returns>
-        Task ReportNewSlaveAvailable(WorkerNode device);
+        Task ReportNewSlaveAvailable(int WorkerID);
 
         /// <summary>
         /// Disconnected by something wrong on server => report to user use this device
@@ -38,28 +37,21 @@ namespace Conductor.Hubs
         /// <returns></returns>
         Task ReportSessionReconnected(int slaveID, int ID);
 
-        /// <summary>
-        /// Else behind
-        /// </summary>
-        /// <param name="slaveID"></param>
-        /// <returns></returns>
-        Task ReportSessionTerminated(int slaveID, int ID);
+        Task ReportSessionTerminated(int WorkerID, int ID);
 
-        /// <summary>
-        /// Else behind
-        /// </summary>
-        /// <param name="slaveID"></param>
-        /// <returns></returns>
-        Task ReportSessionInitialized(WorkerNode slaveID, int ID);
+        Task ReportSessionInitialized(int WorkerID, int ID);
     }
 
     public class ClientHub : IClientHub
     {
         private readonly RestClient _NotificationHub;
+        private readonly IGlobalStateStore _cache;
 
-        public ClientHub(SystemConfig config)
+        public ClientHub(IOptions<SystemConfig> config,
+                         IGlobalStateStore cache)
         {
-            _NotificationHub = new RestClient(config.SystemHub+"/Event");
+            _cache = cache;
+            _NotificationHub = new RestClient(config.Value.SystemHub+"/User/Event");
         }
 
 
@@ -71,6 +63,8 @@ namespace Conductor.Hubs
                 Message = slaveID.ToString()
             };
 
+            Serilog.Log.Information("Sending session disconnected event to client "+ID.ToString());
+
             /*generate rest post to signalling server*/
             var request = new RestRequest("Client")
                 .AddQueryParameter("ID", ID.ToString())
@@ -79,13 +73,15 @@ namespace Conductor.Hubs
             await _NotificationHub.ExecuteAsync(request);
         }
 
-        public async Task ReportSessionInitialized(WorkerNode slave, int ID)
+        public async Task ReportSessionInitialized(int WorkerID, int ID)
         {
             var data = new EventModel
             {
-                EventName = "ReportSessionInitialized",
-                Message = JsonConvert.SerializeObject(slave)
+                EventName = "ReportSessionOn",
+                Message = WorkerID.ToString()
             };
+
+            Serilog.Log.Information("Sending session initialized event to client "+ID.ToString());
 
             /*generate rest post to signalling server*/
             var request = new RestRequest("Client")
@@ -95,13 +91,15 @@ namespace Conductor.Hubs
             await _NotificationHub.ExecuteAsync(request);
         }
 
-        public async Task ReportSessionReconnected(int slaveID, int ID)
+        public async Task ReportSessionReconnected(int WorkerID, int ID)
         {
             var data = new EventModel
             {
                 EventName = "ReportSessionReconnected",
-                Message = slaveID.ToString()
+                Message = WorkerID.ToString()
             };
+
+            Serilog.Log.Information("Sending session reconnected event to client "+ID.ToString());
 
             /*generate rest post to signalling server*/
             var request = new RestRequest("Client")
@@ -119,6 +117,8 @@ namespace Conductor.Hubs
                 Message = slaveID.ToString()
             };
 
+            Serilog.Log.Information("Sending session reconnected event to client "+ID.ToString());
+
             /*generate rest post to signalling server*/
             var request = new RestRequest("Client")
                 .AddQueryParameter("ID", ID.ToString())
@@ -141,13 +141,15 @@ namespace Conductor.Hubs
 
 
 
-        public async Task ReportSlaveObtained(int slaveID)
+        public async Task ReportSlaveObtained(int WorkerID)
         {
             var data = new EventModel
             {
                 EventName = "ReportSlaveObtained",
-                Message = slaveID.ToString()
+                Message = WorkerID.ToString()
             };
+
+            Serilog.Log.Information("Broadcasting worker obtained event to all client");
 
             /*generate rest post to signalling server*/
             var request = new RestRequest("Broadcast")
@@ -156,13 +158,16 @@ namespace Conductor.Hubs
             await _NotificationHub.ExecuteAsync(request);
         }
 
-        public async Task ReportNewSlaveAvailable(WorkerNode device)
+
+        public async Task ReportNewSlaveAvailable(int WorkerID)
         {
             var data = new EventModel
             {
                 EventName = "ReportNewSlaveAvailable",
-                Message = JsonConvert.SerializeObject(device)
+                Message = WorkerID.ToString()
             };
+
+            Serilog.Log.Information("Broadcasting worker "+WorkerID.ToString()+" available event to all client");
 
             /*generate rest post to signalling server*/
             var request = new RestRequest("Broadcast")

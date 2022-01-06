@@ -1,38 +1,41 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using RestSharp;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
 using WorkerManager.Interfaces;
-using WorkerManager.SlaveDevices;
-using WorkerManager.Data;
-using SharedHost.Auth;
-using WorkerManager.Models;
 using SharedHost.Models.User;
+using SharedHost;
+
+using WorkerManager;
+using WorkerManager.Models;
 
 namespace WorkerManager.Middleware
 {
-    public class JwtMiddleware
+    public class ClusterJwtMiddleware
     {
         private readonly RequestDelegate _next;
         
         private readonly ITokenGenerator _generator;
 
-        private readonly ClusterDbContext _db;
+        private readonly ILocalStateStore _cache;
 
         private readonly RestClient _token;
 
-        public JwtMiddleware(RequestDelegate next,
-                            ITokenGenerator generator,
-                            ClusterDbContext db)
+        private readonly ClusterConfig _config;
+
+        public ClusterJwtMiddleware(RequestDelegate next,
+                            ILocalStateStore cache,
+                            IOptions<ClusterConfig> config,
+                            ITokenGenerator generator)
         {
-            _db = db;
             _next = next;
+            _cache = cache;
             _generator = generator;
-            _token = new RestClient("https://host.thinkmay.net/Account");
+            _config = config.Value;
+            _token = new RestClient();
         }
 
         public async Task Invoke(HttpContext context)
@@ -50,14 +53,16 @@ namespace WorkerManager.Middleware
             try
             {
                 ClusterWorkerNode node = await _generator.ValidateToken(token);
-                if (node == null)
+                if (node != null)
                 {
-                    context.Items.Add("PrivateID", node.PrivateID.ToString());
+                    context.Items.Add("PrivateID", node.ID.ToString());
+                    context.Items.Add("IsWorker", "true");
                 }
                 else
                 {
-                    var request = new RestRequest("GetInfor")
-                        .AddHeader("token","Bearer "+ token);
+                    context.Items.Add("IsWorker", "false");
+                    var request = new RestRequest(_config.OwnerAuthorizeUrl)
+                        .AddHeader("Authorization","Bearer "+ token);
                     request.Method = Method.GET;
 
                     var result = await _token.ExecuteAsync(request);
@@ -67,13 +72,17 @@ namespace WorkerManager.Middleware
                         var jsonResult = JsonConvert.DeserializeObject<UserInforModel>(result.Content);
                         if(jsonResult != null)
                         {
-                            if(_db.Owner.Where(o => o.Name == jsonResult.UserName).Any())
+                            var Cluster = await _cache.GetClusterInfor();
+                            if(Cluster.OwnerName == jsonResult.UserName)
                             {
                                 context.Items.Add("IsOwner", "true");
-                            }    
+                            }
+                            else
+                            {
+                                context.Items.Add("IsOwner", "false");
+                            }
                         }
                     }
-
                 }
                 return;
             }
@@ -87,11 +96,11 @@ namespace WorkerManager.Middleware
 
 
 
-    public class AuthorizeMiddleware
+    public class ClusterAuthorizeMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public AuthorizeMiddleware(RequestDelegate next)
+        public ClusterAuthorizeMiddleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -102,8 +111,8 @@ namespace WorkerManager.Middleware
             var userAttribute = endpoint?.Metadata.GetMetadata<WorkerAttribute>();
             if (userAttribute != null)
             {
-                var isUser = context.Items["PrivateID"];
-                if (isUser == null)
+                var isWorker = (string)context.Items["IsWorker"];
+                if (isWorker != "true")
                 {
                     context.Response.StatusCode =  StatusCodes.Status401Unauthorized;
                     return;

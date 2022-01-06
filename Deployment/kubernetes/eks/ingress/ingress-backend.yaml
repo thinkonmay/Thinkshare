@@ -14,7 +14,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /User/*
+      - path: /Fetch/*
         pathType: Prefix
         backend:
           service:
@@ -28,13 +28,6 @@ spec:
             name: conductor
             port:
               number: 80
-      - path: /Device/*
-        pathType: Prefix
-        backend:
-          service:
-            name: conductor
-            port:
-              number: 80
       - path: /Shell/*
         pathType: Prefix
         backend:
@@ -42,15 +35,15 @@ spec:
             name: conductor
             port:
               number: 80
-      - path: /Query/*
-        pathType: Prefix
-        backend:
-          service:
-            name: conductor
-            port:
-              number: 80
 
-      - path: /Setting/*
+
+
+
+
+
+
+
+      - path: /Admin/*
         pathType: Prefix
         backend:
           service:
@@ -64,6 +57,41 @@ spec:
             name: authenticator
             port:
               number: 80
+      - path: /Cluster/*
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+      - path: /Setting/*
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+
+
+
+
+
+
+
+
+
+      - path: /Token/Challenge/*
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+              
+
+
+
+
  
       - path: /Handshake
         pathType: Prefix
@@ -73,16 +101,7 @@ spec:
             port:
               number: 80
 
-      - path: /Agent
-        pathType: Prefix
-        backend:
-          service:
-            name: slavemanager
-            port:
-              number: 80
-
-
-      - path: /Hub
+      - path: /Hub/*
         pathType: Prefix
         backend:
           service:
@@ -90,11 +109,5 @@ spec:
             port:
               number: 80
 
-      - path: /Metric/*
-        pathType: Prefix
-        backend:
-          service:
-            name: metric-collector
-            port:
-              number: 80
+
               

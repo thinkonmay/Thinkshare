@@ -25,11 +25,11 @@ namespace Authenticator.Services
 
         private readonly UserManager<UserAccount> _userManager;
 
-        private readonly ApplicationDbContext _db;
+        private readonly GlobalDbContext _db;
 
         public TokenGenerator(IOptions<JwtOptions> options, 
                               UserManager<UserAccount> userManager,
-                              ApplicationDbContext db )
+                              GlobalDbContext db )
         {
             _db = db;
             _jwt = options.Value;
@@ -39,15 +39,6 @@ namespace Authenticator.Services
         public async Task<string> GenerateUserJwt(UserAccount user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
-            var roles = await _userManager.GetRolesAsync(user);
-            var roleClaims = new List<Claim>();
-            foreach (var role in roles)
-            {
-                roleClaims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            // combine default claim with customized claim
-            var claims = userClaims.Union(roleClaims);
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwt.Key);
@@ -55,9 +46,8 @@ namespace Authenticator.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
-                Expires = DateTime.Now.AddHours(10),
+                Expires = DateTime.Now.AddDays(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -130,7 +120,7 @@ namespace Authenticator.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", accession.ID.ToString()) }),
-                Expires = DateTime.Now.AddHours(10),
+                Expires = DateTime.Now.AddDays(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
             };
@@ -194,18 +184,23 @@ namespace Authenticator.Services
 
 
 
-        public async Task<string> GenerateClusterJwt(GlobalCluster accession)
+        public async Task<string> GenerateClusterJwt(string UserID, string ClusterName, int ID)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwt.Key);
+            var claims = new List<Claim>();
+
+            claims.Add(new Claim("UserID",UserID.ToString()));
+            claims.Add(new Claim("ClusterName",ClusterName.ToString()));
 
 
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("ID", accession.ID.ToString()) }),
+                Subject = new ClaimsIdentity(new[] { new Claim("ID", ID.ToString()) }),
                 Expires = DateTime.Now.AddDays(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+                Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -229,12 +224,16 @@ namespace Authenticator.Services
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
 
-                var ClusterID = Int32.Parse(jwtToken.Claims.First(x => x.Type == "ID").Value);
-                var Cluster =  _db.Clusters.Find(ClusterID);
+                var UserID = jwtToken.Claims.First(x => x.Type == "UserID").Value;
+                var Cluster  = jwtToken.Claims.First(x => x.Type == "ClusterName").Value;
+                var ID = jwtToken.Claims.First(x => x.Type == "ID").Value;
+
+
                 var ret = new ClusterCredential
                 {
-                    ID = ClusterID,
-                    Devices = Cluster.WorkerNode
+                    ID = Int32.Parse(ID),
+                    ClusterName = Cluster,
+                    OwnerID = Int32.Parse(UserID)
                 };
                 return ret;
             }

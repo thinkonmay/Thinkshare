@@ -1,12 +1,11 @@
 ﻿using WorkerManager.Interfaces;
+using Microsoft.Extensions.Options;
 using SharedHost.Models.Cluster;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
-using SharedHost.Models.Shell;
 using RestSharp;
 using System.Net;
-using SharedHost;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Net.WebSockets;
@@ -14,9 +13,10 @@ using System.Threading;
 using System;
 using System.IO;
 using System.Text;
-using SharedHost.Models.Session;
-using WorkerManager.Data;
-using WorkerManager.SlaveDevices;
+using WorkerManager;
+using SharedHost;
+
+using WorkerManager.Models;
 
 namespace WorkerManager.Services
 {
@@ -24,65 +24,169 @@ namespace WorkerManager.Services
 
     public class ConductorSocket : IConductorSocket
     {
-        private readonly ClientWebSocket _clientWebSocket;
-
         private readonly ClusterConfig clusterConfig;
 
-        private readonly ClusterDbContext _db;
+        private ClientWebSocket _clientWebSocket;
 
-        public ConductorSocket(ClusterConfig cluster, 
-                               ClusterDbContext db)
+        private RestClient _scriptmodel;
+
+        private ILocalStateStore _cache;
+
+        private readonly ClusterConfig _config;
+        
+        private readonly ITokenGenerator _generator;
+
+        private readonly ClusterKey _cluster;
+
+        private bool isRunning;
+
+        public ConductorSocket(IOptions<ClusterConfig> cluster, 
+                               ITokenGenerator generator,
+                               ILocalStateStore cache)
         {
-            _db = db;
-            clusterConfig = cluster;
-            _clientWebSocket = new ClientWebSocket();
-            _clientWebSocket.ConnectAsync(new Uri("https://host.thinkmay.net/Hub/Cluster?token="+cluster.token), CancellationToken.None).Wait();
-            if(_clientWebSocket.State != WebSocketState.Open) 
-            {
-                Serilog.Log.Debug("Fail to connect to system hub");
-                Environment.Exit(0);
-            }
-            Task.Run(() => Handle());
+            isRunning = false;
+            _generator = generator;
+            _cache = cache;
+            _config = cluster.Value;
+            _scriptmodel = new RestClient();
+            _cluster = _cache.GetClusterInfor().Result;
         }
+
+        public async Task<bool> Start()
+        {
+            try
+            {
+                if (isRunning) { return false; }
+                var token = (await _cache.GetClusterInfor()).ClusterToken;
+                _clientWebSocket = new ClientWebSocket();
+                await _clientWebSocket.ConnectAsync(
+                    new Uri(_config.ClusterHub+"?token=" + token), 
+                    CancellationToken.None);
+
+                if (_clientWebSocket.State == WebSocketState.Open)
+                {
+                    // DONOT set this to awaited
+                    isRunning = true;
+                    Handle();
+                    var currentState = await _cache.GetClusterState();
+                    var request = new Message
+                    {
+                        Opcode = Opcode.STATE_SYNCING,
+                        From = Module.CLUSTER_MODULE,
+                        To = Module.HOST_MODULE,
+                        Data = JsonConvert.SerializeObject(currentState)
+                    };
+                    await SendMessage(JsonConvert.SerializeObject(request));
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch 
+            { 
+                return false;
+            }
+        }
+
+        public async Task<bool> Stop()
+        {
+            if(isRunning)
+            {
+                isRunning = false;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
 
 
 
         public async Task Handle()
         {
-            WebSocketReceiveResult message;
-            do
+            try
             {
-                using (var memoryStream = new MemoryStream())
+                WebSocketReceiveResult message;
+                do
                 {
-                    message = await ReceiveMessage(_clientWebSocket, memoryStream);
-                    if (message.Count > 0)
+                    if (!isRunning) 
+                    { 
+                        await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                        return; 
+                    }
+                    using (var memoryStream = new MemoryStream())
                     {
-                        var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                        if(receivedMessage == "ping"){continue;}
-                        var WsMessage = JsonConvert.DeserializeObject<Message>(receivedMessage);
-                        switch(WsMessage.Opcode)
+                        message = await ReceiveMessage(_clientWebSocket, memoryStream);
+                        if (message.Count > 0)
                         {
-                            // execute session operation by public id 
-                            case Opcode.SESSION_INITIALIZE:
-                                await Initialize((int)WsMessage.WorkerID,WsMessage.token,JsonConvert.DeserializeObject<SessionBase>(WsMessage.Data));
-                                break;
-                            case Opcode.SESSION_TERMINATE:
-                                await Terminate((int)WsMessage.WorkerID);
-                                break;
-                            case Opcode.SESSION_RECONNECT:
-                                await Reconnect((int)WsMessage.WorkerID,JsonConvert.DeserializeObject<SessionBase>(WsMessage.Data));
-                                break;
-                            case Opcode.SESSION_DISCONNECT:
-                                await Disconnect((int)WsMessage.WorkerID);
-                                break;
-                            case Opcode.ID_GRANT:
-                                await Assignment(WsMessage);
-                                break;
+                            var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
+                            if (receivedMessage == "ping") { Serilog.Log.Information("Got ping from system hub"); continue; }
+                            var WsMessage = JsonConvert.DeserializeObject<Message>(receivedMessage);
+                            switch (WsMessage.Opcode)
+                            {
+                                // execute session operation by public id 
+                                // DONOT await this function because it will stop other message
+                                case Opcode.SESSION_INITIALIZE:
+                                    Initialize((int)WsMessage.WorkerID, WsMessage.token);
+                                    break;
+                                case Opcode.SESSION_TERMINATE:
+                                    Terminate((int)WsMessage.WorkerID);
+                                    break;
+                                case Opcode.SESSION_RECONNECT:
+                                    Reconnect((int)WsMessage.WorkerID);
+                                    break;
+                                case Opcode.SESSION_DISCONNECT:
+                                    Disconnect((int)WsMessage.WorkerID);
+                                    break;
+                                case Opcode.STATE_SYNCING:
+                                    StateSyncing(WsMessage); 
+                                    break;
+                            }
                         }
                     }
+                } while (message.MessageType != WebSocketMessageType.Close && _clientWebSocket.State == WebSocketState.Open);
+                await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                RestoreConnection(null);
+            }
+            catch (Exception ex)
+            {
+                RestoreConnection(ex);
+            }
+        }
+
+        async Task RestoreConnection(Exception? exception)
+        {
+            try
+            {
+                await Stop();
+                if(exception != null)
+                {
+                    Serilog.Log.Information("Error when connect to sytemhub: " + exception.Message);
+                    Serilog.Log.Information(exception.StackTrace);
+                    Serilog.Log.Information("Retry after 10 second");
                 }
-            } while (message.MessageType != WebSocketMessageType.Close && _clientWebSocket.State == WebSocketState.Open);
-            await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                else
+                {
+                    Serilog.Log.Information("Disconnected from systemhub");
+                    Serilog.Log.Information("Retry after 10 second");
+                }
+                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
+                var success = await Start();
+                if(!success)
+                {
+                    await RestoreConnection(null);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await RestoreConnection(ex);
+            }
         }
 
 
@@ -102,143 +206,220 @@ namespace WorkerManager.Services
         {
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
-            await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-        }
-
-
-        async Task Assignment(Message message)
-        {
-            var assign = JsonConvert.DeserializeObject<IDAssign>(message.Data);
-            var worker = _db.Devices.Find(assign.PrivateID);
-
-            worker.GlobalID = assign.GlobalID;
-            worker._workerState = WorkerState.Open;
-            await _db.SaveChangesAsync();
-        }
-
-
-        /// <summary>
-        /// initialize session
-        /// </summary>
-        /// <param name="session"></param>
-        /// <returns></returns>
-        public async Task Initialize(int GlobalID, string token, SessionBase session)
-        {
-            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
-            worker.RestoreWorkerNode();
-
-            worker.RemoteToken = token;
-            worker.QoE = session.QoE;
-            worker.SignallingUrl = session.SignallingUrl;
-            await worker.SessionInitialize();
-            await _db.SaveChangesAsync();
-        }
-
-
-        /// <summary>
-        /// Terminate session 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
-        public async Task Terminate(int GlobalID)
-        {
-            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
-            worker.RestoreWorkerNode();
-
-            worker.RemoteToken = null;
-            worker.SignallingUrl = null;
-            worker.QoE = null;
-            await worker.SessionTerminate();
-            await _db.SaveChangesAsync();
-        }
-
-
-        /// <summary>
-        /// disconnect remote control during session
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
-        public async Task Disconnect(int GlobalID)
-        {
-            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
-            worker.RestoreWorkerNode();
-
-            await worker.SessionDisconnect();
-            await _db.SaveChangesAsync();
-        }
-
-        /// <summary>
-        /// Reconnect remote control after disconnect
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
-        public async Task Reconnect(int GlobalID, SessionBase session)
-        {
-            var worker = _db.Devices.Where(o => o.GlobalID == GlobalID).First();
-            worker.RestoreWorkerNode();
-
-            worker.QoE = session.QoE;
-            worker.SignallingUrl = session.SignallingUrl;
-            await worker.SessionReconnect();
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+            } catch { Serilog.Log.Information("Fail to send message to websocket client"); }
         }
 
 
 
 
 
-        /// <summary>
-        /// Report session state change to user 
-        /// </summary>
-        public async Task WorkerStateSyncing(int WorkerID, string WorkerState)
+
+
+
+
+        async Task StateSyncing(Message message)
         {
-            await SendMessage(JsonConvert.SerializeObject( 
-                new Message { WorkerID = WorkerID, 
-                            From = Module.CLUSTER_MODULE, 
-                            To= Module.HOST_MODULE, 
-                            Opcode=Opcode.STATE_SYNCING,
-                            Data= WorkerState}));
-            return;
+            Dictionary<int, string> syncedState = JsonConvert.DeserializeObject<Dictionary<int,string>>(message.Data); 
+
+            try
+            {
+                while (true)
+                {
+                    var clusterSnapshoot = await _cache.GetClusterState();
+                    /// check for every different between 
+                    foreach ( var item in clusterSnapshoot)
+                    {
+                        bool success = syncedState.TryGetValue(item.Key,out var output);
+
+                        // if item is not exist in synced snapshoot, sync
+                        if(!success)
+                        {
+                            var request = new Message
+                            {
+                                Opcode = Opcode.STATE_SYNCING,
+                                From = Module.CLUSTER_MODULE,
+                                To = Module.HOST_MODULE,
+                                Data = JsonConvert.SerializeObject(clusterSnapshoot)
+                            };
+                            await SendMessage(JsonConvert.SerializeObject(request));
+                            return;
+                        }
+                        else // compare state and sync for any different
+                        {
+                            if(output != item.Value)
+                            {
+                                if(item.Value == WorkerState.unregister)
+                                {
+                                    var device = await _cache.GetWorkerInfor(item.Key);
+                                    if(device == null)
+                                    {
+                                        clusterSnapshoot.Remove(item.Key);
+                                        await _cache.SetWorkerState(item.Key,null);
+                                    }
+                                    else
+                                    {
+                                        bool result = await reRegisterDevice((ClusterWorkerNode)device);
+                                        if(!result)
+                                        {
+                                            clusterSnapshoot.Remove(item.Key);
+                                            await _cache.SetWorkerState(item.Key,null);
+                                        }
+                                    }
+                                }
+
+                                var request = new Message
+                                {
+                                    Opcode = Opcode.STATE_SYNCING,
+                                    From = Module.CLUSTER_MODULE,
+                                    To = Module.HOST_MODULE,
+                                    Data = JsonConvert.SerializeObject(clusterSnapshoot)
+                                };
+                                await SendMessage(JsonConvert.SerializeObject(request));
+                                return;
+                            }
+                        }
+                    }
+
+                    // check for item that is synced with host but not exist in cluster 
+                    foreach (var item in syncedState)
+                    {
+                        bool success = clusterSnapshoot.TryGetValue(item.Key,out var output);
+                        if(!success)
+                        {
+                            await _cache.SetWorkerState(item.Key,WorkerState.MISSING);
+                        }
+                    }
+                    Thread.Sleep((int)TimeSpan.FromMilliseconds(50).TotalMilliseconds);
+                }
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Information("state syncing failed");
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
+                await StateSyncing(message);
+            }
         }
 
 
-        public async Task ReportWorkerRegistered(ClusterWorkerNode information)
+
+        async Task<bool> reRegisterDevice(ClusterWorkerNode model)
         {
-            var WorkerNode = new WorkerNode{
-                OS = information.OS,
-                GPU = information.GPU,
-                CPU = information.CPU,
-                RAMcapacity = information.RAMcapacity,
-                WorkerState = information._workerState
+
+            var node = new WorkerRegisterModel
+            {
+                CPU = model.CPU,
+                GPU = model.GPU,
+                RAMcapacity = (int)model.RAMcapacity,
+                OS = model.OS,
             };
-            await SendMessage(JsonConvert.SerializeObject(
-                new Message { WorkerID = information.PrivateID, 
-                            From = Module.CLUSTER_MODULE, 
-                            To= Module.HOST_MODULE, 
-                            Opcode=Opcode.REGISTER_WORKER_NODE,
-                            Data= JsonConvert.SerializeObject(WorkerNode)}));
-        }
+
+            var workers = await _cache.GetClusterState();
+            foreach (var item in workers)
+            {
+                await _cache.SetWorkerState(item.Key,WorkerState.Disconnected);
+            }
 
 
-        public async Task<List<ScriptModel>> GetDefaultModel()
-        {
-            var _scriptmodel = new RestClient("https://host.thinkmay.net/Shell");
-            var request = new RestRequest("AllModel")
-                .AddHeader("Authorization", "Bearer " + clusterConfig.token);
-            request.Method = Method.GET;
 
-            var result = await _scriptmodel.ExecuteAsync(request);
+            var client = new RestClient();
+            var request = new RestRequest(_config.WorkerRegisterUrl)
+                .AddQueryParameter("ClusterName",_cluster.Name)
+                .AddJsonBody(node)
+                .AddHeader("Authorization","Bearer "+_cluster.OwnerToken);
+
+            var result = await client.ExecuteAsync(request);
             if(result.StatusCode == HttpStatusCode.OK)
             {
-                var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
-                return allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
+                IDAssign id = JsonConvert.DeserializeObject<IDAssign>(result.Content);
+                model.ID = id.GlobalID;
+
+                await _cache.CacheWorkerInfor(model);
+                await _cache.SetWorkerState(model.ID, WorkerState.Open);
+                return true;
             }
             else
             {
-                Serilog.Log.Information("Failed to get default script");
-                return await GetDefaultModel();
+                Serilog.Log.Information("Fail to register device");
+                return false;
             }
         }
 
+
+
+
+
+
+
+
+
+        
+
+
+
+
+        public async Task Initialize(int ID, string remoteToken)
+        {
+            var worker = await _cache.GetWorkerInfor(ID);
+
+            await _cache.SetWorkerRemoteToken(ID,remoteToken);
+
+            var workerToken = await _generator.GenerateWorkerToken(worker);
+            if (await worker.SessionInitialize(workerToken))
+            {
+                Serilog.Log.Information("initialize session done");
+                await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
+            }
+            else 
+            {
+                Serilog.Log.Information("Fail to initialize session");
+                await _cache.SetWorkerState(worker.ID, WorkerState.OffRemote);
+            }
+        }
+
+
+
+        public async Task Terminate(int GlobalID)
+        {
+            var worker = await _cache.GetWorkerInfor(GlobalID);
+            await _cache.SetWorkerRemoteToken(GlobalID,"none");
+
+            var workerToken = await _generator.GenerateWorkerToken(worker);
+            if(await worker.SessionTerminate(workerToken))
+            {
+                Serilog.Log.Information("Terminate session success");
+                await _cache.SetWorkerState(worker.ID, WorkerState.Open);
+            }
+            else
+            {
+                Serilog.Log.Information("Fail to terminate session");
+            }
+        }
+
+
+        public async Task Disconnect(int GlobalID)
+        {
+            var worker = await _cache.GetWorkerInfor(GlobalID);
+
+            var workerToken = await _generator.GenerateWorkerToken(worker);
+            if (await worker.SessionDisconnect(workerToken))
+            {
+                await _cache.SetWorkerState(worker.ID,WorkerState.OffRemote);
+            }
+        }
+
+        public async Task Reconnect(int GlobalID)
+        {
+            var worker = await _cache.GetWorkerInfor(GlobalID);
+
+            var workerToken = await _generator.GenerateWorkerToken(worker);
+            if (await worker.SessionReconnect(workerToken))
+            {
+                await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
+            }
+        }
     }
 }

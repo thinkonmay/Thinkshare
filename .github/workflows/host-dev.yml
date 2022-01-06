@@ -19,8 +19,8 @@ env:
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
   AUTHENTICATOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/authenticator:latest
   METRIC_COLLECTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/metric-collector:latest
-  GKE_CLUSTER: thinkmaydev
-  GKE_ZONE: asia-southeast2
+  AUTOSCALING_IMAGE_NAME : ${{ secrets.DOCKER_USERNAME }}/autoscaling:latest
+  SYSTEMHUB_IMAGE_NAME : ${{ secrets.DOCKER_USERNAME }}/systemhub:latest
   
 jobs:      
   build-signalling:
@@ -44,7 +44,7 @@ jobs:
         push: true
         tags: ${{ env.SIGNALLING_IMAGE_NAME }}
 
-  build-slavemanager:
+  build-workermanager:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -56,12 +56,12 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: SlaveManager
+    - name: WorkerManager 
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host  
         target: dev
-        file: Host/SlaveManager/Dockerfile
+        file: Host/WorkerManager/Dockerfile
         push: true
         tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
 
@@ -130,33 +130,43 @@ jobs:
         tags: ${{ env.METRIC_COLLECTOR_IMAGE_NAME }}
         
 
-  deploy-on-dev-server:
-    name: deploy
+  build-systemhub:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
+    - name: Checkout repository
       uses: actions/checkout@v2
 
-    # Setup gcloud CLI
-    - uses: google-github-actions/setup-gcloud@v0.2.0
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
-        project_id: ${{ secrets.GKE_PROJECT }}
-        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-    # Configure Docker to use the gcloud command-line tool as a credential
-    # helper for authentication
-    - run: |-
-        gcloud --quiet auth configure-docker
-
-    # Get the GKE credentials so we can deploy to the cluster
-    - uses: google-github-actions/get-gke-credentials@v0.2.1
+    - name: Systemhub
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
-        location: ${{ env.GKE_ZONE }}
-        cluster_name: ${{ env.GKE_CLUSTER }}
-        credentials: ${{ secrets.GKE_SA_KEY }}
+        context: Host 
+        target: prod
+        file: Host/SystemHub/Dockerfile
+        push: true
+        tags: ${{ env.SYSTEMHUB_IMAGE_NAME}}
 
-    # Deploy the Docker image to the GKE cluster
-    - name: Deploy
-      run: |-
-        kubectl rollout restart deploy
+  build-autoscaling:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: AutoScaling
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Host 
+        file: Host/AutoScaling/Dockerfile
+        push: true
+        tags: ${{ env.AUTOSCALING_IMAGE_NAME}}

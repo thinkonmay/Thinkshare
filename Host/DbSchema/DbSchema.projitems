@@ -9,7 +9,11 @@
     <Import_RootNamespace>DbSchema</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CachedState\DistributedCacheExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CachedState\GlobalStateStore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DbSeeding\AccountSeeder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DbSeeding\RoleSeeding.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SystemDb\ApplicationDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DbSeeding\ScriptModelSeeder.cs" />
+    <Compile Include="..\DbSchema\SystemDb\GlobalDbContext.cs" />
   </ItemGroup>
 </Project>

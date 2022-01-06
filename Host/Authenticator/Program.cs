@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Authenticator.Services;
@@ -9,6 +10,7 @@ using SharedHost;
 using AutoMapper.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SharedHost.Models.User;
+using DbSchema.DbSeeding;
 
 namespace Authenticator
 {
@@ -40,14 +42,15 @@ namespace Authenticator
             {
                 var services = scope.ServiceProvider;
 
-                var db = services.GetRequiredService<ApplicationDbContext>();
+                var db = services.GetRequiredService<GlobalDbContext>();
                 var userManager = services.GetRequiredService<UserManager<UserAccount>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
-                var systemconfig = services.GetRequiredService<SystemConfig>();
+                var systemconfig = services.GetRequiredService<IOptions<SystemConfig>>();
 
+                
                 AccountSeeder.SeedRoles(roleManager);
-                AccountSeeder.SeedAdminUsers(userManager,systemconfig);
                 AccountSeeder.SeedUserRole(userManager);
+                AccountSeeder.SeedAdminUsers(userManager,db,systemconfig.Value);
             }
         }
     }

@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
-using RestSharp;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
 using SharedHost.Auth.ThinkmayAuthProtocol;
+using System.Net;
+using RestSharp;
 
 namespace SharedHost.Auth
 {
@@ -14,15 +14,18 @@ namespace SharedHost.Auth
     {
         private readonly RequestDelegate _next;
 
-        private readonly RestClient _TokenIssuer;
+        private readonly RestClient _UserTokenIssuer;
 
         private readonly string IssuerUrl;
 
-        public JwtMiddleware(RequestDelegate next)
+        private readonly SystemConfig _config;
+
+        public JwtMiddleware(RequestDelegate next, 
+                            IOptions<SystemConfig> config)
         {
             _next = next;
-            IssuerUrl = "http://authenticator/Token";
-            _TokenIssuer = new RestClient("http://authenticator/Token");
+            _config = config.Value;
+            _UserTokenIssuer = new RestClient();
         }
 
         public async Task Invoke(HttpContext context)
@@ -30,28 +33,29 @@ namespace SharedHost.Auth
             string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (token != null)
             {
-                attachUserToContext(context,  token);
+                await attachUserToContext(context,  token);
             }
             await _next(context);
         }
 
-        private void attachUserToContext(HttpContext context, string token)
+        private async Task attachUserToContext(HttpContext context, string token)
         {
             try
             {
                 var tokenRequest = new AuthenticationRequest
                 {
                    token = token,
-                   Validator = IssuerUrl
+                   Validator = _config.UserTokenValidator
                 };
-                var request = new RestRequest("Challange")
-                    .AddJsonBody(tokenRequest);
+                var request = new RestRequest(_config.UserTokenValidator)
+                    .AddJsonBody(JsonConvert.SerializeObject(tokenRequest));
                 request.Method = Method.POST;
 
-                var result = _TokenIssuer.Execute(request);
-                if(result.StatusCode == System.Net.HttpStatusCode.OK)
+                var result = await _UserTokenIssuer.ExecuteAsync(request);
+                if(result.StatusCode == HttpStatusCode.OK)
                 {
-                    var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(result.Content);
+                    var content = result.Content;
+                    var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(content);
                     // attach user to context on successful jwt
 
 
@@ -123,7 +127,5 @@ namespace SharedHost.Auth
 
             await _next(context);
         }
-
-        
     }
 }

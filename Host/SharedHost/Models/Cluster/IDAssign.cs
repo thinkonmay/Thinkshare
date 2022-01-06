@@ -7,8 +7,6 @@ namespace SharedHost.Models.Cluster
 {
     public class IDAssign
     {
-        public int PrivateID {get;set;}
-
         public int GlobalID {get;set;}
 
         public int ClusterID {get;set;}

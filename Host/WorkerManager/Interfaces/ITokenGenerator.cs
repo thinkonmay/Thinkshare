@@ -1,6 +1,5 @@
-﻿using SharedHost.Models.User;
+﻿using WorkerManager.Models;
 using System.Threading.Tasks;
-using WorkerManager.SlaveDevices;
 
 namespace WorkerManager.Interfaces
 {

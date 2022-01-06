@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SharedHost;
 using SystemHub.Interfaces;
-using SharedHost.Models.Hub;
+using SharedHost.Models.Message;
 
 namespace SystemHub.Controllers
 {
-    [Route("/UserEvent")]
+    [Route("/User/Event")]
     [ApiController]
     [Produces("application/json")]
     public class UserEventController : ControllerBase
@@ -29,13 +29,6 @@ namespace SystemHub.Controllers
         public IActionResult BroadcastPost([FromBody] EventModel data)
         {
             _User.BroadcastClientEvent(data);
-            return Ok();
-        }
-
-        [HttpPost("Admin")]
-        public IActionResult AdminPost([FromBody] EventModel data)
-        {
-            _User.BroadcastAdminEvent(data);
             return Ok();
         }
     }

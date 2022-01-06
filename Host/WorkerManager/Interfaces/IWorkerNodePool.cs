@@ -1,13 +1,11 @@
-﻿using SharedHost.Models.Device;
-using SharedHost.Models.Session;
-using WorkerManager.SlaveDevices;
-using System;
-using System.Collections.Generic;
-using SharedHost.Models.Shell;
+﻿using System.Threading.Tasks;
+using SharedHost.Models.Device;
 
 namespace WorkerManager.Interfaces
 {
     public interface IWorkerNodePool
     {
+        bool Start();
+        bool Stop();
     }
 }

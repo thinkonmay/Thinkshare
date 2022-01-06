@@ -22,7 +22,7 @@ spec:
   selector:
     matchLabels:
       app: authenticator
-  replicas: 1
+  replicas: 2
   strategy:
     type: Recreate
   template:
@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: authenticator
-        image: pigeatgarlic/authenticator:2021-11-15
+        image: pigeatgarlic/authenticator:2021-12-24
         imagePullPolicy: Always
         resources:
           requests:

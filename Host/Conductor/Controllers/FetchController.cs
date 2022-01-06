@@ -8,14 +8,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using SharedHost.Models.User;
 using SharedHost.Models.Device;
+using Microsoft.Extensions.Caching.Distributed;
 using SharedHost.Auth.ThinkmayAuthProtocol;
+using DbSchema.CachedState;
+using System.Linq;
 
 namespace Conductor.Controllers
 {
     /// <summary>
     /// Routes used by user to fetch information about the system
     /// </summary>
-    [User]
     [ApiController]
     [Route("/Fetch")]
     [Produces("application/json")]
@@ -23,14 +25,18 @@ namespace Conductor.Controllers
     {
         private readonly UserManager<UserAccount> _userManager;
 
-        private readonly ApplicationDbContext _db;
+        private readonly GlobalDbContext _db;
 
         private readonly IWorkerCommnader _slmsocket;
 
-        public FetchController(ApplicationDbContext db, 
+        private readonly IGlobalStateStore _cache;
+
+        public FetchController(GlobalDbContext db, 
                             UserManager<UserAccount> userManager,
-                            IWorkerCommnader slm)
+                            IWorkerCommnader slm,
+                            IGlobalStateStore cache)
         {
+            _cache = cache;
             _slmsocket = slm;
             _db = db;
             _userManager = userManager;
@@ -44,11 +50,25 @@ namespace Conductor.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
+        [User]
         [HttpGet("Node")]
         public async Task<IActionResult> FetchNode()
         {
-            var available_node = _db.Devices.Where(o => o.WorkerState == WorkerState.Open);
-            return Ok(available_node);
+            var publicCluster = _db.Clusters.Where(x => x.Private == false);
+
+            var result = new Dictionary<int,string>();
+            foreach (var cluster in publicCluster)
+            {
+                var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
+                foreach (var state in snapshoot)
+                {
+                    if (state.Value == WorkerState.Open)
+                    {
+                        result.TryAdd(state.Key,state.Value);
+                    }
+                }
+            }
+            return Ok(result);
         }
 
 
@@ -57,18 +77,29 @@ namespace Conductor.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
+        [User]
         [HttpGet("Session")]
-        public async Task<IActionResult> UserGetCurrentSesssion()
+        public async Task<IActionResult> GetUserSession()
         {
+            var result = new Dictionary<int,string>();
             var UserID = HttpContext.Items["UserID"];
             var session = _db.RemoteSessions.Where(s => s.ClientId == Int32.Parse(UserID.ToString()) &&
                                                   !s.EndTime.HasValue).ToList();
-            var IDlist = new List<int>();
-            session.ForEach(s => IDlist.Add(s.ID));
-            var device = _db.Devices.Where(d => IDlist.Contains(d.ID) &&  
-                                                d.WorkerState == WorkerState.OffRemote && 
-                                                d.WorkerState == WorkerState.OnSession);
-            return Ok(device);
+            
+            Serilog.Log.Information("Fetching session from cache");
+            Serilog.Log.Information("User "+UserID+" has "+session.Count().ToString()+" session");
+
+            foreach (var x in session)
+            {
+                result.TryAdd(x.WorkerID, await _cache.GetWorkerState(x.WorkerID));
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("Worker/Infor")]
+        public async Task<IActionResult> GetWorkerInfor(int WorkerID)
+        {
+            return Ok(await _cache.GetWorkerInfor(WorkerID));
         }
     }
 }

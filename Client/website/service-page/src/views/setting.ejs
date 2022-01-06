@@ -15,10 +15,10 @@
         <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
                 <div>
-                    <a class="navbar-brand brand-logo" href="https://thinkmay.net" target="_blank">
+                    <a class="navbar-brand brand-logo" href="https://www.thinkmay.net" target="_blank">
                         <img src="images/logo-thinkmay-black.png" alt="logo" />
                     </a>
-                    <a class="navbar-brand brand-logo-mini" href="https://thinkmay.net" target="_blank">
+                    <a class="navbar-brand brand-logo-mini" href="https://www.thinkmay.net" target="_blank">
                         <img src="images/logo-thinkmay-black.png" alt="logo" />
                     </a>
                 </div>
@@ -68,13 +68,14 @@
                                     <p class="card-description">
                                         Change your remote core to enhance your experience
                                     </p>
+                                    
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Remote</label>
                                         <div class="col-sm-4">
                                             <div class="form-check" id="remoteCoreOption1">
                                                 <label class="form-check-label">
                                                     <input name="optionsRemoteCore" type="radio"
-                                                        class="form-check-input" id='remoteCtrler1'>
+                                                        class="form-check-input" id='remoteCtrler1' value="CHROME">
                                                     Chrome
                                                     <i class="input-helper"></i></label>
                                             </div>
@@ -83,16 +84,15 @@
                                             <div class="form-check" id="remoteCoreOption2">
                                                 <label class="form-check-label">
                                                     <input name="optionsRemoteCore" type="radio"
-                                                        class="form-check-input" id='remoteCtrler2'>
+                                                        class="form-check-input" id='remoteCtrler2' value = "GSTREAMER" disabled>
                                                     Gstreamer
                                                     <i class="input-helper"></i></label>
-                                                <p>(this feature just available on <a href="url">ThinkMay App</a>)
+                                                <p>(this feature just available on <a href="https://www.thinkmay.net/#demo-modal">ThinkMay App</a>)
 
                                             </div>
                                         </div>
-                                        <button id="sumbitRemoteCoreCtrler" class="btn btn-primary me-2"
-                                            type="button">Submit</button>
                                     </div>
+
                                     <h4 class="card-title">Display Controller</h4>
                                     <p class="card-description">
                                         Enhance your experience
@@ -106,22 +106,21 @@
                                                 <div class="form-check" name="resolutionOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input"
-                                                            name="optionsResolution" id="optionsResolution1"
-                                                            value="1" />
+                                                            name="optionsResolution" id="optionsResolution1" value="4K" />
                                                         4K
                                                     </label>
                                                 </div>
                                                 <div class="form-check" name="resolutionOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input"
-                                                            name="optionsResolution" id="optionsResolution2" value="2">
+                                                            name="optionsResolution" id="optionsResolution2" value="2K">
                                                         2K
                                                     </label>
                                                 </div>
                                                 <div class="form-check" name="resolutionOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input"
-                                                            name="optionsResolution" id="optionsResolution3" value="3">
+                                                            name="optionsResolution" id="optionsResolution3" value="FullHD">
                                                         FullHD
                                                     </label>
                                                 </div>
@@ -134,42 +133,42 @@
                                                 <div class="form-check" name="bitrateOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input"
-                                                            name="optionsBitrate" id="optionsBitrates1" value="1">
+                                                            name="optionsBitrate" id="optionsBitrates1" value="ULTRA_LOW_CONST">
                                                         ultra low
                                                     </label>
                                                 </div>
                                                 <div class="form-check" name="bitrateOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input"
-                                                            name="optionsBitrate" id="optionsRadios2" value="2">
+                                                            name="optionsBitrate" id="optionsRadios2" value="LOW_CONST">
                                                         low
                                                     </label>
                                                 </div>
                                                 <div class="form-check" name="bitrateOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input"
-                                                            name="optionsBitrate" id="optionsRadios3" value="3">
+                                                            name="optionsBitrate" id="optionsRadios3" value="MEDIUM_CONST">
                                                         medium
                                                     </label>
                                                 </div>
                                                 <div class="form-check" name="bitrateOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input"
-                                                            name="optionsBitrate" id="optionsRadios3" value="4">
+                                                            name="optionsBitrate" id="optionsRadios3" value="HIGH_CONST">
                                                         high
                                                     </label>
                                                 </div>
                                                 <div class="form-check" name="bitrateOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input"
-                                                            name="optionsBitrate" id="optionsRadios3" value="5">
+                                                            name="optionsBitrate" id="optionsRadios3" value="VERY_HIGH_CONST">
                                                         very high
                                                     </label>
                                                 </div>
                                                 <div class="form-check" name="bitrateOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input"
-                                                            name="optionsBitrate" id="optionsRadios3" value="6">
+                                                            name="optionsBitrate" id="optionsRadios3" value="ULTRA_HIGH_CONST">
                                                         ultra high
                                                     </label>
                                                 </div>
@@ -183,14 +182,14 @@
                                                 <div class="form-check" name="audioOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input" name="optionsAudio"
-                                                            id="optionsAudio1" value="1">
+                                                            id="optionsAudio1" value="OPUS">
                                                         opus
                                                     </label>
                                                 </div>
                                                 <div class="form-check" name="audioOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input" name="optionsAudio"
-                                                            id="optionsAudio2" value="2">
+                                                            id="optionsAudio2" value="MP3">
                                                         mp3
                                                     </label>
                                                 </div>
@@ -204,31 +203,28 @@
                                                 <div class="form-check" name="videoOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input" name="optionsVideo"
-                                                            id="optionsVideo1" value="1">
+                                                            id="optionsVideo1" value="VP9">
                                                         vp9
                                                     </label>
                                                 </div>
                                                 <div class="form-check" name="videoOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input" name="optionsVideo"
-                                                            id="optionsVideo2" value="2">
+                                                            id="optionsVideo2" value="H264">
                                                         h264
                                                     </label>
                                                 </div>
                                                 <div class="form-check" name="videoOptions">
                                                     <label class="form-check-label">
                                                         <input type="radio" class="form-check-input" name="optionsVideo"
-                                                            id="optionsVideo3" value="2" disabled>
+                                                            id="optionsVideo3" value="H265" disabled>
                                                         h265
                                                     </label>
-                                                    <p>(this feature just available on <a href="url">ThinkMay App</a>)
+                                                    <p>(this feature just available on <a href="https://www.thinkmay.net/#demo-modal">ThinkMay App</a>)
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <button id="submitDisplayCtrler" class="btn btn-primary me-2"
-                                            type="button">Submit</button>
-                                        <!-- <button id="submitDisplayCtrler" class="btn btn-primary me-2">Submit</button> -->
                                     </form>
                                 </div>
                             </div>
@@ -332,7 +328,7 @@
                                 <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
                                     <b>Version</b> 1.0.0
                                     <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
-                                        <strong>Copyright &copy; 2014-2021 <a href="https://thinkmay.net"
+                                        <strong>Copyright &copy; 2014-2021 <a href="https://www.thinkmay.net"
                                                 target="_blank">ThinkMay</a>.</strong> All rights reserved..</span>
                                     <!-- content-wrapper ends -->
                                     <!-- partial:partials/_footer.html -->

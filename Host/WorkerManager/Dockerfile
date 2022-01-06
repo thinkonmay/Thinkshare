@@ -7,11 +7,10 @@ EXPOSE 443
 
 
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS buildprod
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 
 COPY ["WorkerManager/WorkerManager.csproj", "WorkerManager/"]
-COPY ["SharedHost/setting/prod/appsettings.json", "WorkerManager/"]
 RUN dotnet restore "WorkerManager/WorkerManager.csproj"
 
 
@@ -23,42 +22,22 @@ RUN dotnet build "WorkerManager.csproj" -c Release -o /app/build
 
 
 
-
-
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS builddev
-WORKDIR /src
-
-COPY ["WorkerManager/WorkerManager.csproj", "WorkerManager/"]
-COPY ["SharedHost/setting/dev/appsettings.json", "WorkerManager/"]
-RUN dotnet restore "WorkerManager/WorkerManager.csproj"
-
-
-# copy setting from setting dev folder to workdir
-COPY . .
-WORKDIR "/src/WorkerManager"
-RUN dotnet build "WorkerManager.csproj" -c Release -o /app/build
-
-
-
-
-FROM builddev AS publishdev
-RUN dotnet publish "WorkerManager.csproj" -c Release -o /app/publish
-
-FROM buildprod AS publishprod
+FROM build AS publish 
 RUN dotnet publish "WorkerManager.csproj" -c Release -o /app/publish
 
 
 
 
-
-
-# production and development image both base on base image
-FROM base AS dev
-WORKDIR /app
-COPY --from=publishdev /app/publish .
-ENTRYPOINT ["dotnet", "WorkerManager.dll"]
 
 FROM base AS prod
+
+ENV POSTGRES_USER=cluster_manager
+ENV POSTGRES_PASSWORD=cluster_manager_password
+ENV POSTGRES_DATABASE=cluster_manager
+ENV POSTGRES_IP="192.168.1.12"
+ENV AUTO_START="true"
+
+
 WORKDIR /app
-COPY --from=publishprod /app/publish .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "WorkerManager.dll"]

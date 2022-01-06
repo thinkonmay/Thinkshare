@@ -1,11 +1,23 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Distributed;
+using SharedHost.Models.Device;
+using System;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using WorkerManager.Interfaces;
 using WorkerManager.Services;
-using WorkerManager.Data;
+using System.Collections.Generic;
+using SharedHost.Models.Shell;
+using System.Net;
+using SharedHost;
+using WorkerManager;
+using System.Linq;
+using Newtonsoft.Json;
+using RestSharp;
+
 
 namespace WorkerManager
 {
@@ -14,7 +26,9 @@ namespace WorkerManager
         public static void Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            InitWorkerPoolThread(host);
+            InitLocalStateStore(host).Wait();
+            GetDefaultModel(host).Wait();
+            AutoStart(host).Wait();
             host.Run();
         }
 
@@ -32,16 +46,65 @@ namespace WorkerManager
                     webBuilder.UseStartup<Startup>();
                 });
 
-
-        static void InitWorkerPoolThread(IHost host)
+        static async Task GetDefaultModel(IHost host)
         {
             using (var scope = host.Services.CreateScope())
             {
-                var services = scope.ServiceProvider;
-                var db = services.GetRequiredService<ClusterDbContext>();
-                var conductor = services.GetRequiredService<IConductorSocket>();
+                var _config = scope.ServiceProvider.GetRequiredService<IOptions<ClusterConfig>>().Value;
+                var _cache  = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
+                var _client = new RestClient();
+                var request = new RestRequest(new Uri(_config.ScriptModelUrl));
+                request.Method = Method.GET;
 
-                Task.Run(() =>{ new WorkerNodePool(conductor,db);});
+                var result = await _client.ExecuteAsync(request);
+                if(result.StatusCode == HttpStatusCode.OK)
+                {
+                    var allModel = JsonConvert.DeserializeObject<ICollection<ScriptModel>>(result.Content);
+                    var defaultModel = allModel.Where(o => o.ID < (int)ScriptModelEnum.LAST_DEFAULT_MODEL).ToList();
+                    await _cache.CacheScriptModel(defaultModel);
+                }
+            }
+        }
+
+        static async Task InitLocalStateStore(IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var _config = scope.ServiceProvider.GetRequiredService<IOptions<ClusterConfig>>().Value;
+                var _cache  = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
+                var cluster = await _cache.GetClusterInfor();
+
+                if(cluster == null || cluster.WorkerNodes == null)
+                {
+                    var initcluster  = new Models.ClusterKey();
+                    initcluster.WorkerNodes = new List<Models.ClusterWorkerNode>();
+                    await _cache.SetClusterInfor(initcluster);
+                }
+            }
+        }
+
+        static async Task AutoStart(IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var conductor = scope.ServiceProvider.GetRequiredService<IConductorSocket>();
+                var pool      = scope.ServiceProvider.GetRequiredService<IWorkerNodePool>();
+                var _cache    = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
+                var _cluster  = await _cache.GetClusterInfor();
+
+                var nodes = _cluster.WorkerNodes;
+                var initState = new Dictionary<int,string>();
+                nodes.ForEach(x => initState.Add(x.ID,WorkerState.Disconnected));
+                await _cache.SetClusterState(initState);
+
+                if(_cluster.ClusterToken != null &&
+                   _cluster.OwnerToken != null)
+                {
+                    if(await conductor.Start())
+                    {
+                        pool.Start();
+                    }
+                }
             }
         }
     }

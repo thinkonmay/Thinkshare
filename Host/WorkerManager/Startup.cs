@@ -1,18 +1,17 @@
 using Microsoft.AspNetCore.Builder;
+using SharedHost.Models.Auth;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using SharedHost;
 using WorkerManager.Interfaces;
 using WorkerManager.Services;
 using System;
 using System.IO;
 using System.Reflection;
-using WorkerManager.Data;
-using System.Threading.Tasks;
 using WorkerManager.Middleware;
+using SharedHost;
+
 
 namespace WorkerManager
 {
@@ -34,11 +33,27 @@ namespace WorkerManager
                     builder => builder.AllowAnyOrigin());
             });
 
+            var REDIS_IP =  Environment.GetEnvironmentVariable("REDIS_IP");
 
-            services.AddDbContext<ClusterDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                ServiceLifetime.Singleton
-            );
+            if(REDIS_IP == null)
+            {
+                Console.WriteLine("Missing environment variable");
+                Console.WriteLine("Using default connection string");
+
+                services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = "localhost:6379";
+                    options.InstanceName = "Cluster";
+                });
+            }
+            else
+            {
+                services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = REDIS_IP+":6379";
+                    options.InstanceName = "Cluster";
+                });
+            }
 
             services.AddControllers();            
             services.AddSwaggerGen(c =>
@@ -54,11 +69,38 @@ namespace WorkerManager
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
 
                 c.IncludeXmlComments(xmlFilePath);
-            });
-            services.AddSingleton(Configuration.GetSection("ClusterConfig").Get<ClusterConfig>());
 
-            services.AddSingleton<IConductorSocket, ConductorSocket>();
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            new string[] {}
+                    }
+                }); 
+            });
+            services.Configure<ClusterConfig>(Configuration.GetSection("ClusterConfig"));
+            services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
             services.AddTransient<ITokenGenerator,TokenGenerator>();
+            services.AddTransient<ILocalStateStore, LocalStateStore>();
+            services.AddSingleton<IConductorSocket,ConductorSocket>();
+            services.AddSingleton<IWorkerNodePool,WorkerNodePool>();
             services.AddMvc();
         
         }
@@ -69,18 +111,19 @@ namespace WorkerManager
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
             
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
 
-            app.UseMiddleware<JwtMiddleware>();
-            app.UseMiddleware<AuthorizeMiddleware>();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseMiddleware<ClusterJwtMiddleware>();
+            app.UseMiddleware<ClusterAuthorizeMiddleware>();
+
 
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>

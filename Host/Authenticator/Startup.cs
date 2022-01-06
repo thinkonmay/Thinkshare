@@ -22,6 +22,7 @@ using System.Text;
 using SharedHost;
 using System.Collections.Generic;
 using SharedHost.Auth;
+using DbSchema.CachedState;
 
 namespace Authenticator
 {
@@ -43,8 +44,14 @@ namespace Authenticator
                     builder => builder.AllowAnyOrigin());
             });
 
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = Configuration.GetConnectionString("RedisInstanceName");
+            });
+
             //for postgresql
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<GlobalDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
                 ServiceLifetime.Transient
             );
@@ -52,7 +59,7 @@ namespace Authenticator
 
             services.AddDefaultIdentity<UserAccount>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole<int>>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<GlobalDbContext>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -96,6 +103,7 @@ namespace Authenticator
             });
 
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
+            services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -105,9 +113,7 @@ namespace Authenticator
                 options.Password.RequireUppercase = false;
             });
 
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
-
-
+            services.AddTransient<IGlobalStateStore, GlobalStateStore>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
             services.AddMvc();
         }

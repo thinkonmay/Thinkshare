@@ -10,6 +10,8 @@ using SharedHost.Models.Cluster;
 using Authenticator.Interfaces;
 using SharedHost;
 using RestSharp;
+using System.Linq;
+using DbSchema.CachedState;
 
 namespace Authenticator.Controllers
 {
@@ -24,14 +26,20 @@ namespace Authenticator.Controllers
     {
         private readonly UserManager<UserAccount> _userManager;
 
-        private readonly ApplicationDbContext _db;
+        private readonly GlobalDbContext _db;
 
         private readonly ITokenGenerator _token;
 
-        public ClusterController(ApplicationDbContext db,
-                                 UserManager<UserAccount> userManager)
+        private readonly IGlobalStateStore _cache;
+
+        public ClusterController(GlobalDbContext db,
+                                 UserManager<UserAccount> userManager,
+                                 ITokenGenerator token,
+                                 IGlobalStateStore cache)
         {
+            _cache = cache;
             _db = db;
+            _token = token;
             _userManager = userManager;
         }
 
@@ -43,35 +51,88 @@ namespace Authenticator.Controllers
         /// Get list of available slave device, contain device information
         /// </summary>
         /// <returns></returns>
+        [Manager]
         [HttpPost("Register")]
-        public async Task<IActionResult> NewCluster(bool Private , string TURN)
+        public async Task<IActionResult> NewCluster(string ClusterName, bool Private)
         {
             var ManagerID = HttpContext.Items["UserID"];
             UserAccount account =  await _userManager.FindByIdAsync((string)ManagerID);
-            account.ManagedCluster = new GlobalCluster 
-            { 
-                TURN = TURN,
-                Register = DateTime.Now, 
-                Private = Private 
-            };
-            await _userManager.UpdateAsync(account);
-            var updated_cluster = (await _userManager.FindByIdAsync((string)ManagerID)).ManagedCluster;
 
-            var token = await _token.GenerateClusterJwt(updated_cluster);
+            var refreshCluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
+            if(refreshCluster.Any())
+            {
+                var refreshToken = await _token.GenerateClusterJwt((string)ManagerID,ClusterName,refreshCluster.First().ID);
+                return Ok(refreshToken);
+            }
+
+            var cluster = new GlobalCluster
+            {
+                Name = ClusterName,
+                Register = DateTime.Now,
+                Private = Private
+            };
+            account.ManagedCluster.Add(cluster);
+            await _userManager.UpdateAsync(account);
+
+
+
+
+
+
+
+
+
+            var token = await _token.GenerateClusterJwt((string)ManagerID,ClusterName,cluster.ID);
             return Ok(token);
         }
 
 
-
-
-        /// <summary>
-        /// Get list of available slave device, contain device information
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("Infor")]
-        public IActionResult GetInfor(int ID)
+        [Manager]
+        [HttpPost("Worker/Register")]
+        public async Task<IActionResult> Register(string ClusterName, [FromBody] WorkerRegisterModel body)
         {
-            return Ok(_db.Clusters.Find(ID));
+            var ManagerID = HttpContext.Items["UserID"];
+            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
+            
+            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).FirstOrDefault();
+            var newWorker = new WorkerNode
+            {
+                Register = DateTime.Now,
+                CPU = body.CPU,
+                GPU = body.GPU,
+                RAMcapacity = body.RAMcapacity,
+                OS = body.OS
+            };
+            cluster.WorkerNode.Add(newWorker);
+            _db.Clusters.Update(cluster);
+            await _db.SaveChangesAsync();
+
+            // get GlobalID and return to cluster
+            var result = new IDAssign
+            {
+                GlobalID = newWorker.ID,
+                ClusterID = cluster.ID,
+            };
+
+            await _cache.CacheWorkerInfor(newWorker);
+            return Ok(result);
+        }
+
+        [Manager]
+        [HttpGet("Infor")]
+        public async Task<IActionResult> getInfor(string ClusterName)
+        {
+            var ManagerID = HttpContext.Items["UserID"];
+            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
+            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
+            if (!cluster.Any())
+            {
+                return BadRequest("Cluster not found");
+            }
+            else
+            {
+                return Ok(cluster.First());
+            }
         }
     }
 }

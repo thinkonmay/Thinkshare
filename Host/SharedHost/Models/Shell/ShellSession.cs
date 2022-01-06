@@ -15,26 +15,8 @@ namespace SharedHost.Models.Shell
 
         public DateTime Time { get; set; }
 
-        public string Script { get; set; }
-
         public string Output { get; set; }
 
-        /// <summary>
-        /// preserved for database insert,
-        ///  should only be used by admin service to
-        /// insert database
-        /// </summary>
-        /// <value></value>
-        [Required]
-        public int WorkerID { get; set; }
-
-        [ForeignKey("WorkerID")]
-        public virtual WorkerNode Slave { get; set; }
-
-        [Required]
-        public int ModelID { get; set; }
-        
-        [ForeignKey("ModelID")]
         public virtual ScriptModel Model { get; set; }
     }
 }

@@ -1,0 +1,45 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: remote
+  namespace: frontend
+  labels:
+    app: remote
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80    
+  selector:
+   app: remote
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: remote
+  namespace: frontend
+spec:
+  selector:
+    matchLabels:
+      app: remote
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: remote
+    spec:
+      containers:
+      - name: remote
+        image: pigeatgarlic/remote:2021-12-16
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "200m"
+          limits:
+            memory: "300Mi"
+            cpu: "300m"
+        ports:
+        - containerPort: 80

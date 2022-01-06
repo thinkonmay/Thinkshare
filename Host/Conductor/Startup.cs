@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using DbSchema.CachedState;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,18 +38,20 @@ namespace Conductor
             });
 
             //for postgresql
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<GlobalDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
                 ServiceLifetime.Transient
             );
-
-            services.AddDatabaseDeveloperPageExceptionFilter();
-
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = Configuration.GetConnectionString("RedisInstanceName");
+            });
             services.AddDefaultIdentity<UserAccount>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole<int>>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<GlobalDbContext>();
 
-
+            services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -91,8 +94,9 @@ namespace Conductor
             });
             services.AddMvc();
             services.AddTransient<IClientHub,ClientHub>();
-            services.AddSingleton<IWorkerCommnader,WorkerCommander>();
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
+            services.AddTransient<IWorkerCommnader,WorkerCommander>();
+            services.AddTransient<IGlobalStateStore,GlobalStateStore>();
+            services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

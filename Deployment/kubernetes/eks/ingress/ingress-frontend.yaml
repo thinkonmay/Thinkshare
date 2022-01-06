@@ -7,6 +7,29 @@ metadata:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
+
+  - host: www.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: landing-page
+            port:
+              number: 80
+
+  - host: www.thinkmay.net
+    http:
+      paths:
+      - path: /document/
+        pathType: Prefix
+        backend:
+          service:
+            name: document
+            port:
+              number: 80
+
   - host: service.thinkmay.net
     http:
       paths:
@@ -19,13 +42,13 @@ spec:
               number: 80
 
 
-  - host: resources.thinkmay.net
+  - host: remote.thinkmay.net
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: resources 
+            name: remote
             port:
               number: 80

@@ -62,8 +62,7 @@ namespace Signalling
                 c.IncludeXmlComments(xmlFilePath);
             });
 
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
-
+            services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
             services.AddSingleton<ISessionQueue, SessionQueue>();
             services.AddMvc();
         }

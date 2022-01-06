@@ -19,6 +19,8 @@ using SharedHost.Models.Session;
 using SharedHost.Models.ResponseModel;
 using Google.Apis.Auth;
 using SharedHost.Auth;
+using DbSchema.CachedState;
+using Microsoft.Extensions.Options;
 
 namespace Authenticator.Controllers
 {
@@ -29,17 +31,20 @@ namespace Authenticator.Controllers
         private readonly UserManager<UserAccount> _userManager;
         private readonly SignInManager<UserAccount> _signInManager;
         private readonly ITokenGenerator _tokenGenerator;
-        private readonly ApplicationDbContext _db;
-        
+        private readonly IGlobalStateStore _cache;
+        private readonly GlobalDbContext _db;
         private readonly SystemConfig _config;
+
         public AccountController(
             UserManager<UserAccount> userManager,
             SignInManager<UserAccount> signInManager,
+            IGlobalStateStore cache,
             ITokenGenerator tokenGenerator,
-            ApplicationDbContext db,
-            SystemConfig config)
+            GlobalDbContext db,
+            IOptions<SystemConfig> config)
         {
-            _config = config;
+            _cache = cache;
+            _config = config.Value;
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenGenerator = tokenGenerator;
@@ -157,7 +162,7 @@ namespace Authenticator.Controllers
                 {
                     user = new UserAccount
                     {
-                        UserName = Randoms.Next().ToString(),
+                        UserName = payload.Email,
                         Email = payload.Email,
                         Avatar = payload.Picture,
                         FullName = payload.Name,
@@ -181,13 +186,14 @@ namespace Authenticator.Controllers
                 var resp = new AuthenticationRequest
                 {
                     token = token,
-                    Validator = "https://host.thinkmay.net/"
+                    Validator = "host.thinkmay.net"
                 };
                 return Ok(resp);
             }
             catch (Exception ex)
             {
-                Serilog.Log.Debug(ex.Message);
+                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information(ex.StackTrace);
                 return BadRequest();
             }
         }
@@ -203,24 +209,21 @@ namespace Authenticator.Controllers
         /// </summary>
         /// <returns></returns>
         [User]
-        [HttpGet("GetInfor")]
+        [HttpGet("Infor")]
         public async Task<IActionResult> GetInfor()
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
-            if(account.DefaultSetting == null)
+            return Ok(new  UserInforModel
             {
-                account.DefaultSetting = new DeviceCap {
-                    device = DeviceType.WEBAPP,
-                    videoCodec = Codec.CODEC_H264,
-                    audioCodec = Codec.OPUS_ENC,
-                    mode = QoEMode.HIGH_CONST,
-                    screenHeight = 1920,
-                    screenWidth = 1080                         
-                };
-                await _userManager.UpdateAsync(account);
-            }
-            return Ok(new UserInforModel(account));
+                UserName = account.UserName,
+                FullName = account.FullName,
+                Jobs = account.Jobs,
+                PhoneNumber = account.PhoneNumber,
+                Gender = account.Gender,
+                DateOfBirth = account.DateOfBirth,
+                Avatar = account.Avatar
+            });
         }
 
 
@@ -229,7 +232,7 @@ namespace Authenticator.Controllers
         /// </summary>
         /// <returns></returns>
         [User]
-        [HttpPost("SetInfor")]
+        [HttpPost("Infor")]
         public async Task<IActionResult> SetAccountInfor([FromBody] UserInforModel infor)
         {
             var UserID = HttpContext.Items["UserID"];
@@ -259,27 +262,6 @@ namespace Authenticator.Controllers
             if(infor.PhoneNumber != null)
             {
                 account.PhoneNumber = infor.Jobs;
-            }                        
-            if(infor.DefaultSetting != null)
-            {
-                if(infor.DefaultSetting.device != null){
-                    account.DefaultSetting.device = infor.DefaultSetting.device;
-                }                
-                if(infor.DefaultSetting.audioCodec != null){
-                    account.DefaultSetting.audioCodec = infor.DefaultSetting.audioCodec;
-                }
-                if(infor.DefaultSetting.videoCodec != null){
-                    account.DefaultSetting.videoCodec = infor.DefaultSetting.videoCodec;
-                }
-                if(infor.DefaultSetting.mode != null){
-                    account.DefaultSetting.mode = infor.DefaultSetting.mode;
-                }
-                if(infor.DefaultSetting.screenWidth != null){
-                    account.DefaultSetting.screenWidth = infor.DefaultSetting.screenWidth;
-                }
-                if(infor.DefaultSetting.screenHeight != null){
-                    account.DefaultSetting.screenHeight = infor.DefaultSetting.screenHeight;
-                }
             }
             
             await _userManager.UpdateAsync(account);
@@ -311,7 +293,7 @@ namespace Authenticator.Controllers
         /// </summary>
         /// <returns></returns>
         [User]
-        [HttpGet("GetSession")]
+        [HttpGet("History")]
         public async Task<IActionResult> UserGetSession()
         {
             var UserID = HttpContext.Items["UserID"];

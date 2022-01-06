@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using DbSchema.SystemDb.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -8,7 +9,10 @@ using System.Reflection;
 using SharedHost;
 using SystemHub.Interfaces;
 using SystemHub.Services;
+using DbSchema.SystemDb;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using DbSchema.CachedState;
 
 namespace SystemHub
 {
@@ -46,8 +50,19 @@ namespace SystemHub
 
                 c.IncludeXmlComments(xmlFilePath);
             });
-            services.AddSingleton(Configuration.GetSection("SystemConfig").Get<SystemConfig>());
 
+            services.AddDbContext<GlobalDbContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
+                ServiceLifetime.Transient
+            );
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = Configuration.GetConnectionString("RedisInstanceName");
+            });
+
+            services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
+            services.AddTransient<IGlobalStateStore,GlobalStateStore>();
             services.AddSingleton<IClusterSocketPool, ClusterSocketPool>();
             services.AddSingleton<IUserSocketPool, UserSocketPool>();
             services.AddMvc();

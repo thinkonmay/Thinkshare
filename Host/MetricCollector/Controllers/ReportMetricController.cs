@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using MetricCollector.Model;
 using System.Threading.Tasks;
+using SharedHost;
+using Microsoft.Extensions.Options;
 
 namespace MetricCollector.Controllers
 {
@@ -18,16 +20,19 @@ namespace MetricCollector.Controllers
         private readonly ILogger<MetricController> _logger;
 
         private readonly IScriptGetter _getter;
+        private readonly SystemConfig _config;
 
-        public ReportMetricController(ILogger<MetricController> logger, IScriptGetter getter)
+        public ReportMetricController(ILogger<MetricController> logger, IScriptGetter getter, IOptions<SystemConfig> config)
         {
             _getter = getter;
             _logger = logger;
+            _config = config.Value;
         }
 
         [HttpGet("RemoteControl")]
-        public IActionResult QoSMetric([FromBody] QoSMetric model)
+        public IActionResult QoSMetric()
         {
+            var i = _config.STUNlist;
             return Ok();
         }
     }

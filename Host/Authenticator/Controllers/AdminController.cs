@@ -23,13 +23,10 @@ namespace Authenticator.Controllers
     public class AdminController : ControllerBase
     {
         private readonly UserManager<UserAccount> _userManager;
-        private readonly ApplicationDbContext _db;
-        public AdminController(
-            UserManager<UserAccount> userManager,
-            ApplicationDbContext db)
+
+        public AdminController(UserManager<UserAccount> userManager)
         {
             _userManager = userManager;
-            _db = db;
         }
 
 
@@ -41,13 +38,12 @@ namespace Authenticator.Controllers
         /// <param name="Role"></param>
         /// <returns></returns>
         [Admin]
-        [HttpPost("GrantRole")]
+        [HttpPost("Grant/Role")]
         public async Task<IActionResult> GrantRole(string UserEmail, string Role)
         {
             var account = await _userManager.FindByEmailAsync(UserEmail);
             await _userManager.AddToRoleAsync(account, Role);
             return Ok();
         }
-
     }
 }

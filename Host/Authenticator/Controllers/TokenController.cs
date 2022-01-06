@@ -12,6 +12,7 @@ using SharedHost;
 using System;
 using SharedHost.Models.Session;
 using SharedHost.Models.Cluster;
+using Microsoft.Extensions.Options;
 
 namespace Authenticator.Controllers
 {
@@ -28,12 +29,12 @@ namespace Authenticator.Controllers
             UserManager<UserAccount> userManager,
             SignInManager<UserAccount> signInManager,
             ITokenGenerator tokenGenerator,
-            SystemConfig config)
+            IOptions<SystemConfig> config)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenGenerator = tokenGenerator;
-            _config = config;
+            _config = config.Value;
         }
 
         /// <summary>
@@ -42,18 +43,19 @@ namespace Authenticator.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("Challange")]
+        [Route("Challenge/User")]
         public async Task<IActionResult> Challene([FromBody] AuthenticationRequest request)
         {
             if (ModelState.IsValid)
             {
                 var account = await _tokenGenerator.ValidateUserToken(request.token);
+                var roles = await _userManager.GetRolesAsync(account);
                 var resp = new AuthenticationResponse
                 { 
-                    UserID = await _userManager.GetUserIdAsync(account),
-                    IsAdmin = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.ADMIN),
-                    IsManager = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.MOD),
-                    IsUser = (await _userManager.GetRolesAsync(account)).Contains(RoleSeeding.USER),
+                    UserID = account.Id.ToString(),
+                    IsAdmin = (roles).Contains(RoleSeeding.ADMIN),
+                    IsManager = (roles).Contains(RoleSeeding.MOD),
+                    IsUser = (roles).Contains(RoleSeeding.USER),
                     ValidatedBy = _config.Authenticator
                 };
 
@@ -66,24 +68,6 @@ namespace Authenticator.Controllers
         }
 
 
-        /// <summary>
-        /// login to server with email/username and password
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("GrantSession")]
-        public async Task<IActionResult> SessionGrant(SessionAccession access)
-        {
-            if (ModelState.IsValid)
-            {
-                return Ok(await _tokenGenerator.GenerateSessionJwt(access));
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
 
         /// <summary>
         /// login to server with email/username and password
@@ -92,7 +76,7 @@ namespace Authenticator.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("ChallengeSession")]
+        [Route("Challenge/Session")]
         public async Task<IActionResult> SessionChallenge(string token)
         {
             if (ModelState.IsValid)
@@ -107,17 +91,42 @@ namespace Authenticator.Controllers
 
 
 
-        /// <summary>
-        /// login to server with email/username and password
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="request"></param>
-        /// <returns></returns>
         [HttpPost]
-        [Route("ChallangeCluster")]
+        [Route("Challenge/Cluster")]
         public async Task<IActionResult> ClusterChallange(string token)
         {
             return Ok(await _tokenGenerator.ValidateClusterToken(token));
+        }
+
+        [HttpPost]
+        [Route("Grant/Cluster")]
+        public async Task<IActionResult> GrantCluster(string UserID, string ClusterName, int ClusterID)
+        {
+            return Ok(await _tokenGenerator.GenerateClusterJwt(UserID,ClusterName,ClusterID));
+        }
+
+        /// <summary>
+        /// /// </summary>
+        /// login to server with email/username and password
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("Grant/Session")]
+        public async Task<IActionResult> SessionGrant([FromBody] SessionAccession access)
+        {
+            if (ModelState.IsValid)
+            {
+                var token = await _tokenGenerator.GenerateSessionJwt(access);
+                return Ok(new AuthenticationRequest
+                {
+                    token = token,
+                    Validator = _config.Authenticator
+                });
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

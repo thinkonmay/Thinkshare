@@ -12,6 +12,8 @@ using System.Net;
 using Conductor.Interfaces;
 using SharedHost;
 using DbSchema.SystemDb.Data;
+using Microsoft.Extensions.Options;
+using DbSchema.CachedState;
 
 namespace Conductor.Services
 {
@@ -19,66 +21,79 @@ namespace Conductor.Services
     {
         private readonly RestClient _Cluster;
 
-        public WorkerCommander(SystemConfig config)
+        private readonly GlobalDbContext _db;
+
+
+        private readonly IGlobalStateStore _cache;
+
+        public WorkerCommander(IOptions<SystemConfig> config, 
+                                GlobalDbContext dbContext, 
+                                IGlobalStateStore cache)
         {
-            _Cluster =  new RestClient(config.SystemHub + "/Cluster");
+            _db = dbContext;
+            _cache = cache;
+            _Cluster =  new RestClient(config.Value.SystemHub + "/Cluster/Worker");
         }
 
 
+        public async Task<string> GetWorkerState(int WorkerID)
+        {
+            var publicCluster = _db.Clusters.ToList();
 
-        public async Task SessionReconnect(int SlaveID,SessionBase session)
+            foreach (var cluster in publicCluster)
+            {
+                var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
+                foreach (var state in snapshoot)
+                {
+                    if (state.Key == WorkerID)
+                    {
+                        return state.Value;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public async Task SessionReconnect(int WorkerID)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Reconnect")
-                .AddQueryParameter("SlaveID", SlaveID.ToString())
-                .AddJsonBody(session);
+                .AddQueryParameter("WorkerID", WorkerID.ToString());
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);
         }
 
-        public async Task SessionDisconnect(int SlaveID)
+        public async Task SessionDisconnect(int WorkerID)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Disconnect")
-                .AddQueryParameter("SlaveID", SlaveID.ToString());
+                .AddQueryParameter("WorkerID", WorkerID.ToString());
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);
         }
 
-        public async Task SessionInitialize(int ID, string token, SessionBase session)
+        public async Task SessionInitialize(int WorkerID, string token)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Initialize")
-                .AddQueryParameter("token",token)
-                .AddJsonBody(session);
+                .AddQueryParameter("token", token)
+                .AddQueryParameter("WorkerID", WorkerID.ToString());
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);
         }
 
-        public async Task SessionTerminate(int SlaveID)
+        public async Task SessionTerminate(int WorkerID)
         {
             /*generate rest post to signalling server*/
             var request = new RestRequest("Terminate")
-                .AddQueryParameter("SlaveID", SlaveID.ToString());
+                .AddQueryParameter("WorkerID", WorkerID.ToString());
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);
-        }
-
-
-        public async Task AssignGlobalID(int ClusterID ,int GlobalID, int PrivateID)
-        {
-            var request = new RestRequest("GrantID")
-                .AddQueryParameter("ClusterID", ClusterID.ToString())
-                .AddQueryParameter("GlobalID", GlobalID.ToString())
-                .AddQueryParameter("PrivateID", PrivateID.ToString());
-            request.Method = Method.POST;
-
-            await _Cluster.ExecuteAsync(request);
-
         }
     }
 }
