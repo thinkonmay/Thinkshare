@@ -25,5 +25,9 @@ RUN dotnet publish "AutoScaling.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
+<<<<<<< Updated upstream
 COPY --from=publishprod /app/publish .
+=======
+COPY --from=publish /app/publish .
+>>>>>>> Stashed changes
 ENTRYPOINT ["dotnet", "AutoScaling.dll"]
