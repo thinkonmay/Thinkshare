@@ -60,5 +60,5 @@ ENTRYPOINT ["dotnet", "MetricCollector.dll"]
 
 FROM base AS prod
 WORKDIR /app
-COPY --from=publishprod /app/publish .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "MetricCollector.dll"]
