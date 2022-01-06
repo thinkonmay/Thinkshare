@@ -19,8 +19,8 @@ env:
   CONDUCTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/conductor:latest
   AUTHENTICATOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/authenticator:latest
   METRIC_COLLECTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/metric-collector:latest
-  GKE_CLUSTER: thinkmaydev
-  GKE_ZONE: asia-southeast2
+  AUTOSCALING_IMAGE_NAME : ${{ secrets.DOCKER_USERNAME }}/autoscaling:latest
+  SYSTEMHUB_IMAGE_NAME : ${{ secrets.DOCKER_USERNAME }}/systemhub:latest
   
 jobs:      
   build-signalling:
@@ -130,17 +130,64 @@ jobs:
         tags: ${{ env.METRIC_COLLECTOR_IMAGE_NAME }}
         
 
-  # deploy-on-dev-server:
-  #   name: deploy
-  #   needs: [build-metric-colletor, build-authenticator, build-conductor,build-workermanager,build-signalling]
-  #   runs-on: ubuntu-latest
+  build-metric-collector:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v2
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
-  #   # Deploy the Docker image to the GKE cluster
-  #   - name: Deploy
-  #     run: |-
-  #       cd ServerTest/Token
-        
+    - name: MetricCollector
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Host 
+        target: dev
+        file: Host/MetricCollector/Dockerfile
+        push: true
+        tags: ${{ env.METRIC_COLLECTOR_IMAGE_NAME }}
+
+  build-systemhub:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Systemhub
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Host 
+        target: prod
+        file: Host/SystemHub/Dockerfile
+        push: true
+        tags: ${{ env.SYSTEMHUB_IMAGE_NAME}}
+
+  build-autoscaling:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: AutoScaling
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Host 
+        file: Host/AutoScaling/Dockerfile
+        push: true
+        tags: ${{ env.AUTOSCALING_IMAGE_NAME}}

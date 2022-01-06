@@ -7,6 +7,7 @@ using System.Linq;
 using SharedHost.Models.AWS;
 using Renci.SshNet;
 using AutoScaling.Interfaces;
+using Microsoft.Extensions.Options;
 
 namespace AutoScaling.Services
 {
@@ -14,11 +15,12 @@ namespace AutoScaling.Services
     {
         private readonly AmazonEC2Client _ec2Client;
 
+        private readonly AWSSetting _aws;
 
-
-        public EC2Service()
+        public EC2Service(IOptions<AWSSetting> aws)
         {
             _ec2Client = new AmazonEC2Client();
+            _aws = aws.Value;
         }
 
 
@@ -26,7 +28,6 @@ namespace AutoScaling.Services
 
         public async Task<EC2Instance> LaunchInstances()
         {
-            string keyName = "coturn";
             var response = await _ec2Client.RunInstancesAsync(new RunInstancesRequest
             {
                 BlockDeviceMappings = new List<BlockDeviceMapping> {
@@ -36,9 +37,9 @@ namespace AutoScaling.Services
                     }
                 },
 
-                ImageId = "ami-055d15d9cfddf7bd3",
-                InstanceType = "t3.micro",
-                KeyName = keyName,
+                ImageId = _aws.AMI,
+                InstanceType = _aws.InstanceType,
+                KeyName = _aws.Keyname,
                 
                 MaxCount = 1,
                 MinCount = 1,
@@ -62,8 +63,6 @@ namespace AutoScaling.Services
                 InstanceID = response.Reservation.Instances.First().InstanceId,
 
                 PrivateIP = response.Reservation.Instances.First().PrivateIpAddress,
-
-                Key = keyName
             };
 
 
@@ -76,7 +75,7 @@ namespace AutoScaling.Services
                     result.IPAdress = infor.Reservations.First().Instances.First().PublicIpAddress;
                     break;
                 }
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(1000);
             }
 
             return result;
@@ -110,7 +109,7 @@ namespace AutoScaling.Services
                 {
                     return true;
                 }
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(1000);
             }
         }
 
