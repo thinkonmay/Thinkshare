@@ -152,6 +152,96 @@ namespace Authenticator.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("SharedHost.Models.AWS.ClusterInstance", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("IPAdress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("InstanceID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("InstanceName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrivateIP")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("Registered")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("current_timestamp");
+
+                    b.Property<string>("TurnPassword")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TurnUser")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("keyPairID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("keyPairID");
+
+                    b.ToTable("Instances");
+                });
+
+            modelBuilder.Entity("SharedHost.Models.AWS.EC2KeyPair", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrivateKey")
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("EC2KeyPair");
+                });
+
+            modelBuilder.Entity("SharedHost.Models.AWS.PortForward", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("ClusterInstanceID")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("End")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("InstancePort")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LocalPort")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Tag")
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ClusterInstanceID");
+
+                    b.ToTable("PortForward");
+                });
+
             modelBuilder.Entity("SharedHost.Models.Cluster.GlobalCluster", b =>
                 {
                     b.Property<int>("ID")
@@ -170,21 +260,23 @@ namespace Authenticator.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
 
-                    b.Property<string>("TurnIp")
-                        .HasColumnType("text");
+                    b.Property<bool>("SelfHost")
+                        .HasColumnType("boolean");
 
-                    b.Property<string>("TurnPassword")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TurnUser")
-                        .HasColumnType("text");
+                    b.Property<DateTime>("Unregister")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("UserAccountId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("instanceID")
                         .HasColumnType("integer");
 
                     b.HasKey("ID");
 
                     b.HasIndex("UserAccountId");
+
+                    b.HasIndex("instanceID");
 
                     b.ToTable("Clusters");
                 });
@@ -436,11 +528,33 @@ namespace Authenticator.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SharedHost.Models.AWS.ClusterInstance", b =>
+                {
+                    b.HasOne("SharedHost.Models.AWS.EC2KeyPair", "keyPair")
+                        .WithMany()
+                        .HasForeignKey("keyPairID");
+
+                    b.Navigation("keyPair");
+                });
+
+            modelBuilder.Entity("SharedHost.Models.AWS.PortForward", b =>
+                {
+                    b.HasOne("SharedHost.Models.AWS.ClusterInstance", null)
+                        .WithMany("portForwards")
+                        .HasForeignKey("ClusterInstanceID");
+                });
+
             modelBuilder.Entity("SharedHost.Models.Cluster.GlobalCluster", b =>
                 {
                     b.HasOne("SharedHost.Models.User.UserAccount", null)
                         .WithMany("ManagedCluster")
                         .HasForeignKey("UserAccountId");
+
+                    b.HasOne("SharedHost.Models.AWS.ClusterInstance", "instance")
+                        .WithMany()
+                        .HasForeignKey("instanceID");
+
+                    b.Navigation("instance");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Device.WorkerNode", b =>
@@ -480,6 +594,11 @@ namespace Authenticator.Migrations
                         .HasForeignKey("WorkerNodeID");
 
                     b.Navigation("Model");
+                });
+
+            modelBuilder.Entity("SharedHost.Models.AWS.ClusterInstance", b =>
+                {
+                    b.Navigation("portForwards");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Cluster.GlobalCluster", b =>

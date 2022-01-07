@@ -31,11 +31,10 @@ namespace WorkerManager.Services
         {
             var claims = new List<Claim>();
 
-            claims.Add(new Claim("CPU", node.CPU));
-            claims.Add(new Claim("GPU", node.GPU));
-            claims.Add(new Claim("OS", node.OS));
-            claims.Add(new Claim("RAMcapacity", node.RAMcapacity.ToString()));
-            claims.Add(new Claim("IPAddress", node.PrivateIP));
+            claims.Add(new Claim("CPU", node.model.CPU));
+            claims.Add(new Claim("GPU", node.model.GPU));
+            claims.Add(new Claim("OS", node.model.OS));
+            claims.Add(new Claim("RAMcapacity", node.model.RAMcapacity.ToString()));
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwt.Key);

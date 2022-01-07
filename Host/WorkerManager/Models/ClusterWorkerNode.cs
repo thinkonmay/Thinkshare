@@ -16,105 +16,57 @@ namespace WorkerManager.Models
 {
     public class ClusterWorkerNode 
     {
-        [Key]
         public int ID{ get; set; }
 
-        [Required]
-        public string PrivateIP { get; set; }
+        public WorkerRegisterModel model {get;set;}
 
-        [Required]
-        public string CPU { get; set; }
-
-        [Required]
-        public string GPU { get; set; }
-
-        [Required]
-        public int RAMcapacity { get; set; }
-
-        [Required]
-        public string OS { get; set; }
-
-        [Required]
-        public DateTime Register { get;set; }
-
-        [NotMapped]
-        [Required]
         public int agentFailedPing {get;set;}
-
-        [NotMapped]
-        [Required]
-        public int sessionFailedPing {get;set;}
-        
-        [NotMapped]
-        [JsonIgnore]
-        public RestClient _coreClient { get; set; }
-
-        [NotMapped]
-        [JsonIgnore]
-        public RestClient _agentClient { get; set; }
-
-        [JsonIgnore]
-        public virtual IList<Log> Logs {get;set;}
-
-        [JsonIgnore]
-        public virtual IList<ShellSession> Shells {get;set;}
-
-        void RestoreWorkerNode ()
-        {
-            _coreClient = new RestClient("http://"+PrivateIP.ToString()+":3330/cluster");
-            _agentClient = new RestClient("http://"+PrivateIP.ToString()+":2220/cluster");
-        }
-
-
 
         /*state dependent method*/
         public async Task<bool> SessionInitialize(string token)
         {
-            Serilog.Log.Information("Intializing worker "+ID.ToString()+" on IP address "+PrivateIP);
-            RestoreWorkerNode();
-            var request = new RestRequest("Initialize")
+            var request = new RestRequest(model.AgentUrl + "/Initialize")
                 .AddHeader("Authorization", token);
             request.Method = Method.POST;
 
-            var result = await _agentClient.ExecuteAsync(request);
-            return (result.StatusCode == HttpStatusCode.OK);
-        }
-
-        public async Task<bool> SessionTerminate(string token)
-        {
-            Serilog.Log.Information("Terminating worker "+ID.ToString()+" on IP address "+PrivateIP);
-            RestoreWorkerNode();
-            var request = new RestRequest("Terminate")
-                .AddHeader("Authorization", token);
-            request.Method = Method.POST;
-
-            var result = await _agentClient.ExecuteAsync(request);
-            return (result.StatusCode == HttpStatusCode.OK);
-        }
-
-        public async Task<bool> SessionDisconnect(string token)
-        {
-            Serilog.Log.Information("Disconnect worker "+ID.ToString()+" on IP address "+PrivateIP);
-            RestoreWorkerNode();
-            var request = new RestRequest("Terminate")
-                .AddHeader("Authorization", token);
-            request.Method = Method.POST;
-
-            var result = await _agentClient.ExecuteAsync(request);
+            var result = await (new RestClient()).ExecuteAsync(request);
+            Serilog.Log.Information("Intializing worker "+ID.ToString());
             return (result.StatusCode == HttpStatusCode.OK);
         }
 
         public async Task<bool> SessionReconnect(string token)
         {
-            Serilog.Log.Information("Reconnect worker "+ID.ToString()+" on IP address "+PrivateIP);
-            RestoreWorkerNode();
-            var request = new RestRequest("Initialize")
+            var request = new RestRequest(model.AgentUrl + "/Initialize")
                 .AddHeader("Authorization", token);
             request.Method = Method.POST;
 
-            var result = await _agentClient.ExecuteAsync(request);
+            var result = await (new RestClient()).ExecuteAsync(request);
+            Serilog.Log.Information("Reconnect worker "+ID.ToString());
             return (result.StatusCode == HttpStatusCode.OK);
         }
+
+        public async Task<bool> SessionTerminate(string token)
+        {
+            var request = new RestRequest(model.AgentUrl + "/Terminate")
+                .AddHeader("Authorization", token);
+            request.Method = Method.POST;
+
+            var result = await (new RestClient()).ExecuteAsync(request);
+            Serilog.Log.Information("Terminating worker "+ID.ToString());
+            return (result.StatusCode == HttpStatusCode.OK);
+        }
+
+        public async Task<bool> SessionDisconnect(string token)
+        {
+            var request = new RestRequest(model.AgentUrl + "/Terminate")
+                .AddHeader("Authorization", token);
+            request.Method = Method.POST;
+
+            var result = await (new RestClient()).ExecuteAsync(request);
+            Serilog.Log.Information("Disconnect worker "+ID.ToString());
+            return (result.StatusCode == HttpStatusCode.OK);
+        }
+
 
 
 
@@ -149,17 +101,20 @@ namespace WorkerManager.Models
         async Task<bool> Ping(Module module)
         {
             IRestResponse result;
-            var request = new RestRequest("ping");
-            request.Method = Method.POST;
 
-            RestoreWorkerNode();
             if(module == Module.CORE_MODULE)
             {
-                result = await _coreClient.ExecuteAsync(request);
+                var request = new RestRequest(model.CoreUrl + "/ping");
+                request.Method = Method.POST;
+
+                result = await (new RestClient()).ExecuteAsync(request);
             }
             else if (module == Module.AGENT_MODULE)
             {
-                result = await _agentClient.ExecuteAsync(request);
+                var request = new RestRequest(model.AgentUrl + "/ping");
+
+                request.Method = Method.POST;
+                result = await (new RestClient()).ExecuteAsync(request);
             }
             else
             {
@@ -177,20 +132,19 @@ namespace WorkerManager.Models
 
 
 
-        public async Task GetWorkerMetric(ILocalStateStore cache, List<ScriptModel> models)
+        public async Task GetWorkerMetric(ILocalStateStore cache, List<ScriptModel> scriptModels)
         {
-            foreach (var model in models)
+            foreach (var item in scriptModels)
             {
-                var request = new RestRequest("Shell");
-                request.AddParameter("application/json", model.Script, ParameterType.RequestBody);
+                var request = new RestRequest(model.AgentUrl + "/Shell")
+                    .AddParameter("application/json", item.Script, ParameterType.RequestBody);
 
                 request.Method = Method.POST;
-                RestoreWorkerNode();
-                var result = await _agentClient.ExecuteAsync(request);
+                var result = await (new RestClient()).ExecuteAsync(request);
                 if(result.StatusCode == HttpStatusCode.OK) 
                 { 
                     var session = new ShellSession();                
-                    session.Model  = model;
+                    session.Model  = item;
                     session.Output = result.Content;
 
                     await cache.CacheShellSession(ID,session);

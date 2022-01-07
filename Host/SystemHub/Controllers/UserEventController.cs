@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SharedHost;
 using SystemHub.Interfaces;
-using SharedHost.Models.Hub;
+using SharedHost.Models.Message;
 
 namespace SystemHub.Controllers
 {

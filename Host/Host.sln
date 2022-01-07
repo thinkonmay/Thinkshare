@@ -23,10 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebsocketTesting", "..\Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authenticator", "Authenticator\Authenticator.csproj", "{E7CE091E-DCF6-41E4-A9E4-EEC5AF669848}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoScaling", "AutoScaling\AutoScaling.csproj", "{E9BA3407-2E8F-4119-9FE0-A56A54828284}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedHost\SharedHost.projitems*{00c0924c-717c-42ee-b3d1-3b7970d5ed4b}*SharedItemsImports = 5
-		DbSchema\DbSchema.projitems*{2581b75b-1c79-4249-8cc7-d8ac7c6a6063}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{2581b75b-1c79-4249-8cc7-d8ac7c6a6063}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{4f9d3da4-1264-42eb-8804-f5b9822e7b0d}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{5de0dae9-0034-44a9-a52a-05f646a5a80b}*SharedItemsImports = 5
@@ -38,6 +39,7 @@ Global
 		SharedHost\SharedHost.projitems*{a972cf97-de50-4cf3-a9af-23a0815a3e29}*SharedItemsImports = 5
 		DbSchema\DbSchema.projitems*{e7ce091e-dcf6-41e4-a9e4-eec5af669848}*SharedItemsImports = 5
 		SharedHost\SharedHost.projitems*{e7ce091e-dcf6-41e4-a9e4-eec5af669848}*SharedItemsImports = 5
+		SharedHost\SharedHost.projitems*{e9ba3407-2e8f-4119-9fe0-a56a54828284}*SharedItemsImports = 5
 		DbSchema\DbSchema.projitems*{fdd0cfdc-c9c1-45be-9d9f-ec71d1941930}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{E7CE091E-DCF6-41E4-A9E4-EEC5AF669848}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7CE091E-DCF6-41E4-A9E4-EEC5AF669848}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7CE091E-DCF6-41E4-A9E4-EEC5AF669848}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9BA3407-2E8F-4119-9FE0-A56A54828284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9BA3407-2E8F-4119-9FE0-A56A54828284}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9BA3407-2E8F-4119-9FE0-A56A54828284}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9BA3407-2E8F-4119-9FE0-A56A54828284}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

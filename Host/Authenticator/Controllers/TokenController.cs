@@ -100,7 +100,9 @@ namespace Authenticator.Controllers
 
         [HttpPost]
         [Route("Grant/Cluster")]
-        public async Task<IActionResult> GrantCluster(string UserID, string ClusterName, int ClusterID)
+        public async Task<IActionResult> GrantCluster(string UserID, 
+                                                      string ClusterName, 
+                                                      int ClusterID)
         {
             return Ok(await _tokenGenerator.GenerateClusterJwt(UserID,ClusterName,ClusterID));
         }

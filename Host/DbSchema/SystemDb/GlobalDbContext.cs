@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SharedHost.Models.User;
 using SharedHost.Models.Session;
+using SharedHost.Models.AWS;
 using SharedHost.Models.Shell;
 using SharedHost.Models.Device;
 using SharedHost.Models.Cluster;
@@ -33,10 +34,12 @@ namespace DbSchema.SystemDb.Data
             builder.Entity<ShellSession>().Property(u => u.Time).HasDefaultValueSql("current_timestamp");
             builder.Entity<WorkerNode>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
             builder.Entity<GlobalCluster>().Property(u => u.Register).HasDefaultValueSql("current_timestamp");
+            builder.Entity<ClusterInstance>().Property(u => u.Registered).HasDefaultValueSql("current_timestamp");
         }
 
 
-        public DbSet<GlobalCluster> Clusters { get; set; }
+        public DbSet<ClusterInstance> Instances{ get; set; }
+        public DbSet<GlobalCluster> Clusters{ get; set; }
         public DbSet<WorkerNode> Devices { get; set; }
         public DbSet<RemoteSession> RemoteSessions { get; set; }
         public DbSet<ShellSession> ShellSession { get; set; }

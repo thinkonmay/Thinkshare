@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
+using SharedHost.Models.AWS;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -145,7 +146,7 @@ namespace DbSchema.CachedState
             var sessionWorker = new SessionWorker
             {
                 signallingurl = config.SignallingWs,
-                turn = "turn://" + cluster.TurnUser + ":" + cluster.TurnPassword + "@" + cluster.TurnIp + ":3478",
+                turn = "turn://" + cluster.instance.TurnUser+ ":" + cluster.instance.TurnPassword+ "@" + cluster.instance.IPAdress+ ":3478",
 
                 clientdevice = defaultSetting.device,
                 clientengine = defaultSetting.engine,
@@ -162,11 +163,11 @@ namespace DbSchema.CachedState
             var sessionClient = new SessionClient
             {
                 signallingurl = config.SignallingWs,
-                turn = "turn://" + cluster.TurnUser + ":" + cluster.TurnPassword + "@" + cluster.TurnIp + ":3478",
+                turn = "turn://" + cluster.instance.TurnUser + ":" + cluster.instance.TurnPassword + "@" + cluster.instance.IPAdress + ":3478",
 
-                turnip =  "turn:"+cluster.TurnIp + ":3478",
-                turnuser = cluster.TurnUser,
-                turnpassword = cluster.TurnPassword,
+                turnip =  "turn:"+cluster.instance.IPAdress+ ":3478",
+                turnuser = cluster.instance.TurnUser,
+                turnpassword = cluster.instance.TurnPassword,
 
                 audiocodec = defaultSetting.audioCodec,
                 videocodec = defaultSetting.videoCodec,

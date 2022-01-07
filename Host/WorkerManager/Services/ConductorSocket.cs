@@ -235,7 +235,7 @@ namespace WorkerManager.Services
                 while (true)
                 {
                     var clusterSnapshoot = await _cache.GetClusterState();
-                    /// check for every different between 
+                    // check for every different between 
                     foreach ( var item in clusterSnapshoot)
                     {
                         bool success = syncedState.TryGetValue(item.Key,out var output);
@@ -315,14 +315,6 @@ namespace WorkerManager.Services
         async Task<bool> reRegisterDevice(ClusterWorkerNode model)
         {
 
-            var node = new WorkerRegisterModel
-            {
-                CPU = model.CPU,
-                GPU = model.GPU,
-                RAMcapacity = (int)model.RAMcapacity,
-                OS = model.OS,
-            };
-
             var workers = await _cache.GetClusterState();
             foreach (var item in workers)
             {
@@ -334,14 +326,14 @@ namespace WorkerManager.Services
             var client = new RestClient();
             var request = new RestRequest(_config.WorkerRegisterUrl)
                 .AddQueryParameter("ClusterName",_cluster.Name)
-                .AddJsonBody(node)
+                .AddJsonBody(model.model)
                 .AddHeader("Authorization","Bearer "+_cluster.OwnerToken);
 
             var result = await client.ExecuteAsync(request);
             if(result.StatusCode == HttpStatusCode.OK)
             {
-                IDAssign id = JsonConvert.DeserializeObject<IDAssign>(result.Content);
-                model.ID = id.GlobalID;
+                int id = JsonConvert.DeserializeObject<int>(result.Content);
+                model.ID = id;
 
                 await _cache.CacheWorkerInfor(model);
                 await _cache.SetWorkerState(model.ID, WorkerState.Open);

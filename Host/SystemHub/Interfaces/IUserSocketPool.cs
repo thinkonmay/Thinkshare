@@ -1,5 +1,5 @@
 ﻿using SharedHost.Auth;
-using SharedHost.Models.Hub;
+using SharedHost.Models.Message;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 

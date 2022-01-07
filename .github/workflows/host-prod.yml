@@ -35,7 +35,6 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host  
-        target: prod
         file: Host/Signalling/Dockerfile
         push: true
         tags: ${{ env.SIGNALLING_IMAGE_NAME }}
@@ -62,7 +61,6 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host  
-        target: prod
         file: Host/WorkerManager/Dockerfile
         push: true
         tags: ${{ env.WORKERMANAGER_IMAGE_FILE}}
@@ -89,7 +87,6 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        target: prod
         file: Host/Conductor/Dockerfile
         push: true
         tags: ${{ env.CONDUCTOR_IMAGE_NAME }}
@@ -117,7 +114,6 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        target: prod
         file: Host/Authenticator/Dockerfile
         push: true
         tags: ${{ env.AUTHENTICATOR_IMAGE_NAME }}
@@ -144,7 +140,6 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        target: prod
         file: Host/MetricCollector/Dockerfile
         push: true
         tags: ${{ env.METRIC_COLLECTOR_IMAGE_NAME }}
@@ -171,9 +166,34 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        target: prod
         file: Host/SystemHub/Dockerfile
         push: true
-        tags: ${{ env.METRIC_COLLECTOR_IMAGE_NAME }}
+        tags: ${{ env.SYSTEMHUB_IMAGE_NAME }}
       env:
-        METRIC_COLLECTOR_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/systemhub:${{ steps.date.outputs.date }}
+        SYSTEMHUB_IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/systemhub:${{ steps.date.outputs.date }}
+
+  build-autoscaling:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        
+    - name: get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+    - name: MetricCollector
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Host 
+        file: Host/AutoScaling/Dockerfile
+        push: true
+        tags: ${{ env.AUTOSCALING_IMAGE}}
+      env:
+        AUTOSCALING_IMAGE: ${{ secrets.DOCKER_USERNAME }}/autoscaling:${{ steps.date.outputs.date }}

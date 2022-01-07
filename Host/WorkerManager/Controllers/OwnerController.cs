@@ -92,6 +92,7 @@ namespace WorkerManager.Controllers
             if (result.StatusCode == HttpStatusCode.OK)
             {
                 cluster.Name = ClusterName;
+                cluster.ClusterToken = JsonConvert.DeserializeObject<string>(result.Content);
                 await _cache.SetClusterInfor(cluster);
                 return Ok();
             }
@@ -114,41 +115,10 @@ namespace WorkerManager.Controllers
             request.Method = Method.GET;
 
             var result = await _client.ExecuteAsync(request);
-            if(result.StatusCode == HttpStatusCode.OK)            
-            {
-                return Ok(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
-            }
-            else
-            {
-                return BadRequest(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
-            }
+            return Ok(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
         }
 
 
-
-        [Owner]
-        [HttpGet("Cluster/Token")]
-        public async Task<IActionResult> Token()
-        {
-            var Cluster = await _cache.GetClusterInfor();
-            var request = new RestRequest(_config.ClusterTokenUrl)
-                .AddHeader("Authorization","Bearer "+ Cluster.OwnerToken)
-                .AddQueryParameter("ClusterName", Cluster.Name);
-            request.Method = Method.GET;
-
-            var result = await _client.ExecuteAsync(request);
-
-            if (result.StatusCode == HttpStatusCode.OK)
-            {
-                Cluster.ClusterToken = JsonConvert.DeserializeObject<string>(result.Content);
-                _cache.SetClusterInfor(Cluster);
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
 
         [Owner]
         [HttpGet("Worker/State")]
@@ -160,39 +130,6 @@ namespace WorkerManager.Controllers
 
 
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="login"></param>
-        /// <returns></returns>
-        [Owner]
-        [HttpPost("Cluster/TURN")]
-        public async Task<IActionResult> setturn(string turnIP, 
-                                                 string turnUSER, 
-                                                 string turnPASSWORD)
-        {
-            var cluster = await _cache.GetClusterInfor();
-
-            var request = new RestRequest(_config.ClusterTURNUrl)
-                .AddHeader("Authorization","Bearer "+cluster.OwnerToken)
-                .AddQueryParameter("ClusterName",cluster.Name)
-                .AddQueryParameter("turnIP",turnIP)
-                .AddQueryParameter("turnUSER",turnUSER)
-                .AddQueryParameter("turnPASSWORD",turnPASSWORD);
-            request.Method = Method.POST;
-
-
-            var result = await _client.ExecuteAsync(request);
-            if(result.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok();
-            }
-            else
-            {
-                return BadRequest("Fail to update cluster turn");
-            }
-        }
 
 
         [Owner]
@@ -234,14 +171,7 @@ namespace WorkerManager.Controllers
         [HttpPost("Cluster/isRegistered")]
         public async Task<IActionResult> isRegistered()
         {
-            if((await _cache.GetClusterInfor()).ClusterToken != null)
-            {
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return ((await _cache.GetClusterInfor()).ClusterToken == null) ? BadRequest() : Ok();
         }
 
 
@@ -267,14 +197,7 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> GetLogWithOptions(int WorkerID, DateTime From, DateTime To)
         {
             var array = await _cache.GetLog(WorkerID,From,To);
-            if(array.Count() > 60)
-            {
-                return Ok(array.Take(60));
-            }
-            else
-            {
-                return Ok(array);
-            }
+            return (array.Count() > 60) ? Ok(array.Take(60)) : Ok(array);
         }
     }
 }

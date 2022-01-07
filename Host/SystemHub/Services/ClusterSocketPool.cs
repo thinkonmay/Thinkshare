@@ -6,7 +6,7 @@ using System.Threading;
 using SystemHub.Interfaces;
 using System.Threading.Tasks;
 using SharedHost.Auth;
-using SharedHost.Models.Hub;
+using SharedHost.Models.Message;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using SharedHost.Models.Cluster;

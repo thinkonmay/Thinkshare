@@ -23,6 +23,13 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "700m"
+          limits:
+            memory: "1500Mi"
+            cpu: "1000m"
       volumes:
       - name: data
         awsElasticBlockStore:        
