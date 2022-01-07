@@ -34,6 +34,23 @@ namespace AutoScaling
                     builder => builder.AllowAnyOrigin());
             });
 
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = Configuration.GetConnectionString("RedisInstanceName");
+            });
+
+            //for postgresql
+            services.AddDbContext<GlobalDbContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
+                ServiceLifetime.Transient
+            );
+            services.AddDatabaseDeveloperPageExceptionFilter();
+
+            services.AddDefaultIdentity<UserAccount>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole<int>>()
+                .AddEntityFrameworkStores<GlobalDbContext>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -46,6 +63,7 @@ namespace AutoScaling
             });
 
             services.Configure<AWSSetting>(Configuration.GetSection("AWSSetting"));
+            services.Configure<InstanceSetting>(Configuration.GetSection("InstanceSetting"));
             services.AddTransient<IEC2Service, EC2Service>();
             services.AddMvc();
         }

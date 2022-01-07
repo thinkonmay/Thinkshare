@@ -16,12 +16,15 @@ namespace SharedHost.Models.AWS
 
         public DateTime? Registered {get;set;}
 
+        public List<PortForward> portForwards {get;set;}
+
         public ClusterInstance(EC2Instance instance)
         {
             IPAdress = instance.IPAdress;
             InstanceID = instance.InstanceID;
             InstanceName = instance.InstanceName;
             PrivateIP = instance.PrivateIP;
+            portForwards = new List<PortForward>();
         }
         public ClusterInstance() { }
     }

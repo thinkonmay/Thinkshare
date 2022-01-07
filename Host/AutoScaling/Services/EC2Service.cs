@@ -1,4 +1,6 @@
 using System;
+using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using Amazon.EC2;
 using Amazon.EC2.Model;
@@ -37,6 +39,29 @@ namespace AutoScaling.Services
         }
 
 
+        public async Task<EC2KeyPair> CreateKeyPair()
+        {
+            AmazonEC2Client _ec2Client;
+            if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
+            {
+                _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
+            }
+            else
+            {
+                return null;
+            }
+
+            CreateKeyPairResponse response =
+                await _ec2Client.CreateKeyPairAsync(new CreateKeyPairRequest{
+                    KeyName = (new Random()).Next().ToString()
+                });            
+
+
+            return new EC2KeyPair {
+                PrivateKey = response.KeyPair.KeyMaterial,
+                Name = response.KeyPair.KeyName
+            };
+        }
 
 
         public async Task<EC2Instance> LaunchInstances()
@@ -51,6 +76,8 @@ namespace AutoScaling.Services
                 return null;
             }
 
+            var keyPair = await CreateKeyPair();
+
 
             var response = await _ec2Client.RunInstancesAsync(new RunInstancesRequest
             {
@@ -63,17 +90,17 @@ namespace AutoScaling.Services
 
                 ImageId = _aws.AMI,
                 InstanceType = _aws.InstanceType,
-                KeyName = _aws.Keyname,
+                KeyName = keyPair.Name,
                 
                 MaxCount = 1,
                 MinCount = 1,
                 TagSpecifications = new List<TagSpecification> {
                     new TagSpecification {
-                        ResourceType = "instance",
+                        ResourceType = "AutoLauched node",
                         Tags = new List<Tag> {
                             new Tag {
-                                Key = "Purpose",
-                                Value = "test"
+                                Key = "Launcher",
+                                Value = "AutoScaling"
                             }
                         }
                     }
@@ -87,6 +114,8 @@ namespace AutoScaling.Services
                 InstanceID = response.Reservation.Instances.First().InstanceId,
 
                 PrivateIP = response.Reservation.Instances.First().PrivateIpAddress,
+
+                keyPair = keyPair,
             };
 
 
@@ -147,7 +176,7 @@ namespace AutoScaling.Services
             }
         }
 
-        public async Task<ClusterInstance> SetupClusterManager()
+        public async Task<ClusterInstance> SetupManagedCluster()
         {
             var result = new ClusterInstance((await LaunchInstances()));
 
@@ -159,23 +188,39 @@ namespace AutoScaling.Services
             System.Threading.Thread.Sleep(30*1000);
 
             var coturn = SetupCoturnScript(result.TurnUser,result.TurnPassword);
-            await AccessEC2Instance(result.IPAdress ,coturn);
+            await AccessEC2Instance(result,coturn);
 
             var cluster = SetupClusterScript();
-            await AccessEC2Instance(result.IPAdress,cluster);
+            await AccessEC2Instance(result,cluster);
             return result;
         }
 
-        public async Task<List<string>?> AccessEC2Instance (string IP, List<string> commands)
-        {
 
-            var pk = new PrivateKeyFile(_aws.SSHkeyPath);
-            var keyFiles = new[] { pk };
+        public async Task<ClusterInstance> SetupCoturnService()
+        {
+            var result = new ClusterInstance((await LaunchInstances()));
+
+            result.TurnUser = (new Random()).Next().ToString();
+            result.TurnPassword = (new Random()).Next().ToString();
+
+
+            // wait for coturn server to boot up until setup coturn script
+            System.Threading.Thread.Sleep(30*1000);
+
+            var coturn = SetupCoturnScript(result.TurnUser,result.TurnPassword);
+            await AccessEC2Instance(result,coturn);
+            return result;
+        }
+
+        public async Task<List<string>?> AccessEC2Instance (EC2Instance instance, List<string> commands)
+        {
+            MemoryStream keyStream = new MemoryStream(Encoding.UTF8.GetBytes(instance.keyPair.PrivateKey));
+            var keyFiles = new[] { new PrivateKeyFile(keyStream) };
 
             var methods = new List<AuthenticationMethod>();
             methods.Add(new PrivateKeyAuthenticationMethod("ubuntu", keyFiles));
 
-            var con = new ConnectionInfo(IP, 22, "ubuntu", methods.ToArray());
+            var con = new ConnectionInfo(instance.IPAdress, 22, "ubuntu", methods.ToArray());
 
             var _client = new SshClient(con);
             _client.Connect();
@@ -194,7 +239,16 @@ namespace AutoScaling.Services
             return result;
         }
 
-        public List<string> SetupCoturnScript(string user, string password)
+
+
+
+
+
+
+
+
+
+        List<string> SetupCoturnScript(string user, string password)
         {
             var script = new List<string>
             {
@@ -207,7 +261,7 @@ namespace AutoScaling.Services
             return script;
         }
 
-        public List<string> SetupClusterScript()
+        List<string> SetupClusterScript()
         {
             var script = new List<string>
             {

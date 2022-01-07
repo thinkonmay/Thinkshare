@@ -11,15 +11,16 @@ using SharedHost.Models.Device;
 using WorkerManager.Middleware;
 using System.Linq;
 using WorkerManager;
-using Microsoft.Extensions.Options;
 using SharedHost;
+using Microsoft.Extensions.Options;
+using SharedHost.Auth;
 
 using WorkerManager.Models;
 
 namespace WorkerManager.Controllers
 {
     [ApiController]
-    [Route("/agent")]
+    [Route("/worker")]
     [Produces("application/json")]
     public class AgentController : ControllerBase
     {
@@ -49,17 +50,9 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> PostInfor([FromBody]WorkerRegisterModel agent_register)
         {
             var Cluster = await _cache.GetClusterInfor();
-            if(Cluster == null)
-            {
-                return BadRequest("Cluster haven't been registered yet");
-            }
+            if(Cluster == null) { return BadRequest(); }
 
-            var cachednode = Cluster.WorkerNodes.Where(x => 
-                x.PrivateIP == agent_register.LocalIP &&
-                x.CPU == agent_register.CPU &&
-                x.GPU == agent_register.GPU &&
-                x.RAMcapacity == (int)agent_register.RAMcapacity &&
-                x.OS == agent_register.OS);
+            var cachednode = Cluster.WorkerNodes.Where(x => x.model == agent_register);
 
             if(!cachednode.Any())
             {
@@ -76,13 +69,8 @@ namespace WorkerManager.Controllers
                     int id = JsonConvert.DeserializeObject<int>(result.Content);
                     var node = new ClusterWorkerNode
                     {
-                        ID = id.GlobalID,
-                        PrivateIP = agent_register.LocalIP,
-                        Register = DateTime.Now,
-                        CPU = agent_register.CPU,
-                        GPU = agent_register.GPU,
-                        RAMcapacity = (int)agent_register.RAMcapacity,
-                        OS = agent_register.OS,
+                        ID = id,
+                        model = agent_register
                     };
 
                     await _cache.CacheWorkerInfor(node);
@@ -103,16 +91,66 @@ namespace WorkerManager.Controllers
         }
 
         [Worker]
-        [Route("core/end")]
+        [Route("session/end")]
         [HttpPost]
         public async Task<IActionResult> Post()
         {
-            var workerID = Int32.Parse((string)HttpContext.Items["PrivateID"]);
+            var workerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
             var state = await _cache.GetWorkerState(workerID);
             if(state == WorkerState.OnSession)
             {
                 await _cache.SetWorkerState(workerID, WorkerState.OffRemote);
             }
+            return Ok();
+        }
+
+        [Worker]
+        [HttpPost("session/continue")]
+        public async Task<IActionResult> shouldContinue()
+        {
+            var workerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
+
+            var currentState = await _cache.GetWorkerState(workerID);
+            return (currentState == WorkerState.OnSession)? Ok() : BadRequest();
+        }
+
+        [Worker]
+        [HttpPost("session/token")]
+        public async Task<IActionResult> Session()
+        {
+            var workerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
+
+            Serilog.Log.Information("Worker node get remote token: "+ workerID);
+            var remoteToken = await _cache.GetWorkerRemoteToken(workerID);
+
+            return Ok(new AuthenticationRequest{
+                token = remoteToken,
+                Validator = "WorkerManager",
+            });
+        }
+
+        [Route("token/validate")]
+        [HttpPost]
+        public async Task<IActionResult> TokenValidation(string token)
+        {
+            return (await _tokenGenerator.ValidateToken(token) != null) ? Ok() : BadRequest();
+        }
+
+        [Worker]
+        [HttpPost("log")]
+        public async Task<IActionResult> Log([FromBody] string log)
+        {
+            var WorkerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
+
+
+            var cluster = await _cache.GetClusterInfor();
+            var worker = cluster.WorkerNodes.Where(x => x.ID == WorkerID).First();
+            await _cache.Log(worker.ID,new Log
+            {
+                WorkerID = worker.ID,
+                Content = log,
+                LogTime = DateTime.Now,
+            });
             return Ok();
         }
     }

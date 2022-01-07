@@ -49,27 +49,27 @@ module "eks" {
   }
 
   node_groups = {
-    # cluster_node = {
-    #   desired_capacity = 1
-    #   max_capacity     = 2
-    #   min_capacity     = 0
+    cluster_node = {
+      desired_capacity = 0
+      max_capacity     = 1
+      min_capacity     = 0
 
-    #   instance_types = ["t3.micro"]
-    #   disk_size      = 5
-    #   capacity_type  = "SPOT"
+      instance_types = ["t3.micro"]
+      disk_size      = 5
+      capacity_type  = "SPOT"
 
-    #   create_launch_template = true
-    #   public_ip      = true
+      create_launch_template = true
+      public_ip      = true
       
-    #   k8s_labels = {
-    #     Environment = "production"
-    #     Type        = "Cluster-resources"
-    #   }
+      k8s_labels = {
+        Environment = "production"
+        Type        = "Cluster-resources"
+      }
 
-    #   update_config = {
-    #     max_unavailable_percentage = 50 # or set `max_unavailable`
-    #   }
-    # },
+      update_config = {
+        max_unavailable_percentage = 50 # or set `max_unavailable`
+      }
+    },
 
 
     thinkmay_node = {

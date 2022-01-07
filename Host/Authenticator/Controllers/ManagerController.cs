@@ -90,5 +90,33 @@ namespace Authenticator.Controllers
             await _db.SaveChangesAsync();
             return Ok(registeredCluster);
         }
+
+        [Manager]
+        [HttpPost("/Cluster/Unregister")]
+        public async Task<IActionResult> UnregisterCluster( string ClusterName)
+        {
+            var UserID = HttpContext.Items["UserID"];
+            var account = await _userManager.FindByIdAsync(UserID.ToString());
+
+            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
+            cluster.Unregister = DateTime.Now;
+
+
+
+            var clusterRequest = new RestRequest(_config.AutoScaling + "/Instance/Terminate")
+                .AddQueryParameter("ID",cluster.instance.InstanceID);
+            var clusterResult = await (new RestClient()).ExecuteAsync(clusterRequest); 
+            var success = JsonConvert.DeserializeObject<bool>(clusterResult.Content);
+            if (success)
+            {
+                cluster.Unregister = DateTime.Now;
+                await _userManager.UpdateAsync(account);
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

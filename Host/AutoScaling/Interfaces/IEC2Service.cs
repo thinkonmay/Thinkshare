@@ -8,7 +8,8 @@ namespace AutoScaling.Interfaces
     {
         Task<EC2Instance> LaunchInstances();
         Task<bool> EC2TerminateInstances(string ID);
-        Task<ClusterInstance> SetupClusterManager();
-        Task<List<string>?> AccessEC2Instance (string IP, List<string> commands);
+        Task<ClusterInstance> SetupManagedCluster();
+        Task<List<string>?> AccessEC2Instance (EC2Instance instance , List<string> commands);
+        Task<ClusterInstance> SetupCoturnService();
     }
 }

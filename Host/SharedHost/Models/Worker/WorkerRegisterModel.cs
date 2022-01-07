@@ -21,6 +21,8 @@ namespace SharedHost.Models.Device
         [Required]
         public string? OS { get; set; }
 
-        public string? LocalIP {get;set;}
+        public string? AgentUrl {get;set;}
+
+        public string? CoreUrl {get;set;}
     }
 }

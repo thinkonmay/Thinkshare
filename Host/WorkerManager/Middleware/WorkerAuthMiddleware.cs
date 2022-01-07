@@ -55,7 +55,7 @@ namespace WorkerManager.Middleware
                 ClusterWorkerNode node = await _generator.ValidateToken(token);
                 if (node != null)
                 {
-                    context.Items.Add("PrivateID", node.ID.ToString());
+                    context.Items.Add("WorkerID", node.ID.ToString());
                     context.Items.Add("IsWorker", "true");
                 }
                 else

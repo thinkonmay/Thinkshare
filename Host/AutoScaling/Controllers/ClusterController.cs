@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SharedHost.Models.AWS;
 using DbSchema.SystemDb.Data;
 using Newtonsoft.Json;
 using System;
@@ -35,18 +36,22 @@ namespace AutoScaling.Controllers
         private readonly RestClient _client;
 
         private readonly SystemConfig _config;
+        
+        private readonly InstanceSetting _instanceSetting;
 
         private readonly IEC2Service _ec2;
 
         public ClusterController(GlobalDbContext db,
                                  IEC2Service ec2,
                                  IOptions<SystemConfig> config,
+                                 IOptions<InstanceSetting> instanceSetting,
                                  UserManager<UserAccount> userManager,
                                  IGlobalStateStore cache)
         {
             _cache = cache;
             _db = db;
             _client = new RestClient(config.Value.Authenticator);
+            _instanceSetting = instanceSetting.Value;
             _userManager = userManager;
             _config = config.Value;
             _ec2 = ec2;
@@ -56,10 +61,6 @@ namespace AutoScaling.Controllers
 
 
 
-        /// <summary>
-        /// Get list of available slave device, contain device information
-        /// </summary>
-        /// <returns></returns>
         [Manager]
         [HttpPost("Register")]
         public async Task<IActionResult> NewCluster(string ClusterName, bool Private)
@@ -83,6 +84,14 @@ namespace AutoScaling.Controllers
             else
             {
                 cluster = refreshCluster.First();
+                if(cluster.SelfHost)
+                {
+                    if(cluster.instance == null)
+                    {
+                        cluster.instance = await _ec2.SetupCoturnService();
+                        await _userManager.UpdateAsync(account);
+                    }                    
+                }
             }
 
 
@@ -119,7 +128,6 @@ namespace AutoScaling.Controllers
             _db.Clusters.Update(cluster);
             await _db.SaveChangesAsync();
 
-            // get GlobalID and return to cluster
             await _cache.CacheWorkerInfor(newWorker);
             return Ok(newWorker.ID);
         }
@@ -133,5 +141,24 @@ namespace AutoScaling.Controllers
             var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
             return Ok(cluster);
         }
+
+        [Manager]
+        [HttpGet("ManagedInstance")]
+        public async Task<IActionResult> getKey(string ClusterName)
+        {
+            var ManagerID = HttpContext.Items["UserID"];
+            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
+            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
+            if(cluster.SelfHost)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return Ok(cluster.instance);
+            }
+        }
+
+
     }
 }

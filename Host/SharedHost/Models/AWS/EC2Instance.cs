@@ -13,5 +13,7 @@ namespace SharedHost.Models.AWS
         public string InstanceName {  set; get; } 
 
         public string PrivateIP { get;set; }
+
+        public EC2KeyPair keyPair { get; set; }
     }
 }
