@@ -16,7 +16,7 @@ namespace SharedHost.Models.AWS
 
         public DateTime? Registered {get;set;}
 
-        public List<PortForward> portForwards {get;set;}
+        public virtual List<PortForward> portForwards {get;set;}
 
         public ClusterInstance(EC2Instance instance)
         {

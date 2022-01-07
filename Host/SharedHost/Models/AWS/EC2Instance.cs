@@ -14,6 +14,6 @@ namespace SharedHost.Models.AWS
 
         public string PrivateIP { get;set; }
 
-        public EC2KeyPair keyPair { get; set; }
+        public virtual EC2KeyPair keyPair { get; set; }
     }
 }

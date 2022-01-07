@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: development
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: development
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: development
+    spec:
+      containers:
+      - name: development
+        image: pigeatgarlic/host:development
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "1000Mi"
+            cpu: "700m"
+          limits:
+            memory: "1300Mi"
+            cpu: "900m"

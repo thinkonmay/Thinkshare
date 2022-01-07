@@ -39,7 +39,7 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host  
-        file: Host/Signalling/Dockerfile
+        file: Host/Signalling/Dockerfile.development
         push: true
         tags: ${{ env.SIGNALLING_IMAGE_NAME }}
 
@@ -59,7 +59,7 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host  
-        file: Host/SlaveManager/Dockerfile
+        file: Host/SlaveManager/Dockerfile.development
         push: true
         tags: ${{ env.SLAVEMANAGER_IMAGE_NAME }}
 
@@ -79,7 +79,7 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        file: Host/Conductor/Dockerfile
+        file: Host/Conductor/Dockerfile.development
         push: true
         tags: ${{ env.CONDUCTOR_IMAGE_NAME }}
 
@@ -100,7 +100,7 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        file: Host/Authenticator/Dockerfile
+        file: Host/Authenticator/Dockerfile.development
         push: true
         tags: ${{ env.AUTHENTICATOR_IMAGE_NAME }}
 
@@ -120,7 +120,7 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        file: Host/MetricCollector/Dockerfile
+        file: Host/MetricCollector/Dockerfile.development
         push: true
         tags: ${{ env.METRIC_COLLECTOR_IMAGE_NAME }}
         
@@ -140,7 +140,7 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        file: Host/SystemHub/Dockerfile
+        file: Host/SystemHub/Dockerfile.development
         push: true
         tags: ${{ env.SYSTEMHUB_IMAGE_NAME }}
 
@@ -160,6 +160,6 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Host 
-        file: Host/AutoScaling/Dockerfile
+        file: Host/AutoScaling/Dockerfile.development
         push: true
         tags: ${{ env.AUTOSCALING_IMAGE_NAME}}

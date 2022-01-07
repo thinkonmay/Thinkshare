@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: systemhub
+  namespace: development
+  labels:
+    app: systemhub
+spec:
+  type: NodePort
+  ports:
+  - port: 80    
+  selector:
+   app: systemhub
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: systemhub
+  namespace: development
+spec:
+  selector:
+    matchLabels:
+      app: systemhub
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: systemhub
+    spec:
+      containers:
+      - name: systemhub
+        image: pigeatgarlic/systemhub:development
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "1000Mi"
+            cpu: "700m"
+          limits:
+            memory: "1500Mi"
+            cpu: "1000m"
+        ports:
+        - containerPort: 80
