@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using SharedHost;
 using Microsoft.Extensions.Options;
@@ -6,11 +5,8 @@ using RestSharp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Authenticator.Interfaces;
-using SharedHost.Models.Auth;
 using SharedHost.Models.User;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using SharedHost.Models.AWS;
 using System.Threading.Tasks;
 using DbSchema.DbSeeding;

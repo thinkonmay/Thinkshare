@@ -1,17 +1,12 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Authenticator.Interfaces;
 using SharedHost.Models.User;
-using SharedHost.Models.Auth;
 using SharedHost.Auth;
 using System.Threading.Tasks;
-using System.Linq;
 using DbSchema.DbSeeding;
 using SharedHost;
-using System;
 using SharedHost.Models.Session;
-using SharedHost.Models.Cluster;
 using Microsoft.Extensions.Options;
 
 namespace Authenticator.Controllers

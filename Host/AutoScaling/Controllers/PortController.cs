@@ -2,23 +2,16 @@
 using Microsoft.AspNetCore.Mvc;
 using SharedHost.Models.AWS;
 using DbSchema.SystemDb.Data;
-using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using SharedHost.Models.User;
-using SharedHost.Models.Auth;
-using SharedHost.Models.Device;
-using Microsoft.AspNetCore.Identity;
 using SharedHost.Auth.ThinkmayAuthProtocol;
-using SharedHost.Models.Cluster;
 using SharedHost;
 using RestSharp;
 using System.Linq;
-using DbSchema.SystemDb.Data;
 using AutoScaling.Interfaces;
 using Microsoft.Extensions.Options;
-using IdentityServer4.Models;
 
 namespace AutoScaling.Controllers
 {

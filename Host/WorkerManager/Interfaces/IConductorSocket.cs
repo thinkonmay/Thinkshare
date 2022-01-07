@@ -1,6 +1,4 @@
 ﻿using System.Threading.Tasks;
-using System.Collections.Generic;
-using SharedHost.Models.Shell;
 
 namespace WorkerManager.Interfaces
 {

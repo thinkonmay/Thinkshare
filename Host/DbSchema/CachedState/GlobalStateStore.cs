@@ -6,10 +6,7 @@ using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
-using SharedHost.Models.AWS;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DbSchema.CachedState

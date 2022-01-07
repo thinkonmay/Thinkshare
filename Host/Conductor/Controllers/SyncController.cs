@@ -1,19 +1,14 @@
 ﻿using Conductor.Hubs;
-using SharedHost.Models.Cluster;
 using Conductor.Interfaces;
 using DbSchema.SystemDb.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SharedHost;
-using SharedHost.Auth.ThinkmayAuthProtocol;
 using SharedHost.Models.Device;
 using SharedHost.Models.User;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DbSchema.CachedState;
-using Microsoft.Extensions.Options;
 
 namespace Conductor.Controllers
 {

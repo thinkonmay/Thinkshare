@@ -4,7 +4,6 @@ using System.Linq;
 using WorkerManager.Interfaces;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
-using WorkerManager;
 
 using WorkerManager.Models;
 

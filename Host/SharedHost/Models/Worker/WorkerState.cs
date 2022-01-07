@@ -1,6 +1,6 @@
 ﻿namespace SharedHost.Models.Device
 {
-   public class WorkerState
+    public class WorkerState
     {
         public const string OnSession = "ON_SESSION";
 

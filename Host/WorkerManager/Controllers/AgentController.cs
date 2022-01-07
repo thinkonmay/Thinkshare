@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SharedHost.Models.Auth;
-using SharedHost.Models.Cluster;
 using RestSharp;
 using Microsoft.AspNetCore.Mvc;
 using WorkerManager.Interfaces;
@@ -10,7 +9,6 @@ using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using WorkerManager.Middleware;
 using System.Linq;
-using WorkerManager;
 using SharedHost;
 using Microsoft.Extensions.Options;
 using SharedHost.Auth;

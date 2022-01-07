@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Http.Features;
 using WorkerManager.Interfaces;
 using SharedHost.Models.User;
 using SharedHost;
-
-using WorkerManager;
 using WorkerManager.Models;
 
 namespace WorkerManager.Middleware

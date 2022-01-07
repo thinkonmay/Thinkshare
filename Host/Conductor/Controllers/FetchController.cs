@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using SharedHost.Models.User;
 using SharedHost.Models.Device;
-using Microsoft.Extensions.Caching.Distributed;
 using SharedHost.Auth.ThinkmayAuthProtocol;
 using DbSchema.CachedState;
-using System.Linq;
 
 namespace Conductor.Controllers
 {

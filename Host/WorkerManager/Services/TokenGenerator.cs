@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using WorkerManager;
 using Microsoft.IdentityModel.Tokens;
 using WorkerManager.Interfaces;
 using SharedHost.Models.Auth;

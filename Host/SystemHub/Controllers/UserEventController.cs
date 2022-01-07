@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SharedHost;
 using SystemHub.Interfaces;
 using SharedHost.Models.Message;
 

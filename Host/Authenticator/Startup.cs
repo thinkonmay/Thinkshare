@@ -1,13 +1,9 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Authenticator.Services;
 using DbSchema.SystemDb.Data;
@@ -17,10 +13,7 @@ using SharedHost.Models.User;
 using System;
 using System.IO;
 using System.Reflection;
-using IdentityServer4.Models;
-using System.Text;
 using SharedHost;
-using System.Collections.Generic;
 using SharedHost.Auth;
 using DbSchema.CachedState;
 

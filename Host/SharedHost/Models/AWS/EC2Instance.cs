@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SharedHost.Models.AWS
+﻿namespace SharedHost.Models.AWS
 {
     public class EC2Instance
     {

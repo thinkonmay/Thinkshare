@@ -1,5 +1,4 @@
-﻿using System;
-namespace SharedHost
+﻿namespace SharedHost
 {
     public class ClusterConfig
     {

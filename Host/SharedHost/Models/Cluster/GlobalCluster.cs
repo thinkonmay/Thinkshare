@@ -1,6 +1,5 @@
 ﻿using SharedHost.Models.Device;
 using System.Collections.Generic;
-using SharedHost.Models.User;
 using System;
 using System.ComponentModel.DataAnnotations;
 using SharedHost.Models.AWS;

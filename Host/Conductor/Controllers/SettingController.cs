@@ -1,20 +1,12 @@
-
-using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SharedHost.Models.Auth;
 using SharedHost.Models.User;
 using SharedHost.Models.Device;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using DbSchema.DbSeeding;
 using SharedHost.Auth.ThinkmayAuthProtocol;
-using System.Linq;
 using DbSchema.SystemDb.Data;
-using SharedHost.Models.ResponseModel;
 using DbSchema.CachedState;
 
 namespace Conductor.Controllers

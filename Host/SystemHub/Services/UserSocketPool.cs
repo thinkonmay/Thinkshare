@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using SharedHost.Auth;
 using SharedHost.Models.Message;
 using Newtonsoft.Json;
-using System.Collections.Concurrent;
 using System.Text;
 using Microsoft.Extensions.Options;
 

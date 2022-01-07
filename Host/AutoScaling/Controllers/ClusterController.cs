@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SharedHost.Models.AWS;
 using DbSchema.SystemDb.Data;
 using Newtonsoft.Json;
 using System;

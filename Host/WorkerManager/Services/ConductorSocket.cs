@@ -1,19 +1,16 @@
 ﻿using WorkerManager.Interfaces;
 using Microsoft.Extensions.Options;
-using SharedHost.Models.Cluster;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
 using RestSharp;
 using System.Net;
 using Newtonsoft.Json;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using System;
 using System.IO;
 using System.Text;
-using WorkerManager;
 using SharedHost;
 
 using WorkerManager.Models;

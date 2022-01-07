@@ -1,13 +1,5 @@
-﻿using System;
-using SharedHost.Models.AWS;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-
-using Amazon.EC2;
 using Amazon.EC2.Model;
 using AutoScaling.Interfaces;
 

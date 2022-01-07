@@ -1,11 +1,4 @@
-﻿using SharedHost.Models.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SharedHost.Models.Device;
-using SharedHost.Models.Shell;
-using RestSharp;
+﻿using System.Threading.Tasks;
 
 namespace Conductor.Interfaces
 {

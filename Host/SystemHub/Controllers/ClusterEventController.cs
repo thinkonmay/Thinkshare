@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SharedHost;
 using SystemHub.Interfaces;
-using SharedHost.Models.Message;
-using SharedHost.Models.Session;
-using Newtonsoft.Json;
 using SharedHost.Models.Device;
-using SharedHost.Models.Cluster;
 
 namespace SystemHub.Controllers
 {

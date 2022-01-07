@@ -1,12 +1,7 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using SharedHost.Models.User;
-using Conductor.Services;
 using DbSchema.SystemDb.Data;
-using SharedHost;
 using Serilog;
 using DbSchema.DbSeeding;
 

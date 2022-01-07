@@ -1,14 +1,9 @@
 using System.Threading.Tasks;
 using DbSchema.CachedState;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using SharedHost;
 using SystemHub.Interfaces;
 using RestSharp;
-using System;
-using SharedHost.Auth;
-using Newtonsoft.Json;
-using SharedHost.Models.Cluster;
 using Microsoft.Extensions.Options;
 
 namespace SystemHub.Controllers

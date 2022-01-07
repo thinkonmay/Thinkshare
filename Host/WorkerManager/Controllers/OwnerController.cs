@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using WorkerManager.Models;
 using WorkerManager.Interfaces;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ using RestSharp;
 using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
 using Microsoft.Extensions.Options;
-using WorkerManager;
 using SharedHost;
 
 namespace WorkerManager.Controllers

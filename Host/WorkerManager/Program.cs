@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Caching.Distributed;
 using SharedHost.Models.Device;
 using System;
 using Microsoft.Extensions.Options;
@@ -8,12 +7,10 @@ using Serilog;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using WorkerManager.Interfaces;
-using WorkerManager.Services;
 using System.Collections.Generic;
 using SharedHost.Models.Shell;
 using System.Net;
 using SharedHost;
-using WorkerManager;
 using System.Linq;
 using Newtonsoft.Json;
 using RestSharp;
