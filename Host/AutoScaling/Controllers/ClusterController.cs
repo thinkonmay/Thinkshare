@@ -158,7 +158,5 @@ namespace AutoScaling.Controllers
                 return Ok(cluster.instance);
             }
         }
-
-
     }
 }

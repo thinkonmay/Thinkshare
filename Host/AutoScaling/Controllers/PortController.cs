@@ -7,15 +7,18 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using SharedHost.Models.User;
+using SharedHost.Models.Auth;
 using SharedHost.Models.Device;
+using Microsoft.AspNetCore.Identity;
 using SharedHost.Auth.ThinkmayAuthProtocol;
 using SharedHost.Models.Cluster;
 using SharedHost;
 using RestSharp;
 using System.Linq;
-using DbSchema.CachedState;
+using DbSchema.SystemDb.Data;
 using AutoScaling.Interfaces;
 using Microsoft.Extensions.Options;
+using IdentityServer4.Models;
 
 namespace AutoScaling.Controllers
 {
@@ -24,15 +27,13 @@ namespace AutoScaling.Controllers
     /// </summary>
     [Manager]
     [ApiController]
-    [Route("/Cluster")]
+    [Route("/ManagedCluster")]
     [Produces("application/json")]
     public class PortController : Controller
     {
         private readonly UserManager<UserAccount> _userManager;
 
         private readonly GlobalDbContext _db;
-
-        private readonly IGlobalStateStore _cache;
 
         private readonly RestClient _client;
 
@@ -46,10 +47,8 @@ namespace AutoScaling.Controllers
                                  IEC2Service ec2,
                                  IOptions<SystemConfig> config,
                                  IOptions<InstanceSetting> instanceSetting,
-                                 UserManager<UserAccount> userManager,
-                                 IGlobalStateStore cache)
+                                 UserManager<UserAccount> userManager)
         {
-            _cache = cache;
             _db = db;
             _client = new RestClient(config.Value.Authenticator);
             _instanceSetting = instanceSetting.Value;
@@ -60,7 +59,7 @@ namespace AutoScaling.Controllers
 
 
         [Manager]
-        [HttpGet("ManagedInstance/Portforward/Request")]
+        [HttpGet("Portforward/Request")]
         public async Task<IActionResult> request(string ClusterName, int LocalPort)
         {
             var ManagerID = HttpContext.Items["UserID"];
@@ -99,7 +98,7 @@ namespace AutoScaling.Controllers
         }
 
         [Manager]
-        [HttpGet("ManagedInstance/Portforward/Release")]
+        [HttpGet("Portforward/Release")]
         public async Task<IActionResult> Release(string ClusterName, int LocalPort)
         {
             var ManagerID = HttpContext.Items["UserID"];
