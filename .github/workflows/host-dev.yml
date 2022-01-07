@@ -146,7 +146,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: ["build-autoscaling", "build-systemhub", "build-authenticator", "build-signalling","build-conductor","build-metric-collector"]
+    needs: [ "build-autoscaling", "build-systemhub", "build-authenticator", "build-signalling", "build-conductor", "build-metric-collector"]
     steps:
       - uses: actions/checkout@v2
 
@@ -159,4 +159,8 @@ jobs:
           cluster_name: thinkmay-eks
         with:
           args: |
-            kubectl rollout restart deployment -n development
+            kubectl rollout restart deployment.apps/autoscaling -n development
+            kubectl rollout restart deployment.apps/systemhub -n development
+            kubectl rollout restart deployment.apps/authenticator -n development
+            kubectl rollout restart deployment.apps/signalling -n development
+            kubectl rollout restart deployment.apps/conductor -n development
