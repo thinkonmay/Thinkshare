@@ -73,18 +73,36 @@ module "eks" {
 
 
     thinkmay_node = {
-      desired_capacity = 8
-      max_capacity     = 10
-      min_capacity     = 6
+      desired_capacity = 6
+      max_capacity     = 8
+      min_capacity     = 4
 
       instance_types = ["t3.medium"]
       capacity_type  = "SPOT"
       
       k8s_labels = {
         Environment = "production"
+        Color = "BLUE"
       }
       update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
+        max_unavailable_percentage = 0 # or set `max_unavailable`
+      }
+    }
+
+    requested_node = {
+      desired_capacity = 2
+      max_capacity     = 2
+      min_capacity     = 2
+
+      instance_types = ["t3.medium"]
+      capacity_type  = "ON_DEMAND"
+      
+      k8s_labels = {
+        Environment = "production"
+        Color = "RED"
+      }
+      update_config = {
+        max_unavailable_percentage = 100 # or set `max_unavailable`
       }
     }
   }

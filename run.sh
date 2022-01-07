@@ -1,13 +1,15 @@
-cp ./Host/SharedHost/setting/dev/appsettings.json ./Host/Authenticator        
-cp ./Host/SharedHost/setting/dev/appsettings.json ./Host/Conductor            
-cp ./Host/SharedHost/setting/dev/appsettings.json ./Host/MetricCollector      
-cp ./Host/SharedHost/setting/dev/appsettings.json ./Host/Signalling           
-cp ./Host/SharedHost/setting/dev/appsettings.json ./Host/SystemHub            
-cp ./Host/SharedHost/setting/dev/appsettings.json ./Host/WorkerManager        
+sudo docker build ./Host -f ./Host/Signalling/Dockerfile.development   -t pigeatgarlic/signalling:development &
+sudo docker build ./Host -f ./Host/Conductor/Dockerfile.development   -t pigeatgarlic/conductor:development &
+sudo docker build ./Host -f ./Host/Authenticator/Dockerfile.development   -t pigeatgarlic/authenticator:development &
+sudo docker build ./Host -f ./Host/MetricCollector/Dockerfile.development   -t pigeatgarlic/metric-collector:development &
+sudo docker build ./Host -f ./Host/SystemHub/Dockerfile.development   -t pigeatgarlic/autoscaling:development &
+sudo docker build ./Host -f ./Host/AutoScaling/Dockerfile.development   -t pigeatgarlic/systemhub:development &
 
-dotnet run ./Host/Authenticator        --urls=http://localhost:5030
-dotnet run ./Host/Conductor            --urls=http://localhost:5020 
-dotnet run ./Host/MetricCollector      --urls=http://localhost:5040 
-dotnet run ./Host/Signalling           --urls=http://localhost:5010 
-dotnet run ./Host/SystemHub            --urls=http://localhost:5050 
-dotnet run ./Host/WorkerManager        --urls=http://localhost:5000 
+sleep 1m
+
+sudo docker push  pigeatgarlic/signalling:development
+sudo docker push  pigeatgarlic/conductor:development
+sudo docker push  pigeatgarlic/authenticator:development
+sudo docker push  pigeatgarlic/metric-collector:development
+sudo docker push  pigeatgarlic/autoscaling:development
+sudo docker push  pigeatgarlic/systemhub:development
