@@ -1,0 +1,113 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: development
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:574816112352:certificate/6814b5e8-94a7-4801-b783-d6c46edc0b99 
+
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /Fetch/*
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+      - path: /Session/*
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+      - path: /Shell/*
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
+
+
+
+
+
+
+
+
+      - path: /Admin/*
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+      - path: /Account/*
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+      - path: /Cluster/*
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+      - path: /Setting/*
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+
+
+
+
+
+
+
+
+
+      - path: /Token/Challenge/*
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+              
+
+
+
+
+ 
+      - path: /Handshake
+        pathType: Prefix
+        backend:
+          service:
+            name: signalling
+            port:
+              number: 80
+
+      - path: /Hub/*
+        pathType: Prefix
+        backend:
+          service:
+            name: systemhub
+            port:
+              number: 80
+
+
+              
