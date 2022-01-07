@@ -96,7 +96,7 @@ namespace AutoScaling.Services
                 MinCount = 1,
                 TagSpecifications = new List<TagSpecification> {
                     new TagSpecification {
-                        ResourceType = "AutoLauched node",
+                        ResourceType = "instance",
                         Tags = new List<Tag> {
                             new Tag {
                                 Key = "Launcher",
