@@ -148,19 +148,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ "build-autoscaling", "build-systemhub", "build-authenticator", "build-signalling", "build-conductor", "build-metric-collector"]
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Deploy
-        uses: cancue/eks-action@v0.0.2
-        env:
+      - name: setup
+        uses: ianbelcher/eks-kubectl-action@master
+        with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ap-southeast-1
           cluster_name: thinkmay-eks
-        with:
-          args: |
-            kubectl rollout restart deployment.apps/autoscaling -n development
-            kubectl rollout restart deployment.apps/systemhub -n development
-            kubectl rollout restart deployment.apps/authenticator -n development
-            kubectl rollout restart deployment.apps/signalling -n development
-            kubectl rollout restart deployment.apps/conductor -n development
+          args: rollout restart deployment -n development
