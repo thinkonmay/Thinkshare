@@ -10,7 +10,9 @@ using DbSchema.SystemDb.Data;
 
 namespace AutoScaling.Controllers
 {
+    
     [Route("/Instance")]
+    [Produces("application/json")]
     public class InstanceController : Controller
     {
         private readonly IEC2Service  _ec2;

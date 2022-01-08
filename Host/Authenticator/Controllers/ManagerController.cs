@@ -71,6 +71,7 @@ namespace Authenticator.Controllers
             request.Method = Method.GET;
 
             var coturnResult = await (new RestClient()).ExecuteAsync(request);
+            Serilog.Log.Information(coturnResult.Content);
             var InstanceID = JsonConvert.DeserializeObject<int>(coturnResult.Content);
             var cluster = new GlobalCluster
             {
