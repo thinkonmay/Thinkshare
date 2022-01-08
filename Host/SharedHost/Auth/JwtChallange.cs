@@ -15,7 +15,6 @@ namespace SharedHost.Auth
     {
         private readonly RequestDelegate _next;
 
-        private readonly RestClient _UserTokenIssuer;
 
         private readonly string IssuerUrl;
 
@@ -26,7 +25,6 @@ namespace SharedHost.Auth
         {
             _next = next;
             _config = config.Value;
-            _UserTokenIssuer = new RestClient();
         }
 
         public async Task Invoke(HttpContext context)
@@ -53,7 +51,7 @@ namespace SharedHost.Auth
                     .AddJsonBody(JsonConvert.SerializeObject(tokenRequest));
                 request.Method = Method.POST;
 
-                var result = await _UserTokenIssuer.ExecuteAsync(request);
+                var result = await (new RestClient()).ExecuteAsync(request);
                 if(result.StatusCode == HttpStatusCode.OK)
                 {
                     var content = result.Content;

@@ -58,7 +58,7 @@ namespace Authenticator.Controllers
         [HttpPost("ManagedCluster/Request")]
         public async Task<IActionResult> RequestCluster( string ClusterName, bool Private)
         {
-            var UserID = HttpContext.Items["UserID"];
+            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
             if(_db.Clusters.Where(x => x.Name == ClusterName && x.OwnerID == Int32.Parse(UserID.ToString()) ).Any())
             {
                 return BadRequest("Choose a different name");
@@ -85,7 +85,9 @@ namespace Authenticator.Controllers
                 SelfHost = false,
 
                 InstanceID = instance.ID,
-                WorkerNode = new List<WorkerNode>()
+                WorkerNode = new List<WorkerNode>(),
+                
+                OwnerID = UserID,
             };
 
             _db.Clusters.Add(cluster);
