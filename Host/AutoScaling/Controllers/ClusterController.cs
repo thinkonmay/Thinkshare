@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using DbSchema.SystemDb.Data;
 using Newtonsoft.Json;
 using System;
@@ -66,32 +67,39 @@ namespace AutoScaling.Controllers
         {
             GlobalCluster cluster;
             var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account =  await _userManager.FindByIdAsync((string)ManagerID);
-
+            var account =  await _userManager.FindByIdAsync((string)ManagerID);
             var refreshCluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
+
+
+
+
             if(refreshCluster.Count() == 0)
             {
+                var CoturnRequest = new RestRequest(_config.AutoScaling+"/Instance/Coturn");
+                CoturnRequest.Method = Method.GET;
+
+                var coturnResult = await (new RestClient()).ExecuteAsync(CoturnRequest);
+                var InstanceID = JsonConvert.DeserializeObject<int>(coturnResult.Content);
                 cluster = new GlobalCluster
                 {
                     Name = ClusterName,
                     Register = DateTime.Now,
-                    Private = Private
+
+                    Private = Private,
+                    SelfHost = true,
+
+                    InstanceID = InstanceID,
+                    WorkerNode = new List<WorkerNode>(),
                 };
+
                 account.ManagedCluster.Add(cluster);
                 await _userManager.UpdateAsync(account);
             }
             else
             {
                 cluster = refreshCluster.First();
-                if(cluster.SelfHost)
-                {
-                    if(cluster.instance == null)
-                    {
-                        cluster.instance = await _ec2.SetupCoturnService();
-                        await _userManager.UpdateAsync(account);
-                    }                    
-                }
             }
+
 
 
             var request = new RestRequest(_config.ClusterTokenGrantor)

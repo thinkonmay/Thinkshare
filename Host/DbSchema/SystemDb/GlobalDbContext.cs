@@ -42,5 +42,6 @@ namespace DbSchema.SystemDb.Data
         public DbSet<WorkerNode> Devices { get; set; }
         public DbSet<RemoteSession> RemoteSessions { get; set; }
         public DbSet<ScriptModel> ScriptModels { get; set; }
+        public DbSet<ClusterInstance> Instances {get;set;}
     }
 }

@@ -71,7 +71,7 @@ namespace Authenticator.Controllers
             request.Method = Method.GET;
 
             var coturnResult = await (new RestClient()).ExecuteAsync(request);
-            var instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content);
+            var InstanceID = JsonConvert.DeserializeObject<int>(coturnResult.Content);
             var cluster = new GlobalCluster
             {
                 Name = ClusterName,
@@ -80,7 +80,7 @@ namespace Authenticator.Controllers
                 Private = Private,
                 SelfHost = false,
 
-                instance = instance,
+                InstanceID = InstanceID,
                 WorkerNode = new List<WorkerNode>()
             };
 
@@ -111,8 +111,6 @@ namespace Authenticator.Controllers
             if (success)
             {
                 cluster.Unregister = DateTime.Now;
-                if(cluster.instance != null) { cluster.instance.End = DateTime.Now; }
-                cluster.instance.portForwards.ForEach(x => x.End = DateTime.Now);
                 await _userManager.UpdateAsync(account);
                 return Ok();
             }

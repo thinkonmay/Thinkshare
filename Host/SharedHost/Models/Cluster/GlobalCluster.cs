@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using SharedHost.Models.AWS;
 
 namespace SharedHost.Models.Cluster
@@ -27,6 +28,9 @@ namespace SharedHost.Models.Cluster
 
         public virtual List<WorkerNode> WorkerNode { get; set; }
 
+        public int? InstanceID {get;set;}
+
+        [ForeignKey("InstanceID")]
         public virtual ClusterInstance? instance {get;set;}
     }
 }
