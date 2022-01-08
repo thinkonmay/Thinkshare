@@ -17,9 +17,9 @@ namespace SharedHost.Models.Cluster
 
         public string Name {get;set;}
 
-        public DateTime Register { get; set; }
+        public DateTime? Register { get; set; }
 
-        public DateTime Unregister { get; set; }
+        public DateTime? Unregister { get; set; }
 
         public bool Private { get;set; }
 
