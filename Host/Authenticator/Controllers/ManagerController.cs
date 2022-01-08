@@ -62,11 +62,16 @@ namespace Authenticator.Controllers
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
+            if(account.ManagedCluster.Where(x => x.Name == ClusterName).Any())
+            {
+                return BadRequest("Choose a different name");
+            }
 
             var request = new RestRequest(_config.AutoScaling+"/Instance/Managed");
             request.Method = Method.GET;
 
             var coturnResult = await (new RestClient()).ExecuteAsync(request);
+            var instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content);
             var cluster = new GlobalCluster
             {
                 Name = ClusterName,
@@ -75,12 +80,13 @@ namespace Authenticator.Controllers
                 Private = Private,
                 SelfHost = false,
 
-                instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content),
+                instance = instance,
                 WorkerNode = new List<WorkerNode>()
             };
 
             account.ManagedCluster.Add(cluster);
             await _userManager.UpdateAsync(account);
+
 
             return Ok(cluster);
         }
