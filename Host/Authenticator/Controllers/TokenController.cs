@@ -6,6 +6,7 @@ using SharedHost.Auth;
 using System.Threading.Tasks;
 using DbSchema.DbSeeding;
 using SharedHost;
+using SharedHost.Models.Cluster;
 using SharedHost.Models.Session;
 using Microsoft.Extensions.Options;
 
@@ -95,11 +96,9 @@ namespace Authenticator.Controllers
 
         [HttpPost]
         [Route("Grant/Cluster")]
-        public async Task<IActionResult> GrantCluster(string UserID, 
-                                                      string ClusterName, 
-                                                      int ClusterID)
+        public async Task<IActionResult> GrantCluster([FromBody] GlobalCluster Cluster)
         {
-            return Ok(await _tokenGenerator.GenerateClusterJwt(UserID,ClusterName,ClusterID));
+            return Ok(await _tokenGenerator.GenerateClusterJwt(Cluster));
         }
 
         /// <summary>

@@ -72,7 +72,6 @@ namespace Authenticator.Controllers
 
             var coturnResult = await (new RestClient()).ExecuteAsync(request);
             var instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content);
-            Serilog.Log.Information("Initialize cluster instance "+instance.InstanceName+" done");
             var cluster = new GlobalCluster
             {
                 Name = ClusterName,

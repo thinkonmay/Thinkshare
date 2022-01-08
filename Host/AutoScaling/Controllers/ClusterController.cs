@@ -95,9 +95,7 @@ namespace AutoScaling.Controllers
 
 
             var request = new RestRequest(_config.ClusterTokenGrantor)
-                .AddQueryParameter("UserID",account.Id.ToString())
-                .AddQueryParameter("ClusterName",ClusterName)
-                .AddQueryParameter("ClusterID",cluster.ID.ToString());
+                .AddJsonBody(cluster);
             request.Method = Method.POST;
             
             var result = await _client.ExecuteAsync(request);

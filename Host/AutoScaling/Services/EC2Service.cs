@@ -186,7 +186,15 @@ namespace AutoScaling.Services
         public async Task<ClusterInstance> SetupManagedCluster()
         {
             var instance = await LaunchInstances();
-            var result = new ClusterInstance(instance);
+            var result = new ClusterInstance
+            {
+                IPAdress = instance.IPAdress,
+                InstanceID = instance.InstanceID,
+                InstanceName = instance.InstanceName,
+                PrivateIP = instance.PrivateIP,
+                keyPair = instance.keyPair,
+                portForwards = new List<PortForward>(),
+            };
 
 
             result.TurnUser = (new Random()).Next().ToString();
@@ -208,7 +216,15 @@ namespace AutoScaling.Services
         public async Task<ClusterInstance> SetupCoturnService()
         {
             var instance = await LaunchInstances();
-            var result = new ClusterInstance(instance);
+            var result = new ClusterInstance
+            {
+                IPAdress = instance.IPAdress,
+                InstanceID = instance.InstanceID,
+                InstanceName = instance.InstanceName,
+                PrivateIP = instance.PrivateIP,
+                keyPair = instance.keyPair,
+                portForwards = new List<PortForward>(),
+            };
 
             result.TurnUser = (new Random()).Next().ToString();
             result.TurnPassword = (new Random()).Next().ToString();
