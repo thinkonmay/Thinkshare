@@ -73,7 +73,6 @@ namespace SharedHost.Auth
                 var ClusterTokenResult = await (new RestClient()).ExecuteAsync(ClusterTokenRequest);
                 if (ClusterTokenResult.StatusCode == HttpStatusCode.OK)
                 {
-
                     var credential = JsonConvert.DeserializeObject<ClusterCredential>(ClusterTokenResult.Content);
 
                     context.Items.Add("IsCluster", "true" );
