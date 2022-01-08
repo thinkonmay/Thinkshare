@@ -23,7 +23,7 @@ namespace SharedHost.Models.AWS
             InstanceID = instance.InstanceID;
             InstanceName = instance.InstanceName;
             PrivateIP = instance.PrivateIP;
-            portForwards = new List<PortForward>();
+            keyPair = instance.keyPair;
         }
         public ClusterInstance() { }
     }

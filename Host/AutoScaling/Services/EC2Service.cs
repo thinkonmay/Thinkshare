@@ -118,7 +118,7 @@ namespace AutoScaling.Services
                 keyPair = keyPair,
             };
 
-
+            int waitingTime = 0;
             while (true)
             {
                 var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { response.Reservation.Instances.First().InstanceId } });
@@ -128,8 +128,11 @@ namespace AutoScaling.Services
                     result.IPAdress = infor.Reservations.First().Instances.First().PublicIpAddress;
                     break;
                 }
+                Serilog.Log.Information("waiting for ec2 instance to get desired state: "+ waitingTime);
                 System.Threading.Thread.Sleep(1000);
+                waitingTime++;
             }
+            Serilog.Log.Information("EC2 instance create finished after : "+ waitingTime);
 
             return result;
         }
@@ -178,7 +181,9 @@ namespace AutoScaling.Services
 
         public async Task<ClusterInstance> SetupManagedCluster()
         {
-            var result = new ClusterInstance((await LaunchInstances()));
+            var instance = await LaunchInstances();
+            var result = new ClusterInstance(instance);
+
 
             result.TurnUser = (new Random()).Next().ToString();
             result.TurnPassword = (new Random()).Next().ToString();
@@ -188,17 +193,18 @@ namespace AutoScaling.Services
             System.Threading.Thread.Sleep(30*1000);
 
             var coturn = SetupCoturnScript(result.TurnUser,result.TurnPassword);
-            await AccessEC2Instance(result,coturn);
+            await AccessEC2Instance(instance,coturn);
 
             var cluster = SetupClusterScript();
-            await AccessEC2Instance(result,cluster);
+            await AccessEC2Instance(instance,cluster);
             return result;
         }
 
 
         public async Task<ClusterInstance> SetupCoturnService()
         {
-            var result = new ClusterInstance((await LaunchInstances()));
+            var instance = await LaunchInstances();
+            var result = new ClusterInstance(instance);
 
             result.TurnUser = (new Random()).Next().ToString();
             result.TurnPassword = (new Random()).Next().ToString();
@@ -208,7 +214,7 @@ namespace AutoScaling.Services
             System.Threading.Thread.Sleep(30*1000);
 
             var coturn = SetupCoturnScript(result.TurnUser,result.TurnPassword);
-            await AccessEC2Instance(result,coturn);
+            await AccessEC2Instance(instance,coturn);
             return result;
         }
 
