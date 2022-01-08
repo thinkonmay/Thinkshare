@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using DbSchema.SystemDb.Data;
 using SharedHost.Models.User;
+using DbSchema.CachedState;
 
 namespace AutoScaling
 {
@@ -86,6 +87,7 @@ namespace AutoScaling
             services.Configure<AWSSetting>(Configuration.GetSection("AWSSetting"));
             services.Configure<InstanceSetting>(Configuration.GetSection("InstanceSetting"));
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
+            services.AddTransient<IGlobalStateStore,GlobalStateStore>();
             services.AddTransient<IEC2Service, EC2Service>();
             services.AddMvc();
         }
