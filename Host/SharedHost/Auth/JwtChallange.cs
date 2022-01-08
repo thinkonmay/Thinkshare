@@ -8,6 +8,7 @@ using SharedHost.Auth.ThinkmayAuthProtocol;
 using SharedHost.Models.Cluster;
 using System.Net;
 using RestSharp;
+using System;
 
 namespace SharedHost.Auth
 {
@@ -45,14 +46,15 @@ namespace SharedHost.Auth
                 var tokenRequest = new AuthenticationRequest
                 {
                    token = token,
-                   Validator = _config.UserTokenValidator
+                   Validator = "authenticator"
                 };
-                var UserTokenRequest = new RestRequest(_config.UserTokenValidator)
-                    .AddJsonBody(JsonConvert.SerializeObject(tokenRequest));
+
+                var UserTokenRequest = new RestRequest(_config.Authenticator+"/Token/Challenge/User")
+                    .AddJsonBody(tokenRequest);
                 UserTokenRequest.Method = Method.POST;
 
-                var ClusterTokenRequest = new RestRequest(_config.ClusterTokenValidator)
-                    .AddJsonBody(JsonConvert.SerializeObject(tokenRequest));
+                var ClusterTokenRequest = new RestRequest(_config.Authenticator+"/Token/Challenge/Cluster")
+                    .AddJsonBody(tokenRequest);
                 ClusterTokenRequest.Method = Method.POST;
 
                 var UserTokenResult =    await (new RestClient()).ExecuteAsync(UserTokenRequest);
@@ -79,7 +81,7 @@ namespace SharedHost.Auth
                 }
                 return;
             }
-            catch
+            catch (Exception ex)
             {
 
                 // do nothing if jwt validation fails

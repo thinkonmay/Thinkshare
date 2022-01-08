@@ -22,7 +22,6 @@ namespace AutoScaling.Controllers
     /// <summary>
     /// Routes used by user to fetch information about the system
     /// </summary>
-    [Manager]
     [ApiController]
     [Route("/Cluster")]
     [Produces("application/json")]
@@ -104,7 +103,7 @@ namespace AutoScaling.Controllers
 
 
 
-            var request = new RestRequest(_config.ClusterTokenGrantor)
+            var request = new RestRequest(_config.Authenticator+"/Token/Grant/Cluster")
                 .AddJsonBody(cluster);
             request.Method = Method.POST;
             
@@ -136,6 +135,7 @@ namespace AutoScaling.Controllers
             await _cache.CacheWorkerInfor(newWorker);
             return Ok(newWorker.ID);
         }
+
 
         [Cluster]
         [HttpGet("Infor")]

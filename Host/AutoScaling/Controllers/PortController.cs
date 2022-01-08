@@ -18,7 +18,6 @@ namespace AutoScaling.Controllers
     /// <summary>
     /// Routes used by user to fetch information about the system
     /// </summary>
-    [Manager]
     [ApiController]
     [Route("/ManagedCluster")]
     [Produces("application/json")]
