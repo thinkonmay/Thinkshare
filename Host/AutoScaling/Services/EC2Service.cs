@@ -39,7 +39,7 @@ namespace AutoScaling.Services
         }
 
 
-        public async Task<EC2KeyPair> CreateKeyPair()
+        private async Task<EC2KeyPair> CreateKeyPair()
         {
             AmazonEC2Client _ec2Client;
             if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
@@ -64,7 +64,9 @@ namespace AutoScaling.Services
         }
 
 
-        public async Task<EC2Instance> LaunchInstances()
+
+
+        private async Task<EC2Instance> LaunchInstances()
         {
             AmazonEC2Client _ec2Client;
             if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
@@ -142,7 +144,7 @@ namespace AutoScaling.Services
 
 
 
-        public async Task<bool> EC2TerminateInstances(string ID)
+        public async Task<bool> TerminateInstance(ClusterInstance instance)
         {
             AmazonEC2Client _ec2Client;
             if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
@@ -154,24 +156,24 @@ namespace AutoScaling.Services
                 return false;
             }
 
-            var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { ID } });
-
+            var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
             if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
             {
                 return false;
             }
 
-            var response = await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
+            await _ec2Client.DeleteKeyPairAsync(new DeleteKeyPairRequest( instance.keyPair.Name ));            
+            await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
             {
                 InstanceIds = new List<string> {
-                    ID
+                    instance.InstanceID
                 }
             });
 
 
             while(true)
             {
-                var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { ID } });
+                var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
 
                 if (infor.Reservations.First().Instances.First().State.Name == InstanceStateName.Terminated )
                 {
@@ -220,7 +222,7 @@ namespace AutoScaling.Services
             return result;
         }
 
-        public async Task<List<string>?> AccessEC2Instance (EC2Instance instance, List<string> commands)
+        private async Task<List<string>?> AccessEC2Instance (EC2Instance instance, List<string> commands)
         {
             MemoryStream keyStream = new MemoryStream(Encoding.UTF8.GetBytes(instance.keyPair.PrivateKey));
             var keyFiles = new[] { new PrivateKeyFile(keyStream) };

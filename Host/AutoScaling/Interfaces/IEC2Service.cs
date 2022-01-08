@@ -6,10 +6,8 @@ namespace AutoScaling.Interfaces
 {
     public interface IEC2Service
     {
-        Task<EC2Instance> LaunchInstances();
-        Task<bool> EC2TerminateInstances(string ID);
+        Task<bool> TerminateInstance(ClusterInstance instance);
         Task<ClusterInstance> SetupManagedCluster();
-        Task<List<string>?> AccessEC2Instance (EC2Instance instance , List<string> commands);
         Task<ClusterInstance> SetupCoturnService();
     }
 }

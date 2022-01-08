@@ -33,7 +33,7 @@ namespace AutoScaling
             });
 
             services.AddStackExchangeRedisCache(options =>
-            {
+                                                            {
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = Configuration.GetConnectionString("RedisInstanceName");
             });

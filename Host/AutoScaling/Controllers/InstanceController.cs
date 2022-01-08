@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Amazon.EC2.Model;
 using AutoScaling.Interfaces;
+using SharedHost.Models.AWS;
 
 namespace AutoScaling.Controllers
 {
@@ -14,25 +15,16 @@ namespace AutoScaling.Controllers
         {
             _ec2 = ec2;
         }
-
-        [HttpGet("/Create")]
-        public async Task<IActionResult> Cluster()
+        [HttpPost("/Managed")]
+        public async Task<IActionResult> ManagedInstance()
         {
-            return Ok(await _ec2.LaunchInstances());
+            return Ok(await _ec2.SetupManagedCluster());
         }
 
-        [HttpGet("/Terminate")]
-        public async Task<IActionResult> Cluster(string ID)
+        [HttpPost("/Terminate")]
+        public async Task<IActionResult> Cluster([FromBody]ClusterInstance instance)
         {
-            return Ok(await _ec2.EC2TerminateInstances(ID));
-        }
-
-        [HttpGet("/Cluster")]
-        public async Task<IActionResult> Coturn()
-        {
-            return Ok(
-                await _ec2.SetupManagedCluster()
-            );
+            return Ok(await _ec2.TerminateInstance(instance));
         }
     }
 }

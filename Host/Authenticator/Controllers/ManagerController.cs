@@ -59,7 +59,7 @@ namespace Authenticator.Controllers
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
 
-            var request = new RestRequest(_config.ManagedClusterServiceGrantor);
+            var request = new RestRequest(_config.AutoScaling+"/Cluster/");
             request.Method = Method.GET;
 
             var coturnResult = await (new RestClient()).ExecuteAsync(request);
@@ -89,7 +89,7 @@ namespace Authenticator.Controllers
 
         [Manager]
         [HttpPost("/Cluster/Unregister")]
-        public async Task<IActionResult> UnregisterCluster( string ClusterName)
+        public async Task<IActionResult> UnregisterCluster(string ClusterName)
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
@@ -99,16 +99,14 @@ namespace Authenticator.Controllers
 
 
             var clusterRequest = new RestRequest(_config.AutoScaling + "/Instance/Terminate")
-                .AddQueryParameter("ID",cluster.instance.InstanceID);
+                .AddJsonBody(cluster.instance);
             var clusterResult = await (new RestClient()).ExecuteAsync(clusterRequest); 
             var success = JsonConvert.DeserializeObject<bool>(clusterResult.Content);
             if (success)
             {
                 cluster.Unregister = DateTime.Now;
-                if(cluster.instance != null)
-                {
-                    cluster.instance.End = DateTime.Now;
-                }
+                if(cluster.instance != null) { cluster.instance.End = DateTime.Now; }
+                cluster.instance.portForwards.ForEach(x => x.End = DateTime.Now);
                 await _userManager.UpdateAsync(account);
                 return Ok();
             }

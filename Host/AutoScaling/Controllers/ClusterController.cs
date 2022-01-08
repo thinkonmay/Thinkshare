@@ -140,22 +140,5 @@ namespace AutoScaling.Controllers
             var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
             return Ok(cluster);
         }
-
-        [Manager]
-        [HttpGet("ManagedInstance")]
-        public async Task<IActionResult> getKey(string ClusterName)
-        {
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
-            if(cluster.SelfHost)
-            {
-                return BadRequest();
-            }
-            else
-            {
-                return Ok(cluster.instance);
-            }
-        }
     }
 }
