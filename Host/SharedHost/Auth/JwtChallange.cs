@@ -31,6 +31,7 @@ namespace SharedHost.Auth
         public async Task Invoke(HttpContext context)
         {
             string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            context.Items.Add("Token", token);
             if (token != null)
             {
                 await attachUserToContext(context,  token);
@@ -69,6 +70,7 @@ namespace SharedHost.Auth
             }
             catch
             {
+
                 // do nothing if jwt validation fails
                 // user is not attached to context so request won't have access to secure routes
             }
@@ -81,9 +83,13 @@ namespace SharedHost.Auth
     {
         private readonly RequestDelegate _next;
 
-        public AuthorizeMiddleWare(RequestDelegate next)
+        private readonly SystemConfig _config;
+
+        public AuthorizeMiddleWare(RequestDelegate next, 
+                                   IOptions<SystemConfig> config)
         {
             _next = next;
+            _config = config.Value;
         }
 
         public async Task Invoke(HttpContext context)
@@ -122,6 +128,38 @@ namespace SharedHost.Auth
                 {
                     context.Response.StatusCode =  StatusCodes.Status401Unauthorized;
                     return;
+                }
+            }
+
+            var clusterAttribute = endpoint?.Metadata.GetMetadata<ClusterAttribute>();
+            if (adminAttribute != null)
+            {
+                try
+                {
+                    var request = new RestRequest(_config.UserTokenValidator)
+                        .AddQueryParameter("token",(string)context.Items["Token"]);
+                    request.Method = Method.POST;
+
+                    var result = await (new RestClient()).ExecuteAsync(request);
+                    if(result.StatusCode == HttpStatusCode.OK)
+                    {
+                        var content = result.Content;
+                        var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(content);
+                        // attach user to context on successful jwt
+
+
+                        context.Items.Add("IsUser", claim.IsUser ? "true" : "false");
+                        context.Items.Add("IsManager", claim.IsManager ? "true" : "false");
+                        context.Items.Add("IsAdmin", claim.IsAdmin ? "true" : "false");
+
+                        context.Items.Add("UserID", claim.UserID);
+                    }
+                    return;
+                }
+                catch
+                {
+                    // do nothing if jwt validation fails
+                    // user is not attached to context so request won't have access to secure routes
                 }
             }
 

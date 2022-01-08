@@ -28,8 +28,6 @@ namespace AutoScaling.Controllers
     [Produces("application/json")]
     public class ClusterController : Controller
     {
-        private readonly UserManager<UserAccount> _userManager;
-
         private readonly GlobalDbContext _db;
 
         private readonly IGlobalStateStore _cache;
@@ -46,14 +44,12 @@ namespace AutoScaling.Controllers
                                  IEC2Service ec2,
                                  IOptions<SystemConfig> config,
                                  IOptions<InstanceSetting> instanceSetting,
-                                 UserManager<UserAccount> userManager,
                                  IGlobalStateStore cache)
         {
             _cache = cache;
             _db = db;
             _client = new RestClient(config.Value.Authenticator);
             _instanceSetting = instanceSetting.Value;
-            _userManager = userManager;
             _config = config.Value;
             _ec2 = ec2;
         }
@@ -67,9 +63,10 @@ namespace AutoScaling.Controllers
         public async Task<IActionResult> NewCluster(string ClusterName, bool Private)
         {
             GlobalCluster cluster;
-            var ManagerID = HttpContext.Items["UserID"];
-            var account =  await _userManager.FindByIdAsync(ManagerID.ToString());
-            var refreshCluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
+            var ManagerID = Int32.Parse(HttpContext.Items["UserID"].ToString());
+            var refreshCluster = _db.Clusters
+                .Where(x => x.Name == ClusterName && 
+                            x.OwnerID == ManagerID);
 
 
 
@@ -93,10 +90,12 @@ namespace AutoScaling.Controllers
 
                     InstanceID = instance.ID,
                     WorkerNode = new List<WorkerNode>(),
+
+                    OwnerID = ManagerID
                 };
 
-                account.ManagedCluster.Add(cluster);
-                await _userManager.UpdateAsync(account);
+                _db.Clusters.Add(cluster);
+                await _db.SaveChangesAsync();
             }
             else
             {
@@ -115,14 +114,12 @@ namespace AutoScaling.Controllers
         }
 
 
-        [Manager]
+        [Cluster]
         [HttpPost("Worker/Register")]
         public async Task<IActionResult> Register(string ClusterName, [FromBody] WorkerRegisterModel body)
         {
-            var ManagerID = HttpContext.Items["UserID"];
-            var account =  await _userManager.FindByIdAsync(ManagerID.ToString());
-            
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).FirstOrDefault();
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
             var newWorker = new WorkerNode
             {
                 Register = DateTime.Now,
@@ -132,21 +129,21 @@ namespace AutoScaling.Controllers
                 OS = body.OS
             };
 
-            cluster.WorkerNode.Add(newWorker);
-            _db.Clusters.Update(cluster);
+            Cluster.WorkerNode.Add(newWorker);
+            _db.Clusters.Update(Cluster);
             await _db.SaveChangesAsync();
 
             await _cache.CacheWorkerInfor(newWorker);
             return Ok(newWorker.ID);
         }
 
-        [Manager]
+        [Cluster]
         [HttpGet("Infor")]
         public async Task<IActionResult> getInfor()
         {
-            var ManagerID = HttpContext.Items["UserID"];
-            var account = await _userManager.FindByIdAsync((string)ManagerID);
-            return Ok(account.ManagedCluster);
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+            return Ok(Cluster );
         }
     }
 }

@@ -66,7 +66,6 @@ namespace Authenticator.Services
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
@@ -120,7 +119,7 @@ namespace Authenticator.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", accession.ID.ToString()) }),
-                Expires = DateTime.Now.AddDays(30),
+                Expires = DateTime.Now.AddDays(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
             };
@@ -197,9 +196,7 @@ namespace Authenticator.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("ID", Cluster.ID.ToString()) }),
-                Expires = Cluster.Register,
-                IssuedAt = Cluster.Register,
-                NotBefore = Cluster.Register,
+                Expires = DateTime.Now.AddDays(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
             };

@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using SharedHost.Models.AWS;
+using SharedHost.Models.User;
 
 namespace SharedHost.Models.Cluster
 {
@@ -32,6 +33,12 @@ namespace SharedHost.Models.Cluster
 
         [ForeignKey("InstanceID")]
         public virtual ClusterInstance? instance {get;set;}
+
+        [Required]
+        public int OwnerID {get;set;}
+
+        [ForeignKey("OwnerID")]
+        public virtual UserAccount Owner { get; set; }
     }
 }
 

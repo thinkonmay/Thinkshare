@@ -48,19 +48,6 @@ namespace DbSchema.DbSeeding
                     }
                 }
             }
-
-            if(!admins.First().ManagedCluster.Any())
-            {
-                var DefaultCluster = new GlobalCluster 
-                {
-                    Name = RoleSeeding.TEST_CLUSTER, 
-                    Private = true,
-                    Register = System.DateTime.Now,
-                };
-                admins.First().ManagedCluster.Add(DefaultCluster);
-                userManager.UpdateAsync(admins.First()).Wait();
-
-            }
         }
 
         public static void SeedUserRole(UserManager<UserAccount> userManager)

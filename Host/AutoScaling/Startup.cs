@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using DbSchema.SystemDb.Data;
 using SharedHost.Models.User;
 using DbSchema.CachedState;
+using SharedHost.Auth;
 
 namespace AutoScaling
 {
@@ -107,6 +108,9 @@ namespace AutoScaling
                 .SetIsOriginAllowed(origin => true)); // allow any origin
 
             app.UseRouting();
+            app.UseMiddleware<JwtMiddleware>();
+            app.UseMiddleware<AuthorizeMiddleWare>();
+
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
             {

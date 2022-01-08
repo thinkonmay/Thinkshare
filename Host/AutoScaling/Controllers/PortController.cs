@@ -51,13 +51,12 @@ namespace AutoScaling.Controllers
         }
 
 
-        [Manager]
+        [Cluster]
         [HttpGet("Portforward/Request")]
         public async Task<IActionResult> request(string ClusterName, int LocalPort)
         {
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
             if(cluster.SelfHost)
             {
                 return BadRequest();
@@ -90,13 +89,12 @@ namespace AutoScaling.Controllers
 
         }
 
-        [Manager]
+        [Cluster]
         [HttpGet("Portforward/Release")]
-        public async Task<IActionResult> Release(string ClusterName, int LocalPort)
+        public async Task<IActionResult> Release(int LocalPort)
         {
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
             if(cluster.SelfHost)
             {
                 return BadRequest();
@@ -104,9 +102,8 @@ namespace AutoScaling.Controllers
             else
             {
                 var port = cluster.instance.portForwards.Where( x => 
-                    x.LocalPort == LocalPort &&
-                    !x.End.HasValue
-                ).First();
+                     x.LocalPort == LocalPort &&
+                    !x.End.HasValue).First();
                 port.End = DateTime.Now;
 
                 _db.Update(port);

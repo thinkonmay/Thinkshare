@@ -18,4 +18,8 @@ namespace SharedHost.Auth.ThinkmayAuthProtocol
     public class AdminAttribute : ActionFilterAttribute
     {
     }
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class ClusterAttribute : ActionFilterAttribute
+    {
+    }
 }

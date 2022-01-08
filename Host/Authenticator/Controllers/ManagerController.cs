@@ -44,9 +44,7 @@ namespace Authenticator.Controllers
 
         [User]
         [HttpPost("Request")]
-        public async Task<IActionResult> Elevate(string Description, 
-                                                 bool SelfHost, 
-                                                 string ClusterName)
+        public async Task<IActionResult> Elevate(string Description)
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
@@ -58,12 +56,10 @@ namespace Authenticator.Controllers
 
         [Manager]
         [HttpPost("ManagedCluster/Request")]
-        public async Task<IActionResult> RequestCluster( string ClusterName,
-                                                         bool Private)
+        public async Task<IActionResult> RequestCluster( string ClusterName, bool Private)
         {
             var UserID = HttpContext.Items["UserID"];
-            var account = await _userManager.FindByIdAsync(UserID.ToString());
-            if(account.ManagedCluster.Where(x => x.Name == ClusterName).Any())
+            if(_db.Clusters.Where(x => x.Name == ClusterName && x.OwnerID == Int32.Parse(UserID.ToString()) ).Any())
             {
                 return BadRequest("Choose a different name");
             }
@@ -92,8 +88,8 @@ namespace Authenticator.Controllers
                 WorkerNode = new List<WorkerNode>()
             };
 
-            account.ManagedCluster.Add(cluster);
-            await _userManager.UpdateAsync(account);
+            _db.Clusters.Add(cluster);
+            await _db.SaveChangesAsync();
 
 
             return Ok(instance.IPAdress);
@@ -103,15 +99,12 @@ namespace Authenticator.Controllers
         [HttpPost("Cluster/Unregister")]
         public async Task<IActionResult> UnregisterCluster(string ClusterName)
         {
-            var UserID = HttpContext.Items["UserID"];
-            var account = await _userManager.FindByIdAsync(UserID.ToString());
-
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
-
-
+            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
+            var cluster = _db.Clusters
+                .Where(x => x.Name == ClusterName && x.OwnerID == UserID).First();
 
             var clusterRequest = new RestRequest(_config.AutoScaling + "/Instance/Terminate")
-                .AddJsonBody(cluster.instance);
+                .AddQueryParameter("ID",cluster.instance.ID.ToString());
             clusterRequest.Method = Method.POST;
 
             var client = new RestClient();
@@ -121,11 +114,13 @@ namespace Authenticator.Controllers
             {
                 return BadRequest("Fail to terminate cluster");
             }
+
             var success = JsonConvert.DeserializeObject<bool>(clusterResult.Content);
             if (success)
             {
                 cluster.Unregister = DateTime.Now;
-                await _userManager.UpdateAsync(account);
+                _db.Update(cluster);
+                await _db.SaveChangesAsync();
                 return Ok();
             }
             else
