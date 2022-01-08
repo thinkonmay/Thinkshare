@@ -1,4 +1,7 @@
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
+using SharedHost.Models.Cluster;
 using SharedHost;
 using Microsoft.Extensions.Options;
 using RestSharp;
@@ -8,10 +11,10 @@ using Authenticator.Interfaces;
 using SharedHost.Models.User;
 using System;
 using SharedHost.Models.AWS;
+using SharedHost.Models.Device;
 using System.Threading.Tasks;
 using DbSchema.DbSeeding;
 using SharedHost.Auth.ThinkmayAuthProtocol;
-using System.Linq;
 using DbSchema.SystemDb.Data;
 
 namespace Authenticator.Controllers
@@ -33,6 +36,7 @@ namespace Authenticator.Controllers
             _userManager = userManager;
             _db = db;
             _token = token;
+            _config = config.Value;
         }
 
 
@@ -52,43 +56,37 @@ namespace Authenticator.Controllers
         }
 
         [Manager]
-        [HttpPost("/ManagedCluster/Request")]
+        [HttpPost("ManagedCluster/Request")]
         public async Task<IActionResult> RequestCluster( string ClusterName,
                                                          bool Private)
         {
             var UserID = HttpContext.Items["UserID"];
             var account = await _userManager.FindByIdAsync(UserID.ToString());
 
-            var request = new RestRequest(_config.AutoScaling+"/Cluster/");
+            var request = new RestRequest(_config.AutoScaling+"/Instance/Managed");
             request.Method = Method.GET;
 
             var coturnResult = await (new RestClient()).ExecuteAsync(request);
-            ClusterInstance instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content);
+            var cluster = new GlobalCluster
+            {
+                Name = ClusterName,
+                Register = DateTime.Now,
 
-            var managerToken = await _token.GenerateUserJwt(account);
+                Private = Private,
+                SelfHost = false,
 
-            var clusterRequest = new RestRequest(_config.AutoScaling + "/Cluster/Register")
-                .AddHeader("Authorization","Bearer "+managerToken)
-                .AddQueryParameter("ClusterName",ClusterName)
-                .AddQueryParameter("Private",Private.ToString());
-            request.Method = Method.POST;
+                instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content),
+                WorkerNode = new List<WorkerNode>()
+            };
 
-            var clusterResult = await (new RestClient()).ExecuteAsync(clusterRequest); 
-            var token = JsonConvert.DeserializeObject<string>(clusterResult.Content);
+            account.ManagedCluster.Add(cluster);
+            await _userManager.UpdateAsync(account);
 
-
-            var result = _token.ValidateClusterToken(token);
-            var registeredCluster = _db.Clusters.Find(result.Id);
-
-            registeredCluster.instance = instance;
-
-            _db.Update(registeredCluster);
-            await _db.SaveChangesAsync();
-            return Ok(registeredCluster);
+            return Ok(cluster);
         }
 
         [Manager]
-        [HttpPost("/Cluster/Unregister")]
+        [HttpPost("Cluster/Unregister")]
         public async Task<IActionResult> UnregisterCluster(string ClusterName)
         {
             var UserID = HttpContext.Items["UserID"];

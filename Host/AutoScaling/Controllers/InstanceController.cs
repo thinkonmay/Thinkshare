@@ -15,13 +15,13 @@ namespace AutoScaling.Controllers
         {
             _ec2 = ec2;
         }
-        [HttpPost("/Managed")]
+        [HttpPost("Managed")]
         public async Task<IActionResult> ManagedInstance()
         {
             return Ok(await _ec2.SetupManagedCluster());
         }
 
-        [HttpPost("/Terminate")]
+        [HttpPost("Terminate")]
         public async Task<IActionResult> Cluster([FromBody]ClusterInstance instance)
         {
             return Ok(await _ec2.TerminateInstance(instance));

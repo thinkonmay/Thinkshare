@@ -48,7 +48,6 @@ namespace DbSchema.CachedState
         public async Task SetClusterSnapshot(int ClusterID, Dictionary<int, string> snapshoot)
         {
             await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString(), snapshoot,null,null);
-
         }
         public async Task<Dictionary<int, string>> GetClusterSnapshot(int ClusterID)
         {
@@ -56,7 +55,7 @@ namespace DbSchema.CachedState
             if(snapshoot == null)
             {
                 snapshoot = new Dictionary<int, string>();
-                await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString(), snapshoot,null,null);
+                await SetClusterSnapshot(ClusterID,snapshoot);
             }
             return snapshoot;
         }

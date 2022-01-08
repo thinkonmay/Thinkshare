@@ -25,7 +25,7 @@ namespace SharedHost.Models.Cluster
 
         public bool SelfHost {get;set;}
 
-        public virtual ICollection<WorkerNode> WorkerNode { get; set; }
+        public virtual List<WorkerNode> WorkerNode { get; set; }
 
         public virtual ClusterInstance? instance {get;set;}
     }
