@@ -113,12 +113,14 @@ namespace Authenticator.Services
             claims.Add(new Claim("ClientID", accession.ClientID.ToString()));
             claims.Add(new Claim("WorkerID", accession.WorkerID.ToString()));
             claims.Add(new Claim("Module",   ((int) accession.Module).ToString()));
+            claims.Add(new Claim("id",       accession.ID.ToString()));
+
 
 
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", accession.ID.ToString()) }),
+                Subject = new ClaimsIdentity(),
                 Expires = DateTime.Now.AddDays(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
@@ -190,12 +192,15 @@ namespace Authenticator.Services
             var claims = new List<Claim>();
 
             claims.Add(new Claim("Name", Cluster.Name.ToString()));
+            claims.Add(new Claim("Owner", Cluster.OwnerID.ToString()));
+            claims.Add(new Claim("ID", Cluster.ID.ToString()));
+
 
 
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("ID", Cluster.ID.ToString()) }),
+                Subject = new ClaimsIdentity(),
                 Expires = DateTime.Now.AddDays(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
@@ -221,14 +226,16 @@ namespace Authenticator.Services
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
 
-                var ID = jwtToken.Claims.First(x => x.Type == "ID").Value;
-                var Name = jwtToken.Claims.First(x => x.Type == "Name").Value;
+                var ID    = jwtToken.Claims.First(x => x.Type == "ID").Value;
+                var Name  = jwtToken.Claims.First(x => x.Type == "Name").Value;
+                var Owner = jwtToken.Claims.First(x => x.Type == "Owner").Value;
 
 
                 var ret = new ClusterCredential
                 {
                     ID = Int32.Parse(ID),
-                    ClusterName = Name
+                    OwnerID = Int32.Parse(Owner), 
+                    ClusterName = Name,
                 };
                 return ret;
             }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
 using SharedHost.Auth.ThinkmayAuthProtocol;
+using SharedHost.Models.Cluster;
 using System.Net;
 using RestSharp;
 
@@ -132,11 +133,11 @@ namespace SharedHost.Auth
             }
 
             var clusterAttribute = endpoint?.Metadata.GetMetadata<ClusterAttribute>();
-            if (adminAttribute != null)
+            if (clusterAttribute != null)
             {
                 try
                 {
-                    var request = new RestRequest(_config.UserTokenValidator)
+                    var request = new RestRequest(_config.ClusterTokenValidator)
                         .AddQueryParameter("token",(string)context.Items["Token"]);
                     request.Method = Method.POST;
 
@@ -144,22 +145,24 @@ namespace SharedHost.Auth
                     if(result.StatusCode == HttpStatusCode.OK)
                     {
                         var content = result.Content;
-                        var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(content);
-                        // attach user to context on successful jwt
+                        var credential = JsonConvert.DeserializeObject<ClusterCredential>(content);
 
 
-                        context.Items.Add("IsUser", claim.IsUser ? "true" : "false");
-                        context.Items.Add("IsManager", claim.IsManager ? "true" : "false");
-                        context.Items.Add("IsAdmin", claim.IsAdmin ? "true" : "false");
-
-                        context.Items.Add("UserID", claim.UserID);
+                        context.Items.Add("OwnerID", credential.OwnerID );
+                        context.Items.Add("ClusterID", credential.ID );
+                        context.Items.Add("ClusterName", credential.ID );
+                    }
+                    else
+                    {
+                        context.Response.StatusCode =  StatusCodes.Status401Unauthorized;
+                        return;
                     }
                     return;
                 }
                 catch
                 {
-                    // do nothing if jwt validation fails
-                    // user is not attached to context so request won't have access to secure routes
+                    context.Response.StatusCode =  StatusCodes.Status401Unauthorized;
+                    return;
                 }
             }
 
