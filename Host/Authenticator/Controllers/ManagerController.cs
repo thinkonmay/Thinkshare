@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using DbSchema.DbSeeding;
 using SharedHost.Auth.ThinkmayAuthProtocol;
 using DbSchema.SystemDb.Data;
+using System.Text;
 
 namespace Authenticator.Controllers
 {
@@ -71,8 +72,9 @@ namespace Authenticator.Controllers
             request.Method = Method.GET;
 
             var coturnResult = await (new RestClient()).ExecuteAsync(request);
-            Serilog.Log.Information(coturnResult.Content);
-            var InstanceID = JsonConvert.DeserializeObject<int>(coturnResult.Content);
+            var content = Encoding.Default.GetString(coturnResult.RawBytes);
+            Serilog.Log.Information("Got result from autoscaling :"+content);
+            var InstanceID = JsonConvert.DeserializeObject<int>(content);
             var cluster = new GlobalCluster
             {
                 Name = ClusterName,
