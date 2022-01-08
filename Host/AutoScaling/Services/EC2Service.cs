@@ -115,6 +115,8 @@ namespace AutoScaling.Services
 
                 PrivateIP = response.Reservation.Instances.First().PrivateIpAddress,
 
+                Start = DateTime.Now,
+
                 keyPair = keyPair,
             };
 

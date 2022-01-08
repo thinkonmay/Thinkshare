@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 
 COPY ["AutoScaling/AutoScaling.csproj", "AutoScaling/"]
+COPY ["SharedHost/setting/dev/appsettings.json", "AutoScaling/"]
 RUN dotnet restore "AutoScaling/AutoScaling.csproj"
 
 

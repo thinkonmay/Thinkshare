@@ -95,7 +95,6 @@ namespace Authenticator.Controllers
             var account = await _userManager.FindByIdAsync(UserID.ToString());
 
             var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
-            cluster.Unregister = DateTime.Now;
 
 
 
@@ -106,6 +105,10 @@ namespace Authenticator.Controllers
             if (success)
             {
                 cluster.Unregister = DateTime.Now;
+                if(cluster.instance != null)
+                {
+                    cluster.instance.End = DateTime.Now;
+                }
                 await _userManager.UpdateAsync(account);
                 return Ok();
             }
