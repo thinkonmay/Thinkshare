@@ -98,6 +98,8 @@ namespace Authenticator.Controllers
 
             var clusterRequest = new RestRequest(_config.AutoScaling + "/Instance/Terminate")
                 .AddJsonBody(cluster.instance);
+            clusterRequest.Method = Method.POST;
+
             var clusterResult = await (new RestClient()).ExecuteAsync(clusterRequest); 
             var success = JsonConvert.DeserializeObject<bool>(clusterResult.Content);
             if (success)

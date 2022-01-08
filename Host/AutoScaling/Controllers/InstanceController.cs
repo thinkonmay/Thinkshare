@@ -15,7 +15,7 @@ namespace AutoScaling.Controllers
         {
             _ec2 = ec2;
         }
-        [HttpPost("Managed")]
+        [HttpGet("Managed")]
         public async Task<IActionResult> ManagedInstance()
         {
             return Ok(await _ec2.SetupManagedCluster());
