@@ -73,9 +73,7 @@ namespace Authenticator.Controllers
 
             var client = new RestClient();
             var coturnResult = await client.ExecuteAsync(request);
-            var content = Encoding.Default.GetString(coturnResult.RawBytes);
-            Serilog.Log.Information("Got result from autoscaling :"+content);
-            var InstanceID = JsonConvert.DeserializeObject<int>(content);
+            Serilog.Log.Information(JsonConvert.SerializeObject(coturnResult));
             var cluster = new GlobalCluster
             {
                 Name = ClusterName,
@@ -84,7 +82,7 @@ namespace Authenticator.Controllers
                 Private = Private,
                 SelfHost = false,
 
-                InstanceID = InstanceID,
+                InstanceID = Int32.Parse(coturnResult.Content),
                 WorkerNode = new List<WorkerNode>()
             };
 
