@@ -71,7 +71,8 @@ namespace Authenticator.Controllers
             var request = new RestRequest(_config.AutoScaling+"/Instance/Managed");
             request.Method = Method.GET;
 
-            var coturnResult = await (new RestClient()).ExecuteAsync(request);
+            var client = new RestClient();
+            var coturnResult = await client.ExecuteAsync(request);
             var content = Encoding.Default.GetString(coturnResult.RawBytes);
             Serilog.Log.Information("Got result from autoscaling :"+content);
             var InstanceID = JsonConvert.DeserializeObject<int>(content);
