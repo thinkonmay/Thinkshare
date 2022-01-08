@@ -8,6 +8,7 @@ using SharedHost.Auth.ThinkmayAuthProtocol;
 using SharedHost.Models.Cluster;
 using System.Net;
 using RestSharp;
+using System;
 
 namespace SharedHost.Auth
 {
@@ -45,16 +46,18 @@ namespace SharedHost.Auth
                 var tokenRequest = new AuthenticationRequest
                 {
                    token = token,
-                   Validator = _config.UserTokenValidator
+                   Validator = "authenticator"
                 };
-                var UserTokenRequest = new RestRequest(_config.UserTokenValidator)
-                    .AddJsonBody(JsonConvert.SerializeObject(tokenRequest));
+
+                var UserTokenRequest = new RestRequest(_config.Authenticator+"/Token/Challenge/User")
+                    .AddJsonBody(tokenRequest);
                 UserTokenRequest.Method = Method.POST;
 
-                var ClusterTokenRequest = new RestRequest(_config.ClusterTokenValidator)
-                    .AddJsonBody(JsonConvert.SerializeObject(tokenRequest));
+                var ClusterTokenRequest = new RestRequest(_config.Authenticator+"/Token/Challenge/Cluster")
+                    .AddJsonBody(tokenRequest);
                 ClusterTokenRequest.Method = Method.POST;
 
+                Serilog.Log.Information("Validating user token");
                 var UserTokenResult =    await (new RestClient()).ExecuteAsync(UserTokenRequest);
                 if(UserTokenResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -66,6 +69,7 @@ namespace SharedHost.Auth
                     context.Items.Add("UserID", claim.UserID);
                 }
 
+                Serilog.Log.Information("Validating cluster token");
                 var ClusterTokenResult = await (new RestClient()).ExecuteAsync(ClusterTokenRequest);
                 if (ClusterTokenResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -77,9 +81,10 @@ namespace SharedHost.Auth
                     context.Items.Add("ClusterID", credential.ID );
                     context.Items.Add("ClusterName", credential.ClusterName );
                 }
+                Serilog.Log.Information("Both validating scheme is failed");
                 return;
             }
-            catch
+            catch (Exception ex)
             {
 
                 // do nothing if jwt validation fails
