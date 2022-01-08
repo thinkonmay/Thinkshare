@@ -260,7 +260,6 @@ namespace WorkerManager.Services
                                     if(device == null)
                                     {
                                         clusterSnapshoot.Remove(item.Key);
-                                        await _cache.SetWorkerState(item.Key,null);
                                     }
                                     else
                                     {
@@ -268,7 +267,6 @@ namespace WorkerManager.Services
                                         if(!result)
                                         {
                                             clusterSnapshoot.Remove(item.Key);
-                                            await _cache.SetWorkerState(item.Key,null);
                                         }
                                     }
                                 }
@@ -286,15 +284,6 @@ namespace WorkerManager.Services
                         }
                     }
 
-                    // check for item that is synced with host but not exist in cluster 
-                    foreach (var item in syncedState)
-                    {
-                        bool success = clusterSnapshoot.TryGetValue(item.Key,out var output);
-                        if(!success)
-                        {
-                            await _cache.SetWorkerState(item.Key,WorkerState.MISSING);
-                        }
-                    }
                     Thread.Sleep((int)TimeSpan.FromMilliseconds(50).TotalMilliseconds);
                 }
             }
@@ -311,34 +300,33 @@ namespace WorkerManager.Services
 
         async Task<bool> reRegisterDevice(ClusterWorkerNode model)
         {
-
-            var workers = await _cache.GetClusterState();
-            foreach (var item in workers)
+            try
             {
-                await _cache.SetWorkerState(item.Key,WorkerState.Disconnected);
+                var client = new RestClient();
+                var request = new RestRequest(_config.WorkerRegisterUrl)
+                    .AddHeader("Authorization",_cluster.ClusterToken)
+                    .AddJsonBody(model.model);
+                request.Method = Method.POST;
+
+                var result = await client.ExecuteAsync(request);
+                if(result.StatusCode == HttpStatusCode.OK)
+                {
+                    int id = JsonConvert.DeserializeObject<int>(result.Content);
+                    model.ID = id;
+
+                    await _cache.CacheWorkerInfor(model);
+                    await _cache.SetWorkerState(model.ID, WorkerState.Open);
+                    return true;
+                }
+                else
+                {
+                    Serilog.Log.Information("Fail to register device with host");
+                    return false;
+                }
             }
-
-
-
-            var client = new RestClient();
-            var request = new RestRequest(_config.WorkerRegisterUrl)
-                .AddQueryParameter("ClusterName",_cluster.Name)
-                .AddJsonBody(model.model)
-                .AddHeader("Authorization","Bearer "+_cluster.OwnerToken);
-
-            var result = await client.ExecuteAsync(request);
-            if(result.StatusCode == HttpStatusCode.OK)
+            catch (Exception ex)
             {
-                int id = JsonConvert.DeserializeObject<int>(result.Content);
-                model.ID = id;
-
-                await _cache.CacheWorkerInfor(model);
-                await _cache.SetWorkerState(model.ID, WorkerState.Open);
-                return true;
-            }
-            else
-            {
-                Serilog.Log.Information("Fail to register device");
+                Serilog.Log.Information($"Fail to register device due to {ex.Message}");
                 return false;
             }
         }

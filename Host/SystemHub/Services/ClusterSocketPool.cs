@@ -1,4 +1,5 @@
 ﻿using SharedHost;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
@@ -96,28 +97,11 @@ namespace SystemHub.Services
 
 
 
-        public async Task SendToNode(Message message)
-        {
-            int NodeID = (int)message.WorkerID;
-            foreach (var cluster in _ClusterSocketsPool)
-            {
-                var snapshoot = await _cache.GetClusterSnapshot(cluster.Key.ID);
-                if(snapshoot.ContainsKey(NodeID))
-                {
-                    await SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
-                }
-            }
-        }
 
         public async Task SendToCluster(int ClusterID, Message message)
         {
-            foreach (var cluster in _ClusterSocketsPool)
-            {
-                if(cluster.Key.ID == ClusterID)
-                {
-                    await SendMessage(cluster.Value,JsonConvert.SerializeObject(message));
-                }
-            }
+            var ws = _ClusterSocketsPool.Where(x => x.Key.ID == ClusterID).First().Value;
+            await SendMessage(ws,JsonConvert.SerializeObject(message));
         }
 
 
@@ -225,26 +209,9 @@ namespace SystemHub.Services
 
                     syncedSnapshoot.Add(unsyncedItem.Key,syncedState);
                 }
-                else // otherwise, set item as missing state
+                else 
                 {
-                    var syncrequest = new RestRequest("Worker/State")
-                        .AddQueryParameter("NewState", WorkerState.MISSING)
-                        .AddQueryParameter("ID",unsyncedItem.Key.ToString());
-                    syncrequest.Method = Method.POST;
-                    
-                    Serilog.Log.Information("Reporting sync event to conductor: ");
-                    Serilog.Log.Information("WorkerID: "+unsyncedItem.Key.ToString()+" | State: Missing");
-
-                    var result = await _conductor.ExecuteAsync(syncrequest);
-                    if(result.StatusCode == System.Net.HttpStatusCode.OK)
-                    {
-                        Serilog.Log.Information("Reportd state changing to conductor");
-                    }
-                    else
-                    {
-                        Serilog.Log.Information("Fail to report event to conductor");
-                    }
-                    syncedSnapshoot.Add(unsyncedItem.Key,WorkerState.MISSING);
+                    // otherwise, ignore the item
                 }
             }
 

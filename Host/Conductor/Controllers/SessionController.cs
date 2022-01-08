@@ -55,36 +55,15 @@ namespace Conductor.Controllers
             _sessionToken = new RestClient();
         }
 
-        /// <summary>
-        /// initialize session
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <param name="request"></param>
-        /// <returns></returns>
         [User]
         [HttpPost("Initialize")]
         public async Task<IActionResult> Create(int SlaveID)
         {
-            GlobalCluster? globalCluster = null;
-            var UserID = HttpContext.Items["UserID"];
-            var worker = _db.Devices.Where(x => x.ID == SlaveID).FirstOrDefault();
+            var UserID = Int32.Parse((string)HttpContext.Items["UserID"]);
 
-            var globalClusters = _db.Clusters.ToList();
-            foreach (var item in globalClusters)
-            {
-                foreach (var node in item.WorkerNode)
-                {
-                    if(node.ID == worker.ID)
-                    {
-                        globalCluster = item;
-                    }
-                }
-            }
-
-            if(globalCluster == null)
-            {
-                return BadRequest("Cannot recognize worker");
-            }
+            var worker = _db.Devices.Find(SlaveID);
+            var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
+            if(globalCluster.Private && globalCluster.OwnerID != UserID) {return Unauthorized();}
 
             var workerState = await _Cluster.GetWorkerState(SlaveID);
             // search for availability of slave device
@@ -93,7 +72,7 @@ namespace Conductor.Controllers
             /*create new session with gevin session request from user*/
             var sess = new RemoteSession()
             {
-                ClientId = Int32.Parse((string)UserID),
+                ClientId = UserID,
                 WorkerID = SlaveID 
             };
 
@@ -105,7 +84,7 @@ namespace Conductor.Controllers
             var workerTokenRequest = new RestRequest(new Uri(_config.SessionTokenGrantor))
                 .AddJsonBody(new SessionAccession
                 {
-                    ClientID = Int32.Parse((string)UserID),
+                    ClientID = UserID,
                     WorkerID = sess.WorkerID,
                     ID = sess.ID,
                     Module = Module.CORE_MODULE
@@ -114,7 +93,7 @@ namespace Conductor.Controllers
             var clientTokenRequest = new RestRequest(new Uri(_config.SessionTokenGrantor))
                 .AddJsonBody(new SessionAccession
                 {
-                    ClientID = Int32.Parse((string)UserID),
+                    ClientID = UserID,
                     WorkerID = sess.WorkerID,
                     ID = sess.ID,
                     Module = Module.CLIENT_MODULE
@@ -128,7 +107,7 @@ namespace Conductor.Controllers
 
 
             /*create session from client device capability*/
-            var userSetting = await _cache.GetUserSetting(Int32.Parse((string)UserID));
+            var userSetting = await _cache.GetUserSetting(UserID);
             await _cache.SetSessionSetting(sess.ID,userSetting,_config, globalCluster);
 
             // invoke session initialization in slave pool
@@ -142,23 +121,19 @@ namespace Conductor.Controllers
 
     
 
-        /// <summary>
-        /// Terminate session 
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
         [User]
         [HttpDelete("Terminate")]
         public async Task<IActionResult> Terminate(int SlaveID)
         {
-            var UserID = HttpContext.Items["UserID"];
+            var UserID = Int32.Parse((string)HttpContext.Items["UserID"]);
 
             var device = _db.Devices.Find(SlaveID);
 
             string workerState = await _Cluster.GetWorkerState(SlaveID);
+
             // get session information in database
             var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID && 
-                                               s.ClientId == Int32.Parse(UserID.ToString())&& 
+                                               s.ClientId == UserID && 
                                               !s.EndTime.HasValue);
 
             // return badrequest if session is not available in database
@@ -170,19 +145,14 @@ namespace Conductor.Controllers
             || workerState == WorkerState.OffRemote)
             {
                 //
+                Serilog.Log.Information($"Terminate remote session {ses.First().ID}");
                 await _Cluster.SessionTerminate(ses.First().WorkerID);
                 return Ok();
             }
-            Serilog.Log.Information("Start remote session between user "+UserID.ToString()+" and worker "+SlaveID);
             return BadRequest("Cannot send terminate session signal to slave");            
         }
 
 
-        /// <summary>
-        /// disconnect remote control during session
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
         [User]
         [HttpPost("Disconnect")]
         public async Task<IActionResult> DisconnectRemoteControl(int SlaveID)
@@ -205,18 +175,13 @@ namespace Conductor.Controllers
             if (workerState == WorkerState.OnSession)
             {
                 // send disconnect signal to slave
+                Serilog.Log.Information($"Disconnect remote session {ses.ID}");
                 await _Cluster.SessionDisconnect(SlaveID);
                 return Ok();
             }
-            Serilog.Log.Information("Remote session between user "+(string)UserID+" and worker "+SlaveID+" disconnected");
             return BadRequest("Device not in session");            
         }
 
-        /// <summary>
-        /// Reconnect remote control after disconnect
-        /// </summary>
-        /// <param name="SlaveID"></param>
-        /// <returns></returns>
         [User]
         [HttpPost("Reconnect")]
         public async Task<IActionResult> ReconnectRemoteControl(int SlaveID)
@@ -254,11 +219,11 @@ namespace Conductor.Controllers
             {
                 // reconect remote control
                 await _Cluster.SessionReconnect(ses.First().WorkerID);
-                
-                // return view to client 
+                Serilog.Log.Information($"Remote session {ses.First().ID} reconnected");
+
+                // return token to client 
                 return Ok(clientToken);
             }
-            Serilog.Log.Information("Remote session between user "+(string)UserID+" and worker "+SlaveID+" reconnected");
             return BadRequest("Device not in off remote");            
         }
 
@@ -300,7 +265,7 @@ namespace Conductor.Controllers
         }
 
         [HttpPost("Setting")]
-        public async Task<IActionResult> SetSetting(string token,[FromBody]UserSetting setting)
+        public async Task<IActionResult> SetSetting(string token, [FromBody]UserSetting setting)
         {
 
             var request = new RestRequest(_config.SessionTokenValidator)

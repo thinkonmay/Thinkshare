@@ -46,11 +46,12 @@ namespace WorkerManager.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var request = new RestRequest( new Uri(_config.OwnerAccountUrl))
+            var request = new RestRequest( _config.OwnerAccountUrl)
                  .AddJsonBody(login);
             request.Method = Method.POST;
 
             var result = await _client.ExecuteAsync(request);
+
             if(result.StatusCode != HttpStatusCode.OK) {return BadRequest("Fail to connect to host");}
             var jsonresult = JsonConvert.DeserializeObject<AuthResponse>(result.Content);
 
@@ -74,14 +75,14 @@ namespace WorkerManager.Controllers
 
         [Owner]
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(bool isPrivate, string ClusterName)
+        public async Task<IActionResult> Register(string ClusterName)
         {
             var cluster = await _cache.GetClusterInfor();
 
             var request = new RestRequest(_config.ClusterRegisterUrl)
-                .AddHeader("Authorization","Bearer "+cluster.OwnerToken)
+                .AddHeader("Authorization",cluster.OwnerToken)
                 .AddQueryParameter("ClusterName", ClusterName)
-                .AddQueryParameter("Private", isPrivate.ToString());
+                .AddQueryParameter("Private", (true).ToString());
 
             request.Method = Method.POST;
 
@@ -89,7 +90,6 @@ namespace WorkerManager.Controllers
 
             if (result.StatusCode == HttpStatusCode.OK)
             {
-                cluster.Name = ClusterName;
                 cluster.ClusterToken = JsonConvert.DeserializeObject<string>(result.Content);
                 await _cache.SetClusterInfor(cluster);
                 return Ok();
@@ -108,8 +108,7 @@ namespace WorkerManager.Controllers
             var cluster = await _cache.GetClusterInfor();
 
             var request = new RestRequest(_config.ClusterInforUrl)
-                .AddHeader("Authorization","Bearer "+cluster.OwnerToken)
-                .AddQueryParameter("ClusterName", cluster.Name);
+                .AddHeader("Authorization",cluster.ClusterToken);
             request.Method = Method.GET;
 
             var result = await _client.ExecuteAsync(request);
@@ -169,7 +168,7 @@ namespace WorkerManager.Controllers
         [HttpPost("Cluster/isRegistered")]
         public async Task<IActionResult> isRegistered()
         {
-            return ((await _cache.GetClusterInfor()).ClusterToken == null) ? BadRequest() : Ok();
+            return Ok((await _cache.GetClusterInfor()).ClusterToken == null);
         }
 
 

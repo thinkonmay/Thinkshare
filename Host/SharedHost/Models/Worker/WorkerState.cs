@@ -10,9 +10,6 @@
 
         public const string Disconnected = "DEVICE_DISCONNECTED";
 
-        // unregister state, only available in worker manager d
-        public const string MISSING = "MISSING";
-
         public const string unregister = "UNREGISTER";
     }
 }

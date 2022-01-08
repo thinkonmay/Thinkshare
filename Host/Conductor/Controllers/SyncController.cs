@@ -65,13 +65,6 @@ namespace Conductor.Controllers
                         _db.RemoteSessions.Update(session);
                         await _db.SaveChangesAsync();
                         break;
-                    case WorkerState.MISSING:
-                        await _clientHubctx.ReportSessionTerminated(ID,session.ClientId);
-
-                        session.EndTime = DateTime.Now;
-                        _db.RemoteSessions.Update(session);
-                        await _db.SaveChangesAsync();
-                        break;
                     case WorkerState.OffRemote:
                         await _clientHubctx.ReportSessionDisconnected(ID, session.ClientId);
                         await _clientHubctx.ReportSlaveObtained(ID);
@@ -94,9 +87,6 @@ namespace Conductor.Controllers
                     case WorkerState.Disconnected:
                         await _clientHubctx.ReportSlaveObtained(ID);
                         break;
-                    case WorkerState.MISSING:
-                        await _clientHubctx.ReportSlaveObtained(ID);
-                        break;
                 }
 
             }
@@ -110,10 +100,6 @@ namespace Conductor.Controllers
 
         
 
-        /// <summary>
-        /// Get list of available slave device, contain device information
-        /// </summary>
-        /// <returns></returns>
         [HttpPost("Cluster/Disconnected")]
         public async Task<IActionResult> Disconnected(int ClusterID)
         {

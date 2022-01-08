@@ -44,15 +44,12 @@ namespace Conductor.Controllers
 
 
 
-        /// <summary>
-        /// Get list of available slave device, contain device information
-        /// </summary>
-        /// <returns></returns>
         [User]
         [HttpGet("Node")]
         public async Task<IActionResult> FetchNode()
         {
-            var publicCluster = _db.Clusters.Where(x => x.Private == false);
+            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
+            var publicCluster = _db.Clusters.Where(x => x.Private == false || x.OwnerID == UserID );
 
             var result = new Dictionary<int,string>();
             foreach (var cluster in publicCluster)
@@ -70,18 +67,13 @@ namespace Conductor.Controllers
         }
 
 
-
-        /// <summary>
-        /// Get list of available slave device, contain device information
-        /// </summary>
-        /// <returns></returns>
         [User]
         [HttpGet("Session")]
         public async Task<IActionResult> GetUserSession()
         {
             var result = new Dictionary<int,string>();
-            var UserID = HttpContext.Items["UserID"];
-            var session = _db.RemoteSessions.Where(s => s.ClientId == Int32.Parse(UserID.ToString()) &&
+            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
+            var session = _db.RemoteSessions.Where(s => s.ClientId == UserID &&
                                                   !s.EndTime.HasValue).ToList();
             
             Serilog.Log.Information("Fetching session from cache");

@@ -66,7 +66,6 @@ namespace WorkerManager.Services
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
                 var jwtToken = (JwtSecurityToken)validatedToken;
 

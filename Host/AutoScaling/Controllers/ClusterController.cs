@@ -58,8 +58,8 @@ namespace AutoScaling.Controllers
 
 
         [Manager]
-        [HttpPost("Register")]
-        public async Task<IActionResult> NewCluster(string ClusterName, bool Private)
+        [HttpGet("Token")]
+        public async Task<IActionResult> NewCluster(string ClusterName)
         {
             GlobalCluster cluster;
             var ManagerID = Int32.Parse(HttpContext.Items["UserID"].ToString());
@@ -84,7 +84,7 @@ namespace AutoScaling.Controllers
                     Name = ClusterName,
                     Register = DateTime.Now,
 
-                    Private = Private,
+                    Private = true,
                     SelfHost = true,
 
                     InstanceID = instance.ID,
@@ -115,7 +115,7 @@ namespace AutoScaling.Controllers
 
         [Cluster]
         [HttpPost("Worker/Register")]
-        public async Task<IActionResult> Register(string ClusterName, [FromBody] WorkerRegisterModel body)
+        public async Task<IActionResult> Register([FromBody] WorkerRegisterModel body)
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
@@ -143,7 +143,22 @@ namespace AutoScaling.Controllers
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
-            return Ok(Cluster );
+            return Ok(Cluster);
+        }
+
+        [Cluster]
+        [HttpPost("Infor")]
+        public async Task<IActionResult> setInfor(string Name, bool Private, bool SelfHost)
+        {
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+            Cluster.Private = Private;
+            Cluster.Name = Name;
+            Cluster.SelfHost = SelfHost;
+
+            _db.Update(Cluster);
+            await _db.SaveChangesAsync();
+            return Ok();
         }
     }
 }

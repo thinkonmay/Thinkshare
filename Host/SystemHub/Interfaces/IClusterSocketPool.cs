@@ -9,8 +9,6 @@ namespace SystemHub.Interfaces
     {
         Task AddtoPool(ClusterCredential resp, WebSocket session);
 
-        Task SendToNode(Message message);
-
         Task SendToCluster(int ClusterID, Message message);
     }
 }
