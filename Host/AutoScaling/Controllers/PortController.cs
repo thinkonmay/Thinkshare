@@ -19,7 +19,7 @@ namespace AutoScaling.Controllers
     /// Routes used by user to fetch information about the system
     /// </summary>
     [ApiController]
-    [Route("/ManagedCluster")]
+    [Route("/Port")]
     [Produces("application/json")]
     public class PortController : Controller
     {
@@ -51,7 +51,7 @@ namespace AutoScaling.Controllers
 
 
         [Cluster]
-        [HttpGet("Portforward/Request")]
+        [HttpGet("Request")]
         public async Task<IActionResult> request(int LocalPort)
         {
             var ClusterID = HttpContext.Items["ClusterID"];
@@ -90,7 +90,7 @@ namespace AutoScaling.Controllers
         }
 
         [Cluster]
-        [HttpGet("Portforward/Release")]
+        [HttpGet("Release")]
         public async Task<IActionResult> Release(int InstancePort)
         {
             var ClusterID = HttpContext.Items["ClusterID"];
