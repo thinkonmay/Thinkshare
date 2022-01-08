@@ -68,7 +68,7 @@ namespace AutoScaling.Controllers
         {
             GlobalCluster cluster;
             var ManagerID = HttpContext.Items["UserID"];
-            var account =  await _userManager.FindByIdAsync((string)ManagerID);
+            var account =  await _userManager.FindByIdAsync(ManagerID.ToString());
             var refreshCluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
 
 
@@ -120,7 +120,7 @@ namespace AutoScaling.Controllers
         public async Task<IActionResult> Register(string ClusterName, [FromBody] WorkerRegisterModel body)
         {
             var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
+            var account =  await _userManager.FindByIdAsync(ManagerID.ToString());
             
             var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).FirstOrDefault();
             var newWorker = new WorkerNode
@@ -142,12 +142,11 @@ namespace AutoScaling.Controllers
 
         [Manager]
         [HttpGet("Infor")]
-        public async Task<IActionResult> getInfor(string ClusterName)
+        public async Task<IActionResult> getInfor()
         {
             var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
-            return Ok(cluster);
+            var account = await _userManager.FindByIdAsync((string)ManagerID);
+            return Ok(account.ManagedCluster);
         }
     }
 }
