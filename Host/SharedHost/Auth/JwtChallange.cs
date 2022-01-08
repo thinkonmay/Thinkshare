@@ -57,7 +57,6 @@ namespace SharedHost.Auth
                     .AddJsonBody(tokenRequest);
                 ClusterTokenRequest.Method = Method.POST;
 
-                Serilog.Log.Information("Validating user token");
                 var UserTokenResult =    await (new RestClient()).ExecuteAsync(UserTokenRequest);
                 if(UserTokenResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -69,7 +68,6 @@ namespace SharedHost.Auth
                     context.Items.Add("UserID", claim.UserID);
                 }
 
-                Serilog.Log.Information("Validating cluster token");
                 var ClusterTokenResult = await (new RestClient()).ExecuteAsync(ClusterTokenRequest);
                 if (ClusterTokenResult.StatusCode == HttpStatusCode.OK)
                 {
@@ -80,7 +78,6 @@ namespace SharedHost.Auth
                     context.Items.Add("ClusterID", credential.ID );
                     context.Items.Add("ClusterName", credential.ClusterName );
                 }
-                Serilog.Log.Information("Both validating scheme is failed");
                 return;
             }
             catch (Exception ex)

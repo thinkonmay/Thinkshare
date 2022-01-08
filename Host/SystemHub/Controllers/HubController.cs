@@ -43,10 +43,10 @@ namespace SystemHub.Controllers
                 var tokenRequest = new AuthenticationRequest
                 {
                     token = token,
-                    Validator = _config.UserTokenValidator
+                    Validator = "authenticator"
                 };
 
-                var request = new RestRequest(new Uri(_config.UserTokenValidator))
+                var request = new RestRequest(new Uri(_config.Authenticator+"/Token/Challenge/User"))
                     .AddJsonBody(tokenRequest);
                 request.Method = Method.POST;
 
@@ -71,7 +71,7 @@ namespace SystemHub.Controllers
             var context = ControllerContext.HttpContext;
             if (context.WebSockets.IsWebSocketRequest)
             {
-                var request = new RestRequest(_config.ClusterTokenValidator)
+                var request = new RestRequest(_config.Authenticator+"/Token/Challenge/Cluster")
                     .AddQueryParameter("token",token);
                 request.Method = Method.POST;
 

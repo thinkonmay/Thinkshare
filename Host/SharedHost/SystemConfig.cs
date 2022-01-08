@@ -15,7 +15,6 @@ namespace SharedHost
         public string GoogleOauthID {get;set;}
         public string SessionTokenValidator {get;set;}
         public string SessionTokenGrantor {get;set;}
-        public string ClusterTokenGrantor {get;set;}
         public LoginModel AdminLogin { get; set; }
         public List<string> STUNlist { get; set; }
     }
