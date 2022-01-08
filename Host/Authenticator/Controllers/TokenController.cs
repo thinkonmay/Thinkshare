@@ -89,9 +89,9 @@ namespace Authenticator.Controllers
 
         [HttpPost]
         [Route("Challenge/Cluster")]
-        public async Task<IActionResult> ClusterChallange(string token)
+        public async Task<IActionResult> ClusterChallange([FromBody] AuthenticationRequest request)
         {
-            return Ok(await _tokenGenerator.ValidateClusterToken(token));
+            return Ok(await _tokenGenerator.ValidateClusterToken(request.token));
         }
 
         [HttpPost]

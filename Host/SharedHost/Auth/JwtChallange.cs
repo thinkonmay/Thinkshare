@@ -47,23 +47,35 @@ namespace SharedHost.Auth
                    token = token,
                    Validator = _config.UserTokenValidator
                 };
-                var request = new RestRequest(_config.UserTokenValidator)
+                var UserTokenRequest = new RestRequest(_config.UserTokenValidator)
                     .AddJsonBody(JsonConvert.SerializeObject(tokenRequest));
-                request.Method = Method.POST;
+                UserTokenRequest.Method = Method.POST;
 
-                var result = await (new RestClient()).ExecuteAsync(request);
-                if(result.StatusCode == HttpStatusCode.OK)
+                var ClusterTokenRequest = new RestRequest(_config.ClusterTokenValidator)
+                    .AddQueryParameter("token",(string)context.Items["Token"]);
+                ClusterTokenRequest.Method = Method.POST;
+
+                var UserTokenResult =    await (new RestClient()).ExecuteAsync(UserTokenRequest);
+                if(UserTokenResult.StatusCode == HttpStatusCode.OK)
                 {
-                    var content = result.Content;
-                    var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(content);
-                    // attach user to context on successful jwt
-
+                    var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(UserTokenResult.Content);
 
                     context.Items.Add("IsUser", claim.IsUser ? "true" : "false");
                     context.Items.Add("IsManager", claim.IsManager ? "true" : "false");
                     context.Items.Add("IsAdmin", claim.IsAdmin ? "true" : "false");
-
                     context.Items.Add("UserID", claim.UserID);
+                }
+
+                var ClusterTokenResult = await (new RestClient()).ExecuteAsync(ClusterTokenRequest);
+                else if (ClusterTokenResult.StatusCode == HttpStatusCode.OK)
+                {
+
+                    var credential = JsonConvert.DeserializeObject<ClusterCredential>(ClusterTokenResult.Content);
+
+                    context.Items.Add("IsCluster", "true" );
+                    context.Items.Add("OwnerID", credential.OwnerID );
+                    context.Items.Add("ClusterID", credential.ID );
+                    context.Items.Add("ClusterName", credential.ClusterName );
                 }
                 return;
             }
@@ -109,7 +121,6 @@ namespace SharedHost.Auth
             var managerAttribute = endpoint?.Metadata.GetMetadata<ManagerAttribute>();
             if (managerAttribute != null)
             {
-
                 string isManger = (string)context.Items["IsManager"];
                 if (isManger != "true")
                 {
@@ -121,7 +132,6 @@ namespace SharedHost.Auth
             var adminAttribute = endpoint?.Metadata.GetMetadata<AdminAttribute>();
             if (adminAttribute != null)
             {
-
                 string IsAdmin = (string)context.Items["IsAdmin"];
                 if (IsAdmin != "true")
                 {
@@ -133,35 +143,13 @@ namespace SharedHost.Auth
             var clusterAttribute = endpoint?.Metadata.GetMetadata<ClusterAttribute>();
             if (clusterAttribute != null)
             {
-                try
-                {
-                    var request = new RestRequest(_config.ClusterTokenValidator)
-                        .AddQueryParameter("token",(string)context.Items["Token"]);
-                    request.Method = Method.POST;
-
-                    var result = await (new RestClient()).ExecuteAsync(request);
-                    if(result.StatusCode == HttpStatusCode.OK)
-                    {
-                        var content = result.Content;
-                        var credential = JsonConvert.DeserializeObject<ClusterCredential>(content);
-
-
-                        context.Items.Add("OwnerID", credential.OwnerID );
-                        context.Items.Add("ClusterID", credential.ID );
-                        context.Items.Add("ClusterName", credential.ID );
-                    }
-                    else
-                    {
-                        context.Response.StatusCode =  StatusCodes.Status401Unauthorized;
-                        return;
-                    }
-                    return;
-                }
-                catch
+                string IsCluster = (string)context.Items["IsCluster"];
+                if (IsCluster != "true")
                 {
                     context.Response.StatusCode =  StatusCodes.Status401Unauthorized;
                     return;
                 }
+
             }
 
             await _next(context);
