@@ -52,7 +52,7 @@ namespace SharedHost.Auth
                 UserTokenRequest.Method = Method.POST;
 
                 var ClusterTokenRequest = new RestRequest(_config.ClusterTokenValidator)
-                    .AddQueryParameter("token",(string)context.Items["Token"]);
+                    .AddJsonBody(JsonConvert.SerializeObject(tokenRequest));
                 ClusterTokenRequest.Method = Method.POST;
 
                 var UserTokenResult =    await (new RestClient()).ExecuteAsync(UserTokenRequest);
@@ -67,7 +67,7 @@ namespace SharedHost.Auth
                 }
 
                 var ClusterTokenResult = await (new RestClient()).ExecuteAsync(ClusterTokenRequest);
-                else if (ClusterTokenResult.StatusCode == HttpStatusCode.OK)
+                if (ClusterTokenResult.StatusCode == HttpStatusCode.OK)
                 {
 
                     var credential = JsonConvert.DeserializeObject<ClusterCredential>(ClusterTokenResult.Content);
