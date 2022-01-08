@@ -52,7 +52,7 @@ namespace AutoScaling.Controllers
 
         [Cluster]
         [HttpGet("Portforward/Request")]
-        public async Task<IActionResult> request(string ClusterName, int LocalPort)
+        public async Task<IActionResult> request(int LocalPort)
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
@@ -74,23 +74,24 @@ namespace AutoScaling.Controllers
                         break;
                     }
                 }
-
-                cluster.instance.portForwards.Add(new PortForward{
+                var port = new PortForward{
                     LocalPort = LocalPort,
                     InstancePort = InstancePort,
                     Start = DateTime.Now
-                });
+                };
 
+                cluster.instance.portForwards.Add(port);
                 _db.Update(cluster);
                 await _db.SaveChangesAsync();
-                return Ok();
+
+                return Ok(port);
             }
 
         }
 
         [Cluster]
         [HttpGet("Portforward/Release")]
-        public async Task<IActionResult> Release(int LocalPort)
+        public async Task<IActionResult> Release(int InstancePort)
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
@@ -101,7 +102,7 @@ namespace AutoScaling.Controllers
             else
             {
                 var port = cluster.instance.portForwards.Where( x => 
-                     x.LocalPort == LocalPort &&
+                     x.InstancePort == InstancePort &&
                     !x.End.HasValue).First();
                 port.End = DateTime.Now;
 
