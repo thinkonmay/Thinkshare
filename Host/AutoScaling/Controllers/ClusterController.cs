@@ -15,6 +15,7 @@ using System.Linq;
 using DbSchema.CachedState;
 using AutoScaling.Interfaces;
 using Microsoft.Extensions.Options;
+using SharedHost.Models.AWS;
 
 namespace AutoScaling.Controllers
 {
@@ -78,8 +79,10 @@ namespace AutoScaling.Controllers
                 var CoturnRequest = new RestRequest(_config.AutoScaling+"/Instance/Coturn");
                 CoturnRequest.Method = Method.GET;
 
-                var coturnResult = await (new RestClient()).ExecuteAsync(CoturnRequest);
-                var InstanceID = JsonConvert.DeserializeObject<int>(coturnResult.Content);
+                var client = new RestClient();
+                client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
+                var coturnResult = await client.ExecuteAsync(CoturnRequest);
+                var instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content);
                 cluster = new GlobalCluster
                 {
                     Name = ClusterName,
@@ -88,7 +91,7 @@ namespace AutoScaling.Controllers
                     Private = Private,
                     SelfHost = true,
 
-                    InstanceID = InstanceID,
+                    InstanceID = instance.ID,
                     WorkerNode = new List<WorkerNode>(),
                 };
 

@@ -72,7 +72,14 @@ namespace Authenticator.Controllers
             request.Method = Method.GET;
 
             var client = new RestClient();
+            client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
             var coturnResult = await client.ExecuteAsync(request);
+            var instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content);
+            if(coturnResult == null)
+            {
+                return BadRequest("Fail to intialize cluster");
+            }
+
             var cluster = new GlobalCluster
             {
                 Name = ClusterName,
@@ -81,7 +88,7 @@ namespace Authenticator.Controllers
                 Private = Private,
                 SelfHost = false,
 
-                InstanceID = Int32.Parse(coturnResult.Content),
+                InstanceID = instance.ID,
                 WorkerNode = new List<WorkerNode>()
             };
 
@@ -89,7 +96,7 @@ namespace Authenticator.Controllers
             await _userManager.UpdateAsync(account);
 
 
-            return Ok(cluster);
+            return Ok(instance.IPAdress);
         }
 
         [Manager]
@@ -107,7 +114,13 @@ namespace Authenticator.Controllers
                 .AddJsonBody(cluster.instance);
             clusterRequest.Method = Method.POST;
 
-            var clusterResult = await (new RestClient()).ExecuteAsync(clusterRequest); 
+            var client = new RestClient();
+            client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
+            var clusterResult = await client.ExecuteAsync(clusterRequest); 
+            if(clusterResult == null)
+            {
+                return BadRequest("Fail to terminate cluster");
+            }
             var success = JsonConvert.DeserializeObject<bool>(clusterResult.Content);
             if (success)
             {

@@ -34,7 +34,7 @@ namespace AutoScaling.Controllers
             _db.Instances.Add(instance);
             await _db.SaveChangesAsync();
 
-            return Ok(instance.ID);
+            return Ok(instance);
         }
 
         [HttpGet("Coturn")]
@@ -44,7 +44,7 @@ namespace AutoScaling.Controllers
             _db.Instances.Add(instance);
             await _db.SaveChangesAsync();
 
-            return Ok(instance.ID);
+            return Ok(instance);
         }
 
         [HttpPost("Terminate")]
