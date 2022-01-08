@@ -44,16 +44,14 @@ namespace WorkerManager.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel login)
+        public async Task<IActionResult> Login(string? ClusterName, [FromBody] LoginModel login)
         {
-            var request = new RestRequest( _config.OwnerAccountUrl)
-                 .AddJsonBody(login);
-            request.Method = Method.POST;
+            var loginResult = await _client.ExecuteAsync(
+                new RestRequest( _config.OwnerAccountUrl,Method.POST)
+                    .AddJsonBody(login));
 
-            var result = await _client.ExecuteAsync(request);
-
-            if(result.StatusCode != HttpStatusCode.OK) {return BadRequest("Fail to connect to host");}
-            var jsonresult = JsonConvert.DeserializeObject<AuthResponse>(result.Content);
+            if(loginResult.StatusCode != HttpStatusCode.OK) {return BadRequest();}
+            var jsonresult = JsonConvert.DeserializeObject<AuthResponse>(loginResult.Content);
 
             if(jsonresult.Errors == null)
             {
@@ -63,41 +61,25 @@ namespace WorkerManager.Controllers
                     cluster.OwnerToken = jsonresult.Token;
                     cluster.OwnerName = jsonresult.UserName;
                 }
+
+                if (ClusterName == null)
+                {
+                    return Ok(jsonresult);
+                }
+                
+                var tokenResult = await _client.ExecuteAsync( 
+                    new RestRequest(_config.ClusterRegisterUrl,Method.POST)
+                        .AddHeader("Authorization",cluster.OwnerToken)
+                        .AddQueryParameter("ClusterName", ClusterName));
+
+                if (tokenResult.StatusCode == HttpStatusCode.OK)
+                {
+                    cluster.ClusterToken = JsonConvert.DeserializeObject<string>(tokenResult.Content);
+                }
                 await _cache.SetClusterInfor(cluster);
-                return Ok(jsonresult.Token);
             }
-            else
-            {
-                return BadRequest(jsonresult);
-            }
-        }
 
-
-        [Owner]
-        [HttpPost("Register")]
-        public async Task<IActionResult> Register(string ClusterName)
-        {
-            var cluster = await _cache.GetClusterInfor();
-
-            var request = new RestRequest(_config.ClusterRegisterUrl)
-                .AddHeader("Authorization",cluster.OwnerToken)
-                .AddQueryParameter("ClusterName", ClusterName)
-                .AddQueryParameter("Private", (true).ToString());
-
-            request.Method = Method.POST;
-
-            var result = await _client.ExecuteAsync(request);
-
-            if (result.StatusCode == HttpStatusCode.OK)
-            {
-                cluster.ClusterToken = JsonConvert.DeserializeObject<string>(result.Content);
-                await _cache.SetClusterInfor(cluster);
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return Ok(jsonresult);
         }
 
 
@@ -177,7 +159,7 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> GetWorkerInfor(int ID)
         {
             var result = await _cache.GetWorkerInfor(ID);
-            return (result != null) ? Ok(result) : BadRequest("Worker not found");
+            return Ok(result);
         }
 
 
