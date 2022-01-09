@@ -3,9 +3,9 @@ version: "3.3"
 services:
   workermanager:
     container_name: cluster_manager
-    image: pigeatgarlic/workermanager:2022-01-03
+    image: pigeatgarlic/workermanager:development
     environment:
-      REDIS_IP: "192.168.1.15"
+      REDIS_IP: "localhost"
     restart: unless-stopped
     ports:
       - "5000:80"
@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
     ports:
       - "8080:3000"
-    
+
   cache:
     container_name: redis_cache
     image: redis:latest
