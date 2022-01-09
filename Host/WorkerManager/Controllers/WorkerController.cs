@@ -28,11 +28,15 @@ namespace WorkerManager.Controllers
 
         private readonly ClusterConfig _config;
 
+        private readonly IClusterInfor _infor;
+
         public WorkerController( ITokenGenerator token,
                                 ILocalStateStore cache,
+                                IClusterInfor infor,
                                 IOptions<ClusterConfig> config)
         {
             _cache = cache;
+            _infor = infor;
             _config = config.Value;
             _tokenGenerator = token;
         }
@@ -44,6 +48,9 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> PostInfor([FromBody]WorkerRegisterModel model)
         {
             var Cluster = await _cache.GetClusterInfor();
+
+
+
             if(Cluster == null) { return BadRequest(); }
 
             var cachednode = Cluster.WorkerNodes.Where(x => x.model == model);
@@ -65,6 +72,11 @@ namespace WorkerManager.Controllers
                         ID = id,
                         model = model 
                     };
+
+                    if(await _infor.IsSelfHost())
+                    {
+
+                    }
 
                     await _cache.CacheWorkerInfor(node);
                     await _cache.SetWorkerState(node.ID, WorkerState.Open);

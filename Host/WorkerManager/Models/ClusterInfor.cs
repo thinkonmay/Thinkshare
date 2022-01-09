@@ -7,7 +7,6 @@ namespace WorkerManager.Models
         public string? ClusterToken {get;set;}
         public string? OwnerName {get;set;}
         public string? OwnerToken {get;set;}
-
         public List<ClusterWorkerNode> WorkerNodes  {get;set;}
     }
 }

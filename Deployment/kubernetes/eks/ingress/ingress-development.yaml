@@ -35,35 +35,6 @@ spec:
             name: conductor
             port:
               number: 80
-
-
-
-
-
-
-
-
-      - path: /Admin/*
-        pathType: Prefix
-        backend:
-          service:
-            name: authenticator
-            port:
-              number: 80
-      - path: /Account/*
-        pathType: Prefix
-        backend:
-          service:
-            name: authenticator
-            port:
-              number: 80
-      - path: /Cluster/*
-        pathType: Prefix
-        backend:
-          service:
-            name: authenticator
-            port:
-              number: 80
       - path: /Setting/*
         pathType: Prefix
         backend:
@@ -79,15 +50,39 @@ spec:
 
 
 
-
-      - path: /Token/Challenge/*
+      - path: /Account/*
         pathType: Prefix
         backend:
           service:
             name: authenticator
             port:
               number: 80
-              
+      - path: /Manager/*
+        pathType: Prefix
+        backend:
+          service:
+            name: authenticator
+            port:
+              number: 80
+
+
+      - path: /Cluster/*
+        pathType: Prefix
+        backend:
+          service:
+            name: autoscaling
+            port:
+              number: 80
+      - path: /Port/*
+        pathType: Prefix
+        backend:
+          service:
+            name: autoscaling
+            port:
+              number: 80
+
+
+
 
 
 

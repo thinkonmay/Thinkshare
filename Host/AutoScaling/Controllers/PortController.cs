@@ -1,4 +1,4 @@
-
+using SharedHost.Models.Device;
 using Microsoft.AspNetCore.Mvc;
 using SharedHost.Models.AWS;
 using DbSchema.SystemDb.Data;
@@ -106,6 +106,30 @@ namespace AutoScaling.Controllers
                     !x.End.HasValue).First();
                 port.End = DateTime.Now;
 
+                _db.Update(port);
+                await _db.SaveChangesAsync();
+                return Ok();
+            }
+        }
+
+        [Cluster]
+        [HttpGet("Update")]
+        public async Task<IActionResult> Update(int InstancePort, int WorkerID)
+        {
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+
+            if(cluster.SelfHost)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                var port = cluster.instance.portForwards.Where( x => 
+                     x.InstancePort == InstancePort &&
+                    !x.End.HasValue).First();
+
+                port.WorkerID = WorkerID;
                 _db.Update(port);
                 await _db.SaveChangesAsync();
                 return Ok();

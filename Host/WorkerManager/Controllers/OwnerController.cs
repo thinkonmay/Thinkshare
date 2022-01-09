@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
 using Microsoft.Extensions.Options;
 using SharedHost;
+using SharedHost.Auth;
 
 namespace WorkerManager.Controllers
 {
@@ -71,12 +72,12 @@ namespace WorkerManager.Controllers
                     new RestRequest(_config.ClusterRegisterUrl,Method.POST)
                         .AddHeader("Authorization",cluster.OwnerToken)
                         .AddQueryParameter("ClusterName", ClusterName));
-
                 if (tokenResult.StatusCode == HttpStatusCode.OK)
                 {
-                    cluster.ClusterToken = JsonConvert.DeserializeObject<string>(tokenResult.Content);
+                    cluster.ClusterToken = JsonConvert.DeserializeObject<AuthenticationRequest>(tokenResult.Content).token;
                 }
                 await _cache.SetClusterInfor(cluster);
+
             }
 
             return Ok(jsonresult);
