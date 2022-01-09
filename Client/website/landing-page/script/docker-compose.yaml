@@ -5,7 +5,7 @@ services:
     container_name: cluster_manager
     image: pigeatgarlic/workermanager:development
     environment:
-      REDIS_IP: "localhost"
+      REDIS_IP: "cache"
     restart: unless-stopped
     ports:
       - "5000:80"
@@ -22,6 +22,4 @@ services:
     image: redis:latest
     volumes:
        - /home/cache:/data
-    ports:
-      - "6379:6379"
     restart: unless-stopped
