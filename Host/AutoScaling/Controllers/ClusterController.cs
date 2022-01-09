@@ -16,12 +16,10 @@ using DbSchema.CachedState;
 using AutoScaling.Interfaces;
 using Microsoft.Extensions.Options;
 using SharedHost.Models.AWS;
+using SharedHost.Auth;
 
 namespace AutoScaling.Controllers
 {
-    /// <summary>
-    /// Routes used by user to fetch information about the system
-    /// </summary>
     [ApiController]
     [Route("/Cluster")]
     [Produces("application/json")]
@@ -109,7 +107,10 @@ namespace AutoScaling.Controllers
             
             var result = await _client.ExecuteAsync(request);
             var Token = JsonConvert.DeserializeObject<string>(result.Content);
-            return Ok(Token);
+            return Ok(new AuthenticationRequest{
+                token = Token,
+                Validator = "Autoscaling",
+            });
         }
 
 
