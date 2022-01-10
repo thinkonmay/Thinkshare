@@ -103,7 +103,10 @@ namespace Authenticator.Controllers
         {
             var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
             var cluster = _db.Clusters
-                .Where(x => x.Name == ClusterName && x.OwnerID == UserID).First();
+                .Where(x => x.Name == ClusterName && 
+                            x.OwnerID == UserID && 
+                           !x.Unregister.HasValue).First();
+            if(cluster == null) { BadRequest("cluster not found"); }
 
             var clusterRequest = new RestRequest(_config.AutoScaling + "/Instance/Terminate")
                 .AddQueryParameter("ID",cluster.instance.ID.ToString());

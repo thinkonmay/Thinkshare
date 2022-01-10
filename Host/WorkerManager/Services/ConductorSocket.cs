@@ -81,8 +81,9 @@ namespace WorkerManager.Services
                     return false;
                 }
             }
-            catch 
+            catch (Exception ex)
             { 
+                Serilog.Log.Information($"Fail to connect to host {ex.Message}");
                 return false;
             }
         }

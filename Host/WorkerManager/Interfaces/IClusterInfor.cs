@@ -8,5 +8,7 @@ namespace WorkerManager.Interfaces
         Task<bool> IsPrivate();
 
         Task<bool> IsSelfHost();
+
+        Task<bool> IsRegistered();
     }
 }

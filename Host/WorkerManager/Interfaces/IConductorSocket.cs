@@ -7,7 +7,5 @@ namespace WorkerManager.Interfaces
         Task<bool> Start();
 
         Task<bool> Stop();
-
-
     }
 }

@@ -87,21 +87,18 @@ namespace WorkerManager
                 var conductor = scope.ServiceProvider.GetRequiredService<IConductorSocket>();
                 var pool      = scope.ServiceProvider.GetRequiredService<IWorkerNodePool>();
                 var _cache    = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
+                var _infor    = scope.ServiceProvider.GetRequiredService<IClusterInfor>();
+
+
                 var _cluster  = await _cache.GetClusterInfor();
+                pool.Start();
 
                 var nodes = _cluster.WorkerNodes;
                 var initState = new Dictionary<int,string>();
                 nodes.ForEach(x => initState.Add(x.ID,WorkerState.Disconnected));
                 await _cache.SetClusterState(initState);
 
-                if(_cluster.ClusterToken != null &&
-                   _cluster.OwnerToken != null)
-                {
-                    if(await conductor.Start())
-                    {
-                        pool.Start();
-                    }
-                }
+                if(await _infor.IsRegistered()) { await conductor.Start(); }
             }
         }
     }

@@ -58,5 +58,10 @@ namespace WorkerManager.Services
             var instance =  JsonConvert.DeserializeObject<GlobalCluster>(instanceResult.Content);
             return instance.instance.portForwards;
         }
+
+        public async Task<bool> IsRegistered()
+        {
+            return ((await _cache.GetClusterInfor()).ClusterToken != null);
+        }
     }
 }

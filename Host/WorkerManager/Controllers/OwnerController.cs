@@ -31,12 +31,16 @@ namespace WorkerManager.Controllers
 
         private ILocalStateStore _cache;
 
+        private IClusterInfor _infor;
+
         public OwnerController( ILocalStateStore cache,
                                 IConductorSocket socket,
                                 IWorkerNodePool workerPool,
+                                IClusterInfor infor,
                                 IOptions<ClusterConfig> config)
         {
             _cache = cache;
+            _infor = infor;
             _conductor = socket;
             _workerNodePool = workerPool;
             _config = config.Value;
@@ -69,7 +73,7 @@ namespace WorkerManager.Controllers
                 }
                 
                 var tokenResult = await _client.ExecuteAsync( 
-                    new RestRequest(_config.ClusterRegisterUrl,Method.POST)
+                    new RestRequest(_config.ClusterRegisterUrl,Method.GET)
                         .AddHeader("Authorization",cluster.OwnerToken)
                         .AddQueryParameter("ClusterName", ClusterName));
                 if (tokenResult.StatusCode == HttpStatusCode.OK)
@@ -118,10 +122,7 @@ namespace WorkerManager.Controllers
         {
             if(await _conductor.Start())
             {
-                if(_workerNodePool.Start())
-                {
-                    return Ok();
-                }
+                return Ok();
             }
             return BadRequest("Cluster has already been initialized");
         }
@@ -133,10 +134,7 @@ namespace WorkerManager.Controllers
         {
             if(await _conductor.Stop())
             {
-                if(_workerNodePool.Stop())
-                {
-                    return Ok();
-                }
+                return Ok();
             }
             return BadRequest("Cluster has already been initialized");
         }
@@ -151,7 +149,7 @@ namespace WorkerManager.Controllers
         [HttpPost("Cluster/isRegistered")]
         public async Task<IActionResult> isRegistered()
         {
-            return Ok((await _cache.GetClusterInfor()).ClusterToken == null);
+            return Ok(await _infor.IsRegistered());
         }
 
 
