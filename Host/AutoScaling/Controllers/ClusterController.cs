@@ -149,12 +149,11 @@ namespace AutoScaling.Controllers
 
         [Cluster]
         [HttpPost("Infor")]
-        public async Task<IActionResult> setInfor(string Name, bool Private, bool SelfHost)
+        public async Task<IActionResult> setInfor(bool Private, bool SelfHost)
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
             Cluster.Private = Private;
-            Cluster.Name = Name;
             Cluster.SelfHost = SelfHost;
 
             _db.Update(Cluster);

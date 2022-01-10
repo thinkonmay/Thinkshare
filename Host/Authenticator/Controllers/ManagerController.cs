@@ -56,7 +56,7 @@ namespace Authenticator.Controllers
 
         [Manager]
         [HttpPost("ManagedCluster/Request")]
-        public async Task<IActionResult> RequestCluster( string ClusterName, bool Private)
+        public async Task<IActionResult> RequestCluster( string ClusterName)
         {
             var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
             if(_db.Clusters.Where(x => x.Name == ClusterName && x.OwnerID == Int32.Parse(UserID.ToString()) ).Any())
@@ -81,7 +81,7 @@ namespace Authenticator.Controllers
                 Name = ClusterName,
                 Register = DateTime.Now,
 
-                Private = Private,
+                Private = true,
                 SelfHost = false,
 
                 InstanceID = instance.ID,
