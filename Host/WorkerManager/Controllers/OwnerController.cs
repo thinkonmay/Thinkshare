@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using System;
 using WorkerManager.Interfaces;
 using System.Net;
@@ -51,6 +52,10 @@ namespace WorkerManager.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(string? ClusterName, [FromBody] LoginModel login)
         {
+            bool registered = await _infor.IsRegistered();
+            if(!registered && ClusterName == null) 
+            {return BadRequest("Cluster haven't been registered");}
+
             var loginResult = await _client.ExecuteAsync(
                 new RestRequest( _config.OwnerAccountUrl,Method.POST)
                     .AddJsonBody(login));
@@ -61,29 +66,33 @@ namespace WorkerManager.Controllers
             if(jsonresult.Errors == null)
             {
                 var cluster = await _cache.GetClusterInfor();
-                if(cluster.OwnerName == null && cluster.OwnerToken == null)
+
+                if(!registered)
                 {
                     cluster.OwnerToken = jsonresult.Token;
                     cluster.OwnerName = jsonresult.UserName;
+                    var tokenResult = await _client.ExecuteAsync( 
+                        new RestRequest(_config.ClusterRegisterUrl,Method.GET)
+                            .AddHeader("Authorization",cluster.OwnerToken)
+                            .AddQueryParameter("ClusterName", ClusterName));
+                    if (tokenResult.StatusCode == HttpStatusCode.OK)
+                    {
+                        cluster.ClusterToken = JsonConvert.DeserializeObject<AuthenticationRequest>(tokenResult.Content).token;
+                        await _conductor.Start();
+                        await _cache.SetClusterInfor(cluster);
+                    }
                 }
-
-                if (ClusterName == null)
+                else
                 {
-                    return Ok(jsonresult);
+                    if(cluster.OwnerName != jsonresult.UserName)
+                    {
+                        jsonresult.Errors.Add(new IdentityError{
+                            Code = "Unauthorized",
+                            Description = "Registered account does not the owner of this cluster",
+                        });
+                    }
                 }
-                
-                var tokenResult = await _client.ExecuteAsync( 
-                    new RestRequest(_config.ClusterRegisterUrl,Method.GET)
-                        .AddHeader("Authorization",cluster.OwnerToken)
-                        .AddQueryParameter("ClusterName", ClusterName));
-                if (tokenResult.StatusCode == HttpStatusCode.OK)
-                {
-                    cluster.ClusterToken = JsonConvert.DeserializeObject<AuthenticationRequest>(tokenResult.Content).token;
-                }
-                await _cache.SetClusterInfor(cluster);
-
             }
-
             return Ok(jsonresult);
         }
 
@@ -114,37 +123,6 @@ namespace WorkerManager.Controllers
 
 
 
-
-
-        [Owner]
-        [HttpPost("Cluster/Start")]
-        public async Task<IActionResult> Start()
-        {
-            if(await _conductor.Start())
-            {
-                return Ok();
-            }
-            return BadRequest("Cluster has already been initialized");
-        }
-
-
-        [Owner]
-        [HttpPost("Cluster/Stop")]
-        public async Task<IActionResult> Stop()
-        {
-            if(await _conductor.Stop())
-            {
-                return Ok();
-            }
-            return BadRequest("Cluster has already been initialized");
-        }
-
-
-
-
-
-
-
         [Owner]
         [HttpPost("Cluster/isRegistered")]
         public async Task<IActionResult> isRegistered()
@@ -154,28 +132,11 @@ namespace WorkerManager.Controllers
 
 
         [Owner]
-        [HttpPost("Cluster/Worker/Infor")]
-        public async Task<IActionResult> GetWorkerInfor(int ID)
-        {
-            var result = await _cache.GetWorkerInfor(ID);
-            return Ok(result);
-        }
-
-
-
-        [Owner]
         [HttpGet("Cluster/Worker/Log")]
-        public async Task<IActionResult> GetLog(int WorkerID)
+        public async Task<IActionResult> GetLog(int WorkerID, DateTime Time)
         {
-            return Ok(await _cache.GetLog(WorkerID,null,null));
-        }
-
-        [Owner]
-        [HttpGet("Cluster/Worker/Log/Timestamp")]
-        public async Task<IActionResult> GetLogWithOptions(int WorkerID, DateTime From, DateTime To)
-        {
-            var array = await _cache.GetLog(WorkerID,From,To);
-            return (array.Count() > 60) ? Ok(array.Take(60)) : Ok(array);
+            var array = await _cache.GetLog(Time);
+            return Ok(array.Where(x => x.WorkerID == WorkerID));
         }
     }
 }

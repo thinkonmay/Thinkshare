@@ -136,6 +136,5 @@ namespace WorkerManager.Services
                 currentTime.AddDays(1);
             }
         }
-
     }
 }

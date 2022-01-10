@@ -33,7 +33,6 @@ namespace WorkerManager.Services
         
         private readonly ITokenGenerator _generator;
 
-        private readonly ClusterKey _cluster;
 
         private bool isRunning;
 
@@ -46,59 +45,44 @@ namespace WorkerManager.Services
             _cache = cache;
             _config = cluster.Value;
             _scriptmodel = new RestClient();
-            _cluster = _cache.GetClusterInfor().Result;
         }
 
-        public async Task<bool> Start()
+        public async Task Start()
         {
             try
             {
-                if (isRunning) { return false; }
+                if (isRunning) { return; }
+                isRunning = true;
+
                 var token = (await _cache.GetClusterInfor()).ClusterToken;
                 _clientWebSocket = new ClientWebSocket();
                 await _clientWebSocket.ConnectAsync(
                     new Uri(_config.ClusterHub+"?token=" + token), 
                     CancellationToken.None);
 
-                if (_clientWebSocket.State == WebSocketState.Open)
+                var currentState = await _cache.GetClusterState();
+                var request = new Message
                 {
-                    // DONOT set this to awaited
-                    isRunning = true;
-                    Handle();
-                    var currentState = await _cache.GetClusterState();
-                    var request = new Message
-                    {
-                        Opcode = Opcode.STATE_SYNCING,
-                        From = Module.CLUSTER_MODULE,
-                        To = Module.HOST_MODULE,
-                        Data = JsonConvert.SerializeObject(currentState)
-                    };
-                    await SendMessage(JsonConvert.SerializeObject(request));
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                    Opcode = Opcode.STATE_SYNCING,
+                    From = Module.CLUSTER_MODULE,
+                    To = Module.HOST_MODULE,
+                    Data = JsonConvert.SerializeObject(currentState)
+                };
+                await SendMessage(JsonConvert.SerializeObject(request));
+                Handle(); // DONOT set this to awaited
             }
             catch (Exception ex)
             { 
                 Serilog.Log.Information($"Fail to connect to host {ex.Message}");
-                return false;
+                System.Threading.Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
+                await Start();
             }
         }
 
-        public async Task<bool> Stop()
+        private async Task Stop()
         {
-            if(isRunning)
-            {
-                isRunning = false;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            if(!isRunning) { return; }
+            isRunning = false;
         }
 
 
@@ -162,24 +146,13 @@ namespace WorkerManager.Services
             try
             {
                 await Stop();
-                if(exception != null)
-                {
+                if(exception != null) {
                     Serilog.Log.Information("Error when connect to sytemhub: " + exception.Message);
                     Serilog.Log.Information(exception.StackTrace);
-                    Serilog.Log.Information("Retry after 10 second");
-                }
-                else
-                {
+                } else {
                     Serilog.Log.Information("Disconnected from systemhub");
-                    Serilog.Log.Information("Retry after 10 second");
                 }
-                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
-                var success = await Start();
-                if(!success)
-                {
-                    await RestoreConnection(null);
-                }
-
+                await Start();
             }
             catch (Exception ex)
             {
@@ -305,7 +278,7 @@ namespace WorkerManager.Services
             {
                 var client = new RestClient();
                 var request = new RestRequest(_config.WorkerRegisterUrl)
-                    .AddHeader("Authorization",_cluster.ClusterToken)
+                    .AddHeader("Authorization",(await _cache.GetClusterInfor()).ClusterToken)
                     .AddJsonBody(model.model);
                 request.Method = Method.POST;
 

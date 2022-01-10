@@ -73,11 +73,6 @@ namespace WorkerManager.Controllers
                         model = model 
                     };
 
-                    if(await _infor.IsSelfHost())
-                    {
-
-                    }
-
                     await _cache.CacheWorkerInfor(node);
                     await _cache.SetWorkerState(node.ID, WorkerState.Open);
                     var Token = await _tokenGenerator.GenerateWorkerToken(node);
@@ -151,7 +146,7 @@ namespace WorkerManager.Controllers
 
             var cluster = await _cache.GetClusterInfor();
             var worker = cluster.WorkerNodes.Where(x => x.ID == WorkerID).First();
-            await _cache.Log(worker.ID,new Log
+            await _cache.Log(new Log
             {
                 WorkerID = worker.ID,
                 Content = log,

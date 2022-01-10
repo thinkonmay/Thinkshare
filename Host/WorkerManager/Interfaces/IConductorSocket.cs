@@ -4,8 +4,6 @@ namespace WorkerManager.Interfaces
 {
     public interface IConductorSocket
     {
-        Task<bool> Start();
-
-        Task<bool> Stop();
+        Task Start();
     }
 }

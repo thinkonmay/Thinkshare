@@ -183,6 +183,7 @@ namespace SystemHub.Services
 
 
                 // if unsynced item is exist in new snapshoot
+
                 if(success)
                 {
                     if(syncedState != unsyncedItem.Value)
@@ -245,11 +246,13 @@ namespace SystemHub.Services
                 Opcode = Opcode.STATE_SYNCING,
                 Data = JsonConvert.SerializeObject(syncedSnapshoot)
             };
-            await _cache.SetClusterSnapshot(cred.ID,syncedSnapshoot);
 
+            try { await _cache.SetClusterSnapshot(cred.ID,syncedSnapshoot); }
+            catch (Exception ex) { Serilog.Log.Debug($"Got error {ex.Message} while state syncing with cluster"); }
 
             Serilog.Log.Information("State syncing done, after syncing: ");
             foreach (var item in syncedSnapshoot) { Serilog.Log.Information("WorkerID: "+item.Key.ToString()+" | State: "+item.Value); }
+
             await SendToCluster(cred.ID,reply);
         }
 
