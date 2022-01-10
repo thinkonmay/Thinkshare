@@ -30,22 +30,17 @@ namespace SystemHub.Services
 
         public async Task ConnectionHeartBeat()
         {
-            try
-            {                
-                while (true)
-                {
-                    foreach (var socket in _UserSocketsPool)
-                    {
-                        if(socket.Value.State == WebSocketState.Open)
-                        {
-                            await SendMessage(socket.Value,"ping");
-                        }
-                    }
-                    Thread.Sleep(30*1000);
-                }
-            }catch
+            while (true)
             {
-                await ConnectionHeartBeat();
+                foreach (var socket in _UserSocketsPool)
+                {
+                    if(socket.Value.State == WebSocketState.Open)
+                    {
+                        try {await SendMessage(socket.Value,"ping"); }
+                        catch {  }
+                    }
+                }
+                Thread.Sleep(30*1000);
             }
         }
 
