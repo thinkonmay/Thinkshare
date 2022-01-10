@@ -20,8 +20,6 @@ namespace WorkerManager.Middleware
 
         private readonly ILocalStateStore _cache;
 
-        private readonly RestClient _token;
-
         private readonly ClusterConfig _config;
 
         public ClusterJwtMiddleware(RequestDelegate next,
@@ -33,7 +31,6 @@ namespace WorkerManager.Middleware
             _cache = cache;
             _generator = generator;
             _config = config.Value;
-            _token = new RestClient();
         }
 
         public async Task Invoke(HttpContext context)
@@ -50,7 +47,7 @@ namespace WorkerManager.Middleware
         {
             try
             {
-                ClusterWorkerNode node = await _generator.ValidateToken(token);
+                ClusterWorkerNode? node = await _generator.ValidateToken(token);
                 if (node != null)
                 {
                     context.Items.Add("WorkerID", node.ID.ToString());
@@ -59,30 +56,24 @@ namespace WorkerManager.Middleware
                 else
                 {
                     context.Items.Add("IsWorker", "false");
-                    var request = new RestRequest(_config.OwnerAuthorizeUrl)
-                        .AddHeader("Authorization","Bearer "+ token);
-                    request.Method = Method.GET;
-
-                    var result = await _token.ExecuteAsync(request);
-
-                    if (result.StatusCode == System.Net.HttpStatusCode.OK)
-                    {
-                        var jsonResult = JsonConvert.DeserializeObject<UserInforModel>(result.Content);
-                        if(jsonResult != null)
-                        {
-                            var Cluster = await _cache.GetClusterInfor();
-                            if(Cluster.OwnerName == jsonResult.UserName)
-                            {
-                                context.Items.Add("IsOwner", "true");
-                            }
-                            else
-                            {
-                                context.Items.Add("IsOwner", "false");
-                            }
-                        }
-                    }
                 }
-                return;
+
+
+                var request = new RestRequest(_config.OwnerAuthorizeUrl,Method.GET)
+                    .AddHeader("Authorization",token);
+
+                var result = await (new RestClient()).ExecuteAsync(request);
+                var Cluster = await _cache.GetClusterInfor();
+                var jsonResult = JsonConvert.DeserializeObject<UserInforModel>(result.Content);
+
+                if(Cluster.OwnerName == jsonResult.UserName)
+                {
+                    context.Items.Add("IsOwner", "true");
+                }
+                else
+                {
+                    context.Items.Add("IsOwner", "false");
+                }
             }
             catch
             {

@@ -3,11 +3,11 @@ using System;
 
 namespace WorkerManager.Middleware
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class WorkerAttribute : ActionFilterAttribute
     {
     }
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class OwnerAttribute : ActionFilterAttribute
     {
     }
