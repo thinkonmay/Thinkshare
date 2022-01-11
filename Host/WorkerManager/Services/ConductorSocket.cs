@@ -178,14 +178,19 @@ namespace WorkerManager.Services
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
 
-            try
+            bool success = false;
+            while (!success)
             {
-                await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-            } catch (Exception ex)
-            { 
-                Serilog.Log.Information("Fail to send message to websocket client"); 
-                Thread.Sleep(1000);
-                await SendMessage(msg);
+                try
+                {
+                    await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+                    success = true;
+                } catch (Exception ex)
+                { 
+                    Serilog.Log.Information("Fail to send message to websocket client"); 
+                    Thread.Sleep(1000);
+                    success = false;
+                }
             }
         }
 
@@ -221,6 +226,7 @@ namespace WorkerManager.Services
                                 To = Module.HOST_MODULE,
                                 Data = JsonConvert.SerializeObject(clusterSnapshoot)
                             };
+
                             await SendMessage(JsonConvert.SerializeObject(request));
                             return;
                         }
@@ -263,8 +269,7 @@ namespace WorkerManager.Services
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("state syncing failed");
-                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information($"state syncing failed: {ex.Message}");
                 Serilog.Log.Information(ex.StackTrace);
                 await StateSyncing(message);
             }
@@ -276,13 +281,11 @@ namespace WorkerManager.Services
         {
             try
             {
-                var client = new RestClient();
-                var request = new RestRequest(_config.WorkerRegisterUrl)
+                var request = new RestRequest(_config.WorkerRegisterUrl,Method.POST)
                     .AddHeader("Authorization",(await _cache.GetClusterInfor()).ClusterToken)
                     .AddJsonBody(model.model);
-                request.Method = Method.POST;
 
-                var result = await client.ExecuteAsync(request);
+                var result = await (new RestClient()).ExecuteAsync(request);
                 if(result.StatusCode == HttpStatusCode.OK)
                 {
                     int id = JsonConvert.DeserializeObject<int>(result.Content);

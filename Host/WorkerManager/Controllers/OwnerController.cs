@@ -78,7 +78,6 @@ namespace WorkerManager.Controllers
                     if (tokenResult.StatusCode == HttpStatusCode.OK)
                     {
                         cluster.ClusterToken = JsonConvert.DeserializeObject<AuthenticationRequest>(tokenResult.Content).token;
-                        await _conductor.Start();
                         await _cache.SetClusterInfor(cluster);
                     }
                 }
@@ -93,6 +92,7 @@ namespace WorkerManager.Controllers
                     }
                 }
             }
+            _conductor.Start();
             return Ok(jsonresult);
         }
 
