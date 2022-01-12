@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: authenticator
-        image: pigeatgarlic/authenticator:2022-02-12
+        image: pigeatgarlic/authenticator:2022-01-12
         imagePullPolicy: Always
         resources:
           requests:

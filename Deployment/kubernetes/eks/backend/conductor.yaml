@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: conductor
-        image: pigeatgarlic/conductor:2022-02-12
+        image: pigeatgarlic/conductor:2022-01-12
         imagePullPolicy: Always
         resources:
           requests:
