@@ -20,9 +20,5 @@ namespace SharedHost.Models.Device
         public string? AgentUrl {get;set;}
 
         public string? CoreUrl {get;set;}
-
-        public string? agentInstancePort {get;set;}
-
-        public string? coreInstancePort  {get;set;}
     }
 }

@@ -123,7 +123,6 @@ namespace WorkerManager.Controllers
 
 
 
-        [Owner]
         [HttpPost("Cluster/isRegistered")]
         public async Task<IActionResult> isRegistered()
         {
