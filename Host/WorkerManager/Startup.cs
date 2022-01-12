@@ -102,6 +102,7 @@ namespace WorkerManager
             services.AddTransient<ILocalStateStore, LocalStateStore>();
             services.AddSingleton<IConductorSocket,ConductorSocket>();
             services.AddSingleton<IWorkerNodePool,WorkerNodePool>();
+            services.AddSingleton<IPortProxy,PortProxy>();
             services.AddMvc();
         
         }

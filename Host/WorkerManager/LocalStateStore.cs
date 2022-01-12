@@ -38,6 +38,13 @@ namespace WorkerManager
         Task<string> GetWorkerRemoteToken (int WorkerID);
 
 
+
+        
+
+
+
+
+
         Task CacheScriptModel(List<ScriptModel> models);
 
         Task<List<ScriptModel>> GetScriptModel();

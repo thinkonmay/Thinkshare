@@ -88,9 +88,11 @@ namespace WorkerManager
                 var pool      = scope.ServiceProvider.GetRequiredService<IWorkerNodePool>();
                 var _cache    = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
                 var _infor    = scope.ServiceProvider.GetRequiredService<IClusterInfor>();
+                var _Port    =  scope.ServiceProvider.GetRequiredService<IPortProxy>();
 
 
                 var _cluster  = await _cache.GetClusterInfor();
+                Task.Run(() => _Port.SetupSSHClient());
                 pool.Start();
 
                 var nodes = _cluster.WorkerNodes;

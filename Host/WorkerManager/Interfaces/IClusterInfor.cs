@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using SharedHost.Models.Cluster;
 
 
 namespace WorkerManager.Interfaces 
@@ -10,5 +11,7 @@ namespace WorkerManager.Interfaces
         Task<bool> IsSelfHost();
 
         Task<bool> IsRegistered();
+
+        Task<GlobalCluster> Infor();
     }
 }

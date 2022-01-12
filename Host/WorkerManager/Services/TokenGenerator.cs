@@ -20,7 +20,8 @@ namespace WorkerManager.Services
 
         private readonly ILocalStateStore _cache; 
 
-        public TokenGenerator(IOptions<JwtOptions> options, ILocalStateStore cache)
+        public TokenGenerator(IOptions<JwtOptions> options, 
+                              ILocalStateStore cache)
         {
             _jwt = options.Value;
             _cache = cache;

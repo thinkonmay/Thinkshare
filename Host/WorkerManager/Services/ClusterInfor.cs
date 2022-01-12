@@ -63,5 +63,17 @@ namespace WorkerManager.Services
         {
             return ((await _cache.GetClusterInfor()).ClusterToken != null);
         }
+
+        public async Task<GlobalCluster> Infor()
+        {
+            var cluster = await _cache.GetClusterInfor();
+
+            var request = new RestRequest(_config.ClusterInforUrl)
+                .AddHeader("Authorization",cluster.ClusterToken);
+            request.Method = Method.GET;
+
+            var result = await (new RestClient()).ExecuteAsync(request);
+            return JsonConvert.DeserializeObject<GlobalCluster>(result.Content);
+        }
     }
 }
