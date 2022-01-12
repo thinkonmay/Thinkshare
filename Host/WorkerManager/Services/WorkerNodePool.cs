@@ -91,12 +91,12 @@ namespace WorkerManager.Services
 
 
 
-                        if(worker.agentFailedPing > 10)
+                        if(worker.agentFailedPing > 5)
                         {
                             await _cache.SetWorkerState(keyValue.Key, WorkerState.Disconnected);
                         }
                     }
-                    Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
+                    Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 }
             }catch (Exception ex)
             {

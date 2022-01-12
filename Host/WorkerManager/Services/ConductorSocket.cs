@@ -33,14 +33,12 @@ namespace WorkerManager.Services
         
         private readonly ITokenGenerator _generator;
 
-
-        private bool isRunning;
+        private bool Started;
 
         public ConductorSocket(IOptions<ClusterConfig> cluster, 
                                ITokenGenerator generator,
                                ILocalStateStore cache)
         {
-            isRunning = false;
             _generator = generator;
             _cache = cache;
             _config = cluster.Value;
@@ -51,14 +49,20 @@ namespace WorkerManager.Services
         {
             try
             {
-                if (isRunning) { return; }
-                isRunning = true;
-
                 var token = (await _cache.GetClusterInfor()).ClusterToken;
                 _clientWebSocket = new ClientWebSocket();
                 await _clientWebSocket.ConnectAsync(
                     new Uri(_config.ClusterHub+"?token=" + token), 
                     CancellationToken.None);
+
+                if(_clientWebSocket.State == WebSocketState.Open)
+                {
+                    Serilog.Log.Information($"Connected to cluster hub");
+                }
+                else
+                {
+                    throw new Exception("Connection is not established");
+                }
 
                 var currentState = await _cache.GetClusterState();
                 var request = new Message
@@ -79,13 +83,6 @@ namespace WorkerManager.Services
             }
         }
 
-        private async Task Stop()
-        {
-            if(!isRunning) { return; }
-            isRunning = false;
-        }
-
-
 
 
 
@@ -96,11 +93,6 @@ namespace WorkerManager.Services
                 WebSocketReceiveResult message;
                 do
                 {
-                    if (!isRunning) 
-                    { 
-                        await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-                        return; 
-                    }
                     using (var memoryStream = new MemoryStream())
                     {
                         message = await ReceiveMessage(_clientWebSocket, memoryStream);
@@ -143,21 +135,13 @@ namespace WorkerManager.Services
 
         async Task RestoreConnection(Exception? exception)
         {
-            try
-            {
-                await Stop();
-                if(exception != null) {
-                    Serilog.Log.Information("Error when connect to sytemhub: " + exception.Message);
-                    Serilog.Log.Information(exception.StackTrace);
-                } else {
-                    Serilog.Log.Information("Disconnected from systemhub");
-                }
-                await Start();
+            if(exception != null) {
+                Serilog.Log.Information("Error when connect to sytemhub: " + exception.Message);
+                Serilog.Log.Information(exception.StackTrace);
+            } else {
+                Serilog.Log.Information("Disconnected from systemhub");
             }
-            catch (Exception ex)
-            {
-                await RestoreConnection(ex);
-            }
+            await Start();
         }
 
 
@@ -187,7 +171,7 @@ namespace WorkerManager.Services
                     success = true;
                 } catch (Exception ex)
                 { 
-                    Serilog.Log.Information("Fail to send message to websocket client"); 
+                    Serilog.Log.Information($"Fail to send message to websocket client due to {ex.Message}"); 
                     Thread.Sleep(1000);
                     success = false;
                 }

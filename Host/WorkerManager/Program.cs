@@ -92,7 +92,6 @@ namespace WorkerManager
 
 
                 var _cluster  = await _cache.GetClusterInfor();
-                Task.Run(() => _Port.SetupSSHClient());
                 pool.Start();
 
                 var nodes = _cluster.WorkerNodes;
@@ -100,7 +99,11 @@ namespace WorkerManager
                 nodes.ForEach(x => initState.Add(x.ID,WorkerState.Disconnected));
                 await _cache.SetClusterState(initState);
 
-                if(await _infor.IsRegistered()) { await conductor.Start(); }
+                if(await _infor.IsRegistered()) 
+                { 
+                    await conductor.Start(); 
+                    await _Port.Start();
+                }
             }
         }
     }

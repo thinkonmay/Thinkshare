@@ -111,29 +111,5 @@ namespace AutoScaling.Controllers
                 return Ok();
             }
         }
-
-        [Cluster]
-        [HttpGet("Update")]
-        public async Task<IActionResult> Update(int InstancePort, int WorkerID)
-        {
-            var ClusterID = HttpContext.Items["ClusterID"];
-            var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
-
-            if(cluster.SelfHost)
-            {
-                return BadRequest();
-            }
-            else
-            {
-                var port = cluster.instance.portForwards.Where( x => 
-                     x.InstancePort == InstancePort &&
-                    !x.End.HasValue).First();
-
-                port.WorkerID = WorkerID;
-                _db.Update(port);
-                await _db.SaveChangesAsync();
-                return Ok();
-            }
-        }
     }
 }

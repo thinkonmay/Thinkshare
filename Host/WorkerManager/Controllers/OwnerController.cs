@@ -34,14 +34,18 @@ namespace WorkerManager.Controllers
 
         private IClusterInfor _infor;
 
+        private IPortProxy _port;
+
         public OwnerController( ILocalStateStore cache,
                                 IConductorSocket socket,
                                 IWorkerNodePool workerPool,
+                                IPortProxy port,
                                 IClusterInfor infor,
                                 IOptions<ClusterConfig> config)
         {
             _cache = cache;
             _infor = infor;
+            _port = port;
             _conductor = socket;
             _workerNodePool = workerPool;
             _config = config.Value;
@@ -93,6 +97,7 @@ namespace WorkerManager.Controllers
                 }
             }
             _conductor.Start();
+            _port.Start();
             return Ok(jsonresult);
         }
 
