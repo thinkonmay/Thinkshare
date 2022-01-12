@@ -16,12 +16,10 @@ services:
     restart: unless-stopped
     ports:
       - "8080:3000"
-    
+
   cache:
     container_name: redis_cache
     image: redis:latest
     volumes:
-       - /home/cache/:/data
-    ports:
-      - "6379:6379"
+       - /home/cache:/data
     restart: unless-stopped
