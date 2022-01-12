@@ -81,6 +81,8 @@ namespace WorkerManager.Controllers
                             .AddQueryParameter("ClusterName", ClusterName));
                     if (tokenResult.StatusCode == HttpStatusCode.OK)
                     {
+                        _conductor.Start();
+                        _port.Start();
                         cluster.ClusterToken = JsonConvert.DeserializeObject<AuthenticationRequest>(tokenResult.Content).token;
                         await _cache.SetClusterInfor(cluster);
                     }
@@ -96,8 +98,6 @@ namespace WorkerManager.Controllers
                     }
                 }
             }
-            _conductor.Start();
-            _port.Start();
             return Ok(jsonresult);
         }
 
