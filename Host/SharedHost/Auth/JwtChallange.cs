@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
 using SharedHost.Auth.ThinkmayAuthProtocol;
+using SharedHost.Models.Cluster;
 using System.Net;
 using RestSharp;
+using System;
 
 namespace SharedHost.Auth
 {
@@ -14,7 +16,6 @@ namespace SharedHost.Auth
     {
         private readonly RequestDelegate _next;
 
-        private readonly RestClient _UserTokenIssuer;
 
         private readonly string IssuerUrl;
 
@@ -25,12 +26,12 @@ namespace SharedHost.Auth
         {
             _next = next;
             _config = config.Value;
-            _UserTokenIssuer = new RestClient();
         }
 
         public async Task Invoke(HttpContext context)
         {
             string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            context.Items.Add("Token", token);
             if (token != null)
             {
                 await attachUserToContext(context,  token);
@@ -45,30 +46,43 @@ namespace SharedHost.Auth
                 var tokenRequest = new AuthenticationRequest
                 {
                    token = token,
-                   Validator = _config.UserTokenValidator
+                   Validator = "authenticator"
                 };
-                var request = new RestRequest(_config.UserTokenValidator)
-                    .AddJsonBody(JsonConvert.SerializeObject(tokenRequest));
-                request.Method = Method.POST;
 
-                var result = await _UserTokenIssuer.ExecuteAsync(request);
-                if(result.StatusCode == HttpStatusCode.OK)
+                var UserTokenRequest = new RestRequest(_config.Authenticator+"/Token/Challenge/User")
+                    .AddJsonBody(tokenRequest);
+                UserTokenRequest.Method = Method.POST;
+
+                var ClusterTokenRequest = new RestRequest(_config.Authenticator+"/Token/Challenge/Cluster")
+                    .AddJsonBody(tokenRequest);
+                ClusterTokenRequest.Method = Method.POST;
+
+                var UserTokenResult =    await (new RestClient()).ExecuteAsync(UserTokenRequest);
+                if(UserTokenResult.StatusCode == HttpStatusCode.OK)
                 {
-                    var content = result.Content;
-                    var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(content);
-                    // attach user to context on successful jwt
-
+                    var claim = JsonConvert.DeserializeObject<AuthenticationResponse>(UserTokenResult.Content);
 
                     context.Items.Add("IsUser", claim.IsUser ? "true" : "false");
                     context.Items.Add("IsManager", claim.IsManager ? "true" : "false");
                     context.Items.Add("IsAdmin", claim.IsAdmin ? "true" : "false");
-
                     context.Items.Add("UserID", claim.UserID);
+                }
+
+                var ClusterTokenResult = await (new RestClient()).ExecuteAsync(ClusterTokenRequest);
+                if (ClusterTokenResult.StatusCode == HttpStatusCode.OK)
+                {
+                    var credential = JsonConvert.DeserializeObject<ClusterCredential>(ClusterTokenResult.Content);
+
+                    context.Items.Add("IsCluster", "true" );
+                    context.Items.Add("OwnerID", credential.OwnerID );
+                    context.Items.Add("ClusterID", credential.ID );
+                    context.Items.Add("ClusterName", credential.ClusterName );
                 }
                 return;
             }
-            catch
+            catch (Exception ex)
             {
+
                 // do nothing if jwt validation fails
                 // user is not attached to context so request won't have access to secure routes
             }
@@ -81,9 +95,13 @@ namespace SharedHost.Auth
     {
         private readonly RequestDelegate _next;
 
-        public AuthorizeMiddleWare(RequestDelegate next)
+        private readonly SystemConfig _config;
+
+        public AuthorizeMiddleWare(RequestDelegate next, 
+                                   IOptions<SystemConfig> config)
         {
             _next = next;
+            _config = config.Value;
         }
 
         public async Task Invoke(HttpContext context)
@@ -104,7 +122,6 @@ namespace SharedHost.Auth
             var managerAttribute = endpoint?.Metadata.GetMetadata<ManagerAttribute>();
             if (managerAttribute != null)
             {
-
                 string isManger = (string)context.Items["IsManager"];
                 if (isManger != "true")
                 {
@@ -116,13 +133,24 @@ namespace SharedHost.Auth
             var adminAttribute = endpoint?.Metadata.GetMetadata<AdminAttribute>();
             if (adminAttribute != null)
             {
-
                 string IsAdmin = (string)context.Items["IsAdmin"];
                 if (IsAdmin != "true")
                 {
                     context.Response.StatusCode =  StatusCodes.Status401Unauthorized;
                     return;
                 }
+            }
+
+            var clusterAttribute = endpoint?.Metadata.GetMetadata<ClusterAttribute>();
+            if (clusterAttribute != null)
+            {
+                string IsCluster = (string)context.Items["IsCluster"];
+                if (IsCluster != "true")
+                {
+                    context.Response.StatusCode =  StatusCodes.Status401Unauthorized;
+                    return;
+                }
+
             }
 
             await _next(context);

@@ -8,14 +8,12 @@ using Authenticator;
 using System.Threading.Tasks;
 using System.Net;
 using Microsoft.Extensions.Configuration;
-using System.IO;
 using System;
 using SharedHost;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SharedHost.Models.Auth;
-using SharedHost.Models.User;
 using SharedHost.Auth;
 using SharedHost.Models.Session;
 

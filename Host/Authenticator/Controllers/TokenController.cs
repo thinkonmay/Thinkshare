@@ -1,17 +1,13 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Authenticator.Interfaces;
 using SharedHost.Models.User;
-using SharedHost.Models.Auth;
 using SharedHost.Auth;
 using System.Threading.Tasks;
-using System.Linq;
 using DbSchema.DbSeeding;
 using SharedHost;
-using System;
-using SharedHost.Models.Session;
 using SharedHost.Models.Cluster;
+using SharedHost.Models.Session;
 using Microsoft.Extensions.Options;
 
 namespace Authenticator.Controllers
@@ -93,18 +89,16 @@ namespace Authenticator.Controllers
 
         [HttpPost]
         [Route("Challenge/Cluster")]
-        public async Task<IActionResult> ClusterChallange(string token)
+        public async Task<IActionResult> ClusterChallange([FromBody] AuthenticationRequest request)
         {
-            return Ok(await _tokenGenerator.ValidateClusterToken(token));
+            return Ok(await _tokenGenerator.ValidateClusterToken(request.token));
         }
 
         [HttpPost]
         [Route("Grant/Cluster")]
-        public async Task<IActionResult> GrantCluster(string UserID, 
-                                                      string ClusterName, 
-                                                      int ClusterID)
+        public async Task<IActionResult> GrantCluster([FromBody] GlobalCluster Cluster)
         {
-            return Ok(await _tokenGenerator.GenerateClusterJwt(UserID,ClusterName,ClusterID));
+            return Ok(await _tokenGenerator.GenerateClusterJwt(Cluster));
         }
 
         /// <summary>

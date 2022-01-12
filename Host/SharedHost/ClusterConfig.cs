@@ -1,5 +1,4 @@
-﻿using System;
-namespace SharedHost
+﻿namespace SharedHost
 {
     public class ClusterConfig
     {
@@ -10,5 +9,6 @@ namespace SharedHost
         public string ScriptModelUrl {get;set;}
         public string ClusterRegisterUrl{get;set;}
         public string WorkerRegisterUrl{get;set;}
+        public string PortReleaseUrl {get;set;}
     }
 }

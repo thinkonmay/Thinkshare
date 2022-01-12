@@ -66,7 +66,6 @@ namespace Authenticator.Services
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
@@ -114,13 +113,15 @@ namespace Authenticator.Services
             claims.Add(new Claim("ClientID", accession.ClientID.ToString()));
             claims.Add(new Claim("WorkerID", accession.WorkerID.ToString()));
             claims.Add(new Claim("Module",   ((int) accession.Module).ToString()));
+            claims.Add(new Claim("id",       accession.ID.ToString()));
+
 
 
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", accession.ID.ToString()) }),
-                Expires = DateTime.Now.AddDays(30),
+                Subject = new ClaimsIdentity(),
+                Expires = DateTime.Now.AddDays(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
             };
@@ -184,20 +185,22 @@ namespace Authenticator.Services
 
 
 
-        public async Task<string> GenerateClusterJwt(string UserID, string ClusterName, int ID)
+        public async Task<string> GenerateClusterJwt(GlobalCluster Cluster)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwt.Key);
             var claims = new List<Claim>();
 
-            claims.Add(new Claim("UserID",UserID.ToString()));
-            claims.Add(new Claim("ClusterName",ClusterName.ToString()));
+            claims.Add(new Claim("Name", Cluster.Name.ToString()));
+            claims.Add(new Claim("Owner", Cluster.OwnerID.ToString()));
+            claims.Add(new Claim("ID", Cluster.ID.ToString()));
+
 
 
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("ID", ID.ToString()) }),
+                Subject = new ClaimsIdentity(),
                 Expires = DateTime.Now.AddDays(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Claims = claims.ToDictionary(k => k.Type, v => (object)v.Value)
@@ -218,22 +221,21 @@ namespace Authenticator.Services
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
+                    ValidateAudience = false
                 }, out SecurityToken validatedToken);
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
 
-                var UserID = jwtToken.Claims.First(x => x.Type == "UserID").Value;
-                var Cluster  = jwtToken.Claims.First(x => x.Type == "ClusterName").Value;
-                var ID = jwtToken.Claims.First(x => x.Type == "ID").Value;
+                var ID    = jwtToken.Claims.First(x => x.Type == "ID").Value;
+                var Name  = jwtToken.Claims.First(x => x.Type == "Name").Value;
+                var Owner = jwtToken.Claims.First(x => x.Type == "Owner").Value;
 
 
                 var ret = new ClusterCredential
                 {
                     ID = Int32.Parse(ID),
-                    ClusterName = Cluster,
-                    OwnerID = Int32.Parse(UserID)
+                    OwnerID = Int32.Parse(Owner), 
+                    ClusterName = Name,
                 };
                 return ret;
             }

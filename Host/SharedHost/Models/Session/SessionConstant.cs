@@ -1,11 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using SharedHost.Models.Device;
-using SharedHost.Models.User;
-using SharedHost.Models.Device;
-
-namespace SharedHost.Models.Session
+﻿namespace SharedHost.Models.Session
 {
     public class SessionMetric
     {

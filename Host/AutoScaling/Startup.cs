@@ -1,24 +1,17 @@
-using System;
 using SharedHost;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using AutoScaling.Interfaces;
 using AutoScaling.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
-using DbSchema.CachedState;
 using DbSchema.SystemDb.Data;
 using SharedHost.Models.User;
+using DbSchema.CachedState;
+using SharedHost.Auth;
 
 namespace AutoScaling
 {
@@ -41,7 +34,7 @@ namespace AutoScaling
             });
 
             services.AddStackExchangeRedisCache(options =>
-            {
+                                                            {
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = Configuration.GetConnectionString("RedisInstanceName");
             });
@@ -95,6 +88,7 @@ namespace AutoScaling
             services.Configure<AWSSetting>(Configuration.GetSection("AWSSetting"));
             services.Configure<InstanceSetting>(Configuration.GetSection("InstanceSetting"));
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
+            services.AddTransient<IGlobalStateStore,GlobalStateStore>();
             services.AddTransient<IEC2Service, EC2Service>();
             services.AddMvc();
         }
@@ -114,6 +108,9 @@ namespace AutoScaling
                 .SetIsOriginAllowed(origin => true)); // allow any origin
 
             app.UseRouting();
+            app.UseMiddleware<JwtMiddleware>();
+            app.UseMiddleware<AuthorizeMiddleWare>();
+
             app.UseWebSockets();
             app.UseEndpoints(endpoints =>
             {

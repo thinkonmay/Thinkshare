@@ -1,11 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MetricCollector.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using MetricCollector.Model;
-using System.Threading.Tasks;
 using SharedHost;
 using Microsoft.Extensions.Options;
 

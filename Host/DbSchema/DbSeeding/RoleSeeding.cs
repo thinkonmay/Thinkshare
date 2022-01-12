@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DbSchema.DbSeeding
+﻿namespace DbSchema.DbSeeding
 {
     public class RoleSeeding
     {

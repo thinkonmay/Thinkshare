@@ -6,10 +6,7 @@ using Newtonsoft.Json;
 using SharedHost.Models.Cluster;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
-using SharedHost.Models.AWS;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DbSchema.CachedState
@@ -51,7 +48,6 @@ namespace DbSchema.CachedState
         public async Task SetClusterSnapshot(int ClusterID, Dictionary<int, string> snapshoot)
         {
             await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString(), snapshoot,null,null);
-
         }
         public async Task<Dictionary<int, string>> GetClusterSnapshot(int ClusterID)
         {
@@ -59,7 +55,7 @@ namespace DbSchema.CachedState
             if(snapshoot == null)
             {
                 snapshoot = new Dictionary<int, string>();
-                await _cache.SetRecordAsync<Dictionary<int, string>>("ClusterSnapshoot_"+ClusterID.ToString(), snapshoot,null,null);
+                await SetClusterSnapshot(ClusterID,snapshoot);
             }
             return snapshoot;
         }

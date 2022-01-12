@@ -1,15 +1,10 @@
-﻿using Newtonsoft.Json;
-using System.Threading;
+﻿using System.Threading;
 using System.Collections.Generic;
-using WorkerManager;
 using System.Threading.Tasks;
 using System;
 using SharedHost.Models.Device;
 using RestSharp;
 using SharedHost.Models.Shell;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using SharedHost.Models.Session;
 using System.Net;
 
 namespace WorkerManager.Models
@@ -78,7 +73,7 @@ namespace WorkerManager.Models
             using (var timeoutCancellation = new CancellationTokenSource())
             {
                 var originalTask = Ping(module);
-                var delayTask = Task.Delay(TimeSpan.FromMilliseconds(100));
+                var delayTask = Task.Delay(TimeSpan.FromMilliseconds(1000));
                 var completedTask = await Task.WhenAny(originalTask, delayTask);
                 // Cancel timeout to stop either task:
                 // - Either the original task completed, so we need to cancel the delay task.
@@ -104,17 +99,13 @@ namespace WorkerManager.Models
 
             if(module == Module.CORE_MODULE)
             {
-                var request = new RestRequest(model.CoreUrl + "/ping");
-                request.Method = Method.POST;
-
+                var request = new RestRequest(model.CoreUrl + "/ping",Method.GET);
                 result = await (new RestClient()).ExecuteAsync(request);
             }
             else if (module == Module.AGENT_MODULE)
             {
                 var request = new RestRequest(model.AgentUrl + "/ping");
-
-                request.Method = Method.POST;
-                result = await (new RestClient()).ExecuteAsync(request);
+                result = await (new RestClient()).ExecuteAsync(request,Method.GET);
             }
             else
             {

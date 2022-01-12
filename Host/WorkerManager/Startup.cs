@@ -98,9 +98,11 @@ namespace WorkerManager
             services.Configure<ClusterConfig>(Configuration.GetSection("ClusterConfig"));
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
             services.AddTransient<ITokenGenerator,TokenGenerator>();
+            services.AddTransient<IClusterInfor,ClusterInfor>();
             services.AddTransient<ILocalStateStore, LocalStateStore>();
             services.AddSingleton<IConductorSocket,ConductorSocket>();
             services.AddSingleton<IWorkerNodePool,WorkerNodePool>();
+            services.AddSingleton<IPortProxy,PortProxy>();
             services.AddMvc();
         
         }

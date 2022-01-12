@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SharedHost.Models.AWS;
+using System.Collections.Generic;
 using DbSchema.SystemDb.Data;
 using Newtonsoft.Json;
 using System;
@@ -15,20 +15,16 @@ using System.Linq;
 using DbSchema.CachedState;
 using AutoScaling.Interfaces;
 using Microsoft.Extensions.Options;
+using SharedHost.Models.AWS;
+using SharedHost.Auth;
 
 namespace AutoScaling.Controllers
 {
-    /// <summary>
-    /// Routes used by user to fetch information about the system
-    /// </summary>
-    [Manager]
     [ApiController]
     [Route("/Cluster")]
     [Produces("application/json")]
     public class ClusterController : Controller
     {
-        private readonly UserManager<UserAccount> _userManager;
-
         private readonly GlobalDbContext _db;
 
         private readonly IGlobalStateStore _cache;
@@ -45,14 +41,12 @@ namespace AutoScaling.Controllers
                                  IEC2Service ec2,
                                  IOptions<SystemConfig> config,
                                  IOptions<InstanceSetting> instanceSetting,
-                                 UserManager<UserAccount> userManager,
                                  IGlobalStateStore cache)
         {
             _cache = cache;
             _db = db;
             _client = new RestClient(config.Value.Authenticator);
             _instanceSetting = instanceSetting.Value;
-            _userManager = userManager;
             _config = config.Value;
             _ec2 = ec2;
         }
@@ -62,59 +56,70 @@ namespace AutoScaling.Controllers
 
 
         [Manager]
-        [HttpPost("Register")]
-        public async Task<IActionResult> NewCluster(string ClusterName, bool Private)
+        [HttpGet("Token")]
+        public async Task<IActionResult> NewCluster(string ClusterName)
         {
             GlobalCluster cluster;
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account =  await _userManager.FindByIdAsync((string)ManagerID);
+            var ManagerID = Int32.Parse(HttpContext.Items["UserID"].ToString());
+            var refreshCluster = _db.Clusters
+                .Where(x => x.Name == ClusterName && 
+                            x.OwnerID == ManagerID);
 
-            var refreshCluster = account.ManagedCluster.Where(x => x.Name == ClusterName);
+
+
+
             if(refreshCluster.Count() == 0)
             {
+                var CoturnRequest = new RestRequest(_config.AutoScaling+"/Instance/Coturn");
+                CoturnRequest.Method = Method.GET;
+
+                var client = new RestClient();
+                client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
+                var coturnResult = await client.ExecuteAsync(CoturnRequest);
+                var instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content);
                 cluster = new GlobalCluster
                 {
                     Name = ClusterName,
                     Register = DateTime.Now,
-                    Private = Private
+
+                    Private = true,
+                    SelfHost = true,
+
+                    InstanceID = instance.ID,
+                    WorkerNode = new List<WorkerNode>(),
+
+                    OwnerID = ManagerID
                 };
-                account.ManagedCluster.Add(cluster);
-                await _userManager.UpdateAsync(account);
+
+                _db.Clusters.Add(cluster);
+                await _db.SaveChangesAsync();
             }
             else
             {
                 cluster = refreshCluster.First();
-                if(cluster.SelfHost)
-                {
-                    if(cluster.instance == null)
-                    {
-                        cluster.instance = await _ec2.SetupCoturnService();
-                        await _userManager.UpdateAsync(account);
-                    }                    
-                }
             }
 
 
-            var request = new RestRequest(_config.ClusterTokenGrantor)
-                .AddQueryParameter("UserID",account.Id.ToString())
-                .AddQueryParameter("ClusterName",ClusterName)
-                .AddQueryParameter("ClusterID",cluster.ID.ToString());
+
+            var request = new RestRequest(_config.Authenticator+"/Token/Grant/Cluster")
+                .AddJsonBody(cluster);
             request.Method = Method.POST;
             
             var result = await _client.ExecuteAsync(request);
             var Token = JsonConvert.DeserializeObject<string>(result.Content);
-            return Ok(Token);
+            return Ok(new AuthenticationRequest{
+                token = Token,
+                Validator = "Autoscaling",
+            });
         }
 
 
-        [Manager]
+        [Cluster]
         [HttpPost("Worker/Register")]
-        public async Task<IActionResult> Register(string ClusterName, [FromBody] WorkerRegisterModel body)
+        public async Task<IActionResult> Register([FromBody] WorkerRegisterModel body)
         {
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).FirstOrDefault();
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
             var newWorker = new WorkerNode
             {
                 Register = DateTime.Now,
@@ -124,39 +129,36 @@ namespace AutoScaling.Controllers
                 OS = body.OS
             };
 
-            cluster.WorkerNode.Add(newWorker);
-            _db.Clusters.Update(cluster);
+            Cluster.WorkerNode.Add(newWorker);
+            _db.Clusters.Update(Cluster);
             await _db.SaveChangesAsync();
 
             await _cache.CacheWorkerInfor(newWorker);
             return Ok(newWorker.ID);
         }
 
-        [Manager]
+
+        [Cluster]
         [HttpGet("Infor")]
-        public async Task<IActionResult> getInfor(string ClusterName)
+        public async Task<IActionResult> getInfor()
         {
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
-            return Ok(cluster);
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+            return Ok(Cluster);
         }
 
-        [Manager]
-        [HttpGet("ManagedInstance")]
-        public async Task<IActionResult> getKey(string ClusterName)
+        [Cluster]
+        [HttpPost("Infor")]
+        public async Task<IActionResult> setInfor(bool Private, bool SelfHost)
         {
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
-            if(cluster.SelfHost)
-            {
-                return BadRequest();
-            }
-            else
-            {
-                return Ok(cluster.instance);
-            }
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+            Cluster.Private = Private;
+            Cluster.SelfHost = SelfHost;
+
+            _db.Update(Cluster);
+            await _db.SaveChangesAsync();
+            return Ok();
         }
     }
 }

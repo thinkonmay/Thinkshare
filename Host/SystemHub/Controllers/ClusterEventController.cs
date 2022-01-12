@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SharedHost;
+using System.Linq;
 using SystemHub.Interfaces;
-using SharedHost.Models.Message;
-using SharedHost.Models.Session;
-using Newtonsoft.Json;
 using SharedHost.Models.Device;
-using SharedHost.Models.Cluster;
+using DbSchema.SystemDb.Data;
 
 namespace SystemHub.Controllers
 {
@@ -16,9 +13,13 @@ namespace SystemHub.Controllers
     {
         private readonly IClusterSocketPool _Cluster;
 
-        public ClusterEventController(IClusterSocketPool queue)
+        private readonly GlobalDbContext _db;
+
+        public ClusterEventController(IClusterSocketPool queue,
+                                      GlobalDbContext db)
         {
             _Cluster = queue;
+            _db = db;
         }
 
         [HttpPost("Initialize")]
@@ -32,13 +33,15 @@ namespace SystemHub.Controllers
                 WorkerID = WorkerID,
                 token = token,
             };
-            _Cluster.SendToNode(message);
+
+            var worker = _db.Devices.Find(WorkerID);
+            var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
+            _Cluster.SendToCluster(globalCluster.ID, message);
             return Ok();
         }
 
         [HttpPost("Terminate")]
         public IActionResult Terminate(int WorkerID)
-
         {
             var message = new Message 
             {
@@ -47,7 +50,10 @@ namespace SystemHub.Controllers
                 Opcode = Opcode.SESSION_TERMINATE,
                 WorkerID = WorkerID,
             };
-            _Cluster.SendToNode(message);
+
+            var worker = _db.Devices.Find(WorkerID);
+            var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
+            _Cluster.SendToCluster(globalCluster.ID, message);
             return Ok();
         }
 
@@ -61,7 +67,10 @@ namespace SystemHub.Controllers
                 Opcode = Opcode.SESSION_DISCONNECT,
                 WorkerID = WorkerID,
             };
-            _Cluster.SendToNode(message);
+
+            var worker = _db.Devices.Find(WorkerID);
+            var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
+            _Cluster.SendToCluster(globalCluster.ID, message);
             return Ok();
         }
 
@@ -75,7 +84,10 @@ namespace SystemHub.Controllers
                 Opcode = Opcode.SESSION_RECONNECT,
                 WorkerID = WorkerID,
             };
-            _Cluster.SendToNode(message);
+
+            var worker = _db.Devices.Find(WorkerID);
+            var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
+            _Cluster.SendToCluster(globalCluster.ID, message);
             return Ok();
         }
     }

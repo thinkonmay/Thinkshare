@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SharedHost.Models.AWS
 {
@@ -15,5 +13,9 @@ namespace SharedHost.Models.AWS
         public string PrivateIP { get;set; }
 
         public virtual EC2KeyPair keyPair { get; set; }
+
+        public DateTime Start {get;set;}
+
+        public DateTime? End {get;set;}
     }
 }

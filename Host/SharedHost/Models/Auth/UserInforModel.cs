@@ -1,9 +1,4 @@
-using Microsoft.AspNetCore.Identity;
 using System;
-using SharedHost.Models.Session;
-using System.Collections.Generic;
-using SharedHost.Models.Cluster;
-using SharedHost.Models.Device;
 
 namespace SharedHost.Models.User
 {

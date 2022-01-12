@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using WorkerManager;
 using Microsoft.IdentityModel.Tokens;
 using WorkerManager.Interfaces;
 using SharedHost.Models.Auth;
@@ -21,7 +20,8 @@ namespace WorkerManager.Services
 
         private readonly ILocalStateStore _cache; 
 
-        public TokenGenerator(IOptions<JwtOptions> options, ILocalStateStore cache)
+        public TokenGenerator(IOptions<JwtOptions> options, 
+                              ILocalStateStore cache)
         {
             _jwt = options.Value;
             _cache = cache;
@@ -67,7 +67,6 @@ namespace WorkerManager.Services
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
                 var jwtToken = (JwtSecurityToken)validatedToken;
 

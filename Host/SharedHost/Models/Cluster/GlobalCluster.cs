@@ -1,9 +1,10 @@
 ﻿using SharedHost.Models.Device;
 using System.Collections.Generic;
-using SharedHost.Models.User;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using SharedHost.Models.AWS;
+using SharedHost.Models.User;
 
 namespace SharedHost.Models.Cluster
 {
@@ -18,17 +19,26 @@ namespace SharedHost.Models.Cluster
 
         public string Name {get;set;}
 
-        public DateTime Register { get; set; }
+        public DateTime? Register { get; set; }
 
-        public DateTime Unregister { get; set; }
+        public DateTime? Unregister { get; set; }
 
         public bool Private { get;set; }
 
         public bool SelfHost {get;set;}
 
-        public virtual ICollection<WorkerNode> WorkerNode { get; set; }
+        public virtual List<WorkerNode> WorkerNode { get; set; }
 
+        public int? InstanceID {get;set;}
+
+        [ForeignKey("InstanceID")]
         public virtual ClusterInstance? instance {get;set;}
+
+        [Required]
+        public int OwnerID {get;set;}
+
+        [ForeignKey("OwnerID")]
+        public virtual UserAccount Owner { get; set; }
     }
 }
 

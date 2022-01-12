@@ -38,13 +38,20 @@ namespace WorkerManager
         Task<string> GetWorkerRemoteToken (int WorkerID);
 
 
+
+        
+
+
+
+
+
         Task CacheScriptModel(List<ScriptModel> models);
 
         Task<List<ScriptModel>> GetScriptModel();
 
-        Task Log(int WorkerID, Log token);
+        Task Log(Log token);
 
-        Task<List<Log>> GetLog(int WorkerID, DateTime? Start, DateTime? End);
+        Task<List<Log>> GetLog(DateTime Start);
     }
 
 
@@ -166,16 +173,19 @@ namespace WorkerManager
 
 
 
-        public async Task Log(int WorkerID,Log log)
+        public async Task Log(Log log)
         {
-            var sessions = await _cache.GetRecordAsync<List<Log>>("Log_" + WorkerID.ToString()+log.LogTime.DayOfYear+log.LogTime.Hour);
+            var sessions = await _cache.GetRecordAsync<List<Log>>("Log" + 
+                log.LogTime.DayOfYear+log.LogTime.Hour);
             sessions.Add(log);
-            await _cache.SetRecordAsync<List<Log>>("Log_" + WorkerID.ToString()+log.LogTime.Day, sessions, null,null);
+            await _cache.SetRecordAsync<List<Log>>("Log" + 
+                log.LogTime.DayOfYear+log.LogTime.Hour, sessions, null,null);
         }
 
-        public async Task<List<Log>> GetLog(int WorkerID, DateTime? Start, DateTime? End)
+        public async Task<List<Log>> GetLog(DateTime Time)
         {
-            var cachedValue = await _cache.GetRecordAsync<List<Log>>("Log_"+WorkerID.ToString()+Start.Value.DayOfYear+Start.Value.Hour);
+            var cachedValue = await _cache.GetRecordAsync<List<Log>>("Log"+
+                Time.DayOfYear+Time.Hour);
             return cachedValue;
         }
 

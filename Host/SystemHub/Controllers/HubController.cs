@@ -43,12 +43,11 @@ namespace SystemHub.Controllers
                 var tokenRequest = new AuthenticationRequest
                 {
                     token = token,
-                    Validator = _config.UserTokenValidator
+                    Validator = "authenticator"
                 };
 
-                var request = new RestRequest(new Uri(_config.UserTokenValidator))
+                var request = new RestRequest(_config.Authenticator+"/Token/Challenge/User",Method.POST)
                     .AddJsonBody(tokenRequest);
-                request.Method = Method.POST;
 
                 var result = await _TokenValidator.ExecuteAsync(request);
                 if (result.StatusCode == HttpStatusCode.OK)
@@ -71,9 +70,14 @@ namespace SystemHub.Controllers
             var context = ControllerContext.HttpContext;
             if (context.WebSockets.IsWebSocketRequest)
             {
-                var request = new RestRequest(_config.ClusterTokenValidator)
-                    .AddQueryParameter("token",token);
-                request.Method = Method.POST;
+                var tokenRequest = new AuthenticationRequest
+                {
+                   token = token,
+                   Validator = "authenticator"
+                };
+
+                var request = new RestRequest(_config.Authenticator+"/Token/Challenge/Cluster",Method.POST)
+                    .AddJsonBody(tokenRequest);
 
                 var result = await _TokenValidator.ExecuteAsync(request);
                 if (result.StatusCode == HttpStatusCode.OK)

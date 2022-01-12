@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using SharedHost.Models.Device;
-
-namespace WorkerManager.Interfaces
+﻿namespace WorkerManager.Interfaces
 {
     public interface IWorkerNodePool
     {

@@ -1,19 +1,14 @@
 ﻿using Conductor.Hubs;
-using SharedHost.Models.Cluster;
 using Conductor.Interfaces;
 using DbSchema.SystemDb.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SharedHost;
-using SharedHost.Auth.ThinkmayAuthProtocol;
 using SharedHost.Models.Device;
 using SharedHost.Models.User;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DbSchema.CachedState;
-using Microsoft.Extensions.Options;
 
 namespace Conductor.Controllers
 {
@@ -70,13 +65,6 @@ namespace Conductor.Controllers
                         _db.RemoteSessions.Update(session);
                         await _db.SaveChangesAsync();
                         break;
-                    case WorkerState.MISSING:
-                        await _clientHubctx.ReportSessionTerminated(ID,session.ClientId);
-
-                        session.EndTime = DateTime.Now;
-                        _db.RemoteSessions.Update(session);
-                        await _db.SaveChangesAsync();
-                        break;
                     case WorkerState.OffRemote:
                         await _clientHubctx.ReportSessionDisconnected(ID, session.ClientId);
                         await _clientHubctx.ReportSlaveObtained(ID);
@@ -99,9 +87,6 @@ namespace Conductor.Controllers
                     case WorkerState.Disconnected:
                         await _clientHubctx.ReportSlaveObtained(ID);
                         break;
-                    case WorkerState.MISSING:
-                        await _clientHubctx.ReportSlaveObtained(ID);
-                        break;
                 }
 
             }
@@ -115,10 +100,6 @@ namespace Conductor.Controllers
 
         
 
-        /// <summary>
-        /// Get list of available slave device, contain device information
-        /// </summary>
-        /// <returns></returns>
         [HttpPost("Cluster/Disconnected")]
         public async Task<IActionResult> Disconnected(int ClusterID)
         {

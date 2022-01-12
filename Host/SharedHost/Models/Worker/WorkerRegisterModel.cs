@@ -1,12 +1,8 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using SharedHost.Models.AWS;
 
 namespace SharedHost.Models.Device
 {
-    /// <summary>
-    /// Slavedevice is the cloud computer device that allow user to access 
-    /// </summary>
     public class WorkerRegisterModel
     {
         [Required]

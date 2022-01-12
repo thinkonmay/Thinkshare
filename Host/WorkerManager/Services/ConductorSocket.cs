@@ -1,19 +1,16 @@
 ﻿using WorkerManager.Interfaces;
 using Microsoft.Extensions.Options;
-using SharedHost.Models.Cluster;
 using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using System.Collections.Generic;
 using RestSharp;
 using System.Net;
 using Newtonsoft.Json;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using System;
 using System.IO;
 using System.Text;
-using WorkerManager;
 using SharedHost;
 
 using WorkerManager.Models;
@@ -36,73 +33,55 @@ namespace WorkerManager.Services
         
         private readonly ITokenGenerator _generator;
 
-        private readonly ClusterKey _cluster;
-
-        private bool isRunning;
+        private bool Started;
 
         public ConductorSocket(IOptions<ClusterConfig> cluster, 
                                ITokenGenerator generator,
                                ILocalStateStore cache)
         {
-            isRunning = false;
             _generator = generator;
             _cache = cache;
             _config = cluster.Value;
             _scriptmodel = new RestClient();
-            _cluster = _cache.GetClusterInfor().Result;
         }
 
-        public async Task<bool> Start()
+        public async Task Start()
         {
             try
             {
-                if (isRunning) { return false; }
                 var token = (await _cache.GetClusterInfor()).ClusterToken;
                 _clientWebSocket = new ClientWebSocket();
                 await _clientWebSocket.ConnectAsync(
                     new Uri(_config.ClusterHub+"?token=" + token), 
                     CancellationToken.None);
 
-                if (_clientWebSocket.State == WebSocketState.Open)
+                if(_clientWebSocket.State == WebSocketState.Open)
                 {
-                    // DONOT set this to awaited
-                    isRunning = true;
-                    Handle();
-                    var currentState = await _cache.GetClusterState();
-                    var request = new Message
-                    {
-                        Opcode = Opcode.STATE_SYNCING,
-                        From = Module.CLUSTER_MODULE,
-                        To = Module.HOST_MODULE,
-                        Data = JsonConvert.SerializeObject(currentState)
-                    };
-                    await SendMessage(JsonConvert.SerializeObject(request));
-                    return true;
+                    Serilog.Log.Information($"Connected to cluster hub");
                 }
                 else
                 {
-                    return false;
+                    throw new Exception("Connection is not established");
                 }
+
+                var currentState = await _cache.GetClusterState();
+                var request = new Message
+                {
+                    Opcode = Opcode.STATE_SYNCING,
+                    From = Module.CLUSTER_MODULE,
+                    To = Module.HOST_MODULE,
+                    Data = JsonConvert.SerializeObject(currentState)
+                };
+                await SendMessage(JsonConvert.SerializeObject(request));
+                Handle(); // DONOT set this to awaited
             }
-            catch 
+            catch (Exception ex)
             { 
-                return false;
+                Serilog.Log.Information($"Fail to connect to host {ex.Message}");
+                System.Threading.Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
+                await Start();
             }
         }
-
-        public async Task<bool> Stop()
-        {
-            if(isRunning)
-            {
-                isRunning = false;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
 
 
 
@@ -114,11 +93,6 @@ namespace WorkerManager.Services
                 WebSocketReceiveResult message;
                 do
                 {
-                    if (!isRunning) 
-                    { 
-                        await _clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-                        return; 
-                    }
                     using (var memoryStream = new MemoryStream())
                     {
                         message = await ReceiveMessage(_clientWebSocket, memoryStream);
@@ -161,32 +135,13 @@ namespace WorkerManager.Services
 
         async Task RestoreConnection(Exception? exception)
         {
-            try
-            {
-                await Stop();
-                if(exception != null)
-                {
-                    Serilog.Log.Information("Error when connect to sytemhub: " + exception.Message);
-                    Serilog.Log.Information(exception.StackTrace);
-                    Serilog.Log.Information("Retry after 10 second");
-                }
-                else
-                {
-                    Serilog.Log.Information("Disconnected from systemhub");
-                    Serilog.Log.Information("Retry after 10 second");
-                }
-                Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
-                var success = await Start();
-                if(!success)
-                {
-                    await RestoreConnection(null);
-                }
-
+            if(exception != null) {
+                Serilog.Log.Information("Error when connect to sytemhub: " + exception.Message);
+                Serilog.Log.Information(exception.StackTrace);
+            } else {
+                Serilog.Log.Information("Disconnected from systemhub");
             }
-            catch (Exception ex)
-            {
-                await RestoreConnection(ex);
-            }
+            await Start();
         }
 
 
@@ -207,14 +162,19 @@ namespace WorkerManager.Services
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
 
-            try
+            bool success = false;
+            while (!success)
             {
-                await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-            } catch (Exception ex)
-            { 
-                Serilog.Log.Information("Fail to send message to websocket client"); 
-                Thread.Sleep(1000);
-                await SendMessage(msg);
+                try
+                {
+                    await _clientWebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+                    success = true;
+                } catch (Exception ex)
+                { 
+                    Serilog.Log.Information($"Fail to send message to websocket client due to {ex.Message}"); 
+                    Thread.Sleep(1000);
+                    success = false;
+                }
             }
         }
 
@@ -250,6 +210,7 @@ namespace WorkerManager.Services
                                 To = Module.HOST_MODULE,
                                 Data = JsonConvert.SerializeObject(clusterSnapshoot)
                             };
+
                             await SendMessage(JsonConvert.SerializeObject(request));
                             return;
                         }
@@ -263,7 +224,6 @@ namespace WorkerManager.Services
                                     if(device == null)
                                     {
                                         clusterSnapshoot.Remove(item.Key);
-                                        await _cache.SetWorkerState(item.Key,null);
                                     }
                                     else
                                     {
@@ -271,7 +231,6 @@ namespace WorkerManager.Services
                                         if(!result)
                                         {
                                             clusterSnapshoot.Remove(item.Key);
-                                            await _cache.SetWorkerState(item.Key,null);
                                         }
                                     }
                                 }
@@ -289,22 +248,12 @@ namespace WorkerManager.Services
                         }
                     }
 
-                    // check for item that is synced with host but not exist in cluster 
-                    foreach (var item in syncedState)
-                    {
-                        bool success = clusterSnapshoot.TryGetValue(item.Key,out var output);
-                        if(!success)
-                        {
-                            await _cache.SetWorkerState(item.Key,WorkerState.MISSING);
-                        }
-                    }
                     Thread.Sleep((int)TimeSpan.FromMilliseconds(50).TotalMilliseconds);
                 }
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("state syncing failed");
-                Serilog.Log.Information(ex.Message);
+                Serilog.Log.Information($"state syncing failed: {ex.Message}");
                 Serilog.Log.Information(ex.StackTrace);
                 await StateSyncing(message);
             }
@@ -314,34 +263,31 @@ namespace WorkerManager.Services
 
         async Task<bool> reRegisterDevice(ClusterWorkerNode model)
         {
-
-            var workers = await _cache.GetClusterState();
-            foreach (var item in workers)
+            try
             {
-                await _cache.SetWorkerState(item.Key,WorkerState.Disconnected);
+                var request = new RestRequest(_config.WorkerRegisterUrl,Method.POST)
+                    .AddHeader("Authorization",(await _cache.GetClusterInfor()).ClusterToken)
+                    .AddJsonBody(model.model);
+
+                var result = await (new RestClient()).ExecuteAsync(request);
+                if(result.StatusCode == HttpStatusCode.OK)
+                {
+                    int id = JsonConvert.DeserializeObject<int>(result.Content);
+                    model.ID = id;
+
+                    await _cache.CacheWorkerInfor(model);
+                    await _cache.SetWorkerState(model.ID, WorkerState.Open);
+                    return true;
+                }
+                else
+                {
+                    Serilog.Log.Information("Fail to register device with host");
+                    return false;
+                }
             }
-
-
-
-            var client = new RestClient();
-            var request = new RestRequest(_config.WorkerRegisterUrl)
-                .AddQueryParameter("ClusterName",_cluster.Name)
-                .AddJsonBody(model.model)
-                .AddHeader("Authorization","Bearer "+_cluster.OwnerToken);
-
-            var result = await client.ExecuteAsync(request);
-            if(result.StatusCode == HttpStatusCode.OK)
+            catch (Exception ex)
             {
-                int id = JsonConvert.DeserializeObject<int>(result.Content);
-                model.ID = id;
-
-                await _cache.CacheWorkerInfor(model);
-                await _cache.SetWorkerState(model.ID, WorkerState.Open);
-                return true;
-            }
-            else
-            {
-                Serilog.Log.Information("Fail to register device");
+                Serilog.Log.Information($"Fail to register device due to {ex.Message}");
                 return false;
             }
         }

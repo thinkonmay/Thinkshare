@@ -1,11 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Conductor.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SharedHost.Models.Device;
 using SharedHost.Models.Shell;
 using DbSchema.SystemDb.Data;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
@@ -22,15 +19,12 @@ namespace Conductor.Controllers
     public class ShellController : Controller
     {
         private readonly IWorkerCommnader _slmsocket;
-        private readonly UserManager<UserAccount> _userManager;
         private readonly GlobalDbContext _db;
 
-        public ShellController(UserManager<UserAccount> userManager,
-                            IWorkerCommnader slmSocket, 
-                            GlobalDbContext db )
+        public ShellController( IWorkerCommnader slmSocket, 
+                                GlobalDbContext db )
         {
             _slmsocket = slmSocket;
-            _userManager = userManager;
             _db = db;
         }
 
@@ -44,13 +38,12 @@ namespace Conductor.Controllers
         }
 
 
-        [Manager]
+        [Cluster]
         [HttpPost("Add")]
         public async Task<IActionResult> UpdateShellSession([FromBody] List<ShellSession> session, int WorkerID, string ClusterName)
         {
-            var UserID = HttpContext.Items["UserID"];
-            var manager = await _userManager.FindByIdAsync(UserID.ToString());
-            var cluster = manager.ManagedCluster.Where(x => x.Name == ClusterName).First();
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var cluster = _db.Clusters.Find(System.Int32.Parse(ClusterID.ToString()));
             var worker = cluster.WorkerNode.Where(x => x.ID == WorkerID).First();
 
             if (worker == null)

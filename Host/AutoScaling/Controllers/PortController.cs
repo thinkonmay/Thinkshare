@@ -1,33 +1,25 @@
-
+using SharedHost.Models.Device;
 using Microsoft.AspNetCore.Mvc;
 using SharedHost.Models.AWS;
 using DbSchema.SystemDb.Data;
-using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using SharedHost.Models.User;
-using SharedHost.Models.Auth;
-using SharedHost.Models.Device;
-using Microsoft.AspNetCore.Identity;
 using SharedHost.Auth.ThinkmayAuthProtocol;
-using SharedHost.Models.Cluster;
 using SharedHost;
 using RestSharp;
 using System.Linq;
-using DbSchema.SystemDb.Data;
 using AutoScaling.Interfaces;
 using Microsoft.Extensions.Options;
-using IdentityServer4.Models;
 
 namespace AutoScaling.Controllers
 {
     /// <summary>
     /// Routes used by user to fetch information about the system
     /// </summary>
-    [Manager]
     [ApiController]
-    [Route("/ManagedCluster")]
+    [Route("/Port")]
     [Produces("application/json")]
     public class PortController : Controller
     {
@@ -58,13 +50,12 @@ namespace AutoScaling.Controllers
         }
 
 
-        [Manager]
-        [HttpGet("Portforward/Request")]
-        public async Task<IActionResult> request(string ClusterName, int LocalPort)
+        [Cluster]
+        [HttpGet("Request")]
+        public async Task<IActionResult> request(int LocalPort)
         {
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
             if(cluster.SelfHost)
             {
                 return BadRequest();
@@ -83,27 +74,27 @@ namespace AutoScaling.Controllers
                         break;
                     }
                 }
-
-                cluster.instance.portForwards.Add(new PortForward{
+                var port = new PortForward{
                     LocalPort = LocalPort,
                     InstancePort = InstancePort,
                     Start = DateTime.Now
-                });
+                };
 
+                cluster.instance.portForwards.Add(port);
                 _db.Update(cluster);
                 await _db.SaveChangesAsync();
-                return Ok();
+
+                return Ok(port);
             }
 
         }
 
-        [Manager]
-        [HttpGet("Portforward/Release")]
-        public async Task<IActionResult> Release(string ClusterName, int LocalPort)
+        [Cluster]
+        [HttpGet("Release")]
+        public async Task<IActionResult> Release(int InstancePort)
         {
-            var ManagerID = HttpContext.Items["UserID"];
-            UserAccount account = await _userManager.FindByIdAsync((string)ManagerID);
-            var cluster = account.ManagedCluster.Where(x => x.Name == ClusterName).First();
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
             if(cluster.SelfHost)
             {
                 return BadRequest();
@@ -111,9 +102,8 @@ namespace AutoScaling.Controllers
             else
             {
                 var port = cluster.instance.portForwards.Where( x => 
-                    x.LocalPort == LocalPort &&
-                    !x.End.HasValue
-                ).First();
+                     x.InstancePort == InstancePort &&
+                    !x.End.HasValue).First();
                 port.End = DateTime.Now;
 
                 _db.Update(port);

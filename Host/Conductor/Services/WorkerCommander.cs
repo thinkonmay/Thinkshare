@@ -1,14 +1,6 @@
-﻿using SharedHost.Models.Session;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using SharedHost.Models.Device;
 using RestSharp;
-using Newtonsoft;
-using SharedHost.Models.Shell;
-using Newtonsoft.Json;
-using System.Net;
 using Conductor.Interfaces;
 using SharedHost;
 using DbSchema.SystemDb.Data;

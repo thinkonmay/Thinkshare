@@ -39,7 +39,7 @@ namespace AutoScaling.Services
         }
 
 
-        public async Task<EC2KeyPair> CreateKeyPair()
+        private async Task<EC2KeyPair> CreateKeyPair()
         {
             AmazonEC2Client _ec2Client;
             if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
@@ -64,7 +64,9 @@ namespace AutoScaling.Services
         }
 
 
-        public async Task<EC2Instance> LaunchInstances()
+
+
+        private async Task<EC2Instance> LaunchInstances()
         {
             AmazonEC2Client _ec2Client;
             if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
@@ -96,7 +98,7 @@ namespace AutoScaling.Services
                 MinCount = 1,
                 TagSpecifications = new List<TagSpecification> {
                     new TagSpecification {
-                        ResourceType = "AutoLauched node",
+                        ResourceType = "instance",
                         Tags = new List<Tag> {
                             new Tag {
                                 Key = "Launcher",
@@ -115,10 +117,12 @@ namespace AutoScaling.Services
 
                 PrivateIP = response.Reservation.Instances.First().PrivateIpAddress,
 
+                Start = DateTime.Now,
+
                 keyPair = keyPair,
             };
 
-
+            int waitingTime = 0;
             while (true)
             {
                 var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { response.Reservation.Instances.First().InstanceId } });
@@ -128,8 +132,11 @@ namespace AutoScaling.Services
                     result.IPAdress = infor.Reservations.First().Instances.First().PublicIpAddress;
                     break;
                 }
+                Serilog.Log.Information("waiting for ec2 instance to get desired state: "+ waitingTime);
                 System.Threading.Thread.Sleep(1000);
+                waitingTime++;
             }
+            Serilog.Log.Information("EC2 instance create finished after : "+ waitingTime);
 
             return result;
         }
@@ -137,7 +144,7 @@ namespace AutoScaling.Services
 
 
 
-        public async Task<bool> EC2TerminateInstances(string ID)
+        public async Task<bool> TerminateInstance(ClusterInstance instance)
         {
             AmazonEC2Client _ec2Client;
             if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
@@ -149,24 +156,24 @@ namespace AutoScaling.Services
                 return false;
             }
 
-            var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { ID } });
-
+            var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
             if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
             {
                 return false;
             }
 
-            var response = await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
+            await _ec2Client.DeleteKeyPairAsync(new DeleteKeyPairRequest( instance.keyPair.Name ));            
+            await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
             {
                 InstanceIds = new List<string> {
-                    ID
+                    instance.InstanceID
                 }
             });
 
 
             while(true)
             {
-                var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { ID } });
+                var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
 
                 if (infor.Reservations.First().Instances.First().State.Name == InstanceStateName.Terminated )
                 {
@@ -178,7 +185,17 @@ namespace AutoScaling.Services
 
         public async Task<ClusterInstance> SetupManagedCluster()
         {
-            var result = new ClusterInstance((await LaunchInstances()));
+            var instance = await LaunchInstances();
+            var result = new ClusterInstance
+            {
+                IPAdress = instance.IPAdress,
+                InstanceID = instance.InstanceID,
+                InstanceName = instance.InstanceName,
+                PrivateIP = instance.PrivateIP,
+                keyPair = instance.keyPair,
+                portForwards = new List<PortForward>(),
+            };
+
 
             result.TurnUser = (new Random()).Next().ToString();
             result.TurnPassword = (new Random()).Next().ToString();
@@ -188,17 +205,26 @@ namespace AutoScaling.Services
             System.Threading.Thread.Sleep(30*1000);
 
             var coturn = SetupCoturnScript(result.TurnUser,result.TurnPassword);
-            await AccessEC2Instance(result,coturn);
+            await AccessEC2Instance(instance,coturn);
 
             var cluster = SetupClusterScript();
-            await AccessEC2Instance(result,cluster);
+            await AccessEC2Instance(instance,cluster);
             return result;
         }
 
 
         public async Task<ClusterInstance> SetupCoturnService()
         {
-            var result = new ClusterInstance((await LaunchInstances()));
+            var instance = await LaunchInstances();
+            var result = new ClusterInstance
+            {
+                IPAdress = instance.IPAdress,
+                InstanceID = instance.InstanceID,
+                InstanceName = instance.InstanceName,
+                PrivateIP = instance.PrivateIP,
+                keyPair = instance.keyPair,
+                portForwards = new List<PortForward>(),
+            };
 
             result.TurnUser = (new Random()).Next().ToString();
             result.TurnPassword = (new Random()).Next().ToString();
@@ -208,11 +234,11 @@ namespace AutoScaling.Services
             System.Threading.Thread.Sleep(30*1000);
 
             var coturn = SetupCoturnScript(result.TurnUser,result.TurnPassword);
-            await AccessEC2Instance(result,coturn);
+            await AccessEC2Instance(instance,coturn);
             return result;
         }
 
-        public async Task<List<string>?> AccessEC2Instance (EC2Instance instance, List<string> commands)
+        private async Task<List<string>?> AccessEC2Instance (EC2Instance instance, List<string> commands)
         {
             MemoryStream keyStream = new MemoryStream(Encoding.UTF8.GetBytes(instance.keyPair.PrivateKey));
             var keyFiles = new[] { new PrivateKeyFile(keyStream) };

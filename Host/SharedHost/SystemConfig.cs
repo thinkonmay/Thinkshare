@@ -13,12 +13,8 @@ namespace SharedHost
         public string SystemHub {get;set;}
         public string AutoScaling{get;set;}
         public string GoogleOauthID {get;set;}
-        public string UserTokenValidator {get;set;}
-        public string ClusterTokenValidator {get;set;}
         public string SessionTokenValidator {get;set;}
         public string SessionTokenGrantor {get;set;}
-        public string ClusterTokenGrantor {get;set;}
-        public string ManagedClusterServiceGrantor {get;set;}
         public LoginModel AdminLogin { get; set; }
         public List<string> STUNlist { get; set; }
     }

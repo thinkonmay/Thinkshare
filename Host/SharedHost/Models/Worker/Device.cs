@@ -1,6 +1,3 @@
-using Conductor.Models;
-using SharedHost.Models.Session;
-
 namespace SharedHost.Models.Device
 {
     public enum DeviceType

@@ -1,14 +1,9 @@
-using Microsoft.AspNetCore.SignalR;
-using System.Linq;
-using DbSchema.SystemDb.Data;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
-using SharedHost.Models.Device;
 using SharedHost;
 using RestSharp;
 using SharedHost.Models.Message;
 using DbSchema.CachedState;
-using Newtonsoft.Json;
 
 namespace Conductor.Hubs
 {

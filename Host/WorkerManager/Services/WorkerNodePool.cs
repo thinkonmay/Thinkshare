@@ -4,7 +4,6 @@ using System.Linq;
 using WorkerManager.Interfaces;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
-using WorkerManager;
 
 using WorkerManager.Models;
 
@@ -92,12 +91,12 @@ namespace WorkerManager.Services
 
 
 
-                        if(worker.agentFailedPing > 10)
+                        if(worker.agentFailedPing > 5)
                         {
                             await _cache.SetWorkerState(keyValue.Key, WorkerState.Disconnected);
                         }
                     }
-                    Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
+                    Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 }
             }catch (Exception ex)
             {
@@ -137,6 +136,5 @@ namespace WorkerManager.Services
                 currentTime.AddDays(1);
             }
         }
-
     }
 }

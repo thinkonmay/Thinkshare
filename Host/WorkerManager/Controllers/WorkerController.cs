@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SharedHost.Models.Auth;
-using SharedHost.Models.Cluster;
 using RestSharp;
 using Microsoft.AspNetCore.Mvc;
 using WorkerManager.Interfaces;
@@ -10,7 +9,6 @@ using System.Threading.Tasks;
 using SharedHost.Models.Device;
 using WorkerManager.Middleware;
 using System.Linq;
-using WorkerManager;
 using SharedHost;
 using Microsoft.Extensions.Options;
 using SharedHost.Auth;
@@ -22,7 +20,7 @@ namespace WorkerManager.Controllers
     [ApiController]
     [Route("/worker")]
     [Produces("application/json")]
-    public class AgentController : ControllerBase
+    public class WorkerController : ControllerBase
     {
         private readonly ITokenGenerator _tokenGenerator;
 
@@ -30,37 +28,39 @@ namespace WorkerManager.Controllers
 
         private readonly ClusterConfig _config;
 
-        public AgentController( ITokenGenerator token,
+        private readonly IClusterInfor _infor;
+        private readonly IPortProxy _port;
+
+        public WorkerController( ITokenGenerator token,
                                 ILocalStateStore cache,
+                                IClusterInfor infor,
+                                IPortProxy port,
                                 IOptions<ClusterConfig> config)
         {
             _cache = cache;
+            _infor = infor;
             _config = config.Value;
             _tokenGenerator = token;
+            _port = port;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="agent_register"></param>
-        /// <returns></returns>
+
         [Owner]
         [Route("register")]
         [HttpPost]
-        public async Task<IActionResult> PostInfor([FromBody]WorkerRegisterModel agent_register)
+        public async Task<IActionResult> PostInfor([FromBody]WorkerRegisterModel model)
         {
             var Cluster = await _cache.GetClusterInfor();
             if(Cluster == null) { return BadRequest(); }
 
-            var cachednode = Cluster.WorkerNodes.Where(x => x.model == agent_register);
+            var cachednode = Cluster.WorkerNodes.Where(x => x.model == model);
 
             if(!cachednode.Any())
             {
                 var client = new RestClient();
                 var request = new RestRequest(_config.WorkerRegisterUrl)
-                    .AddQueryParameter("ClusterName",Cluster.Name)
-                    .AddJsonBody(agent_register)
-                    .AddHeader("Authorization","Bearer "+ Cluster.OwnerToken);
+                    .AddHeader("Authorization",Cluster.ClusterToken)
+                    .AddJsonBody(model);
                 request.Method = Method.POST;
 
                 var result = await client.ExecuteAsync(request);
@@ -70,7 +70,7 @@ namespace WorkerManager.Controllers
                     var node = new ClusterWorkerNode
                     {
                         ID = id,
-                        model = agent_register
+                        model = model 
                     };
 
                     await _cache.CacheWorkerInfor(node);
@@ -80,7 +80,8 @@ namespace WorkerManager.Controllers
                 }
                 else
                 {
-                    return BadRequest("Fail to register worker");
+                    Serilog.Log.Information("Fail to register device");
+                    return BadRequest();
                 }
             }
             else
@@ -145,7 +146,7 @@ namespace WorkerManager.Controllers
 
             var cluster = await _cache.GetClusterInfor();
             var worker = cluster.WorkerNodes.Where(x => x.ID == WorkerID).First();
-            await _cache.Log(worker.ID,new Log
+            await _cache.Log(new Log
             {
                 WorkerID = worker.ID,
                 Content = log,

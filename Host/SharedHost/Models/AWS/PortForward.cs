@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using SharedHost.Models.Device;
 
 namespace SharedHost.Models.AWS
 {
@@ -14,12 +14,8 @@ namespace SharedHost.Models.AWS
 
         public int  InstancePort {get;set;}
 
-        public string Tag {get;set;}
-
         public DateTime Start {get;set;}
 
         public DateTime? End {get;set;}
     }
 }
-
-
