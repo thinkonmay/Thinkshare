@@ -46,7 +46,7 @@ namespace WorkerManager.Services
         public async Task Start()
         {
             if(Started) { return; }
-            SetupSSHClient();
+            await SetupSSHClient();
             SetupPortForward();
             Started = true;
         }
@@ -80,8 +80,6 @@ namespace WorkerManager.Services
 
         public async Task SetupSSHClient()
         {
-            try
-            {
                 var cluster = await _infor.Infor();
                 if(cluster.SelfHost){return;}
                 Serilog.Log.Information($"Attempting to establish ssh connection with instance");
@@ -93,11 +91,12 @@ namespace WorkerManager.Services
                 var methods = new List<AuthenticationMethod>();
                 methods.Add(new PrivateKeyAuthenticationMethod("ubuntu", keyFiles));
 
+            try
+            {
                 var con = new ConnectionInfo(instance.IPAdress, 22, "ubuntu", methods.ToArray());
                 _client = new SshClient(con);
                 _client.Connect();
                 Serilog.Log.Information($"Sucessfully establish ssh connection with instance");
-                while (true) { Thread.Sleep(10000); }
             }
             catch (Exception ex)
             {
