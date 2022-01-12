@@ -27,6 +27,15 @@ API.getSetting().then(async data => {
 })
 
 $(document).ready(async () => {
+
+	$('#regtomanager').click(function () {
+		//// write something useful
+	})
+
+	$('#selfhost').click(function () {
+		//// write something useful
+	})
+
 	document.querySelector(".preloader").style.opacity = "0";
 	document.querySelector(".preloader").style.display = "none";
 
@@ -47,11 +56,11 @@ $(document).ready(async () => {
 			// $('#checkboxTutorial').removeAttr("checked")
 			setCookie("show-tutorial", "false", 99999999999999)
 		} else
-		if ($('#checkboxTutorial').attr("checked") != 'checked') {
-			// click checkbox
-			$('#checkboxTutorial').attr("checked", true)
-			setCookie("show-tutorial", "true", 99999999999999)
-		}
+			if ($('#checkboxTutorial').attr("checked") != 'checked') {
+				// click checkbox
+				$('#checkboxTutorial').attr("checked", true)
+				setCookie("show-tutorial", "true", 99999999999999)
+			}
 	})
 
 
@@ -59,17 +68,17 @@ $(document).ready(async () => {
 	// Remote Core
 	$('[name="remote"]').click(async function () {
 		var display = await (await API.getSetting()).json();
-			var value = $(this).val();
-			display.engine = Setting.CoreEngine(value);
-			await Setting.updateSetting(display);
+		var value = $(this).val();
+		display.engine = Setting.CoreEngine(value);
+		await Setting.updateSetting(display);
 	})
 
 	// Remote control bitrate
 	$('[name="bitrate"]').click(async function () {
 		var display = await (await API.getSetting()).json();
-			var value = $(this).val();
-			display.mode = Setting.QoEMode(value);
-			await Setting.updateSetting(display);
+		var value = $(this).val();
+		display.mode = Setting.QoEMode(value);
+		await Setting.updateSetting(display);
 	});
 
 	// Resolution
@@ -91,15 +100,15 @@ $(document).ready(async () => {
 				break;
 		}
 		await Setting.updateSetting(display);
-		
+
 	})
 
 	// VideoCodec
 	$('[name="video"]').click(async function () {
 		var display = await (await API.getSetting()).json();
-			var value = $(this).val();
-			display.videoCodec = Setting.Codec(value);
-			await Setting.updateSetting(display);
+		var value = $(this).val();
+		display.videoCodec = Setting.Codec(value);
+		await Setting.updateSetting(display);
 	});
 
 	// Remote control bitrate
@@ -193,9 +202,9 @@ async function prepare_user_infor() {
 		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
 	} catch {
 		(new Promise(resolve => setTimeout(resolve, 5000)))
-		.then(() => {
-			prepare_user_infor();
-		});
+			.then(() => {
+				prepare_user_infor();
+			});
 	}
 
 }
@@ -216,9 +225,9 @@ async function prepare_worker_dashboard() {
 		}
 	} catch (err) {
 		(new Promise(resolve => setTimeout(resolve, 5000)))
-		.then(() => {
-			prepare_worker_dashboard();
-		});
+			.then(() => {
+				prepare_worker_dashboard();
+			});
 	}
 }
 
@@ -255,13 +264,13 @@ function onClientHubEvent(event) {
 	if (message_json.EventName === "ReportSessionReconnected") {
 		var workerID = parseInt(message_json.Message)
 
-		RemotePage.check_remote_condition(workerID,null,null);
+		RemotePage.check_remote_condition(workerID, null, null);
 		createSlave(workerID, "ON_SESSION", "slavesInUses");
 	}
 	if (message_json.EventName === "ReportSessionOn") {
 		var workerID = parseInt(message_json.Message)
 
-		RemotePage.check_remote_condition(workerID,null,null);
+		RemotePage.check_remote_condition(workerID, null, null);
 		createSlave(workerID, "ON_SESSION", "slavesInUses")
 	}
 	if (message_json.EventName === "ReportSessionTerminated") {
@@ -287,15 +296,15 @@ function onWebsocketOpen() {
 
 function onWebsocketClose(event) {
 	(new Promise(resolve => setTimeout(resolve, 5000)))
-	.then(() => {
-		location.reload();
-	});
+		.then(() => {
+			location.reload();
+		});
 };
 
 async function createSlave(workerID, workerState, queue) {
 	var queues = ["slavesInUses", "availableSlaves"]
 	for (var item in queues) {
-		
+
 		var worker = document.getElementById(`${queues[item]}${workerID}`);
 		if (worker != null) {
 			worker.remove();
@@ -309,14 +318,14 @@ async function createSlave(workerID, workerState, queue) {
 		var slave = await (await API.fetchInfor(workerID)).json();
 	} catch (error) {
 		(new Promise(resolve => setTimeout(resolve, 5000)))
-		.then(async () => {
-			if(document.getElementById(`${queue}${workerID}`) == null)
-				await createSlave(workerID, workerState, queue);
-		});
+			.then(async () => {
+				if (document.getElementById(`${queue}${workerID}`) == null)
+					await createSlave(workerID, workerState, queue);
+			});
 	}
 
-	if(document.getElementById(`${queue}${workerID}`) == null)
-	append(queue, `
+	if (document.getElementById(`${queue}${workerID}`) == null)
+		append(queue, `
     <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
       <div class="card bg-light d-flex flex-fill">
         <div style="text-alignt: center" class="card-header text-muted border-bottom-0">
@@ -411,8 +420,8 @@ function serialize(obj, prefix) {
 				v = obj[p]
 			str.push(
 				v !== null && typeof v === "object" ?
-				serialize(v, k) :
-				encodeURIComponent(k) + "=" + encodeURIComponent(v)
+					serialize(v, k) :
+					encodeURIComponent(k) + "=" + encodeURIComponent(v)
 			)
 		}
 	}
@@ -494,20 +503,20 @@ async function setDataForChart() {
 		var salesTopData = {
 			labels: _lables,
 			datasets: [{
-					label: 'This week',
-					data: datasets,
-					backgroundColor: saleGradientBg,
-					borderColor: [
-						'#1F3BB3',
-					],
-					borderWidth: 1.5,
-					fill: true, // 3: no fill
-					pointBorderWidth: 1,
-					pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-					pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-					pointBackgroundColor: ['#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)'],
-					pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', ],
-				},
+				label: 'This week',
+				data: datasets,
+				backgroundColor: saleGradientBg,
+				borderColor: [
+					'#1F3BB3',
+				],
+				borderWidth: 1.5,
+				fill: true, // 3: no fill
+				pointBorderWidth: 1,
+				pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+				pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+				pointBackgroundColor: ['#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)', '#1F3BB3', '#1F3BB3', '#1F3BB3', '#1F3BB3)'],
+				pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
+			},
 				//  {
 				// 	label: 'Last week',
 				// 	data: [30, 150, 190, 250, 120, 150, 130],
@@ -682,4 +691,4 @@ async function setDataForChart() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-(function ($) {})(jQuery);
+(function ($) { })(jQuery);
