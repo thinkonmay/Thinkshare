@@ -27,16 +27,18 @@ namespace WorkerManager.Services
         private readonly ILocalStateStore _cache;
         private readonly List<int> _ports;
         private SshClient _client;
-
         private readonly ClusterConfig _config;
+        private readonly InstanceSetting _setting;
 
         private bool Started;
 
         public PortProxy(IClusterInfor infor,
                          IOptions<ClusterConfig> config,
+                         IOptions<InstanceSetting> setting,
                          ILocalStateStore cache)
         {
             _config = config.Value;
+            _setting = setting.Value;
             _cache = cache;
             _infor = infor;
             Started = false;
@@ -54,24 +56,16 @@ namespace WorkerManager.Services
 
         private async Task SetupPortForward()
         {
-            while (true)
+            try
             {
-                try
+                for (int i = _setting.PortMinValue; i < _setting.PortMaxValue-1; i++)
                 {
-                    var portForwards = (await _infor.Infor()).instance.portForwards.Where(x => !x.End.HasValue);
-                    foreach (var item in portForwards)
-                    {
-                        if (!_ports.Contains(item.InstancePort))
-                        {
-                            await Forward(item.InstancePort);
-                        }
-                    }
+                    Forward(i);
                 }
-                catch (Exception ex)
-                {
-                    Serilog.Log.Information($"Fail to portforward {ex.Message} , {ex.StackTrace}");
-                }
-                Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Information($"Fail to portforward {ex.Message} , {ex.StackTrace}");
             }
         }
 

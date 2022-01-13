@@ -96,6 +96,7 @@ namespace WorkerManager
                 }); 
             });
             services.Configure<ClusterConfig>(Configuration.GetSection("ClusterConfig"));
+            services.Configure<InstanceSetting>(Configuration.GetSection("InstanceSetting"));
             services.Configure<JwtOptions>(Configuration.GetSection("JwtOptions"));
             services.AddTransient<ITokenGenerator,TokenGenerator>();
             services.AddTransient<IClusterInfor,ClusterInfor>();

@@ -142,16 +142,7 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> Log([FromBody] string log)
         {
             var WorkerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
-
-
-            var cluster = await _cache.GetClusterInfor();
-            var worker = cluster.WorkerNodes.Where(x => x.ID == WorkerID).First();
-            await _cache.Log(new Log
-            {
-                WorkerID = worker.ID,
-                Content = log,
-                LogTime = DateTime.Now,
-            });
+            Serilog.Log.Information($"Log from workernode {WorkerID} : {log}");
             return Ok();
         }
     }
