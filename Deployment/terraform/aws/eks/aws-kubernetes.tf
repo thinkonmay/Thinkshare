@@ -89,6 +89,23 @@ module "eks" {
       }
     }
 
+    requested_node_2 = {
+      desired_capacity = 2
+      max_capacity     = 2
+      min_capacity     = 2
+
+      instance_types = ["t3.medium"]
+      capacity_type  = "ON_DEMAND"
+      aws_availability_zones = "ap-southeast-1b"
+      
+      k8s_labels = {
+        Environment = "production"
+        Color = "RED"
+      }
+      update_config = {
+        max_unavailable_percentage = 100 # or set `max_unavailable`
+      }
+    }
     requested_node = {
       desired_capacity = 2
       max_capacity     = 2
