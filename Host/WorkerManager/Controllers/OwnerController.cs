@@ -102,6 +102,7 @@ namespace WorkerManager.Controllers
         }
 
 
+
         [Owner]
         [HttpGet("Cluster/Infor")]
         public async Task<IActionResult> Infor()

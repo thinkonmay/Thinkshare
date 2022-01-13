@@ -56,23 +56,20 @@ namespace WorkerManager.Services
         {
             while (true)
             {
-                if(!(await _infor.IsSelfHost()))
+                try
                 {
-                    try
+                    var portForwards = (await _infor.Infor()).instance.portForwards.Where(x => !x.End.HasValue);
+                    foreach (var item in portForwards)
                     {
-                        var portForwards = (await _infor.Infor()).instance.portForwards.Where(x => !x.End.HasValue);
-                        foreach (var item in portForwards)
+                        if (!_ports.Contains(item.InstancePort))
                         {
-                            if (!_ports.Contains(item.InstancePort))
-                            {
-                                Task.Run(() => Forward(item.InstancePort));
-                            }
+                            await Forward(item.InstancePort);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        Serilog.Log.Information($"Fail to portforward {ex.Message} , {ex.StackTrace}");
-                    }
+                }
+                catch (Exception ex)
+                {
+                    Serilog.Log.Information($"Fail to portforward {ex.Message} , {ex.StackTrace}");
                 }
                 Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
             }
@@ -114,30 +111,13 @@ namespace WorkerManager.Services
                 var agent = new ForwardedPortLocal("localhost",(uint)Port, "localhost", (uint)Port);
                 _client.AddForwardedPort(agent);
                 agent.Start();
-
-                _ports.Add(Port);
                 Serilog.Log.Information($"Successfully portforward on port {Port}");
-                while (_ports.Contains(Port)) { Thread.Sleep(1000); }
-                agent.Stop();
             }
             catch (Exception ex)
             {
                 Serilog.Log.Information($"got exception {ex.Message} while port forward");
             }
-
-            _ports.Remove(Port);
-            var res = await (new RestClient()).ExecuteAsync(
-                new RestRequest(_config.PortReleaseUrl,Method.GET)
-                .AddHeader("Authorization",(await _cache.GetClusterInfor()).ClusterToken)
-                .AddQueryParameter("InstancePort",Port.ToString()));
-            if(res.StatusCode == HttpStatusCode.OK)
-            {
-                Serilog.Log.Information($"Processed port release with autoscaling");
-            }
-            else
-            {
-                Serilog.Log.Information($"fail to port release with autoscaling");
-            }
+            _ports.Add(Port);
         }
     }
 }
