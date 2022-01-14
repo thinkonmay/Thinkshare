@@ -120,10 +120,10 @@ namespace WorkerManager.Services
                 var worker_list = await _cache.GetClusterState();
                 foreach (var item in worker_list.Where(x => x.Value != WorkerState.Disconnected))
                 {
-                    ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
                     Task.Run(async () => {
+                        ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
                         var res = await worker.GetWorkerMetric(model_list);
-                        res.ForEach(async (x) => await _cache.CacheShellSession(x));
+                        res.ForEach(x => Serilog.Log.Information($"Execute shell session on worker node {worker.ID}, model ID {x.Model.ID}, result: {x.Output}"));
                     });
                 }
                 Thread.Sleep(((int)TimeSpan.FromSeconds(60).TotalMilliseconds));

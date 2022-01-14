@@ -97,28 +97,6 @@ namespace Signalling.Services
                 Serilog.Log.Information(ex.Message);
                 Serilog.Log.Information(ex.StackTrace);
             }
-
-            if(accession.Module == Module.CLIENT_MODULE)
-            {
-                Serilog.Log.Information("Remote client close connection with signalling server");
-                Serilog.Log.Information("State syncing with host");
-                var client = new RestClient();
-                var request = new RestRequest(_config.Conductor+"/Sync/Signalling/Disconnect")
-                    .AddQueryParameter("WorkerID",accession.WorkerID.ToString())
-                    .AddQueryParameter("ClientID",accession.ClientID.ToString());
-                request.Method = Method.POST;
-
-                var result = await client.ExecuteAsync(request);
-                if(result.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    Serilog.Log.Information("Syncing sucessfully");
-                }
-                else
-                {
-                    Serilog.Log.Information("Fail to sync with conductor");
-                }
-            }
-
             onlineList.TryRemove(accession,out var output);
         }
 

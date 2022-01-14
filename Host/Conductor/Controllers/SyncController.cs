@@ -39,7 +39,8 @@ namespace Conductor.Controllers
         [HttpPost("Worker/State")]
         public async Task<IActionResult> Update(int ID, string NewState)
         {
-            var Sessions = _db.RemoteSessions.Where(o => o.WorkerID == ID && !o.EndTime.HasValue);
+            var Sessions = _db.RemoteSessions.Where(o => o.WorkerID == ID && 
+                                                   !o.EndTime.HasValue);
             Serilog.Log.Information("Got worker sync message from worker"+ID.ToString()+", new worker state: "+NewState);            
 
 
@@ -68,10 +69,19 @@ namespace Conductor.Controllers
                     case WorkerState.OffRemote:
                         await _clientHubctx.ReportSessionDisconnected(ID, session.ClientId);
                         await _clientHubctx.ReportSlaveObtained(ID);
+
+                        session.StartTime = session.StartTime.HasValue ? session.StartTime : DateTime.Now;
+                        _db.RemoteSessions.Update(session);
+                        await _db.SaveChangesAsync();
                         break;
                     case WorkerState.OnSession:
                         await _clientHubctx.ReportSessionInitialized(ID, session.ClientId);
                         await _clientHubctx.ReportSlaveObtained(ID);
+
+
+                        session.StartTime = session.StartTime.HasValue ? session.StartTime : DateTime.Now;
+                        _db.RemoteSessions.Update(session);
+                        await _db.SaveChangesAsync();
                         break;
                 }
             }
@@ -118,16 +128,6 @@ namespace Conductor.Controllers
                 }
                 await _db.SaveChangesAsync();
             }
-            return Ok();
-        }
-
-        [HttpPost("Signalling/Disconnected")]
-        public async Task<IActionResult> Disconnected(int WorkerID, int ClientID)
-        {
-            Serilog.Log.Information("Receive client disconnected from signalling server");
-            Serilog.Log.Information("Broadcasting to worker "+WorkerID.ToString()+" and client "+ ClientID.ToString());
-            await _Cluster.SessionDisconnect(WorkerID);
-            await _clientHubctx.ReportSessionDisconnected(WorkerID,ClientID);
             return Ok();
         }
     }

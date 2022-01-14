@@ -52,7 +52,7 @@ namespace AutoScaling.Controllers
 
         [Cluster]
         [HttpGet("Request")]
-        public async Task<IActionResult> request(int LocalPort)
+        public async Task<IActionResult> request()
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
@@ -75,7 +75,7 @@ namespace AutoScaling.Controllers
                     }
                 }
                 var port = new PortForward{
-                    LocalPort = LocalPort,
+                    LocalPort = InstancePort,
                     InstancePort = InstancePort,
                     Start = DateTime.Now
                 };

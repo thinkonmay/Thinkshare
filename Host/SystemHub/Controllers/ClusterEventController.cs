@@ -3,6 +3,7 @@ using System.Linq;
 using SystemHub.Interfaces;
 using SharedHost.Models.Device;
 using DbSchema.SystemDb.Data;
+using System.Threading.Tasks;
 
 namespace SystemHub.Controllers
 {
@@ -23,7 +24,7 @@ namespace SystemHub.Controllers
         }
 
         [HttpPost("Initialize")]
-        public IActionResult ClientPost(int WorkerID, string token)
+        public async Task<IActionResult> ClientPost(int WorkerID, string token)
         {
             var message = new Message 
             {
@@ -36,12 +37,12 @@ namespace SystemHub.Controllers
 
             var worker = _db.Devices.Find(WorkerID);
             var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
-            _Cluster.SendToCluster(globalCluster.ID, message);
+            await _Cluster.SendToCluster(globalCluster.ID, message);
             return Ok();
         }
 
         [HttpPost("Terminate")]
-        public IActionResult Terminate(int WorkerID)
+        public async Task<IActionResult> Terminate(int WorkerID)
         {
             var message = new Message 
             {
@@ -53,12 +54,12 @@ namespace SystemHub.Controllers
 
             var worker = _db.Devices.Find(WorkerID);
             var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
-            _Cluster.SendToCluster(globalCluster.ID, message);
+            await _Cluster.SendToCluster(globalCluster.ID, message);
             return Ok();
         }
 
         [HttpPost("Disconnect")]
-        public IActionResult Disconnect(int WorkerID)
+        public async Task<IActionResult> Disconnect(int WorkerID)
         {
             var message = new Message 
             {
@@ -70,12 +71,12 @@ namespace SystemHub.Controllers
 
             var worker = _db.Devices.Find(WorkerID);
             var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
-            _Cluster.SendToCluster(globalCluster.ID, message);
+            await _Cluster.SendToCluster(globalCluster.ID, message);
             return Ok();
         }
 
         [HttpPost("Reconnect")]
-        public IActionResult Reconnect(int WorkerID)
+        public async Task<IActionResult> Reconnect(int WorkerID)
         {
             var message = new Message 
             {
@@ -87,7 +88,7 @@ namespace SystemHub.Controllers
 
             var worker = _db.Devices.Find(WorkerID);
             var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
-            _Cluster.SendToCluster(globalCluster.ID, message);
+            await _Cluster.SendToCluster(globalCluster.ID, message);
             return Ok();
         }
     }

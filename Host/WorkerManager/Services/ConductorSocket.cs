@@ -307,10 +307,12 @@ namespace WorkerManager.Services
 
         public async Task Initialize(int ID, string remoteToken)
         {
+            var state = await _cache.GetWorkerState(ID);
+            if(state != WorkerState.Open){return;}
+
+
             var worker = await _cache.GetWorkerInfor(ID);
-
             await _cache.SetWorkerRemoteToken(ID,remoteToken);
-
             var workerToken = await _generator.GenerateWorkerToken(worker);
             if (await worker.SessionInitialize(workerToken))
             {
@@ -328,6 +330,9 @@ namespace WorkerManager.Services
 
         public async Task Terminate(int GlobalID)
         {
+            var state = await _cache.GetWorkerState(GlobalID);
+            if(state != WorkerState.OnSession && state != WorkerState.OffRemote){return;}
+
             var worker = await _cache.GetWorkerInfor(GlobalID);
             await _cache.SetWorkerRemoteToken(GlobalID,"none");
 
@@ -346,6 +351,9 @@ namespace WorkerManager.Services
 
         public async Task Disconnect(int GlobalID)
         {
+            var state = await _cache.GetWorkerState(GlobalID);
+            if(state != WorkerState.OnSession){return;}
+
             var worker = await _cache.GetWorkerInfor(GlobalID);
 
             var workerToken = await _generator.GenerateWorkerToken(worker);
@@ -357,6 +365,9 @@ namespace WorkerManager.Services
 
         public async Task Reconnect(int GlobalID)
         {
+            var state = await _cache.GetWorkerState(GlobalID);
+            if(state != WorkerState.OffRemote){return;}
+
             var worker = await _cache.GetWorkerInfor(GlobalID);
 
             var workerToken = await _generator.GenerateWorkerToken(worker);

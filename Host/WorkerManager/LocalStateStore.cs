@@ -23,11 +23,6 @@ namespace WorkerManager
 
         Task CacheWorkerInfor(ClusterWorkerNode Worker);
 
-
-        Task CacheShellSession(ShellSession token);
-
-        Task<List<ShellSession>> GetCachedShellSession(DateTime time);
-
         Task<ClusterKey?> GetClusterInfor();
 
         Task SetClusterInfor(ClusterKey Worker);
@@ -155,36 +150,14 @@ namespace WorkerManager
 
 
 
-        public async Task CacheShellSession(ShellSession session)
-        {
-            session.Time = DateTime.Now;
-            var sessions = await _cache.GetRecordAsync<List<ShellSession>>("Shell_Session_" + 
-                session.Time.DayOfYear.ToString() + session.Time.Hour.ToString());
-            if(session == null){sessions = new List<ShellSession>();}
-            sessions.Add(session);
-            await _cache.SetRecordAsync<List<ShellSession>> ("Shell_Session_" + 
-                session.Time.DayOfYear.ToString() + session.Time.Hour.ToString(), sessions, null,null);
-        }
-
-        public async Task<List<ShellSession>> GetCachedShellSession(DateTime time)
-        {
-            var cachedValue = await _cache.GetRecordAsync<List<ShellSession>>("Shell_Session_" + 
-                time.DayOfYear.ToString() + time.Hour.ToString());
-            return cachedValue;
-        }
-
-
-
-
-
         public async Task Log(Log log)
         {
-            var sessions = await _cache.GetRecordAsync<List<Log>>("Log" + 
+            var logs = await _cache.GetRecordAsync<List<Log>>("Log" + 
                 log.LogTime.DayOfYear+log.LogTime.Hour.ToString());
-            if(sessions == null){sessions = new List<Log>();}
-            sessions.Add(log);
+            if(logs == null){logs = new List<Log>();}
+            logs.Add(log);
             await _cache.SetRecordAsync<List<Log>>("Log" + 
-                log.LogTime.DayOfYear+log.LogTime.Hour, sessions, null,null);
+                log.LogTime.DayOfYear+log.LogTime.Hour, logs, null,null);
         }
 
         public async Task<List<Log>> GetLog(DateTime Time)
