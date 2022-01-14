@@ -18,7 +18,5 @@ namespace SharedHost.Models.Device
         public string? OS { get; set; }
 
         public string? AgentUrl {get;set;}
-
-        public string? CoreUrl {get;set;}
     }
 }

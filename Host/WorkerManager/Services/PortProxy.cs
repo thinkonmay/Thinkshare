@@ -25,11 +25,9 @@ namespace WorkerManager.Services
     {
         private readonly IClusterInfor _infor;
         private readonly ILocalStateStore _cache;
-        private readonly List<int> _ports;
         private SshClient _client;
         private readonly ClusterConfig _config;
         private readonly InstanceSetting _setting;
-
         private bool Started;
 
         public PortProxy(IClusterInfor infor,
@@ -42,14 +40,13 @@ namespace WorkerManager.Services
             _cache = cache;
             _infor = infor;
             Started = false;
-            _ports = new List<int>();
         }
 
         public async Task Start()
         {
             if(Started) { return; }
             await SetupSSHClient();
-            SetupPortForward();
+            await SetupPortForward();
             Started = true;
         }
 
@@ -93,7 +90,6 @@ namespace WorkerManager.Services
             {
                 Serilog.Log.Information($"Attempting failed with error {ex.Message} {ex.StackTrace}");
                 Thread.Sleep(10000);
-                _ports.Clear();
                 await SetupSSHClient();
             }
         }
@@ -111,7 +107,6 @@ namespace WorkerManager.Services
             {
                 Serilog.Log.Information($"got exception {ex.Message} while port forward");
             }
-            _ports.Add(Port);
         }
     }
 }

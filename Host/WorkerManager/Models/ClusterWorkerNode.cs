@@ -68,11 +68,11 @@ namespace WorkerManager.Models
 
 
 
-        public async Task<bool> PingWorker(Module module)
+        public async Task<bool> PingWorker()
         {
             using (var timeoutCancellation = new CancellationTokenSource())
             {
-                var originalTask = Ping(module);
+                var originalTask = Ping();
                 var delayTask = Task.Delay(TimeSpan.FromMilliseconds(1000));
                 var completedTask = await Task.WhenAny(originalTask, delayTask);
                 // Cancel timeout to stop either task:
@@ -93,24 +93,11 @@ namespace WorkerManager.Models
             }
         } 
 
-        async Task<bool> Ping(Module module)
+        async Task<bool> Ping()
         {
             IRestResponse result;
-
-            if(module == Module.CORE_MODULE)
-            {
-                var request = new RestRequest(model.CoreUrl + "/ping",Method.GET);
-                result = await (new RestClient()).ExecuteAsync(request);
-            }
-            else if (module == Module.AGENT_MODULE)
-            {
-                var request = new RestRequest(model.AgentUrl + "/ping");
-                result = await (new RestClient()).ExecuteAsync(request,Method.GET);
-            }
-            else
-            {
-                return false;
-            }
+            var request = new RestRequest(model.AgentUrl + "/ping");
+            result = await (new RestClient()).ExecuteAsync(request,Method.GET);
 
             if(result.StatusCode == HttpStatusCode.OK) { 
                 return true; 
@@ -123,8 +110,9 @@ namespace WorkerManager.Models
 
 
 
-        public async Task GetWorkerMetric(ILocalStateStore cache, List<ScriptModel> scriptModels)
+        public async Task<List<ShellSession>?> GetWorkerMetric(List<ScriptModel> scriptModels)
         {
+            var sessions = new List<ShellSession>();
             foreach (var item in scriptModels)
             {
                 var request = new RestRequest(model.AgentUrl + "/Shell")
@@ -138,9 +126,10 @@ namespace WorkerManager.Models
                     session.Model  = item;
                     session.Output = result.Content;
 
-                    await cache.CacheShellSession(ID,session);
+                    sessions.Add(session);
                 }
             }
+            return sessions;
         }
     }
 }
