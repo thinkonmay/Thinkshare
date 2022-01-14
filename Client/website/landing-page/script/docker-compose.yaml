@@ -10,6 +10,7 @@ services:
     ports:
       - "5000:80"
 
+
   cluster-ui:
     container_name: cluster_ui
     image: pigeatgarlic/cluster-ui:2022-01-03
