@@ -16,6 +16,8 @@ const Token = `${host}/Account/ExchangeToken`
 const Infor = `${host}/Account/Infor`
 const Session = `${host}/Account/History`
 
+const Manager = `${host}/Manager/Request`
+const Cluster = `${host}/Cluster/Request`
 
 const Setting = `${host}/Setting`
 

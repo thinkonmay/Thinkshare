@@ -7,11 +7,12 @@
     "sidebar_content2":"Dark",
     "sidebar2":"HEADER SKINS",
     "menu_title1":"Dashboard",
-    "menu_title2":"Setting",
+    "menu_title2":"Update",
     "nav_item1":"Account",
+
     "menu_title3":"Logout",
-    "menu_title4":"Register To Manager",
-    "menu_title5":"Self Host Cluster",
+    "menu_title4":"Bring your own computer",
+
     "main_panel_title1":"Your device",
     "main_panel_title2":"Available Device",
     "right_body_title":"Type By Amount",

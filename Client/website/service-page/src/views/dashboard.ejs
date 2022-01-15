@@ -193,25 +193,27 @@
               </span>
             </a>
           </li>
-          <li class="nav-item" id="regtomanager">
-            <a class="nav-link">
-              <i class="menu-icon mdi mdi-account-star-outline"></i>
+          <li class="nav-item" id="tutorialButton">
+            <a id="showSettings" class="nav-link">
+              <i class="menu-icon mdi mdi-settings"></i>
+              <span class="menu-title">
+                Setting
+              </span>
+            </a>
+          </li>
+          <li class="nav-item" id="selfhost">
+            <a id="registertoManager" class="nav-link">
+              <i class="menu-icon mdi mdi-desktop-classic"></i>
               <span class="menu-title">
                 <%=menu_title4%>
               </span>
             </a>
           </li>
-          <li class="nav-item" id="selfhost">
-            <a class="nav-link">
-              <i class="menu-icon mdi mdi-desktop-classic"></i>
-              <span class="menu-title">
-                <%=menu_title5%>
-              </span>
-            </a>
-          </li>
+
           <li class="nav-item nav-category">
             <%=nav_item1%>
           </li>
+
           <li class="nav-item">
             <a class="nav-link" href="/setting">
               <i class="mdi mdi-account-settings menu-icon"></i>
@@ -230,6 +232,10 @@
           </li>
         </ul>
       </nav>
+
+
+
+
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper" style="overflow-y: scroll;">
@@ -352,18 +358,16 @@
                                 </div>
                               </div>
                             </div>
-                            <div id="demo-modal" class="modal">
-                              <div class="modal__content">
-                                <a href="#" class="modal__close">
-                                  <h3>x</h3>
-                                </a>
-                                <a class="next-tab">
-                                  <button type="button" class="btn btn-inverse-info btn-fw"><img src="images/next.png"
-                                      width="30"></button>
-                                </a>
 
-                                <a class="modal__checkbox">
-                                  <input style="height: 1.7em; width: 1.7em; margin-top: -0.25em;" type="checkbox" class="form-check-input"> <span style="padding-right: 3px;"></span> Don't show again
+
+
+
+                            <div id="settings-modal" class="modal">
+                              <div class="modal__content">
+                                <a href="#" class="modal__close"> 
+                                    <h3>
+                                      x
+                                    </h3>
                                 </a>
                                 <div class="col-lg-11 d-flex flex-column">
                                   <div class="row flex-grow">
@@ -371,53 +375,9 @@
                                       <div class="card card-rounded">
                                         <div class="card-body">
                                           <div class="tabs">
-                                            <input id="HowToUse" type="radio" id="tab1" name="tab-control" checked>
-                                            <input id="ShorcutKey" type="radio" id="tab2" name="tab-control">
-                                            <input id="Setting" type="radio" id="tab3" name="tab-control">
-                                            <ul>
-                                              <li title="HowToUse"><label for="tab1" role="button"><br><span>How to
-                                                    use</span></label></li>
-                                              <li title="ShorcutKey"><label for="tab2" role="button"><br><span>Shorcut
-                                                    key</span></label></li>
-                                              <li title="Setting"><label for="tab3"
-                                                  role="button"><br><span>Setting</span></label></li>
-                                            </ul>
-                                            <div class="slider">
-                                              <div class="indicator"></div>
-                                            </div>
                                             <div class="content" style="overflow: hidden; min-height: 368px">
-                                              <section>
-                                                <div class="form-group row">
-                                                  <div class="col-sm-6">
-                                                    <img src="images/Disconnect.jpg" alt="" width="384">
-                                                  </div>
-                                                  <div class="col-sm-6">
-                                                    <p style="margin-top: 50%">
-                                                      <b>Disconnect:</b> This action same as 'Sleep' your device
-                                                    </p>
-                                                    <p>
-                                                      <b>Terminate:</b> This action same as 'Shut down' your device
-                                                    </p>
-                                                  </div>
-                                                </div>
-                                              </section>
-                                              <section>
-                                                <div class="form-group row">
-                                                  <div class="col-sm-6" style="padding-left: 80px;">
-                                                    <img width="300" height="192" src="videos/Hidden_Mouse_x2.5.gif" />
-                                                    <p><b>Hidden Mouse:</b> Press it now to quickly hide your mouse and
-                                                      focus on your work</p>
-                                                  </div>
-                                                  <div class="col-sm-6">
-                                                    <img width="300" height="192" src="videos/Full_Screen_x2.5.gif" />
-                                                    <p><b>Full Screen:</b> Using your device with best experience</p>
-                                                  </div>
-                                                </div>
-                                              </section>
-                                              <section>
                                                 <div class="form-group row">
                                                   <div class="col-sm-6" style="padding-left: 92px;">
-
                                                     <h4>Remote Core: </h4>
                                                     <label class="control control--radio"> Chrome (not recommend)
                                                       <input type="radio" name="remote" checked="checked"
@@ -430,7 +390,6 @@
                                                         value="GSTREAMER" />
                                                       <div class="control__indicator"></div>
                                                     </label>
-
                                                     <h4>Resolution: </h4>
                                                     <label class="control control--radio"> 4K (not recommend)
                                                       <input type="radio" name="res" value="4K" />
@@ -444,7 +403,6 @@
                                                       <input type="radio" name="res" value="FullHD" />
                                                       <div class="control__indicator"></div>
                                                     </label>
-
                                                     <h4>VideoCodec: </h4>
                                                     <label class="control control--radio"> vp9
                                                       <input type="radio" name="video" value="VP9" />
@@ -461,7 +419,6 @@
                                                       <div class="control__indicator"></div>
                                                     </label>
                                                   </div>
-
                                                   <div class="col-sm-6" style="padding-left: 80px;">
                                                     <h4>Remote control bitrate: </h4>
                                                     <label class="control control--radio">Ultra low
@@ -484,7 +441,6 @@
                                                       <input type="radio" name="bitrate" value="ULTRA_HIGH_CONST" />
                                                       <div class="control__indicator"></div>
                                                     </label>
-
                                                     <h4>AudioCodec: </h4>
                                                     <label class="control control--radio">opus
                                                       <input type="radio" name="audio" checked="checked" value="OPUS" />
@@ -497,8 +453,6 @@
                                                     </label>
                                                   </div>
                                                 </div>
-
-                                              </section>
                                             </div>
                                           </div>
                                         </div>
@@ -508,6 +462,142 @@
                                 </div>
                               </div>
                             </div>
+
+
+                            <div id="manager-modal" class="modal">
+                              <div class="modal__content" style="width: 600px; height: 600px;">
+                                <a href="#" class="modal__close"> 
+                                    <h3>
+                                      x
+                                    </h3>
+                                </a>
+                                <div class="col-lg-11 d-flex flex-column">
+                                  <div class="row flex-grow">
+                                    <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
+                                      <div class="card card-rounded">
+                                        <div class="card-body">
+                                          <div class="tabs">
+                                            <div class="content" style="overflow: hidden; min-height: 368px">
+                                              <form class="forms-sample">
+                                                  <div class="form-group row">
+                                                      <label class="col-sm-3 col-form-label">
+                                                        ClusterName
+                                                      </label>
+                                                      <div class="col-sm-9">
+                                                          <input 
+                                                              type="text" 
+                                                              class="form-control" 
+                                                              id="clusterNameCtrler"
+                                                              placeholder="Username">
+                                                      </div>
+                                                      <label class="col-sm-3 col-form-label">
+                                                        Description 
+                                                      </label>
+                                                      <div class="col-sm-9">
+                                                          <input 
+                                                              type="text" 
+                                                              class="form-control" 
+                                                              id="descriptionCtrler"
+                                                              style="height: 100px;"
+                                                              placeholder=" Leave us a message(optional) ">
+                                                      </div>
+                                                  </div>
+                                                  <button 
+                                                      id="submitClusterCtrler" 
+                                                      class="btn btn-primary me-2"
+                                                      type="button">Submit
+                                                  </button>
+                                              </form>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+
+                            <div id="demo-modal" class="modal">
+                              <div class="modal__content">
+                                <a href="#" class="modal__close">
+                                  <h3>x</h3>
+                                </a>
+                                <a class="next-tab">
+                                  <button type="button" class="btn btn-inverse-info btn-fw"><img src="images/next.png"
+                                      width="30"></button>
+                                </a>
+                                <a class="modal__checkbox">
+                                  <input style="height: 1.7em; width: 1.7em; margin-top: -0.25em;" type="checkbox" class="form-check-input"> <span style="padding-right: 3px;"></span> Don't show again
+                                </a>
+
+                                <div class="col-lg-11 d-flex flex-column">
+                                  <div class="row flex-grow">
+                                    <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
+                                      <div class="card card-rounded">
+                                        <div class="card-body">
+                                          <div class="tabs">
+                                            <input id="HowToUse" type="radio" id="tab1" name="tab-control" checked>
+                                            <input id="ShorcutKey" type="radio" id="tab2" name="tab-control">
+                                            <ul>
+                                              <li title="HowToUse"><label for="tab1" role="button"><br><span>How to
+                                                    use</span></label></li>
+                                              <li title="ShorcutKey"><label for="tab2" role="button"><br><span>Shorcut
+                                                    key</span></label></li>
+                                              <li title="Setting"><label for="tab3"
+                                                  role="button"><br><span>Setting</span></label></li>
+                                            </ul>
+
+
+                                            <div class="slider">
+                                              <div class="indicator"></div>
+                                            </div>
+
+
+                                            <div class="content" style="overflow: hidden; min-height: 368px">
+                                              <section>
+                                                <div class="form-group row">
+                                                  <div class="col-sm-6">
+                                                    <img src="images/Disconnect.jpg" alt="" width="384">
+                                                  </div>
+                                                  <div class="col-sm-6">
+                                                    <p style="margin-top: 50%">
+                                                      <b>Disconnect:</b> This action same as 'Sleep' your device
+                                                    </p>
+                                                    <p>
+                                                      <b>Terminate:</b> This action same as 'Shut down' your device
+                                                    </p>
+                                                  </div>
+                                                </div>
+                                              </section>
+
+                                              <section>
+                                                <div class="form-group row">
+                                                  <div class="col-sm-6" style="padding-left: 80px;">
+                                                    <img width="300" height="192" src="videos/Hidden_Mouse_x2.5.gif" />
+                                                    <p><b>Hidden Mouse:</b> Press it now to quickly hide your mouse and
+                                                      focus on your work</p>
+                                                  </div>
+                                                  <div class="col-sm-6">
+                                                    <img width="300" height="192" src="videos/Full_Screen_x2.5.gif" />
+                                                    <p><b>Full Screen:</b> Using your device with best experience</p>
+                                                  </div>
+                                                </div>
+                                              </section>
+
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+
+
                           </div>
                         </div>
                       </div>

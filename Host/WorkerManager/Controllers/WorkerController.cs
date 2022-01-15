@@ -29,6 +29,7 @@ namespace WorkerManager.Controllers
         private readonly ClusterConfig _config;
 
         private readonly IClusterInfor _infor;
+
         private readonly IPortProxy _port;
 
         public WorkerController( ITokenGenerator token,
@@ -53,7 +54,12 @@ namespace WorkerManager.Controllers
             var Cluster = await _cache.GetClusterInfor();
             if(Cluster == null) { return BadRequest(); }
 
-            var cachednode = Cluster.WorkerNodes.Where(x => x.model == model);
+            var cachednode = Cluster.WorkerNodes
+                .Where(x => x.model.GPU == model.GPU &&
+                            x.model.RAMcapacity == model.RAMcapacity &&
+                            x.model.OS  == model.OS &&
+                            x.model.User == model.User &&
+                            x.model.Name == model.Name);
 
             if(!cachednode.Any())
             {

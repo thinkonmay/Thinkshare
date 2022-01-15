@@ -126,7 +126,9 @@ namespace AutoScaling.Controllers
                 CPU = body.CPU,
                 GPU = body.GPU,
                 RAMcapacity = body.RAMcapacity,
-                OS = body.OS
+                OS = body.OS,
+                Name = body.Name,
+                User = body.User
             };
 
             Cluster.WorkerNode.Add(newWorker);
