@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: linh
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: linh
+  namespace: linh
+  labels:
+    app: linh
+spec:
+  type: NodePort
+  ports:
+  - port: 80    
+  selector:
+   app: linh
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linh
+  namespace: linh
+spec:
+  selector:
+    matchLabels:
+      app: linh
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: linh
+    spec:
+      containers:
+      - name: linh
+        image: pigeatgarlic/insightyou:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "100m"
+          limits:
+            memory: "600Mi"
+            cpu: "300m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: linh-ingress
+  namespace: linh
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    
+spec:
+  rules:
+  - host: linh.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: linh
+            port:
+              number: 80
+

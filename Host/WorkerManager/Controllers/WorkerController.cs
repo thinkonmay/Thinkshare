@@ -92,6 +92,9 @@ namespace WorkerManager.Controllers
             }
             else
             {
+                var node = cachednode.First();
+                node.model.AgentUrl = model.AgentUrl;
+                await _cache.CacheWorkerInfor(node);
                 var result = await _tokenGenerator.GenerateWorkerToken(cachednode.First());
                 return Ok(AuthResponse.GenerateSuccessful(null,result,null));
             }
