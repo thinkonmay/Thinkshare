@@ -12,16 +12,17 @@ using Newtonsoft.Json;
 using System.Text;
 using Microsoft.Extensions.Options;
 using SystemHub.Models;
+using System.Collections.Concurrent;
 
 namespace SystemHub.Services
 {
     public class UserSocketPool : IUserSocketPool
     {
-        private readonly List<UserHubCredential> _UserSocketsPool;        
+        private readonly ConcurrentDictionary<UserHubCredential,WebSocket> _UserSocketsPool;        
         
         public UserSocketPool(IOptions<SystemConfig> config)
         {
-            _UserSocketsPool = new List<UserHubCredential>();
+            _UserSocketsPool = new ConcurrentDictionary<UserHubCredential, WebSocket>();
 
             Task.Run(() => ConnectionHeartBeat());
             Task.Run(() => ConnectionStateCheck());
@@ -35,9 +36,9 @@ namespace SystemHub.Services
             {
                 foreach (var socket in _UserSocketsPool)
                 {
-                    if(socket.websocket.State == WebSocketState.Open)
+                    if(socket.Value.State == WebSocketState.Open)
                     {
-                        try {await SendMessage(socket.websocket,"ping"); }
+                        try {await SendMessage(socket.Value,"ping"); }
                         catch {  }
                     }
                 }
@@ -53,15 +54,17 @@ namespace SystemHub.Services
                 {
                     foreach (var socket in _UserSocketsPool)
                     {
-                        if(socket.websocket.State == WebSocketState.Closed) 
+                        if(socket.Value.State == WebSocketState.Closed) 
                         {
-                            _UserSocketsPool.Remove(socket);
+                            _UserSocketsPool.TryRemove(socket.Key, out var currupted);
                         }
                     }
                     Thread.Sleep(100);
                 }
-            }catch
+            }catch (Exception ex)
             {
+                Serilog.Log.Information($"{ex.Message} : {ex.StackTrace}");
+                Thread.Sleep(100);
                 await ConnectionStateCheck();
             }
         }
@@ -70,9 +73,9 @@ namespace SystemHub.Services
         public async Task AddtoPool(AuthenticationResponse resp,WebSocket session)
         {
             var credential = new UserHubCredential(resp,session);
-            _UserSocketsPool.Add(credential);
+            _UserSocketsPool.AddOrUpdate(credential,session,(x,y) => session);
             await Handle(session);
-            _UserSocketsPool.RemoveAll(x=>x.rand == credential.rand);
+            _UserSocketsPool.TryRemove(credential, out var removedSession);
         }
 
 
@@ -82,9 +85,9 @@ namespace SystemHub.Services
         {
             foreach (var item in _UserSocketsPool)
             {
-                if (item.IsUser && item.UserID == UserID.ToString())
+                if (item.Key.IsUser && item.Key.UserID == UserID.ToString())
                 {
-                    await SendMessage(item.websocket , JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value , JsonConvert.SerializeObject(data));
                 }
             }
         }
@@ -94,9 +97,9 @@ namespace SystemHub.Services
         {
             foreach (var item in _UserSocketsPool)
             {
-                if (item.IsUser)
+                if (item.Key.IsUser)
                 {
-                    await SendMessage(item.websocket , JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value , JsonConvert.SerializeObject(data));
                 }
             }
         }
@@ -106,9 +109,9 @@ namespace SystemHub.Services
         {
             foreach (var item in _UserSocketsPool)
             {
-                if (item.IsManager && item.UserID == ManagerID.ToString())
+                if (item.Key.IsManager && item.Key.UserID == ManagerID.ToString())
                 {
-                    await SendMessage(item.websocket , JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value , JsonConvert.SerializeObject(data));
                 }
             }
         }
@@ -117,9 +120,9 @@ namespace SystemHub.Services
         {
             foreach(var item in _UserSocketsPool)
             {
-                if(item.IsAdmin)
+                if(item.Key.IsAdmin)
                 {
-                    await SendMessage(item.websocket , JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value , JsonConvert.SerializeObject(data));
                 }
             }
         }

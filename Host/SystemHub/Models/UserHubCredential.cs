@@ -16,6 +16,5 @@ namespace SystemHub.Models
             rand = Randoms.Next();
         }
         public int rand {get;set;}
-        public WebSocket websocket {get;set;}
     }
 }
