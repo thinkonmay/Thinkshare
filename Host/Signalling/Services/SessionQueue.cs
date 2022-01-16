@@ -61,7 +61,7 @@ namespace Signalling.Services
 
         public async Task Handle(SessionAccession accession, WebSocket ws)
         {
-            onlineList.TryAdd(accession,ws);
+            onlineList.AddOrUpdate(accession,ws, (b,c) => ws); 
             var core = onlineList.Where(o => o.Key.ID == accession.ID);
             if(core.Count() == 2)
             {

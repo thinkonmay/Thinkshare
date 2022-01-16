@@ -11,16 +11,17 @@ using SharedHost.Models.Message;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.Extensions.Options;
+using SystemHub.Models;
 
 namespace SystemHub.Services
 {
     public class UserSocketPool : IUserSocketPool
     {
-        private readonly List<KeyValuePair<AuthenticationResponse, WebSocket>> _UserSocketsPool;        
+        private readonly List<UserHubCredential> _UserSocketsPool;        
         
         public UserSocketPool(IOptions<SystemConfig> config)
         {
-            _UserSocketsPool =    new List<KeyValuePair<AuthenticationResponse, WebSocket>>();
+            _UserSocketsPool = new List<UserHubCredential>();
 
             Task.Run(() => ConnectionHeartBeat());
             Task.Run(() => ConnectionStateCheck());
@@ -34,9 +35,9 @@ namespace SystemHub.Services
             {
                 foreach (var socket in _UserSocketsPool)
                 {
-                    if(socket.Value.State == WebSocketState.Open)
+                    if(socket.websocket.State == WebSocketState.Open)
                     {
-                        try {await SendMessage(socket.Value,"ping"); }
+                        try {await SendMessage(socket.websocket,"ping"); }
                         catch {  }
                     }
                 }
@@ -52,7 +53,7 @@ namespace SystemHub.Services
                 {
                     foreach (var socket in _UserSocketsPool)
                     {
-                        if(socket.Value.State == WebSocketState.Closed) 
+                        if(socket.websocket.State == WebSocketState.Closed) 
                         {
                             _UserSocketsPool.Remove(socket);
                         }
@@ -68,9 +69,10 @@ namespace SystemHub.Services
 
         public async Task AddtoPool(AuthenticationResponse resp,WebSocket session)
         {
-            _UserSocketsPool.Add(new KeyValuePair<AuthenticationResponse,WebSocket>(resp,session));
+            var credential = new UserHubCredential(resp,session);
+            _UserSocketsPool.Add(credential);
             await Handle(session);
-            _UserSocketsPool.Remove(new KeyValuePair<AuthenticationResponse,WebSocket>(resp, session));
+            _UserSocketsPool.RemoveAll(x=>x.rand == credential.rand);
         }
 
 
@@ -80,9 +82,9 @@ namespace SystemHub.Services
         {
             foreach (var item in _UserSocketsPool)
             {
-                if (item.Key.IsUser && item.Key.UserID == UserID.ToString())
+                if (item.IsUser && item.UserID == UserID.ToString())
                 {
-                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.websocket , JsonConvert.SerializeObject(data));
                 }
             }
         }
@@ -92,9 +94,9 @@ namespace SystemHub.Services
         {
             foreach (var item in _UserSocketsPool)
             {
-                if (item.Key.IsUser)
+                if (item.IsUser)
                 {
-                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.websocket , JsonConvert.SerializeObject(data));
                 }
             }
         }
@@ -104,9 +106,9 @@ namespace SystemHub.Services
         {
             foreach (var item in _UserSocketsPool)
             {
-                if (item.Key.IsManager && item.Key.UserID == ManagerID.ToString())
+                if (item.IsManager && item.UserID == ManagerID.ToString())
                 {
-                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.websocket , JsonConvert.SerializeObject(data));
                 }
             }
         }
@@ -115,9 +117,9 @@ namespace SystemHub.Services
         {
             foreach(var item in _UserSocketsPool)
             {
-                if(item.Key.IsAdmin)
+                if(item.IsAdmin)
                 {
-                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.websocket , JsonConvert.SerializeObject(data));
                 }
             }
         }

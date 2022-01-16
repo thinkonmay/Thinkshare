@@ -62,14 +62,9 @@ namespace SystemHub.Services
 
         public async Task AddtoPool(ClusterCredential resp,WebSocket session)
         {
-            bool result = _ClusterSocketsPool.TryAdd(resp, session);
-            var snapshoot = await _cache.GetClusterSnapshot(resp.ID);
-            if(!result)
-            {
-                return;
-            }
-
+            _ClusterSocketsPool.AddOrUpdate(resp, session, (x,y) => session);
             await Handle(resp, session);
+            _ClusterSocketsPool.TryRemove(resp,out var removed_ws);
 
             /// report to conductor
             var request = new RestRequest($"{_config.Conductor}/Sync/Cluster/Disconnected")
@@ -79,7 +74,7 @@ namespace SystemHub.Services
             await (new RestClient()).ExecuteAsync(request);
 
             // set all devices state to disconnected
-            snapshoot = await _cache.GetClusterSnapshot(resp.ID);
+            var snapshoot = await _cache.GetClusterSnapshot(resp.ID);
             var newsnapshoot = new Dictionary<int, string>();
             foreach (var Item in snapshoot)
             {
@@ -88,7 +83,6 @@ namespace SystemHub.Services
                 Serilog.Log.Information("WorkerID: "+Item.Key.ToString()+" | State: "+WorkerState.Disconnected);
             }
             await _cache.SetClusterSnapshot(resp.ID,newsnapshoot);
-            var done = _ClusterSocketsPool.TryRemove(resp,out var output);
         }
 
 
