@@ -290,7 +290,7 @@ namespace Conductor.Controllers
         }
 
 
-        [HttpPost("Setting")]
+        [HttpPost("Parsec")]
         public async Task<IActionResult> SetParsec(string token)
         {
 
