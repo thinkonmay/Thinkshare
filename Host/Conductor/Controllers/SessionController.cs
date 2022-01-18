@@ -302,8 +302,7 @@ namespace Conductor.Controllers
             if (result.StatusCode == HttpStatusCode.OK)
             {
                 var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
-                await _cache.GetParsecCred(accession);
-                return Ok();
+                return Ok(await _cache.GetParsecCred(accession));
             }
             else
             {
