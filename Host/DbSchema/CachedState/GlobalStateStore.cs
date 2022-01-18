@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
+using RestSharp;
 using System.Linq;
 using DbSchema.SystemDb.Data;
 using SharedHost;
@@ -27,6 +29,7 @@ namespace DbSchema.CachedState
         Task<SessionClient> GetClientSessionSetting(SessionAccession accession);
         Task<SessionWorker> GetWorkerSessionSetting(SessionAccession accession);
         Task<string?> GetWorkerState(int WorkerID);
+        Task<ParsecLoginResponse> GetParsecCred(SessionAccession accession);
     }
 
 
@@ -37,11 +40,15 @@ namespace DbSchema.CachedState
 
         private GlobalDbContext _db;
 
+        private readonly SystemConfig _config;
+
         public GlobalStateStore(IDistributedCache cache,
+                                IOptions<SystemConfig> config,
                                 GlobalDbContext db)
         {
             _db = db;
             _cache = cache;
+            _config = config.Value;
         }
 
 
@@ -139,6 +146,10 @@ namespace DbSchema.CachedState
 
         public async Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, GlobalCluster cluster)
         {
+            var parsec = JsonConvert.DeserializeObject<ParsecLoginResponse>((await(
+                (new RestClient()).ExecuteAsync(new RestRequest($"{_config.AutoScaling}/Parsec/Login",Method.GET))
+            )).Content);
+
             var sessionWorker = new SessionWorker
             {
                 signallingurl = config.SignallingWs,
@@ -154,7 +165,8 @@ namespace DbSchema.CachedState
                 videocodec = defaultSetting.videoCodec,
 
                 mode = defaultSetting.mode,
-                stuns = config.STUNlist
+                stuns = config.STUNlist,
+                parsec = parsec
             };
             var sessionClient = new SessionClient
             {
@@ -168,7 +180,8 @@ namespace DbSchema.CachedState
                 audiocodec = defaultSetting.audioCodec,
                 videocodec = defaultSetting.videoCodec,
 
-                stuns = config.STUNlist
+                stuns = config.STUNlist,
+                parsec = parsec
             };
 
             Serilog.Log.Information("setting up session setting for session id "+ SessionID.ToString());
@@ -191,6 +204,13 @@ namespace DbSchema.CachedState
             var result = await _cache.GetRecordAsync<SessionWorker>(accession.ID.ToString() + "_CORE_MODULE");
             Serilog.Log.Information("Got worker session in cache :"+ JsonConvert.SerializeObject(result));
             return result;
+        }
+
+
+        public async Task<ParsecLoginResponse> GetParsecCred(SessionAccession accession)
+        {
+            var result = await _cache.GetRecordAsync<SessionWorker>(accession.ID.ToString() + "_CORE_MODULE");
+            return result.parsec;
         }
     }
 }
