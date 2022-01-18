@@ -16,5 +16,22 @@ namespace SystemHub.Models
             rand = Randoms.Next();
         }
         public int rand {get;set;}
+
+        public override int GetHashCode()
+        {
+            return $"{this.UserID}{this.ValidatedBy}{this.rand}".GetHashCode();
+        }
+
+        public override bool Equals(object obj) 
+        { 
+            return Equals(obj as UserHubCredential); 
+        }
+
+        public bool Equals(UserHubCredential y )
+        {
+            return ( ( this.UserID == y.UserID ) &&
+                   ( this.ValidatedBy == y.ValidatedBy) &&
+                   ( this.rand == y.rand ) );
+        }
     }
 }

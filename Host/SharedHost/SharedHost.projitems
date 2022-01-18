@@ -36,6 +36,7 @@
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionAccession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\RemoteSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Session\ParsecModels.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StorageBlock.cs" />
 

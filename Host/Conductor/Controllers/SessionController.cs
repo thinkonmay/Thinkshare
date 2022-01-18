@@ -33,8 +33,6 @@ namespace Conductor.Controllers
 
         private readonly SystemConfig _config;
 
-        private readonly RestClient _sessionToken;
-
         private readonly IWorkerCommnader _Cluster;
 
         private readonly UserManager<UserAccount> _userManager;
@@ -52,7 +50,6 @@ namespace Conductor.Controllers
             _Cluster = slmsocket;
             _userManager = userManager;
             _config = config.Value;
-            _sessionToken = new RestClient();
         }
 
         [User]
@@ -104,8 +101,8 @@ namespace Conductor.Controllers
                 });
 
             // return bad request if fail to delete session pair      
-            var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(clientTokenRequest).Content);
-            var workerToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(workerTokenRequest).Content);
+            var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>((new RestClient()).Post(clientTokenRequest).Content);
+            var workerToken = JsonConvert.DeserializeObject<AuthenticationRequest>((new RestClient()).Post(workerTokenRequest).Content);
 
             /*create session from client device capability*/
             var userSetting = await _cache.GetUserSetting(UserID);
@@ -211,7 +208,7 @@ namespace Conductor.Controllers
                 });
 
             // return bad request if fail to delete session pair      
-            var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>(_sessionToken.Post(clientTokenRequest).Content);
+            var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>((new RestClient()).Post(clientTokenRequest).Content);
 
             // return null if session is not found
             if (ses == null) return BadRequest();
@@ -242,7 +239,7 @@ namespace Conductor.Controllers
                 .AddQueryParameter("token", token);
             request.Method = Method.POST;
 
-            var result = await _sessionToken.ExecuteAsync(request);
+            var result = await (new RestClient()).ExecuteAsync(request);
             if (result.StatusCode == HttpStatusCode.OK)
             {
                 var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
@@ -276,13 +273,36 @@ namespace Conductor.Controllers
                 .AddQueryParameter("token", token);
             request.Method = Method.POST;
 
-            var result = await _sessionToken.ExecuteAsync(request);
+            var result = await (new RestClient()).ExecuteAsync(request);
             if (result.StatusCode == HttpStatusCode.OK)
             {
                 var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
                 var worker = _db.Devices.Find(accession.WorkerID);
                 var cluster = _db.Clusters.Where(o=>o.WorkerNode.Contains(worker)).First();
                 await _cache.SetSessionSetting(accession.ID,setting,_config, cluster);
+                return Ok();
+            }
+            else
+            {
+                Serilog.Log.Information("Fail to parse token");
+                return BadRequest("Token is invalid");
+            }
+        }
+
+
+        [HttpPost("Setting")]
+        public async Task<IActionResult> SetParsec(string token)
+        {
+
+            var request = new RestRequest($"{_config.SessionTokenValidator}",Method.POST)
+                .AddQueryParameter("token", token);
+            request.Method = Method.POST;
+
+            var result = await (new RestClient()).ExecuteAsync(request);
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
+                await _cache.GetParsecCred(accession);
                 return Ok();
             }
             else
