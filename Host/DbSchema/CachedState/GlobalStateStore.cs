@@ -146,7 +146,7 @@ namespace DbSchema.CachedState
         public async Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, GlobalCluster cluster)
         {
             var parsec = JsonConvert.DeserializeObject<ParsecLoginResponse>((await(
-                (new RestClient()).ExecuteAsync(new RestRequest($"{_config.AutoScaling}/Parsec/Login",Method.GET))
+                (new RestClient()).ExecuteAsync(new RestRequest($"{_config.AutoScaling}/Parsec",Method.GET))
             )).Content);
 
             var sessionWorker = new SessionWorker
