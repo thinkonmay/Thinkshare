@@ -25,56 +25,44 @@ namespace WorkerManager.Services
     {
         private readonly IClusterInfor _infor;
         private readonly ILocalStateStore _cache;
-        private readonly List<int> _ports;
         private SshClient _client;
-
         private readonly ClusterConfig _config;
-
+        private readonly InstanceSetting _setting;
         private bool Started;
 
         public PortProxy(IClusterInfor infor,
                          IOptions<ClusterConfig> config,
+                         IOptions<InstanceSetting> setting,
                          ILocalStateStore cache)
         {
             _config = config.Value;
+            _setting = setting.Value;
             _cache = cache;
             _infor = infor;
             Started = false;
-            _ports = new List<int>();
         }
 
         public async Task Start()
         {
             if(Started) { return; }
             await SetupSSHClient();
-            SetupPortForward();
+            await SetupPortForward();
             Started = true;
         }
 
 
         private async Task SetupPortForward()
         {
-            while (true)
+            try
             {
-                if(!(await _infor.IsSelfHost()))
+                for (int i = _setting.PortMinValue; i < _setting.PortMaxValue-1; i++)
                 {
-                    try
-                    {
-                        var portForwards = (await _infor.Infor()).instance.portForwards.Where(x => !x.End.HasValue);
-                        foreach (var item in portForwards)
-                        {
-                            if (!_ports.Contains(item.InstancePort))
-                            {
-                                Task.Run(() => Forward(item.InstancePort));
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Serilog.Log.Information($"Fail to portforward {ex.Message} , {ex.StackTrace}");
-                    }
+                    Forward(i);
                 }
-                Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Information($"Fail to portforward {ex.Message} , {ex.StackTrace}");
             }
         }
 
@@ -102,7 +90,6 @@ namespace WorkerManager.Services
             {
                 Serilog.Log.Information($"Attempting failed with error {ex.Message} {ex.StackTrace}");
                 Thread.Sleep(10000);
-                _ports.Clear();
                 await SetupSSHClient();
             }
         }
@@ -114,29 +101,11 @@ namespace WorkerManager.Services
                 var agent = new ForwardedPortLocal("localhost",(uint)Port, "localhost", (uint)Port);
                 _client.AddForwardedPort(agent);
                 agent.Start();
-
-                _ports.Add(Port);
                 Serilog.Log.Information($"Successfully portforward on port {Port}");
-                while (_ports.Contains(Port)) { Thread.Sleep(1000); }
-                agent.Stop();
             }
             catch (Exception ex)
             {
                 Serilog.Log.Information($"got exception {ex.Message} while port forward");
-            }
-
-            _ports.Remove(Port);
-            var res = await (new RestClient()).ExecuteAsync(
-                new RestRequest(_config.PortReleaseUrl,Method.GET)
-                .AddHeader("Authorization",(await _cache.GetClusterInfor()).ClusterToken)
-                .AddQueryParameter("InstancePort",Port.ToString()));
-            if(res.StatusCode == HttpStatusCode.OK)
-            {
-                Serilog.Log.Information($"Processed port release with autoscaling");
-            }
-            else
-            {
-                Serilog.Log.Information($"fail to port release with autoscaling");
             }
         }
     }

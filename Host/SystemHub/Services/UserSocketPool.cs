@@ -11,16 +11,18 @@ using SharedHost.Models.Message;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.Extensions.Options;
+using SystemHub.Models;
+using System.Collections.Concurrent;
 
 namespace SystemHub.Services
 {
     public class UserSocketPool : IUserSocketPool
     {
-        private readonly List<KeyValuePair<AuthenticationResponse, WebSocket>> _UserSocketsPool;        
+        private readonly ConcurrentDictionary<UserHubCredential,WebSocket> _UserSocketsPool;        
         
         public UserSocketPool(IOptions<SystemConfig> config)
         {
-            _UserSocketsPool =    new List<KeyValuePair<AuthenticationResponse, WebSocket>>();
+            _UserSocketsPool = new ConcurrentDictionary<UserHubCredential, WebSocket>();
 
             Task.Run(() => ConnectionHeartBeat());
             Task.Run(() => ConnectionStateCheck());
@@ -54,13 +56,15 @@ namespace SystemHub.Services
                     {
                         if(socket.Value.State == WebSocketState.Closed) 
                         {
-                            _UserSocketsPool.Remove(socket);
+                            _UserSocketsPool.TryRemove(socket.Key, out var currupted);
                         }
                     }
                     Thread.Sleep(100);
                 }
-            }catch
+            }catch (Exception ex)
             {
+                Serilog.Log.Information($"{ex.Message} : {ex.StackTrace}");
+                Thread.Sleep(100);
                 await ConnectionStateCheck();
             }
         }
@@ -68,9 +72,10 @@ namespace SystemHub.Services
 
         public async Task AddtoPool(AuthenticationResponse resp,WebSocket session)
         {
-            _UserSocketsPool.Add(new KeyValuePair<AuthenticationResponse,WebSocket>(resp,session));
+            var credential = new UserHubCredential(resp,session);
+            _UserSocketsPool.AddOrUpdate(credential,session,(x,y) => session);
             await Handle(session);
-            _UserSocketsPool.Remove(new KeyValuePair<AuthenticationResponse,WebSocket>(resp, session));
+            _UserSocketsPool.TryRemove(credential, out var removedSession);
         }
 
 
@@ -82,7 +87,7 @@ namespace SystemHub.Services
             {
                 if (item.Key.IsUser && item.Key.UserID == UserID.ToString())
                 {
-                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value , JsonConvert.SerializeObject(data));
                 }
             }
         }
@@ -94,7 +99,7 @@ namespace SystemHub.Services
             {
                 if (item.Key.IsUser)
                 {
-                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value , JsonConvert.SerializeObject(data));
                 }
             }
         }
@@ -106,7 +111,7 @@ namespace SystemHub.Services
             {
                 if (item.Key.IsManager && item.Key.UserID == ManagerID.ToString())
                 {
-                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value , JsonConvert.SerializeObject(data));
                 }
             }
         }
@@ -117,7 +122,7 @@ namespace SystemHub.Services
             {
                 if(item.Key.IsAdmin)
                 {
-                    await SendMessage(item.Value, JsonConvert.SerializeObject(data));
+                    await SendMessage(item.Value , JsonConvert.SerializeObject(data));
                 }
             }
         }

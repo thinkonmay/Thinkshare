@@ -79,6 +79,7 @@ module "eks" {
 
       instance_types = ["t3.medium"]
       capacity_type  = "SPOT"
+      aws_availability_zones = "ap-southeast-1b"
       
       k8s_labels = {
         Environment = "production"
@@ -96,6 +97,8 @@ module "eks" {
 
       instance_types = ["t3.medium"]
       capacity_type  = "ON_DEMAND"
+      aws_availability_zones = "ap-southeast-1b"
+      
       
       k8s_labels = {
         Environment = "production"

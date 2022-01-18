@@ -81,10 +81,10 @@ namespace WorkerManager.Controllers
                             .AddQueryParameter("ClusterName", ClusterName));
                     if (tokenResult.StatusCode == HttpStatusCode.OK)
                     {
-                        _conductor.Start();
-                        _port.Start();
                         cluster.ClusterToken = JsonConvert.DeserializeObject<AuthenticationRequest>(tokenResult.Content).token;
                         await _cache.SetClusterInfor(cluster);
+                        await _conductor.Start();
+                        await _port.Start();
                     }
                 }
                 else
@@ -100,6 +100,7 @@ namespace WorkerManager.Controllers
             }
             return Ok(jsonresult);
         }
+
 
 
         [Owner]
@@ -132,15 +133,6 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> isRegistered()
         {
             return Ok(await _infor.IsRegistered());
-        }
-
-
-        [Owner]
-        [HttpGet("Cluster/Worker/Log")]
-        public async Task<IActionResult> GetLog(int WorkerID, DateTime Time)
-        {
-            var array = await _cache.GetLog(Time);
-            return Ok(array.Where(x => x.WorkerID == WorkerID));
         }
     }
 }

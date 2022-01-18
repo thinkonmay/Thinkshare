@@ -3,12 +3,13 @@ version: "3.3"
 services:
   workermanager:
     container_name: cluster_manager
-    image: pigeatgarlic/workermanager:development
+    image: pigeatgarlic/workermanager:2022-01-15
     environment:
       REDIS_IP: "cache"
     restart: unless-stopped
     ports:
       - "5000:80"
+
 
   cluster-ui:
     container_name: cluster_ui

@@ -18,7 +18,6 @@ namespace DbSchema.CachedState
         Task SetClusterSnapshot(int ClusterID, Dictionary<int, string> snapshoot);
         Task<Dictionary<int, string>> GetClusterSnapshot(int ClusterID);
 
-
         Task CacheWorkerInfor(WorkerNode node);
         Task<WorkerNode?> GetWorkerInfor(int WorkerID);
 

@@ -15,7 +15,6 @@ namespace Conductor.Services
 
         private readonly GlobalDbContext _db;
 
-
         private readonly IGlobalStateStore _cache;
 
         public WorkerCommander(IOptions<SystemConfig> config, 
@@ -24,7 +23,7 @@ namespace Conductor.Services
         {
             _db = dbContext;
             _cache = cache;
-            _Cluster =  new RestClient(config.Value.SystemHub + "/Cluster/Worker");
+            _Cluster =  new RestClient($"{config.Value.SystemHub}/Cluster/Worker");
         }
 
 

@@ -17,8 +17,12 @@ namespace SharedHost.Models.Device
         [Required]
         public string? OS { get; set; }
 
-        public string? AgentUrl {get;set;}
+        [Required]
+        public string? Name { get; set; }
 
-        public string? CoreUrl {get;set;}
+        [Required]
+        public string? User { get; set; }
+
+        public string? AgentUrl {get;set;}
     }
 }

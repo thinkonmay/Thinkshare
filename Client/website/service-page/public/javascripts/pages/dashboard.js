@@ -24,18 +24,44 @@ API.getSetting().then(async data => {
 	$(`[value=${Setting.DecodeDeviceType(parseInt(body.device))}]`).attr('checked', true);
 	$(`[value=${Setting.DecodeQoeMode(parseInt(body.mode))}]`).attr('checked', true);
 	$(`[value=${Setting.DecodeResolution(body)}]`).attr('checked', true);
+
 })
 
+var clusterName, description;
+function
+setupClusterRegister()
+{
+    $("#clusterNameCtrler").on("change", function() { clusterName = this.value; });
+    $("#descriptionCtrler").on("change", function() { description = this.value; })
+
+    $('#submitChangeInfoCtrler').click(() => {
+        Utils.newSwal.fire({
+            title: "Đang đăng kí",
+            text: "Vui lòng chờ . . .",
+            didOpen: () => {
+                console.log(body)
+                API.setInfor(body)
+                    .then(async data => {
+                        if (data.status == 200) {
+                            body = await (await API.getInfor()).json();
+                            Utils.newSwal.fire({
+                                title: "Thành công!",
+                                text: "Thông tin của bạn đã được cập nhật",
+                                icon: "success",
+                            })
+                        } else {
+                            Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
+                        }
+                    })
+                    .catch(status ? Utils.fetchErrorHandler : "")
+            }
+        })
+
+    });
+
+}
+
 $(document).ready(async () => {
-
-	$('#regtomanager').click(function () {
-		//// write something useful
-	})
-
-	$('#selfhost').click(function () {
-		//// write something useful
-	})
-
 	document.querySelector(".preloader").style.opacity = "0";
 	document.querySelector(".preloader").style.display = "none";
 
@@ -45,9 +71,19 @@ $(document).ready(async () => {
 	if (getCookie("show-tutorial") != "true") {
 		window.location = '/dashboard#demo-modal'
 	}
+
 	$('#showTutorial').click(function () {
 		window.location = '/dashboard#demo-modal'
 	})
+	$('#showSettings').click(function () {
+		window.location = '/dashboard#settings-modal'
+	})
+	$('#registertoManager').click(function () {
+		window.location = '/dashboard#manager-modal'
+	})
+
+
+
 
 	$('.modal__checkbox').click(function () {
 		if ($('#checkboxTutorial').attr("checked") == 'checked') {
@@ -148,8 +184,10 @@ $(document).ready(async () => {
 		}
 	})
 
-	if (CheckDevice.isElectron()) {
 
+
+
+	if (CheckDevice.isElectron()) {
 		$('#downloadApp').css("display", "none")
 		$('#remoteApp2').removeAttr("disabled")
 		$('#videoCodec3').removeAttr("disabled")
@@ -186,6 +224,7 @@ $(document).ready(async () => {
 	await prepare_user_infor();
 	await prepare_worker_dashboard();
 	await setDataForChart();
+	setupClusterRegister();
 
 
 	// set data for chart to anaylize hour used

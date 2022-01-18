@@ -29,6 +29,7 @@ namespace WorkerManager.Controllers
         private readonly ClusterConfig _config;
 
         private readonly IClusterInfor _infor;
+
         private readonly IPortProxy _port;
 
         public WorkerController( ITokenGenerator token,
@@ -53,7 +54,12 @@ namespace WorkerManager.Controllers
             var Cluster = await _cache.GetClusterInfor();
             if(Cluster == null) { return BadRequest(); }
 
-            var cachednode = Cluster.WorkerNodes.Where(x => x.model == model);
+            var cachednode = Cluster.WorkerNodes
+                .Where(x => x.model.GPU == model.GPU &&
+                            x.model.RAMcapacity == model.RAMcapacity &&
+                            x.model.OS  == model.OS &&
+                            x.model.User == model.User &&
+                            x.model.Name == model.Name);
 
             if(!cachednode.Any())
             {
@@ -86,6 +92,9 @@ namespace WorkerManager.Controllers
             }
             else
             {
+                var node = cachednode.First();
+                node.model.AgentUrl = model.AgentUrl;
+                await _cache.CacheWorkerInfor(node);
                 var result = await _tokenGenerator.GenerateWorkerToken(cachednode.First());
                 return Ok(AuthResponse.GenerateSuccessful(null,result,null));
             }
@@ -142,16 +151,7 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> Log([FromBody] string log)
         {
             var WorkerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
-
-
-            var cluster = await _cache.GetClusterInfor();
-            var worker = cluster.WorkerNodes.Where(x => x.ID == WorkerID).First();
-            await _cache.Log(new Log
-            {
-                WorkerID = worker.ID,
-                Content = log,
-                LogTime = DateTime.Now,
-            });
+            Serilog.Log.Information($"Log from workernode {WorkerID} : {log}");
             return Ok();
         }
     }

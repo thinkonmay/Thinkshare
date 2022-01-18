@@ -11,6 +11,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 
 COPY ["WorkerManager/WorkerManager.csproj", "WorkerManager/"]
+COPY ["WorkerManager/settings/prod/appsettings.json", "WorkerManager/"]
 RUN dotnet restore "WorkerManager/WorkerManager.csproj"
 
 

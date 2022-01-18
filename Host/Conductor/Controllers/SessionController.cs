@@ -63,8 +63,12 @@ namespace Conductor.Controllers
             if(globalCluster.Private && globalCluster.OwnerID != UserID) {return Unauthorized();}
 
             var workerState = await _Cluster.GetWorkerState(SlaveID);
+
             // search for availability of slave device
-            if (workerState != WorkerState.Open) { return BadRequest("Device Not Available"); }
+            if (workerState != WorkerState.Open ||
+                _db.RemoteSessions.Where(x => x.WorkerID == SlaveID && 
+                                             !x.EndTime.HasValue).Any())
+            { return BadRequest("Device Not Available"); }
 
             /*create new session with gevin session request from user*/
             var sess = new RemoteSession()
@@ -100,9 +104,6 @@ namespace Conductor.Controllers
             var clientToken = JsonConvert.DeserializeObject<AuthenticationRequest>((new RestClient()).Post(clientTokenRequest).Content);
             var workerToken = JsonConvert.DeserializeObject<AuthenticationRequest>((new RestClient()).Post(workerTokenRequest).Content);
 
-
-
-
             /*create session from client device capability*/
             var userSetting = await _cache.GetUserSetting(UserID);
             await _cache.SetSessionSetting(sess.ID,userSetting,_config, globalCluster);
@@ -131,6 +132,7 @@ namespace Conductor.Controllers
             // get session information in database
             var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID && 
                                                s.ClientId == UserID && 
+                                               s.StartTime.HasValue &&
                                               !s.EndTime.HasValue);
 
             // return badrequest if session is not available in database
@@ -159,9 +161,10 @@ namespace Conductor.Controllers
             var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
 
             // get session from database
-            var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID  
-                                            && s.ClientId == Int32.Parse((string)UserID)
-                                            && !s.EndTime.HasValue).FirstOrDefault();
+            var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID && 
+                                               s.ClientId == Int32.Parse((string)UserID) &&
+                                               s.StartTime.HasValue &&
+                                              !s.EndTime.HasValue).FirstOrDefault();
 
 
 
@@ -189,6 +192,7 @@ namespace Conductor.Controllers
             // get session from database
             var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID&& 
                                                s.ClientId == Int32.Parse(UserID.ToString())&& 
+                                               s.StartTime.HasValue &&
                                               !s.EndTime.HasValue);
 
 

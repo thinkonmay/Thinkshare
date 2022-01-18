@@ -3,15 +3,17 @@ using System;
 using DbSchema.SystemDb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Authenticator.Migrations
 {
     [DbContext(typeof(GlobalDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220112174045_120122")]
+    partial class _120122
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -300,9 +302,6 @@ namespace Authenticator.Migrations
                     b.Property<int?>("GlobalClusterID")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
                     b.Property<string>("OS")
                         .HasColumnType("text");
 
@@ -313,9 +312,6 @@ namespace Authenticator.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
-
-                    b.Property<string>("User")
-                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -338,7 +334,9 @@ namespace Authenticator.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("StartTime")
-                        .HasColumnType("timestamp without time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("current_timestamp");
 
                     b.Property<int>("WorkerID")
                         .HasColumnType("integer");

@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: autoscaling
-        image: pigeatgarlic/autoscaling:latest
+        image: pigeatgarlic/autoscaling:2022-01-16
         imagePullPolicy: Always
         resources:
           requests:

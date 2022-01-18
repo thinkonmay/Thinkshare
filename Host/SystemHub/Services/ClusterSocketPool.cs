@@ -24,8 +24,6 @@ namespace SystemHub.Services
 
         private readonly SystemConfig _config;
 
-        private readonly RestClient _conductor;
-
         private readonly IGlobalStateStore _cache;
                 
         
@@ -34,7 +32,6 @@ namespace SystemHub.Services
         {
             _config = config.Value;
             _cache = cache;
-            _conductor = new RestClient(_config.Conductor+"/Sync");
             _ClusterSocketsPool = new ConcurrentDictionary<ClusterCredential, WebSocket>();
 
             Task.Run(() => ConnectionHeartBeat());
@@ -65,24 +62,19 @@ namespace SystemHub.Services
 
         public async Task AddtoPool(ClusterCredential resp,WebSocket session)
         {
-            bool result = _ClusterSocketsPool.TryAdd(resp, session);
-            var snapshoot = await _cache.GetClusterSnapshot(resp.ID);
-            if(!result)
-            {
-                return;
-            }
-
+            _ClusterSocketsPool.AddOrUpdate(resp, session, (x,y) => session);
             await Handle(resp, session);
+            _ClusterSocketsPool.TryRemove(resp,out var removed_ws);
 
             /// report to conductor
-            var request = new RestRequest("Cluster/Disconnected")
+            var request = new RestRequest($"{_config.Conductor}/Sync/Cluster/Disconnected")
                 .AddQueryParameter("ClusterID",resp.ID.ToString());
             request.Method = Method.POST;
 
-            await _conductor.ExecuteAsync(request);
+            await (new RestClient()).ExecuteAsync(request);
 
             // set all devices state to disconnected
-            snapshoot = await _cache.GetClusterSnapshot(resp.ID);
+            var snapshoot = await _cache.GetClusterSnapshot(resp.ID);
             var newsnapshoot = new Dictionary<int, string>();
             foreach (var Item in snapshoot)
             {
@@ -91,7 +83,6 @@ namespace SystemHub.Services
                 Serilog.Log.Information("WorkerID: "+Item.Key.ToString()+" | State: "+WorkerState.Disconnected);
             }
             await _cache.SetClusterSnapshot(resp.ID,newsnapshoot);
-            var done = _ClusterSocketsPool.TryRemove(resp,out var output);
         }
 
 
@@ -101,7 +92,8 @@ namespace SystemHub.Services
         public async Task SendToCluster(int ClusterID, Message message)
         {
             var ws = _ClusterSocketsPool.Where(x => x.Key.ID == ClusterID).First().Value;
-            await SendMessage(ws,JsonConvert.SerializeObject(message));
+            try { await SendMessage(ws,JsonConvert.SerializeObject(message)); }
+            catch (System.Exception ex) { }
         }
 
 
@@ -188,7 +180,7 @@ namespace SystemHub.Services
                 {
                     if(syncedState != unsyncedItem.Value)
                     {
-                        var syncrequest = new RestRequest("Worker/State")
+                        var syncrequest = new RestRequest($"{_config.Conductor}/Sync/Worker/State")
                             .AddQueryParameter("NewState", syncedState)
                             .AddQueryParameter("ID",unsyncedItem.Key.ToString());
 
@@ -197,7 +189,7 @@ namespace SystemHub.Services
                         
                         syncrequest.Method = Method.POST;
 
-                        var result = await _conductor.ExecuteAsync(syncrequest);
+                        var result = await (new RestClient()).ExecuteAsync(syncrequest);
                         if(result.StatusCode == System.Net.HttpStatusCode.OK)
                         {
                             Serilog.Log.Information("Reportd state changing to conductor");

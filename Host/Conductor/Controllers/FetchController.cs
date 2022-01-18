@@ -74,6 +74,7 @@ namespace Conductor.Controllers
             var result = new Dictionary<int,string>();
             var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
             var session = _db.RemoteSessions.Where(s => s.ClientId == UserID &&
+                                                   s.StartTime.HasValue &&
                                                   !s.EndTime.HasValue).ToList();
             
             Serilog.Log.Information("Fetching session from cache");

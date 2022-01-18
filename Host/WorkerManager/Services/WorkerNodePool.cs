@@ -73,7 +73,7 @@ namespace WorkerManager.Services
                     foreach (var keyValue in worker_list)
                     {
                         ClusterWorkerNode worker = await _cache.GetWorkerInfor(keyValue.Key);
-                        if(await worker.PingWorker(Module.AGENT_MODULE))
+                        if(await worker.PingWorker())
                         {
                             worker.agentFailedPing = 0;
                             if(keyValue.Value == WorkerState.Disconnected)
@@ -96,7 +96,7 @@ namespace WorkerManager.Services
                             await _cache.SetWorkerState(keyValue.Key, WorkerState.Disconnected);
                         }
                     }
-                    Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
+                    Thread.Sleep(((int)TimeSpan.FromSeconds(1).TotalMilliseconds));
                 }
             }catch (Exception ex)
             {
@@ -120,8 +120,11 @@ namespace WorkerManager.Services
                 var worker_list = await _cache.GetClusterState();
                 foreach (var item in worker_list.Where(x => x.Value != WorkerState.Disconnected))
                 {
-                    ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                    worker.GetWorkerMetric(_cache,model_list);
+                    Task.Run(async () => {
+                        ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
+                        var res = await worker.GetWorkerMetric(model_list);
+                        res.ForEach(x => Serilog.Log.Information($"Execute shell session on worker node {worker.ID}, model ID {x.Model.ID}, result: {x.Output}"));
+                    });
                 }
                 Thread.Sleep(((int)TimeSpan.FromSeconds(60).TotalMilliseconds));
             }
