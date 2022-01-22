@@ -92,7 +92,7 @@ export function check_remote_condition(workerID, token, engine) {
     }
 }
 
-const RemotePageUrl = "https://remote.thinkmay.net/Remote"
+const RemotePageUrl = "https://remote.thinkmay.net/Parsec"
 
 export const getRemotePage = (token, engine) => {
     if (engine == CoreEngine('GSTREAMER')) {

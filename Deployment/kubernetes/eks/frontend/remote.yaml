@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: remote
-        image: pigeatgarlic/remote:2022-01-15
+        image: pigeatgarlic/remote:2022-01-18
         imagePullPolicy: Always
         resources:
           requests:
