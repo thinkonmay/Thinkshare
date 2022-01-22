@@ -69,11 +69,10 @@ $(document).ready(async () => {
 		$('#checkboxTutorial').attr("checked", true)
 	}
 	if (getCookie("show-tutorial") != "true") {
-		window.location = '/dashboard#demo-modal'
+		$('#modal-btn3').attr('checked', true)
 	}
 
 	$('#showTutorial').click(function () {
-		window.location = '/dashboard#demo-modal'
 	})
 	$('#showSettings').click(function () {
 		window.location = '/dashboard#settings-modal'
@@ -94,6 +93,7 @@ $(document).ready(async () => {
 		} else
 			if ($('#checkboxTutorial').attr("checked") != 'checked') {
 				// click checkbox
+				$('#showTutorialState').html("Yes, I won\'t show again")
 				$('#checkboxTutorial').attr("checked", true)
 				setCookie("show-tutorial", "true", 99999999999999)
 			}
@@ -170,13 +170,8 @@ $(document).ready(async () => {
 			$("#HowToUse").attr('checked', false)
 		}
 		if ($("#ShorcutKey").attr('checked') == 'checked') {
-			value = 'Setting';
-			$("#ShorcutKey").attr('checked', false)
-		}
-		if ($("#Setting").attr('checked') == 'checked') {
-			window.location = "#"
 			value = 'HowToUse';
-			$("#Setting").attr('checked', false)
+			$("#ShorcutKey").attr('checked', false)
 		}
 		if (value != null) {
 			value = '#' + value

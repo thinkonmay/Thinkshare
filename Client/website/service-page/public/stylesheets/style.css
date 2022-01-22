@@ -103,8 +103,8 @@
 /* //////////////////////////////////////////////////////// */
 .next-tab {
   position: absolute;
-  bottom: 15px;
-  right: 25px;
+  bottom: -39px;
+  right: -56px;
   color: #585858;
   text-decoration: none;
 }
@@ -214,13 +214,13 @@ body h1 {
 
 .tabs .slider {
   position: relative;
-  width: 33.3333%;
+  width: 50%;
   transition: all 0.33s cubic-bezier(0.38, 0.8, 0.32, 1.07);
 }
 
 .tabs .slider .indicator {
   position: relative;
-  width: 50px;
+  width: 170px;
   max-width: 100%;
   margin: 0 auto;
   height: 4px;
@@ -466,9 +466,10 @@ body h1 {
 }
 
 .modal__checkbox {
-  margin-left: 30px;
+  font-size: 18px;
+  margin-left: 34px;
   position: absolute;
-  bottom: 10px;
+  bottom: -40px;
   left: 15px;
   color: #585858;
   text-decoration: none;
