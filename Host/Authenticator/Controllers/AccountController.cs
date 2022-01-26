@@ -187,8 +187,8 @@ namespace Authenticator.Controllers
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information(ex.Message);
-                Serilog.Log.Information(ex.StackTrace);
+                Serilog.Log.Debug(ex.Message);
+                Serilog.Log.Debug(ex.StackTrace);
                 return BadRequest();
             }
         }
