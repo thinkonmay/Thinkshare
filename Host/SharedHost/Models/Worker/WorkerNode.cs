@@ -28,8 +28,5 @@ namespace SharedHost.Models.Device
         public string? OS { get; set; }
         public string? Name {get;set;}
         public string? User {get;set;}
-
-        [JsonIgnore]
-        public virtual IList<ShellSession> Shells {get;set;}
     }
 }

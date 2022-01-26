@@ -49,6 +49,9 @@
 
     <Compile Include="$(MSBuildThisFileDirectory)SystemConfig.cs" />
 
+    <Compile Include="$(MSBuildThisFileDirectory)Log\LoggingMiddleware.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Log\LoggingService.cs" />
+
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\JwtChallange.cs" />

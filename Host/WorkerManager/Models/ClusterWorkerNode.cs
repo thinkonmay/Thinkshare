@@ -105,31 +105,5 @@ namespace WorkerManager.Models
                 return false; 
             }
         }
-
-
-
-
-
-        public async Task<List<ShellSession>?> GetWorkerMetric(List<ScriptModel> scriptModels)
-        {
-            var sessions = new List<ShellSession>();
-            foreach (var item in scriptModels)
-            {
-                var request = new RestRequest(model.AgentUrl + "/Shell")
-                    .AddParameter("application/json", item.Script, ParameterType.RequestBody);
-
-                request.Method = Method.POST;
-                var result = await (new RestClient()).ExecuteAsync(request);
-                if(result.StatusCode == HttpStatusCode.OK) 
-                { 
-                    var session = new ShellSession();                
-                    session.Model  = item;
-                    session.Output = result.Content;
-
-                    sessions.Add(session);
-                }
-            }
-            return sessions;
-        }
     }
 }

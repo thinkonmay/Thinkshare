@@ -2,9 +2,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Formatting.Compact;
-using Serilog.Formatting.Elasticsearch;
-using System;
-using Serilog.Sinks.Elasticsearch;
 
 namespace MetricCollector
 {
@@ -20,11 +17,8 @@ namespace MetricCollector
                 .UseSerilog((ctx, config) =>{
                     config
                         .MinimumLevel.Information()
-                        .Enrich.FromLogContext();
-                    config.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200")){
-                            AutoRegisterTemplate = true,
-                            AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6
-                    });
+                        .Enrich.FromLogContext()
+                        .WriteTo.Console();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

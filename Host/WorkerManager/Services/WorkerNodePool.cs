@@ -132,11 +132,9 @@ namespace WorkerManager.Services
 
         async Task PushCachedShellSession()
         {
-            DateTime currentTime = DateTime.Now;
             while (true)
             {
                 Thread.Sleep((int)TimeSpan.FromDays(1).TotalMilliseconds);
-                currentTime.AddDays(1);
             }
         }
     }

@@ -13,6 +13,5 @@ namespace MetricCollector.Interface
         Task<List<RAMDataModel>> GetRAM(int DeviceID);
 
         Task<List<StorageDataModel>> GetStorage(int DeviceID);
-        
     }
 }

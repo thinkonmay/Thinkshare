@@ -1,4 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using SharedHost.Models.Shell;
+using System.Collections.Generic;
+using SharedHost.Auth.ThinkmayAuthProtocol;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MetricCollector.Interface;
 using SharedHost;
@@ -24,10 +28,11 @@ namespace MetricCollector.Controllers
             _config = config.Value;
         }
 
-        [HttpGet("RemoteControl")]
-        public IActionResult QoSMetric()
+        [Cluster]
+        [HttpPost("Add")]
+        public async Task<IActionResult> UpdateShellSession([FromBody] List<ShellSession> session)
         {
-            var i = _config.STUNlist;
+            var ClusterID = HttpContext.Items["ClusterID"];
             return Ok();
         }
     }
