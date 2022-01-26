@@ -12,6 +12,7 @@ namespace SharedHost
         public string MetricCollector {get;set;}
         public string SystemHub {get;set;}
         public string AutoScaling{get;set;}
+        public string ElasticSearch{get;set;}
         public string GoogleOauthID {get;set;}
         public string SessionTokenValidator {get;set;}
         public string SessionTokenGrantor {get;set;}

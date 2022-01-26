@@ -30,7 +30,6 @@ namespace MetricCollector.Controllers
         [HttpGet("GPU")]
         public async Task<IActionResult> GPUMetric(int SlaveID)
         {
-            _getter.StupidFunctionWrittenbyHuyHoang();
             return Ok();
         }
 

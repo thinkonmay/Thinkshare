@@ -47,6 +47,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionConstant.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionBase.cs" />
 
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Logging\LoggingModel.cs" />
+
     <Compile Include="$(MSBuildThisFileDirectory)SystemConfig.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Log\LoggingMiddleware.cs" />
