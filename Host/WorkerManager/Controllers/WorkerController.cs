@@ -32,12 +32,16 @@ namespace WorkerManager.Controllers
 
         private readonly IPortProxy _port;
 
+        private readonly ILog _log;
+
         public WorkerController( ITokenGenerator token,
                                 ILocalStateStore cache,
                                 IClusterInfor infor,
+                                ILog log,
                                 IPortProxy port,
                                 IOptions<ClusterConfig> config)
         {
+            _log = log;
             _cache = cache;
             _infor = infor;
             _config = config.Value;
@@ -86,7 +90,7 @@ namespace WorkerManager.Controllers
                 }
                 else
                 {
-                    Serilog.Log.Information("Fail to register device");
+                    _log.Information("Fail to register device");
                     return BadRequest();
                 }
             }
@@ -130,7 +134,7 @@ namespace WorkerManager.Controllers
         {
             var workerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
 
-            Serilog.Log.Information("Worker node get remote token: "+ workerID);
+            _log.Information("Worker node get remote token: "+ workerID);
             var remoteToken = await _cache.GetWorkerRemoteToken(workerID);
 
             return Ok(new AuthenticationRequest{
@@ -151,7 +155,7 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> Log([FromBody] string log)
         {
             var WorkerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
-            Serilog.Log.Information($"Log from workernode {WorkerID} : {log}");
+            _log.Information($"Log from workernode {WorkerID} : {log}");
             return Ok();
         }
     }

@@ -25,7 +25,6 @@ namespace WorkerManager.Models
             request.Method = Method.POST;
 
             var result = await (new RestClient()).ExecuteAsync(request);
-            Serilog.Log.Information("Intializing worker "+ID.ToString());
             return (result.StatusCode == HttpStatusCode.OK);
         }
 
@@ -36,7 +35,6 @@ namespace WorkerManager.Models
             request.Method = Method.POST;
 
             var result = await (new RestClient()).ExecuteAsync(request);
-            Serilog.Log.Information("Reconnect worker "+ID.ToString());
             return (result.StatusCode == HttpStatusCode.OK);
         }
 
@@ -47,7 +45,6 @@ namespace WorkerManager.Models
             request.Method = Method.POST;
 
             var result = await (new RestClient()).ExecuteAsync(request);
-            Serilog.Log.Information("Terminating worker "+ID.ToString());
             return (result.StatusCode == HttpStatusCode.OK);
         }
 
@@ -58,7 +55,6 @@ namespace WorkerManager.Models
             request.Method = Method.POST;
 
             var result = await (new RestClient()).ExecuteAsync(request);
-            Serilog.Log.Information("Disconnect worker "+ID.ToString());
             return (result.StatusCode == HttpStatusCode.OK);
         }
 

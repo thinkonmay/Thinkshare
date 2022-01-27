@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Serilog;
+using SharedHost.Logging;
+using System;
 
 namespace Signalling
 {
@@ -8,19 +9,21 @@ namespace Signalling
     {
         public static void Main(string[] args)
         {
-            var host = CreateHostBuilder(args).Build();
+            IHost host = null;
+            try
+            {
+                host = CreateHostBuilder(args).Build();
+            }
+            catch(Exception ex)
+            {
+                Log.Fatal("Error intializing","Authenticator",ex);
+                return;
+            }
             host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseSerilog((ctx, config) => {
-                    config
-                        .MinimumLevel.Information()
-                        .Enrich.FromLogContext();
-
-                    config.WriteTo.Console();
-                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

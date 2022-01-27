@@ -21,8 +21,12 @@ namespace WorkerManager.Services
 
         private bool isRunning;
 
-        public WorkerNodePool(ILocalStateStore cache)
+        private readonly ILog _log;
+
+        public WorkerNodePool(ILocalStateStore cache,
+                              ILog log)
         {
+            _log = log;
             _cache = cache;
             isRunning = false;
         }
@@ -100,9 +104,9 @@ namespace WorkerManager.Services
                 }
             }catch (Exception ex)
             {
-                Serilog.Log.Information("ping worker failed");
-                Serilog.Log.Information(ex.Message);
-                Serilog.Log.Information(ex.StackTrace);
+                _log.Information("ping worker failed");
+                _log.Information(ex.Message);
+                _log.Information(ex.StackTrace);
                 Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 await SystemHeartBeat();
             }
@@ -122,8 +126,8 @@ namespace WorkerManager.Services
                 {
                     Task.Run(async () => {
                         ClusterWorkerNode worker = await _cache.GetWorkerInfor(item.Key);
-                        var res = await worker.GetWorkerMetric(model_list);
-                        res.ForEach(x => Serilog.Log.Information($"Execute shell session on worker node {worker.ID}, model ID {x.Model.ID}, result: {x.Output}"));
+                        // var res = await worker.GetWorkerMetric(model_list);
+                        // res.ForEach(x => _log.Information($"Execute shell session on worker node {worker.ID}, model ID {x.Model.ID}, result: {x.Output}"));
                     });
                 }
                 Thread.Sleep(((int)TimeSpan.FromSeconds(60).TotalMilliseconds));

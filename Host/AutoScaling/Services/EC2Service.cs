@@ -9,6 +9,7 @@ using System.Linq;
 using SharedHost.Models.AWS;
 using Renci.SshNet;
 using AutoScaling.Interfaces;
+using SharedHost.Logging;
 using Microsoft.Extensions.Options;
 using Amazon.Runtime;
 using Amazon;

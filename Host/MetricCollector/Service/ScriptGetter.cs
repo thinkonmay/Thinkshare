@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using SharedHost;
 using SharedHost.Models.Shell;
 using System;
-using Elasticsearch.Net;
 using Newtonsoft.Json;
 
 namespace MetricCollector.Service

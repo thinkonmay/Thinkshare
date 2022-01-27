@@ -26,6 +26,7 @@ namespace WorkerManager.Services
         private readonly IClusterInfor _infor;
         private readonly ILocalStateStore _cache;
         private SshClient _client;
+        private readonly ILog _log;
         private readonly ClusterConfig _config;
         private readonly InstanceSetting _setting;
         private bool Started;
@@ -33,8 +34,10 @@ namespace WorkerManager.Services
         public PortProxy(IClusterInfor infor,
                          IOptions<ClusterConfig> config,
                          IOptions<InstanceSetting> setting,
+                         ILog log,
                          ILocalStateStore cache)
         {
+            _log = log;
             _config = config.Value;
             _setting = setting.Value;
             _cache = cache;
@@ -62,7 +65,7 @@ namespace WorkerManager.Services
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information($"Fail to portforward {ex.Message} , {ex.StackTrace}");
+                _log.Information($"Fail to portforward {ex.Message} , {ex.StackTrace}");
             }
         }
 
@@ -70,7 +73,7 @@ namespace WorkerManager.Services
         {
                 var cluster = await _infor.Infor();
                 if(cluster.SelfHost){return;}
-                Serilog.Log.Information($"Attempting to establish ssh connection with instance");
+                _log.Information($"Attempting to establish ssh connection with instance");
                 ClusterInstance instance = cluster.instance;
 
                 MemoryStream keyStream = new MemoryStream(Encoding.UTF8.GetBytes(instance.keyPair.PrivateKey));
@@ -84,11 +87,11 @@ namespace WorkerManager.Services
                 var con = new ConnectionInfo(instance.IPAdress, 22, "ubuntu", methods.ToArray());
                 _client = new SshClient(con);
                 _client.Connect();
-                Serilog.Log.Information($"Sucessfully establish ssh connection with instance");
+                _log.Information($"Sucessfully establish ssh connection with instance");
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information($"Attempting failed with error {ex.Message} {ex.StackTrace}");
+                _log.Information($"Attempting failed with error {ex.Message} {ex.StackTrace}");
                 Thread.Sleep(10000);
                 await SetupSSHClient();
             }
@@ -101,11 +104,11 @@ namespace WorkerManager.Services
                 var agent = new ForwardedPortLocal("localhost",(uint)Port, "localhost", (uint)Port);
                 _client.AddForwardedPort(agent);
                 agent.Start();
-                Serilog.Log.Information($"Successfully portforward on port {Port}");
+                _log.Information($"Successfully portforward on port {Port}");
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information($"got exception {ex.Message} while port forward");
+                _log.Information($"got exception {ex.Message} while port forward");
             }
         }
     }

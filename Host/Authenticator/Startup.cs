@@ -11,6 +11,7 @@ using Authenticator.Interfaces;
 using SharedHost.Models.Auth;
 using SharedHost.Models.User;
 using System;
+using SharedHost.Logging;
 using System.IO;
 using System.Reflection;
 using SharedHost;
@@ -108,6 +109,7 @@ namespace Authenticator
 
             services.AddTransient<IGlobalStateStore, GlobalStateStore>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
+            services.AddSingleton<ILog, Log>();
             services.AddMvc();
         }
 
@@ -116,7 +118,10 @@ namespace Authenticator
         {
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
-            // global cors policy
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
@@ -124,14 +129,12 @@ namespace Authenticator
                 .AllowCredentials()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-
 
             app.UseRouting();
             app.UseMiddleware<JwtMiddleware>();
             app.UseMiddleware<AuthorizeMiddleWare>();
 
+            app.UseMiddleware<LoggingMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

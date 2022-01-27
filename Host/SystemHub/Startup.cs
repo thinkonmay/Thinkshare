@@ -11,6 +11,7 @@ using SystemHub.Interfaces;
 using SystemHub.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using SharedHost.Logging;
 using DbSchema.CachedState;
 
 namespace SystemHub
@@ -64,6 +65,7 @@ namespace SystemHub
             services.AddTransient<IGlobalStateStore,GlobalStateStore>();
             services.AddSingleton<IClusterSocketPool, ClusterSocketPool>();
             services.AddSingleton<IUserSocketPool, UserSocketPool>();
+            services.AddSingleton<ILog, Log>();
             services.AddMvc();
         }
 
@@ -84,6 +86,7 @@ namespace SystemHub
             app.UseRouting();
 
             app.UseWebSockets();
+            app.UseMiddleware<LoggingMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

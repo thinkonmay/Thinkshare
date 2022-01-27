@@ -2,8 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using DbSchema.SystemDb.Data;
-using Serilog;
 using DbSchema.DbSeeding;
+using System;
+using SharedHost.Logging;
 
 namespace Conductor
 {
@@ -11,20 +12,22 @@ namespace Conductor
     {
         public static void Main(string[] args)
         {
-            var host = CreateHostBuilder(args).Build();
-            SeedDatabase(host);
+            IHost host = null;
+            try
+            {
+                host = CreateHostBuilder(args).Build();
+                SeedDatabase(host);
+            }
+            catch(Exception ex)
+            {
+                Log.Fatal("Error intializing","Authenticator",ex);
+                return;
+            }
             host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseSerilog((ctx, config) =>{
-                    config
-                        .MinimumLevel.Information()
-                        .Enrich.FromLogContext();
-
-                    config.WriteTo.Console();
-                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
