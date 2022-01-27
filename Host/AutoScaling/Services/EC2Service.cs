@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
@@ -208,8 +209,6 @@ namespace AutoScaling.Services
 
 
             // wait for coturn server to boot up until setup coturn script
-            System.Threading.Thread.Sleep(30*1000);
-
             var coturn = SetupCoturnScript(result.TurnUser,result.TurnPassword);
             await AccessEC2Instance(instance,coturn);
 
@@ -255,12 +254,34 @@ namespace AutoScaling.Services
             var con = new ConnectionInfo(instance.IPAdress, 22, "ubuntu", methods.ToArray());
 
             var _client = new SshClient(con);
-            _client.Connect();
 
-            if(_client.IsConnected == false)
+            int attemption = 0;
+            bool success = false;
+            while (!success)
             {
-                return null;
+                if(attemption == 30)
+                {
+                    _log.Warning("Fail to connect to EC2 instance multipletime");
+                    return null;
+                }
+
+                try
+                {
+                    _client.Connect();
+                    if(_client.IsConnected)
+                    {
+                        success = true;
+                        break;
+                    }
+                }
+                catch (Exception exception)
+                {
+                    _log.Error("Fail to connect to EC2 instance",ex);
+                }
+                Thread.Sleep(1000);
+                attemption++;
             }
+
 
             var result = new List<string>();
             foreach (var command in commands)
