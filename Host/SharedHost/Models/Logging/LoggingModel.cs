@@ -1,6 +1,6 @@
 using System;
 
-namespace SharedHost.Logging
+namespace SharedHost.Models.Logging
 {
     public class GenericLogModel
     {

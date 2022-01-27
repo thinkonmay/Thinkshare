@@ -51,11 +51,11 @@ namespace SharedHost.Auth
 
                 var UserTokenRequest = new RestRequest($"{_config.Authenticator}/Token/Challenge/User")
                     .AddJsonBody(tokenRequest);
-                UserTokenRequest.Method = Method.Post;
+                UserTokenRequest.Method = Method.POST;
 
                 var ClusterTokenRequest = new RestRequest($"{_config.Authenticator}/Token/Challenge/Cluster")
                     .AddJsonBody(tokenRequest);
-                ClusterTokenRequest.Method = Method.Post;
+                ClusterTokenRequest.Method = Method.POST;
 
                 var UserTokenResult =    await (new RestClient()).ExecuteAsync(UserTokenRequest);
                 if(UserTokenResult.StatusCode == HttpStatusCode.OK)

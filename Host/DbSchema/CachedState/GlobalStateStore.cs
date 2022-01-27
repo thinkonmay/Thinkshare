@@ -10,6 +10,7 @@ using SharedHost.Models.Device;
 using SharedHost.Models.Session;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SharedHost.Logging;
 
 namespace DbSchema.CachedState
 {
@@ -41,11 +42,15 @@ namespace DbSchema.CachedState
 
         private readonly SystemConfig _config;
 
+        private readonly ILog _log;
+
         public GlobalStateStore(IDistributedCache cache,
                                 IOptions<SystemConfig> config,
+                                ILog log,
                                 GlobalDbContext db)
         {
             _db = db;
+            _log = log;
             _cache = cache;
             _config = config.Value;
         }
@@ -183,9 +188,9 @@ namespace DbSchema.CachedState
                 parsec = parsec
             };
 
-            Serilog.Log.Information("setting up session setting for session id "+ SessionID.ToString());
-            Serilog.Log.Information("Client session "+ JsonConvert.SerializeObject(sessionClient));
-            Serilog.Log.Information("Worker session "+ JsonConvert.SerializeObject(sessionWorker));
+            _log.Information("setting up session setting for session id "+ SessionID.ToString());
+            _log.Information("Client session "+ JsonConvert.SerializeObject(sessionClient));
+            _log.Information("Worker session "+ JsonConvert.SerializeObject(sessionWorker));
 
             await _cache.SetRecordAsync<SessionClient>(SessionID.ToString() + "_CLIENT_MODULE", sessionClient, null,null);
             await _cache.SetRecordAsync<SessionWorker>(SessionID.ToString() + "_CORE_MODULE", sessionWorker, null,null);
@@ -194,14 +199,14 @@ namespace DbSchema.CachedState
         public async Task<SessionClient> GetClientSessionSetting(SessionAccession accession)
         {
             var result = await _cache.GetRecordAsync<SessionClient>(accession.ID.ToString() + "_CLIENT_MODULE");
-            Serilog.Log.Information("Got client session in cache :"+ JsonConvert.SerializeObject(result));
+            _log.Information("Got client session in cache :"+ JsonConvert.SerializeObject(result));
             return result;
         }
 
         public async Task<SessionWorker> GetWorkerSessionSetting(SessionAccession accession)
         {
             var result = await _cache.GetRecordAsync<SessionWorker>(accession.ID.ToString() + "_CORE_MODULE");
-            Serilog.Log.Information("Got worker session in cache :"+ JsonConvert.SerializeObject(result));
+            _log.Information("Got worker session in cache :"+ JsonConvert.SerializeObject(result));
             return result;
         }
 

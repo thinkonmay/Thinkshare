@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using SharedHost.Auth.ThinkmayAuthProtocol;
 using DbSchema.SystemDb.Data;
 using DbSchema.CachedState;
+using SharedHost.Logging;
 
 
 namespace Conductor.Controllers
@@ -22,29 +23,28 @@ namespace Conductor.Controllers
 
         private readonly IGlobalStateStore _cache;
 
-        public SettingController(
-            UserManager<UserAccount> userManager,
-            IGlobalStateStore cache,
-            GlobalDbContext db)
+        private readonly ILog _log;
+
+        public SettingController( UserManager<UserAccount> userManager,
+                                  IGlobalStateStore cache,
+                                  ILog log,
+                                  GlobalDbContext db)
         {
             _cache = cache;
             _userManager = userManager;
+            _log = log;
             _db = db;
         }
 
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         [User]
         [HttpGet("Get")]
         public async Task<IActionResult> GetDefaultSetting()
         {
             var UserID = HttpContext.Items["UserID"];
             var result = await _cache.GetUserSetting(Int32.Parse((string)UserID));
-            Serilog.Log.Information("User setting received with value:"+ JsonConvert.SerializeObject(result));
+            _log.Information("User setting received with value:"+ JsonConvert.SerializeObject(result));
             return Ok(result);
         }
 
@@ -55,7 +55,7 @@ namespace Conductor.Controllers
         public async Task<IActionResult> SetDefaultSetting([FromBody] UserSetting body)
         {
             var UserID = HttpContext.Items["UserID"];
-            Serilog.Log.Information("Set new setting: "+ JsonConvert.SerializeObject(body));
+            _log.Information("Set new setting: "+ JsonConvert.SerializeObject(body));
             await _cache.SetUserSetting(Int32.Parse((string)UserID), body);
             return Ok();
         }

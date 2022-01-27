@@ -13,17 +13,21 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using SystemHub.Models;
 using System.Collections.Concurrent;
+using SharedHost.Logging;
 
 namespace SystemHub.Services
 {
     public class UserSocketPool : IUserSocketPool
     {
         private readonly ConcurrentDictionary<UserHubCredential,WebSocket> _UserSocketsPool;        
+
+        private readonly ILog _log;
         
-        public UserSocketPool(IOptions<SystemConfig> config)
+        public UserSocketPool(IOptions<SystemConfig> config,
+                              ILog log)
         {
             _UserSocketsPool = new ConcurrentDictionary<UserHubCredential, WebSocket>();
-
+            _log = log;
             Task.Run(() => ConnectionHeartBeat());
             Task.Run(() => ConnectionStateCheck());
         }
@@ -63,7 +67,6 @@ namespace SystemHub.Services
                 }
             }catch (Exception ex)
             {
-                Serilog.Log.Information($"{ex.Message} : {ex.StackTrace}");
                 Thread.Sleep(100);
                 await ConnectionStateCheck();
             }
@@ -144,9 +147,7 @@ namespace SystemHub.Services
                 await Close(ws);
             } catch (Exception ex)
             {
-                Serilog.Log.Information("Connection with client closed ");
-                Serilog.Log.Information(ex.Message);
-                Serilog.Log.Information(ex.StackTrace);
+                _log.Error("Connection with client closed",ex);
                 return;
             }
         }
@@ -171,7 +172,7 @@ namespace SystemHub.Services
             try
             {
                 await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-            } catch { Serilog.Log.Information("Fail to send to user"); }
+            } catch { _log.Information("Fail to send to user"); }
         }
 
 

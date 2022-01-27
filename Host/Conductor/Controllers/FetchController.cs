@@ -10,6 +10,7 @@ using SharedHost.Models.User;
 using SharedHost.Models.Device;
 using SharedHost.Auth.ThinkmayAuthProtocol;
 using DbSchema.CachedState;
+using SharedHost.Logging;
 
 namespace Conductor.Controllers
 {
@@ -29,14 +30,19 @@ namespace Conductor.Controllers
 
         private readonly IGlobalStateStore _cache;
 
+        private readonly ILog _log;
+
+
         public FetchController(GlobalDbContext db, 
                             UserManager<UserAccount> userManager,
+                            ILog log,
                             IWorkerCommnader slm,
                             IGlobalStateStore cache)
         {
             _cache = cache;
             _slmsocket = slm;
             _db = db;
+            _log = log;
             _userManager = userManager;
         }
 
@@ -77,8 +83,8 @@ namespace Conductor.Controllers
                                                    s.StartTime.HasValue &&
                                                   !s.EndTime.HasValue).ToList();
             
-            Serilog.Log.Information("Fetching session from cache");
-            Serilog.Log.Information("User "+UserID+" has "+session.Count().ToString()+" session");
+            _log.Information("Fetching session from cache");
+            _log.Information("User "+UserID+" has "+session.Count().ToString()+" session");
 
             foreach (var x in session)
             {

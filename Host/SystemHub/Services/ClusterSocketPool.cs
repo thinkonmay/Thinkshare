@@ -15,6 +15,7 @@ using SharedHost.Models.Device;
 using RestSharp;
 using Microsoft.Extensions.Options;
 using DbSchema.CachedState;
+using SharedHost.Logging;
 
 namespace SystemHub.Services
 {
@@ -25,13 +26,17 @@ namespace SystemHub.Services
         private readonly SystemConfig _config;
 
         private readonly IGlobalStateStore _cache;
+        
+        private readonly ILog _log;
                 
         
         public ClusterSocketPool(IOptions<SystemConfig> config, 
+                                 ILog log,
                                  IGlobalStateStore cache)
         {
             _config = config.Value;
             _cache = cache;
+            _log = log;
             _ClusterSocketsPool = new ConcurrentDictionary<ClusterCredential, WebSocket>();
 
             Task.Run(() => ConnectionHeartBeat());
@@ -53,7 +58,7 @@ namespace SystemHub.Services
                 }
             }catch (Exception ex)
             {
-                Serilog.Log.Information("Fail to ping client: " + ex.Message + "\n" + ex.StackTrace );
+                _log.Error("Fail to ping client",ex);
                 await ConnectionHeartBeat();
             }
         }
@@ -78,9 +83,9 @@ namespace SystemHub.Services
             var newsnapshoot = new Dictionary<int, string>();
             foreach (var Item in snapshoot)
             {
-                Serilog.Log.Information("cluster disconnected, worker state set to disconncted");
+                _log.Information("cluster disconnected, worker state set to disconncted");
                 newsnapshoot.Add(Item.Key,WorkerState.Disconnected);
-                Serilog.Log.Information("WorkerID: "+Item.Key.ToString()+" | State: "+WorkerState.Disconnected);
+                _log.Information("WorkerID: "+Item.Key.ToString()+" | State: "+WorkerState.Disconnected);
             }
             await _cache.SetClusterSnapshot(resp.ID,newsnapshoot);
         }
@@ -136,9 +141,7 @@ namespace SystemHub.Services
                             }
                             catch (Exception ex)
                             {
-                                Serilog.Log.Information("Fail to parse cluster message");
-                                Serilog.Log.Information(ex.Message);
-                                Serilog.Log.Information(ex.StackTrace);
+                                _log.Error("Fail to parse cluster message",ex);
                             }
                         }
                     }
@@ -147,23 +150,21 @@ namespace SystemHub.Services
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("Cluster connection closed");
-                Serilog.Log.Information(ex.Message);
-                Serilog.Log.Information(ex.StackTrace);
+                _log.Error("Cluster connection closed",ex);
                 return;
             }
         }
 
         async Task onClusterSnapshoot(Message message, ClusterCredential cred)
         {
-            Serilog.Log.Information("Got sync state message from cluster, syncing with globalhub");
-            Serilog.Log.Information("Before syncing:");
+            _log.Information("Got sync state message from cluster, syncing with globalhub");
+            _log.Information("Before syncing:");
             Dictionary<int, string> clusterSnapshoot = JsonConvert.DeserializeObject<Dictionary<int, string>>(message.Data);
             Dictionary<int, string>? unsyncedSnapshoot = await _cache.GetClusterSnapshot(cred.ID);
 
             foreach (var item in unsyncedSnapshoot)
             {
-                Serilog.Log.Information("WorkerID: "+item.Key.ToString()+" | State: "+item.Value);
+                _log.Information("WorkerID: "+item.Key.ToString()+" | State: "+item.Value);
             }
 
 
@@ -184,19 +185,19 @@ namespace SystemHub.Services
                             .AddQueryParameter("NewState", syncedState)
                             .AddQueryParameter("ID",unsyncedItem.Key.ToString());
 
-                        Serilog.Log.Information("Reporting sync event to conductor: ");
-                        Serilog.Log.Information("WorkerID: "+unsyncedItem.Key.ToString()+" | State: "+syncedState);
+                        _log.Information("Reporting sync event to conductor: ");
+                        _log.Information("WorkerID: "+unsyncedItem.Key.ToString()+" | State: "+syncedState);
                         
                         syncrequest.Method = Method.POST;
 
                         var result = await (new RestClient()).ExecuteAsync(syncrequest);
                         if(result.StatusCode == System.Net.HttpStatusCode.OK)
                         {
-                            Serilog.Log.Information("Reportd state changing to conductor");
+                            _log.Information("Reportd state changing to conductor");
                         }
                         else
                         {
-                            Serilog.Log.Information("Fail to report event to conductor");
+                            _log.Information("Fail to report event to conductor");
                         }
                     }
 
@@ -216,16 +217,16 @@ namespace SystemHub.Services
                 // if item is exist in cluster snapshoot but not in synced, add it
                 if (!success)
                 {
-                    Serilog.Log.Information("New worker node sync to host");
+                    _log.Information("New worker node sync to host");
                     var workerInfor = _cache.GetWorkerInfor(item.Key);
                     if(workerInfor == null)
                     {
-                        Serilog.Log.Information("Cannot find worker infor in cache");
+                        _log.Information("Cannot find worker infor in cache");
                         syncedSnapshoot.Add(item.Key,WorkerState.unregister);
                     }
                     else
                     {
-                        Serilog.Log.Information("Found worker infor in cache, added to synced cluster snapshoot");
+                        _log.Information("Found worker infor in cache, added to synced cluster snapshoot");
                         syncedSnapshoot.Add(item.Key,item.Value);
                     }
                 }
@@ -240,10 +241,13 @@ namespace SystemHub.Services
             };
 
             try { await _cache.SetClusterSnapshot(cred.ID,syncedSnapshoot); }
-            catch (Exception ex) { Serilog.Log.Debug($"Got error {ex.Message} while state syncing with cluster"); }
+            catch (Exception ex) 
+            { 
+                _log.Error($"Error state syncing",ex); 
+            }
 
-            Serilog.Log.Information("State syncing done, after syncing: ");
-            foreach (var item in syncedSnapshoot) { Serilog.Log.Information("WorkerID: "+item.Key.ToString()+" | State: "+item.Value); }
+            _log.Information("State syncing done, after syncing: ");
+            foreach (var item in syncedSnapshoot) { _log.Information("WorkerID: "+item.Key.ToString()+" | State: "+item.Value); }
 
             await SendToCluster(cred.ID,reply);
         }
@@ -272,7 +276,7 @@ namespace SystemHub.Services
                 await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
             } catch (Exception ex)
             { 
-                Serilog.Log.Information("Fail to send websocket to client"); 
+                _log.Information("Fail to send websocket to client"); 
                 Thread.Sleep(1000);
                 await SendMessage(ws,msg);
             }

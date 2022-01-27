@@ -10,7 +10,6 @@ using SharedHost;
 using SharedHost.Models.Shell;
 using System;
 using Elasticsearch.Net;
-using Nest;
 using Newtonsoft.Json;
 
 namespace MetricCollector.Service
@@ -37,7 +36,7 @@ namespace MetricCollector.Service
             var dictionary = new Dictionary<string,Object>();
             dictionary.Add("bool",new { must });
 
-            var response = await _client.ExecuteAsync(new RestRequest("logstash*/_search",Method.Post)
+            var response = await _client.ExecuteAsync(new RestRequest("logstash*/_search",Method.POST)
                 .AddJsonBody(new 
                 {
                     size = 10,

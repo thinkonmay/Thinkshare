@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using DbSchema.CachedState;
+using SharedHost.Logging;
 
 namespace Conductor.Controllers
 {
@@ -21,15 +22,18 @@ namespace Conductor.Controllers
         private readonly IWorkerCommnader _Cluster;
         private readonly UserManager<UserAccount> _userManager;
         private readonly IGlobalStateStore _cache;
+        private readonly ILog _log;
 
 
         public SyncController(GlobalDbContext db,
                      IClientHub clientHub,
                      IGlobalStateStore cache,
+                     ILog log,
                      UserManager<UserAccount> userManager,
                      IWorkerCommnader SlaveManager)
         {
             _db = db;
+            _log = log;
             _cache = cache;
             _Cluster = SlaveManager;
             _clientHubctx = clientHub;
@@ -41,13 +45,13 @@ namespace Conductor.Controllers
         {
             var Sessions = _db.RemoteSessions.Where(o => o.WorkerID == ID && 
                                                    !o.EndTime.HasValue);
-            Serilog.Log.Information("Got worker sync message from worker"+ID.ToString()+", new worker state: "+NewState);            
+            _log.Information("Got worker sync message from worker"+ID.ToString()+", new worker state: "+NewState);            
 
 
             // if device is already obtained by one user (dont have endtime)
             if (Sessions.Any())
             {
-                Serilog.Log.Information("Worker is already in session ");            
+                _log.Information("Worker is already in session ");            
                 var session = Sessions.First();
                 switch (NewState)
                 {
@@ -88,7 +92,7 @@ namespace Conductor.Controllers
             // if device is not obtained by any one (has endtime)
             else
             {
-                Serilog.Log.Information("Worker is not in session ");            
+                _log.Information("Worker is not in session ");            
                 switch (NewState)
                 {
                     case WorkerState.Open:
@@ -100,7 +104,7 @@ namespace Conductor.Controllers
                 }
 
             }
-            Serilog.Log.Information("Handle event done");
+            _log.Information("Handle event done");
             return Ok();
         }
 
