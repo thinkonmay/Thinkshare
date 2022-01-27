@@ -104,9 +104,7 @@ namespace WorkerManager.Services
                 }
             }catch (Exception ex)
             {
-                _log.Information("ping worker failed");
-                _log.Information(ex.Message);
-                _log.Information(ex.StackTrace);
+                _log.Error("ping worker failed",ex);
                 Thread.Sleep(((int)TimeSpan.FromSeconds(10).TotalMilliseconds));
                 await SystemHeartBeat();
             }

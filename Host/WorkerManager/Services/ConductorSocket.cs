@@ -82,7 +82,7 @@ namespace WorkerManager.Services
             }
             catch (Exception ex)
             { 
-                _log.Information($"Fail to connect to host {ex.Message}");
+                _log.Error($"Fail to connect to host" ,ex);
                 System.Threading.Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
                 await Start();
             }
@@ -176,7 +176,7 @@ namespace WorkerManager.Services
                     success = true;
                 } catch (Exception ex)
                 { 
-                    _log.Information($"Fail to send message to websocket client due to {ex.Message}"); 
+                    _log.Error($"Fail to send message to websocket client",ex); 
                     Thread.Sleep(1000);
                     success = false;
                 }
@@ -258,8 +258,7 @@ namespace WorkerManager.Services
             }
             catch (Exception ex)
             {
-                _log.Information($"state syncing failed: {ex.Message}");
-                _log.Information(ex.StackTrace);
+                _log.Error($"state syncing failed",ex);
                 await StateSyncing(message);
             }
         }
@@ -292,7 +291,7 @@ namespace WorkerManager.Services
             }
             catch (Exception ex)
             {
-                _log.Information($"Fail to register device due to {ex.Message}");
+                _log.Error($"Error register device",ex);
                 return false;
             }
         }
