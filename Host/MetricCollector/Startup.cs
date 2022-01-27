@@ -11,6 +11,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using SharedHost.Auth;
+using SharedHost.Logging;
 
 
 namespace MetricCollector
@@ -56,19 +57,15 @@ namespace MetricCollector
 
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
             services.AddTransient<IScriptGetter, ScriptGetter>();
+            services.AddSingleton<ILog,Log>();
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MetricCollector v1"));
-            }
-
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -78,25 +75,18 @@ namespace MetricCollector
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
 
+
+
             app.UseRouting();
             app.UseMiddleware<JwtMiddleware>();
             app.UseMiddleware<AuthorizeMiddleWare>();
-
-            app.UseWebSockets();
+            app.UseMiddleware<LoggingMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.OAuthClientId("swagger");
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MetricCollector");
-            }
-            );
         }
     }
 }

@@ -104,6 +104,7 @@ namespace WorkerManager
             services.AddSingleton<IConductorSocket,ConductorSocket>();
             services.AddSingleton<IWorkerNodePool,WorkerNodePool>();
             services.AddSingleton<IPortProxy,PortProxy>();
+            services.AddSingleton<ILog,Log>();
             services.AddMvc();
         
         }

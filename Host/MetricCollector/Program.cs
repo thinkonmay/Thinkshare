@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using SharedHost.Logging;
+using System;
 
 namespace MetricCollector
 {
@@ -7,7 +9,17 @@ namespace MetricCollector
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            IHost host = null;
+            try
+            {
+                host = CreateHostBuilder(args).Build();
+            }
+            catch(Exception ex)
+            {
+                Log.Fatal("Error intializing","Authenticator",ex);
+                return;
+            }
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -16,5 +28,6 @@ namespace MetricCollector
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
     }
 }

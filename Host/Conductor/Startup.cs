@@ -14,6 +14,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using SharedHost;
+using SharedHost.Logging;
 using SharedHost.Auth;
 using Conductor.Hubs;
 
@@ -96,6 +97,7 @@ namespace Conductor
             services.AddTransient<IClientHub,ClientHub>();
             services.AddTransient<IWorkerCommnader,WorkerCommander>();
             services.AddTransient<IGlobalStateStore,GlobalStateStore>();
+            services.AddSingleton<ILog, Log>();
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
         }
 
@@ -105,7 +107,9 @@ namespace Conductor
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "JWTAuthDemo v1"));
 
-           // global cors policy
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
@@ -113,15 +117,12 @@ namespace Conductor
                 .AllowCredentials()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
 
             app.UseRouting();
             app.UseMiddleware<JwtMiddleware>();
             app.UseMiddleware<AuthorizeMiddleWare>();
 
-
-            app.UseWebSockets();
+            app.UseMiddleware<LoggingMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

@@ -49,11 +49,11 @@ namespace SharedHost.Auth
                    Validator = "authenticator"
                 };
 
-                var UserTokenRequest = new RestRequest(_config.Authenticator+"/Token/Challenge/User")
+                var UserTokenRequest = new RestRequest($"{_config.Authenticator}/Token/Challenge/User")
                     .AddJsonBody(tokenRequest);
                 UserTokenRequest.Method = Method.POST;
 
-                var ClusterTokenRequest = new RestRequest(_config.Authenticator+"/Token/Challenge/Cluster")
+                var ClusterTokenRequest = new RestRequest($"{_config.Authenticator}/Token/Challenge/Cluster")
                     .AddJsonBody(tokenRequest);
                 ClusterTokenRequest.Method = Method.POST;
 

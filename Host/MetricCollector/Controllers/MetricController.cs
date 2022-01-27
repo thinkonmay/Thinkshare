@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MetricCollector.Interface;
+using System.Threading.Tasks;
 
 namespace MetricCollector.Controllers
 {
@@ -21,27 +22,27 @@ namespace MetricCollector.Controllers
         }
 
         [HttpGet("CPU")]
-        public IActionResult CPUMetric(int SlaveID)
+        public async Task<IActionResult> CPUMetric(int SlaveID)
         {
-            return Ok(_getter.GetCPU(SlaveID));
+            return Ok(await _getter.GetCPU(SlaveID));
         }
 
         [HttpGet("GPU")]
-        public IActionResult GPUMetric(int SlaveID)
+        public async Task<IActionResult> GPUMetric(int SlaveID)
         {
-            return Ok(_getter.GetGPU(SlaveID));
+            return Ok();
         }
 
         [HttpGet("RAM")]
-        public IActionResult RAMMetric(int SlaveID)
+        public async Task<IActionResult> RAMMetric(int SlaveID)
         {
-            return Ok(_getter.GetRAM(SlaveID));
+            return Ok(await _getter.GetRAM(SlaveID));
         }
 
         [HttpGet("Storage")]
-        public IActionResult StorageMetric(int SlaveID)
+        public async Task<IActionResult> StorageMetric(int SlaveID)
         {
-            return Ok(_getter.GetStorage(SlaveID));
+            return Ok(await _getter.GetStorage(SlaveID));
         }
 
     }

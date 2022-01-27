@@ -47,7 +47,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionConstant.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Session\SessionBase.cs" />
 
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Logging\LoggingModel.cs" />
+
     <Compile Include="$(MSBuildThisFileDirectory)SystemConfig.cs" />
+
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\LoggingMiddleware.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\LoggingService.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthRequest.cs" />

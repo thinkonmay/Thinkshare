@@ -16,6 +16,7 @@ using WorkerManager;
 using System.Threading;
 using Microsoft.Extensions.Options;
 using SharedHost;
+using Renci.SshNet.Common;
 
 
 
@@ -26,6 +27,7 @@ namespace WorkerManager.Services
         private readonly IClusterInfor _infor;
         private readonly ILocalStateStore _cache;
         private SshClient _client;
+        private readonly ILog _log;
         private readonly ClusterConfig _config;
         private readonly InstanceSetting _setting;
         private bool Started;
@@ -33,8 +35,10 @@ namespace WorkerManager.Services
         public PortProxy(IClusterInfor infor,
                          IOptions<ClusterConfig> config,
                          IOptions<InstanceSetting> setting,
+                         ILog log,
                          ILocalStateStore cache)
         {
+            _log = log;
             _config = config.Value;
             _setting = setting.Value;
             _cache = cache;
@@ -47,7 +51,51 @@ namespace WorkerManager.Services
             if(Started) { return; }
             await SetupSSHClient();
             await SetupPortForward();
+            _client.ErrorOccurred += SSHErrorHandler;
             Started = true;
+            Task.Run(() => {
+                while (true)
+                {
+                    if(!_client.IsConnected)
+                    {
+                        SSHconnectionDisconnected();
+                    }
+                }
+            });
+        }
+
+        void SSHErrorHandler(object source, ExceptionEventArgs args)
+        {
+            _log.Error("Error maintain SSH connection",args.Exception);
+        }
+
+        void SSHconnectionDisconnected()
+        {
+            Task.Run(async () => 
+            {
+                try
+                {
+                    Started = false;
+                    _client.Disconnect();
+                    _client.Dispose();
+                } catch {}
+
+                Exception ex;
+                do
+                {
+                    ex = null;
+                    try
+                    {
+                        await Start();
+                    }
+                    catch (Exception exception)
+                    {
+                        _log.Error("Error setup SSH connection",exception);
+                        ex = exception;
+                        Thread.Sleep(1000);
+                    }
+                } while (ex != null);
+            }).Wait();
         }
 
 
@@ -62,7 +110,7 @@ namespace WorkerManager.Services
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information($"Fail to portforward {ex.Message} , {ex.StackTrace}");
+                _log.Error($"Fail to portforward",ex);
             }
         }
 
@@ -70,7 +118,7 @@ namespace WorkerManager.Services
         {
                 var cluster = await _infor.Infor();
                 if(cluster.SelfHost){return;}
-                Serilog.Log.Information($"Attempting to establish ssh connection with instance");
+                _log.Information($"Attempting to establish ssh connection with instance");
                 ClusterInstance instance = cluster.instance;
 
                 MemoryStream keyStream = new MemoryStream(Encoding.UTF8.GetBytes(instance.keyPair.PrivateKey));
@@ -84,11 +132,11 @@ namespace WorkerManager.Services
                 var con = new ConnectionInfo(instance.IPAdress, 22, "ubuntu", methods.ToArray());
                 _client = new SshClient(con);
                 _client.Connect();
-                Serilog.Log.Information($"Sucessfully establish ssh connection with instance");
+                _log.Information($"Sucessfully establish ssh connection with instance");
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information($"Attempting failed with error {ex.Message} {ex.StackTrace}");
+                _log.Error($"Attempting failed",ex);
                 Thread.Sleep(10000);
                 await SetupSSHClient();
             }
@@ -101,11 +149,11 @@ namespace WorkerManager.Services
                 var agent = new ForwardedPortLocal("localhost",(uint)Port, "localhost", (uint)Port);
                 _client.AddForwardedPort(agent);
                 agent.Start();
-                Serilog.Log.Information($"Successfully portforward on port {Port}");
+                _log.Information($"Successfully portforward on port {Port}");
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information($"got exception {ex.Message} while port forward");
+                _log.Error($"Error port forward",ex);
             }
         }
     }

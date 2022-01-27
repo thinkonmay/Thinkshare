@@ -28,7 +28,9 @@ namespace AutoScaling.Controllers
         public ParsecController()
         {
         }
-        [HttpPost("Parsec")]
+
+
+        [HttpGet]
         public async Task<IActionResult> setupParsec()
         {
             var result = await ((new RestClient()).ExecuteAsync(

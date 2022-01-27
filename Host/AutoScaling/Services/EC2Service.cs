@@ -9,6 +9,7 @@ using System.Linq;
 using SharedHost.Models.AWS;
 using Renci.SshNet;
 using AutoScaling.Interfaces;
+using SharedHost.Logging;
 using Microsoft.Extensions.Options;
 using Amazon.Runtime;
 using Amazon;
@@ -27,9 +28,14 @@ namespace AutoScaling.Services
 
         private readonly string defaultProfile;
 
-        public EC2Service(IOptions<AWSSetting> aws)
+        private readonly ILog _log;
+
+        public EC2Service(IOptions<AWSSetting> aws,
+                          ILog log)
         {
             _aws = aws.Value;
+
+            _log = log;
 
             _defaultRegion = RegionEndpoint.APSoutheast1;
 
@@ -132,11 +138,11 @@ namespace AutoScaling.Services
                     result.IPAdress = infor.Reservations.First().Instances.First().PublicIpAddress;
                     break;
                 }
-                Serilog.Log.Information("waiting for ec2 instance to get desired state: "+ waitingTime);
+                _log.Information("waiting for ec2 instance to get desired state: "+ waitingTime);
                 System.Threading.Thread.Sleep(1000);
                 waitingTime++;
             }
-            Serilog.Log.Information("EC2 instance create finished after : "+ waitingTime);
+            _log.Information("EC2 instance create finished after : "+ waitingTime);
 
             return result;
         }

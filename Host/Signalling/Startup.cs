@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using SharedHost;
+using SharedHost.Logging;
 using Signalling.Interfaces;
 using Signalling.Services;
 using System;
@@ -57,6 +58,7 @@ namespace Signalling
 
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
             services.AddSingleton<ISessionQueue, SessionQueue>();
+            services.AddSingleton<ILog, Log>();
             services.AddMvc();
         }
 
@@ -73,6 +75,10 @@ namespace Signalling
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
+
+
+
+            app.UseMiddleware<LoggingMiddleware>();
 
             app.UseRouting();
             app.UseWebSockets();
