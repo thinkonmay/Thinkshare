@@ -276,7 +276,7 @@ namespace AutoScaling.Services
                 }
                 catch (Exception exception)
                 {
-                    _log.Error("Fail to connect to EC2 instance",ex);
+                    _log.Error("Fail to connect to EC2 instance",exception);
                 }
                 Thread.Sleep(1000);
                 attemption++;
