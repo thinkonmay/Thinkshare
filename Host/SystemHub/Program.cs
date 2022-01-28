@@ -19,6 +19,7 @@ namespace SystemHub
                 SharedHost.Logging.Log.Fatal("Error intializing","Authenticator",ex);
                 return;
             }
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

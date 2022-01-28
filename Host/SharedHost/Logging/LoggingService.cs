@@ -136,6 +136,7 @@ namespace SharedHost.Logging
 
         public static void Fatal(string message,string source, Exception ex)
         {
+            Console.WriteLine($"[FATAL]: {ex.Message} : {ex.StackTrace}");
             try
             {
                 Task.Run(async () => 
@@ -156,7 +157,6 @@ namespace SharedHost.Logging
             catch 
             {
                 Console.WriteLine("Fail to report Fatal error");
-                Console.WriteLine($"[FATAL]: {ex.Message} : {ex.StackTrace}");
             }
         }
     }
