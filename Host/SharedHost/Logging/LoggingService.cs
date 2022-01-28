@@ -35,7 +35,7 @@ namespace SharedHost.Logging
         public Log(IOptions<SystemConfig> config)
         {
             _client = new RestClient(config.Value.ElasticSearch);
-            podName = System.Environment.GetEnvironmentVariable("COMPUTERNAME");
+            podName = System.Environment.GetEnvironmentVariable("HOSTNAME");
             
             Task.Run(async ()=>
             {
