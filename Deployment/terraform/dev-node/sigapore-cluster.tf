@@ -18,6 +18,11 @@ provider "aws" {
   region = var.region
 }
 
+resource "aws_ebs_volume" "root" {
+  availability_zone = "${var.region}a"
+  size              = 50
+}
+
 
 
 module "ec2_instance" {
@@ -51,8 +56,4 @@ output "ip" {
   value = module.ec2_instance.public_ip
 }
 
-resource "aws_ebs_volume" "root" {
-  availability_zone =    "${var.region}a"
-  size              = 20
-}
 
