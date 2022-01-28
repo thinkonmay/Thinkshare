@@ -7,32 +7,49 @@ using Microsoft.Extensions.Logging;
 using MetricCollector.Interface;
 using SharedHost;
 using Microsoft.Extensions.Options;
+using SharedHost.Models.Logging;
+using SharedHost.Logging;
 
 namespace MetricCollector.Controllers
 {
     [ApiController]
-    [Route("/Metric")]
+    [Route("/Log")]
     [Produces("application/json")]
     public class ReportMetricController : ControllerBase
     {
 
-        private readonly ILogger<MetricController> _logger;
-
         private readonly IScriptGetter _getter;
         private readonly SystemConfig _config;
 
-        public ReportMetricController(ILogger<MetricController> logger, IScriptGetter getter, IOptions<SystemConfig> config)
+        private readonly ILog _log;
+
+        public ReportMetricController(ILog log, 
+                                      IScriptGetter getter, 
+                                      IOptions<SystemConfig> config)
         {
+            _log = log;
             _getter = getter;
-            _logger = logger;
             _config = config.Value;
         }
 
-        [Cluster]
-        [HttpPost("Add")]
-        public async Task<IActionResult> UpdateShellSession([FromBody] List<ShellSession> session)
+        [HttpPost("Infor")]
+        public async Task<IActionResult> Infor([FromBody] GenericLogModel session, string ClusterName)
         {
-            var ClusterID = HttpContext.Items["ClusterID"];
+            return Ok();
+        }
+        [HttpPost("Error")]
+        public async Task<IActionResult> Error([FromBody] ErrorLogModel session, string ClusterName)
+        {
+            return Ok();
+        }
+        [HttpPost("Fatal")]
+        public async Task<IActionResult> Fatal([FromBody] ErrorLogModel session, string ClusterName)
+        {
+            return Ok();
+        }
+        [HttpPost("Worker")]
+        public async Task<IActionResult> Worker([FromBody] GenericLogModel session, string ClusterName, int WorkerID)
+        {
             return Ok();
         }
     }

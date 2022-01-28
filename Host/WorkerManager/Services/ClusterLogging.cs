@@ -18,6 +18,7 @@ namespace WorkerManager.Services
         public Log(IOptions<ClusterConfig> config)
         {
             _config = config.Value;
+            _client = new RestClient(_config.LogUrl);
         }
 
         public void Information(string information)
@@ -26,7 +27,7 @@ namespace WorkerManager.Services
             Task.Run(async () => 
             {
                 await _client.ExecuteAsync(
-                    new RestRequest($"Log/Cluster",Method.POST)
+                    new RestRequest("Infor",Method.POST)
                     .AddJsonBody(new GenericLogModel{
                         timestamp = DateTime.Now,
                         Type = "Infor",
@@ -41,7 +42,7 @@ namespace WorkerManager.Services
             Task.Run(async () => 
             {
                 await _client.ExecuteAsync(
-                    new RestRequest($"Worker/Cluster",Method.POST)
+                    new RestRequest("Worker",Method.POST)
                     .AddJsonBody(new GenericLogModel{
                         timestamp = DateTime.Now,
                         Type = "Worker",
@@ -56,7 +57,7 @@ namespace WorkerManager.Services
             Task.Run(async () => 
             {
                 await _client.ExecuteAsync(
-                    new RestRequest($"Error/Cluster",Method.POST)
+                    new RestRequest("Error",Method.POST)
                     .AddJsonBody(new ErrorLogModel{
                         timestamp = DateTime.Now,
                         StackTrace = exception.StackTrace,
@@ -72,7 +73,7 @@ namespace WorkerManager.Services
             Task.Run(async () => 
             {
                 await _client.ExecuteAsync(
-                    new RestRequest($"Log/Cluster",Method.POST)
+                    new RestRequest("Infor",Method.POST)
                     .AddJsonBody(new GenericLogModel{
                         timestamp = DateTime.Now,
                         Type = "Warning",
@@ -87,7 +88,7 @@ namespace WorkerManager.Services
             Task.Run(async () => 
             {
                 var result = await (new RestClient()).ExecuteAsync(
-                    new RestRequest($"Fatal/Cluster",Method.POST)
+                    new RestRequest($"Fatal",Method.POST)
                         .AddJsonBody(new ErrorLogModel{
                             timestamp = DateTime.Now,
                             Source = source,
