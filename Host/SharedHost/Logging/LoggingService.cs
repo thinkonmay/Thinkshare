@@ -23,13 +23,13 @@ namespace SharedHost.Logging
 
         private bool ElasticSearch;
 
-        const string InforIndex = "ASPNET_INFOR";
+        const string InforIndex = "infor";
 
-        const string WarningIndex = "ASPNET_WARNING";
+        const string WarningIndex = "warning";
 
-        const string ErrorIndex = "ASPNET_ERROR";
+        const string ErrorIndex = "error";
 
-        const string FatalIndex = "ASPNET_FATAL";
+        const string FatalIndex = "fatal";
 
 
         public Log(IOptions<SystemConfig> config)
@@ -49,15 +49,15 @@ namespace SharedHost.Logging
 
                     if( (await _client.ExecuteAsync(new RestRequest(ErrorIndex,Method.GET))).StatusCode == HttpStatusCode.NotFound) 
                     {
-                        await _client.ExecuteAsync(new RestRequest(ErrorIndex,Method.PUT));
+                        var result = await _client.ExecuteAsync(new RestRequest(ErrorIndex,Method.PUT));
                     }
                     if( (await _client.ExecuteAsync(new RestRequest(InforIndex,Method.GET))).StatusCode == HttpStatusCode.NotFound)
                     {
-                        await _client.ExecuteAsync(new RestRequest(InforIndex,Method.PUT));
+                        var result = await _client.ExecuteAsync(new RestRequest(InforIndex,Method.PUT));
                     }
                     if( (await _client.ExecuteAsync(new RestRequest(WarningIndex,Method.GET))).StatusCode == HttpStatusCode.NotFound)
                     {
-                        await _client.ExecuteAsync(new RestRequest(WarningIndex,Method.PUT));
+                        var result = await _client.ExecuteAsync(new RestRequest(WarningIndex,Method.PUT));
                     }
                     ElasticSearch = true;
                 }
