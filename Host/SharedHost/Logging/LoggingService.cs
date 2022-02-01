@@ -13,6 +13,9 @@ namespace SharedHost.Logging
         void Information(string information);
         void Error(string message, Exception exception);
         void Warning(string message);
+        void Worker (GenericLogModel model);
+        void Cluster(GenericLogModel model);
+        void Cluster(ErrorLogModel model);
     }
 
     public class Log : ILog
@@ -30,6 +33,10 @@ namespace SharedHost.Logging
         const string ErrorIndex = "error";
 
         const string FatalIndex = "fatal";
+
+        const string ClusterIndex = "cluster";
+
+        const string WorkerIndex = "worker";
 
 
         public Log(IOptions<SystemConfig> config)
@@ -58,6 +65,14 @@ namespace SharedHost.Logging
                     if( (await _client.ExecuteAsync(new RestRequest(WarningIndex,Method.GET))).StatusCode == HttpStatusCode.NotFound)
                     {
                         var result = await _client.ExecuteAsync(new RestRequest(WarningIndex,Method.PUT));
+                    }
+                    if( (await _client.ExecuteAsync(new RestRequest(ClusterIndex,Method.GET))).StatusCode == HttpStatusCode.NotFound)
+                    {
+                        var result = await _client.ExecuteAsync(new RestRequest(ClusterIndex,Method.PUT));
+                    }
+                    if( (await _client.ExecuteAsync(new RestRequest(WorkerIndex,Method.GET))).StatusCode == HttpStatusCode.NotFound)
+                    {
+                        var result = await _client.ExecuteAsync(new RestRequest(WorkerIndex,Method.PUT));
                     }
                     ElasticSearch = true;
                 }
@@ -131,6 +146,78 @@ namespace SharedHost.Logging
             else
             {
                 Console.WriteLine(message);
+            }
+        }
+
+        public void Worker (ErrorLogModel model)
+        {
+            if (ElasticSearch)
+            {
+                Task.Run(async () => 
+                {
+                    await _client.ExecuteAsync(new RestRequest($"{ClusterIndex}/_doc",Method.POST)
+                        .AddJsonBody(
+                            model
+                        ));
+                });
+            }
+            else
+            {
+                Console.WriteLine(model.Message);
+            }
+        }
+
+        public void Worker (GenericLogModel model)
+        {
+            if (ElasticSearch)
+            {
+                Task.Run(async () => 
+                {
+                    await _client.ExecuteAsync(new RestRequest($"{ClusterIndex}/_doc",Method.POST)
+                        .AddJsonBody(
+                            model
+                        ));
+                });
+            }
+            else
+            {
+                Console.WriteLine(model.Log);
+            }
+        }
+
+
+        public void Cluster(ErrorLogModel model)
+        {
+            if (ElasticSearch)
+            {
+                Task.Run(async () => 
+                {
+                    await _client.ExecuteAsync(new RestRequest($"{ClusterIndex}/_doc",Method.POST)
+                        .AddJsonBody(
+                            model
+                        ));
+                });
+            }
+            else
+            {
+                Console.WriteLine($"Error on cluster {model.Message} : {model.StackTrace}");
+            }
+        }
+        public void Cluster(GenericLogModel model)
+        {
+            if (ElasticSearch)
+            {
+                Task.Run(async () => 
+                {
+                    await _client.ExecuteAsync(new RestRequest($"{ClusterIndex}/_doc",Method.POST)
+                        .AddJsonBody(
+                            model
+                        ));
+                });
+            }
+            else
+            {
+                Console.WriteLine($"Cluster log : {model.Log}");
             }
         }
 

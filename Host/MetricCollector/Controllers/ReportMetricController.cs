@@ -35,21 +35,26 @@ namespace MetricCollector.Controllers
         [HttpPost("Infor")]
         public async Task<IActionResult> Infor([FromBody] GenericLogModel session, string ClusterName)
         {
+            _log.Cluster(session);
             return Ok();
         }
         [HttpPost("Error")]
         public async Task<IActionResult> Error([FromBody] ErrorLogModel session, string ClusterName)
         {
+            _log.Cluster(session);
             return Ok();
         }
         [HttpPost("Fatal")]
         public async Task<IActionResult> Fatal([FromBody] ErrorLogModel session, string ClusterName)
         {
+            _log.Cluster(session);
             return Ok();
         }
         [HttpPost("Worker")]
-        public async Task<IActionResult> Worker([FromBody] GenericLogModel session, string ClusterName, int WorkerID)
+        public async Task<IActionResult> Worker([FromBody] GenericLogModel session, int WorkerID)
         {
+            session.Source = $"Worker {WorkerID.ToString()}";
+            _log.Worker(session);
             return Ok();
         }
     }

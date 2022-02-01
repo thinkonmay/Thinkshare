@@ -32,7 +32,7 @@ namespace WorkerManager
             }
             catch(Exception ex)
             {
-                Log.Fatal("Error intializing","Cluster",ex);
+                Log.Fatal("Error intializing",ex);
                 return;
             }
             host.Run();

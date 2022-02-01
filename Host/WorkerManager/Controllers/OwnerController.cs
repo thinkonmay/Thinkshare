@@ -57,8 +57,9 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> Login(string? ClusterName, [FromBody] LoginModel login)
         {
             bool registered = await _infor.IsRegistered();
+
             if(!registered && ClusterName == null) 
-            {return BadRequest("Cluster haven't been registered");}
+                return BadRequest("Cluster haven't been registered");
 
             var loginResult = await _client.ExecuteAsync(
                 new RestRequest( _config.OwnerAccountUrl,Method.POST)
