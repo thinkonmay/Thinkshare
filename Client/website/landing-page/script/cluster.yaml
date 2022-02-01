@@ -1,0 +1,178 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: clusterui
+            port:
+              number: 80
+
+      - path: /Worker
+        pathType: Prefix
+        backend:
+          service:
+            name: workermanager 
+            port:
+              number: 80
+
+      - path: /Owner
+        pathType: Prefix
+        backend:
+          service:
+            name: workermanager 
+            port:
+              number: 80
+
+      - path: /swagger
+        pathType: Prefix
+        backend:
+          service:
+            name: workermanager 
+            port:
+              number: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: workermanager
+  labels:
+    app: workermanager
+spec:
+  type: ClusterIP
+  ports:
+   - port: 80
+  selector:
+   app: workermanager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workermanager
+spec:
+  selector:
+    matchLabels:
+      app: workermanager
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: workermanager
+    spec:
+      containers:
+      - name: workermanager
+        image: pigeatgarlic/workermanager:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "200m"
+          limits:
+            memory: "7Gi"
+            cpu: "400m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-ui
+  labels:
+    app: cluster-ui
+spec:
+  type: ClusterIP
+  ports:
+   - port: 80
+  selector:
+   app: cluster-ui
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-ui
+spec:
+  selector:
+    matchLabels:
+      app: cluster-ui
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: cluster-ui
+    spec:
+      containers:
+      - name: cluster-ui
+        image: pigeatgarlic/cluster-ui:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "100m"
+          limits:
+            memory: "200Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  type: ClusterIP
+  ports:
+   - port: 80
+  selector:
+   app: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "300Mi"
+            cpu: "300m"
+          limits:
+            memory: "500Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        hostPath:
+          path: /home/cache
