@@ -1,4 +1,5 @@
 using RestSharp;
+using System.Threading;
 using SharedHost;
 using System.Net;
 using SharedHost.Models.Cluster;
@@ -24,11 +25,17 @@ namespace WorkerManager.Services
             _config = config.Value;
             _cache = cache;
             _client = new RestClient(_config.LogUrl);
+            GetClusterInfor();
         }
 
         async Task GetClusterInfor ()
         {
             var cluster = await _cache.GetClusterInfor();
+            while(cluster.ClusterToken == null)
+            {
+                cluster = await _cache.GetClusterInfor();
+                Thread.Sleep(1000);
+            }
 
             var request = new RestRequest(_config.ClusterInforUrl)
                 .AddHeader("Authorization",cluster.ClusterToken);
