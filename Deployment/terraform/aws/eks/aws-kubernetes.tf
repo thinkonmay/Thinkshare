@@ -45,52 +45,29 @@ module "eks" {
   # Managed Node Groups
   node_groups_defaults = {
     ami_type  = "AL2_x86_64"
-    disk_size = 10
+    disk_size = 20
   }
 
   node_groups = {
-    # cluster_node = {
-    #   desired_capacity = 0
-    #   max_capacity     = 1
-    #   min_capacity     = 0
-
-    #   instance_types = ["t3.micro"]
-    #   disk_size      = 5
-    #   capacity_type  = "SPOT"
-
-    #   create_launch_template = true
-    #   public_ip      = true
-      
-    #   k8s_labels = {
-    #     Environment = "production"
-    #     Type        = "Cluster-resources"
-    #   }
-
-    #   update_config = {
-    #     max_unavailable_percentage = 50 # or set `max_unavailable`
-    #   }
-    # },
-
-
-    thinkmay_node = {
-      desired_capacity = 6
-      max_capacity     = 8
+    requested_node_1 = {
+      desired_capacity = 4
+      max_capacity     = 4
       min_capacity     = 4
 
       instance_types = ["t3.medium"]
-      capacity_type  = "SPOT"
+      capacity_type  = "ON_DEMAND"
       aws_availability_zones = "ap-southeast-1b"
+      
       
       k8s_labels = {
         Environment = "production"
-        Color = "BLUE"
+        Color = "RED"
       }
       update_config = {
-        max_unavailable_percentage = 0 # or set `max_unavailable`
+        max_unavailable_percentage = 0# or set `max_unavailable`
       }
     }
-
-    requested_node = {
+    requested_node_2 = {
       desired_capacity = 2
       max_capacity     = 2
       min_capacity     = 2
@@ -105,7 +82,7 @@ module "eks" {
         Color = "RED"
       }
       update_config = {
-        max_unavailable_percentage = 100 # or set `max_unavailable`
+        max_unavailable_percentage = 0# or set `max_unavailable`
       }
     }
   }

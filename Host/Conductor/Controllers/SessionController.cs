@@ -11,7 +11,6 @@ using SharedHost.Models.User;
 using SharedHost.Models.Device;
 using SharedHost.Models.Session;
 using SharedHost;
-using SharedHost.Auth.ThinkmayAuthProtocol;
 using DbSchema.CachedState;
 using System;
 using System.Net;

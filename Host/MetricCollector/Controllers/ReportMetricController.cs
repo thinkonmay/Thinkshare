@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using MetricCollector.Interface;
 using SharedHost;
 using Microsoft.Extensions.Options;
+using SharedHost.Auth;
 
 namespace MetricCollector.Controllers
 {
@@ -24,10 +25,12 @@ namespace MetricCollector.Controllers
             _config = config.Value;
         }
 
-        [HttpGet("RemoteControl")]
-        public IActionResult QoSMetric()
+        [Cluster]
+        [HttpPost("Cluster")]
+        public IActionResult ClusterLog ([FromBody] string content)
         {
-            var i = _config.STUNlist;
+            var ClusterID = HttpContext.Items["ClusterID"];
+            Serilog.Log.Information($"[Cluster {ClusterID} log] {content}");
             return Ok();
         }
     }

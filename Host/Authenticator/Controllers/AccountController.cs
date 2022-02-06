@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DbSchema.DbSeeding;
-using SharedHost.Auth.ThinkmayAuthProtocol;
+using SharedHost.Auth;
 using System.Linq;
 using DbSchema.SystemDb.Data;
 using SharedHost;

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 
-namespace SharedHost.Auth.ThinkmayAuthProtocol
+namespace SharedHost.Auth
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class UserAttribute : ActionFilterAttribute
