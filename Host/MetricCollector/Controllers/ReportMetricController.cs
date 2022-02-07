@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SharedHost.Models.Shell;
 using System.Collections.Generic;
-using SharedHost.Auth.ThinkmayAuthProtocol;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MetricCollector.Interface;
