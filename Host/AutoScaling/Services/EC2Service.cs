@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using System.Threading;
 using System.Text;
 using System.IO;
@@ -192,6 +193,7 @@ namespace AutoScaling.Services
 
         public async Task<ClusterInstance> SetupManagedCluster()
         {
+            var script = new List<string>();
             var instance = await LaunchInstances();
             var result = new ClusterInstance
             {
@@ -210,10 +212,16 @@ namespace AutoScaling.Services
 
             // wait for coturn server to boot up until setup coturn script
             var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword,instance.IPAdress);
-            await AccessEC2Instance(instance,coturn);
+            script = await AccessEC2Instance(instance,coturn);
+            string turn_log = "Setting up turn server and got script output:\n";
+            script.ForEach(x => turn_log += $"{x}\n");
+            _log.Information(turn_log);
 
             var cluster = SetupClusterScript("development","2022-01-03");
-            await AccessEC2Instance(instance,cluster);
+            script = await AccessEC2Instance(instance,cluster);
+            string docker_log = "Setting up worker manager and got script output:\n";
+            script.ForEach(x => docker_log += $"{x}\n");
+            _log.Information(docker_log);
             return result;
         }
 
@@ -239,7 +247,10 @@ namespace AutoScaling.Services
             System.Threading.Thread.Sleep(30*1000);
 
             var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword,instance.IPAdress);
-            await AccessEC2Instance(instance,coturn);
+            var script = await AccessEC2Instance(instance,coturn);
+            string log = "Setting up turn server and got script output:\n";
+            script.ForEach(x => log += $"{x}\n");
+            _log.Information(log);
             return result;
         }
 
