@@ -310,7 +310,7 @@ namespace AutoScaling.Services
                 $"export TURN_PASSWORD=${password}" ,
                 $"export PUBLIC_IP=${IP}" ,
 
-                "curl https://www.thinkmay.net/script/pion.sh > setup.sh && sudo sh setup.sh & disown"
+                "curl https://www.thinkmay.net/script/pion.sh > setup.sh && sudo sh setup.sh"
             };
 
             return script;
