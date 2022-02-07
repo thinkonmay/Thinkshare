@@ -204,10 +204,10 @@ namespace AutoScaling.Services
             // wait for coturn server to boot up until setup coturn script
             System.Threading.Thread.Sleep(30*1000);
 
-            var coturn = SetupCoturnScript(result.TurnUser,result.TurnPassword);
+            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword,instance.IPAdress);
             await AccessEC2Instance(instance,coturn);
 
-            var cluster = SetupClusterScript();
+            var cluster = SetupClusterScript("development","2022-01-03");
             await AccessEC2Instance(instance,cluster);
             return result;
         }
@@ -233,7 +233,7 @@ namespace AutoScaling.Services
             // wait for coturn server to boot up until setup coturn script
             System.Threading.Thread.Sleep(30*1000);
 
-            var coturn = SetupCoturnScript(result.TurnUser,result.TurnPassword);
+            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword,instance.IPAdress);
             await AccessEC2Instance(instance,coturn);
             return result;
         }
@@ -274,24 +274,30 @@ namespace AutoScaling.Services
 
 
 
-        List<string> SetupCoturnScript(string user, string password)
+        List<string> SetupTurnScript(string user, string password, string IP)
         {
             var script = new List<string>
             {
-                "sudo apt-get -y update" ,
-                "sudo apt-get -y install coturn" ,
-                "echo \"TURNSERVER_ENABLED = 1\" >> sudo vi /etc/default/coturn" ,
-                $"turnserver -a -o -v -n -u {user}:{password} -p 3478 -r someRealm --no-dtls --no-tls"
+                $"export DEBIAN_FRONTEND=noninteractive" ,
+                $"export TURN_USERNAME=${user}" ,
+                $"export TURN_PASSWORD=${password}" ,
+                $"export PUBLIC_IP=${IP}" ,
+
+                "curl https://www.thinkmay.net/script/pion.sh > setup.sh && sudo sh setup.sh & disown"
             };
 
             return script;
         }
 
-        List<string> SetupClusterScript()
+        List<string> SetupClusterScript(string version, string uiVersion)
         {
             var script = new List<string>
             {
-                "curl https://www.thinkmay.net/script/setup.sh > setup.sh && sudo sh setup.sh && rm setup.sh"
+                $"export MANAGER_VERSION=${version}" ,
+                $"export UI_VERSION=${uiVersion}" ,
+
+                "curl https://www.thinkmay.net/script/install.sh > install.sh && sudo sh install.sh" ,
+                "curl https://www.thinkmay.net/script/docker-compose.yaml > docker-compose.yaml && sudo docker-compose up -d"
             };
             return script;
         }

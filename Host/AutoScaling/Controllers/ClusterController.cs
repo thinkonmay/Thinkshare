@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using SharedHost.Models.User;
 using SharedHost.Models.Device;
-using SharedHost.Auth.ThinkmayAuthProtocol;
+using SharedHost.Auth;
 using SharedHost.Models.Cluster;
 using SharedHost;
 using RestSharp;
