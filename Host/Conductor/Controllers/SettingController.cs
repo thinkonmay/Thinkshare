@@ -5,7 +5,7 @@ using SharedHost.Models.User;
 using SharedHost.Models.Device;
 using System;
 using System.Threading.Tasks;
-using SharedHost.Auth.ThinkmayAuthProtocol;
+using SharedHost.Auth;
 using DbSchema.SystemDb.Data;
 using DbSchema.CachedState;
 using SharedHost.Logging;

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http.Features;
-using SharedHost.Auth.ThinkmayAuthProtocol;
 using SharedHost.Models.Cluster;
 using System.Net;
 using RestSharp;

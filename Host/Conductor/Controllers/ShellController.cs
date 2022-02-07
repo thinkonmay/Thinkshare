@@ -6,7 +6,7 @@ using DbSchema.SystemDb.Data;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
-using SharedHost.Auth.ThinkmayAuthProtocol;
+using SharedHost.Auth;
 using SharedHost.Models.User;
 
 namespace Conductor.Controllers

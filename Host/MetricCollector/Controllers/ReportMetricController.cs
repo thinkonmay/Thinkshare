@@ -9,7 +9,6 @@ using SharedHost;
 using Microsoft.Extensions.Options;
 using SharedHost.Models.Logging;
 using SharedHost.Logging;
-
 namespace MetricCollector.Controllers
 {
     [ApiController]

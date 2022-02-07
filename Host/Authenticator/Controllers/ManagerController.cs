@@ -14,7 +14,7 @@ using SharedHost.Models.AWS;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
 using DbSchema.DbSeeding;
-using SharedHost.Auth.ThinkmayAuthProtocol;
+using SharedHost.Auth;
 using DbSchema.SystemDb.Data;
 using SharedHost.Logging;
 using System.Text;

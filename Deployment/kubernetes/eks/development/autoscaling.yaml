@@ -48,18 +48,9 @@ spec:
           readOnly: true
           mountPath: "/etc/.aws"
 
-        - name: ssh
-          readOnly: true
-          mountPath: "/etc/.ssh"
-
       volumes:
       - name: aws
         secret: 
           secretName: aws-cred
           defaultMode: 256
-      - name: ssh
-        secret: 
-          secretName: coturn-ssh
-          defaultMode: 256
-
 
