@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using SharedHost.Models.Cluster;
@@ -112,17 +113,15 @@ namespace Authenticator.Controllers
                            !x.Unregister.HasValue).First();
             if(cluster == null) { BadRequest("cluster not found"); }
 
-            var clusterRequest = new RestRequest(_config.AutoScaling + "/Instance/Terminate")
+            var clusterRequest = new RestRequest($"{_config.AutoScaling}/Instance/Terminate",Method.POST)
                 .AddQueryParameter("ID",cluster.instance.ID.ToString());
-            clusterRequest.Method = Method.POST;
 
             var client = new RestClient();
             client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
             var clusterResult = await client.ExecuteAsync(clusterRequest); 
-            if(clusterResult == null)
-            {
+
+            if(clusterResult == null || clusterResult.StatusCode != HttpStatusCode.OK)
                 return BadRequest("Fail to terminate cluster");
-            }
 
             var success = JsonConvert.DeserializeObject<bool>(clusterResult.Content);
             if (success)

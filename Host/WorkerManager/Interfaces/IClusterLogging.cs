@@ -9,7 +9,6 @@ namespace WorkerManager.Interfaces
     {
         void Information(string information);
         void Error(string message, Exception exception);
-        void Warning(string message);
         void Worker(string information, string WorkerID);
     }
 }

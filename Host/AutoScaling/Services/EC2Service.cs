@@ -153,40 +153,48 @@ namespace AutoScaling.Services
 
         public async Task<bool> TerminateInstance(ClusterInstance instance)
         {
-            AmazonEC2Client _ec2Client;
-            if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
+            try
             {
-                _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
-            }
-            else
-            {
-                return false;
-            }
-
-            var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
-            if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
-            {
-                return false;
-            }
-
-            await _ec2Client.DeleteKeyPairAsync(new DeleteKeyPairRequest( instance.keyPair.Name ));            
-            await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
-            {
-                InstanceIds = new List<string> {
-                    instance.InstanceID
-                }
-            });
-
-
-            while(true)
-            {
-                var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
-
-                if (infor.Reservations.First().Instances.First().State.Name == InstanceStateName.Terminated )
+                AmazonEC2Client _ec2Client;
+                if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
                 {
-                    return true;
+                    _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
                 }
-                System.Threading.Thread.Sleep(1000);
+                else
+                {
+                    return false;
+                }
+
+                var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
+                if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
+                {
+                    return false;
+                }
+
+                await _ec2Client.DeleteKeyPairAsync(new DeleteKeyPairRequest( instance.keyPair.Name ));            
+                await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
+                {
+                    InstanceIds = new List<string> {
+                        instance.InstanceID
+                    }
+                });
+
+
+                while(true)
+                {
+                    var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
+
+                    if (infor.Reservations.First().Instances.First().State.Name == InstanceStateName.Terminated )
+                    {
+                        return true;
+                    }
+                    System.Threading.Thread.Sleep(1000);
+                }
+            }
+            catch(Exception ex)
+            {
+                _log.Error("Fail to terminate instance",ex);
+                return false;
             }
         }
 
@@ -283,10 +291,17 @@ namespace AutoScaling.Services
             }
 
 
-            var result = new List<string>();
-            foreach (var command in commands)
+            try
             {
-                result.Add(_client.RunCommand(command).Result);
+                var result = new List<string>();
+                foreach (var command in commands)
+                {
+                    result.Add(_client.RunCommand(command).Result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Fail to execute script",ex);
             }
 
             return result;

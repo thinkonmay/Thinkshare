@@ -63,7 +63,7 @@ namespace WorkerManager.Services
 
         public void Worker(string information, string WorkerID)
         {
-            Console.WriteLine(information);
+            Console.WriteLine($"worker log output {information}");
             Task.Run(async () => 
             {
                 await _client.ExecuteAsync(
@@ -72,7 +72,7 @@ namespace WorkerManager.Services
                         timestamp = DateTime.Now,
                         Type = "Worker",
                         Log = information,
-                        Source = _infor.Name
+                        Source = $"workerID : {WorkerID.ToString()}"
                     }));
             });
         }
@@ -88,22 +88,6 @@ namespace WorkerManager.Services
                         timestamp = DateTime.Now,
                         StackTrace = exception.StackTrace,
                         Message = exception.Message,
-                        Log = message,
-                        Source = _infor.Name
-                    }));
-            });
-        }
-
-        public void Warning(string message)
-        {
-            Console.WriteLine(message);
-            Task.Run(async () => 
-            {
-                await _client.ExecuteAsync(
-                    new RestRequest("Infor",Method.POST)
-                    .AddJsonBody(new GenericLogModel{
-                        timestamp = DateTime.Now,
-                        Type = "Warning",
                         Log = message,
                         Source = _infor.Name
                     }));
