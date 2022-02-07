@@ -298,13 +298,14 @@ namespace AutoScaling.Services
                 {
                     result.Add(_client.RunCommand(command).Result);
                 }
+                return result;
             }
             catch (Exception ex)
             {
                 _log.Error("Fail to execute script",ex);
+                return null;
             }
 
-            return result;
         }
 
 
