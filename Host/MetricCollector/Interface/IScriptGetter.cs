@@ -1,17 +1,17 @@
 ﻿using MetricCollector.Model;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MetricCollector.Interface
 {
     public interface IScriptGetter
     {
-        public List<CPUDataModel> GetCPU(int DeviceID);
+        Task<List<CPUDataModel>> GetCPU(int DeviceID);
 
-        public List<GPUDataModel> GetGPU(int DeviceID);
+        Task<List<GPUDataModel>> GetGPU(int DeviceID);
 
-        public List<RAMDataModel> GetRAM(int DeviceID);
+        Task<List<RAMDataModel>> GetRAM(int DeviceID);
 
-        public List<StorageDataModel> GetStorage(int DeviceID);
-        
+        Task<List<StorageDataModel>> GetStorage(int DeviceID);
     }
 }

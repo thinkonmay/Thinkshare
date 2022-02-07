@@ -12,6 +12,7 @@ using DbSchema.SystemDb.Data;
 using SharedHost.Models.User;
 using DbSchema.CachedState;
 using SharedHost.Auth;
+using SharedHost.Logging;
 
 namespace AutoScaling
 {
@@ -90,6 +91,7 @@ namespace AutoScaling
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
             services.AddTransient<IGlobalStateStore,GlobalStateStore>();
             services.AddTransient<IEC2Service, EC2Service>();
+            services.AddSingleton<ILog, Log>();
             services.AddMvc();
         }
 
@@ -112,6 +114,7 @@ namespace AutoScaling
             app.UseMiddleware<AuthorizeMiddleWare>();
 
             app.UseWebSockets();
+            app.UseMiddleware<LoggingMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

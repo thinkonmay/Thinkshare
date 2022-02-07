@@ -3,7 +3,6 @@ using SharedHost.Models.Device;
 using System;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
-using Serilog;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using WorkerManager.Interfaces;
@@ -14,6 +13,7 @@ using SharedHost;
 using System.Linq;
 using Newtonsoft.Json;
 using RestSharp;
+using WorkerManager.Services;
 
 
 namespace WorkerManager
@@ -22,22 +22,24 @@ namespace WorkerManager
     {
         public static void Main(string[] args)
         {
-            var host = CreateHostBuilder(args).Build();
-            InitLocalStateStore(host).Wait();
-            GetDefaultModel(host).Wait();
-            AutoStart(host).Wait();
+            IHost host = null;
+            try
+            {
+                host = CreateHostBuilder(args).Build();
+                InitLocalStateStore(host).Wait();
+                GetDefaultModel(host).Wait();
+                AutoStart(host).Wait();
+            }
+            catch(Exception ex)
+            {
+                Log.Fatal("Error intializing",ex);
+                return;
+            }
             host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseSerilog((ctx, config) => {
-                    config
-                        .MinimumLevel.Information()
-                        .Enrich.FromLogContext();
-
-                    config.WriteTo.Console();
-                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

@@ -15,6 +15,7 @@ using SharedHost.Models.ResponseModel;
 using Google.Apis.Auth;
 using SharedHost.Auth;
 using DbSchema.CachedState;
+using SharedHost.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Authenticator.Controllers
@@ -29,16 +30,19 @@ namespace Authenticator.Controllers
         private readonly IGlobalStateStore _cache;
         private readonly GlobalDbContext _db;
         private readonly SystemConfig _config;
+        private readonly ILog _log;
 
         public AccountController(
             UserManager<UserAccount> userManager,
             SignInManager<UserAccount> signInManager,
             IGlobalStateStore cache,
+            ILog log,
             ITokenGenerator tokenGenerator,
             GlobalDbContext db,
             IOptions<SystemConfig> config)
         {
             _cache = cache;
+            _log = log;
             _config = config.Value;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -187,8 +191,7 @@ namespace Authenticator.Controllers
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information(ex.Message);
-                Serilog.Log.Information(ex.StackTrace);
+                _log.Error("Error oauth login",ex);
                 return BadRequest();
             }
         }

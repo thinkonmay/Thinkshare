@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using SharedHost.Models.Device;
+using SharedHost.Logging;
 using Microsoft.Extensions.Options;
 using RestSharp;
 
@@ -22,11 +23,15 @@ namespace Signalling.Services
         private ConcurrentDictionary<SessionAccession, WebSocket> onlineList;
 
         private SystemConfig _config;
+
+        private readonly ILog _log;
         
-        public SessionQueue(IOptions<SystemConfig> config)
+        public SessionQueue(IOptions<SystemConfig> config,
+                            ILog log)
         {
             onlineList = new ConcurrentDictionary<SessionAccession, WebSocket>();
             _config = config.Value;
+            _log = log;
 
 
             Task.Run(() => SystemHeartBeat());
@@ -44,15 +49,13 @@ namespace Signalling.Services
                     }
                     catch (Exception ex)
                     {
-                        Serilog.Log.Information("Fail to ping client");
-                        Serilog.Log.Information(ex.Message);
-                        Serilog.Log.Information(ex.StackTrace);
+                        _log.Error("Fail to ping client",ex);
                     }
                 }
-                Serilog.Log.Information("Current session :");
+                _log.Information("Current session :");
                 foreach (var item in onlineList)
                 {
-                    Serilog.Log.Information($"SessionID: ${item.Key.ID}, Module: "+((item.Key.Module == Module.CLIENT_MODULE) ? "CLIENT" : "WORKER"));
+                    _log.Information($"SessionID: ${item.Key.ID}, Module: "+((item.Key.Module == Module.CLIENT_MODULE) ? "CLIENT" : "WORKER"));
                 }
                 Thread.Sleep((int)TimeSpan.FromSeconds(20).TotalMilliseconds);
             }
@@ -89,13 +92,11 @@ namespace Signalling.Services
                     }
                 } while (ws.State == WebSocketState.Open);
                 await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-                Serilog.Log.Information("Connection closed");
+                _log.Information("Connection closed");
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("Connection closed");
-                Serilog.Log.Information(ex.Message);
-                Serilog.Log.Information(ex.StackTrace);
+                _log.Error("Connection closed",ex);
             }
             onlineList.TryRemove(accession,out var output);
         }
@@ -120,7 +121,7 @@ namespace Signalling.Services
             try
             {
                 await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-            } catch { Serilog.Log.Information("Fail to send websocket to client"); }
+            } catch { _log.Information("Fail to send websocket to client"); }
         }
 
 
@@ -147,9 +148,7 @@ namespace Signalling.Services
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information("Fail to handle handshake");                
-                Serilog.Log.Information(ex.Message);                
-                Serilog.Log.Information(ex.StackTrace);                
+                _log.Error("Fail to handle handshake",ex);                
             }
         }
     }

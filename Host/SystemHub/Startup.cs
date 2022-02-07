@@ -11,6 +11,7 @@ using SystemHub.Interfaces;
 using SystemHub.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using SharedHost.Logging;
 using DbSchema.CachedState;
 
 namespace SystemHub
@@ -52,7 +53,7 @@ namespace SystemHub
 
             services.AddDbContext<GlobalDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresqlConnection")),
-                ServiceLifetime.Transient
+                ServiceLifetime.Singleton
             );
             services.AddStackExchangeRedisCache(options =>
             {
@@ -61,9 +62,10 @@ namespace SystemHub
             });
 
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
-            services.AddTransient<IGlobalStateStore,GlobalStateStore>();
+            services.AddSingleton<IGlobalStateStore,GlobalStateStore>();
             services.AddSingleton<IClusterSocketPool, ClusterSocketPool>();
             services.AddSingleton<IUserSocketPool, UserSocketPool>();
+            services.AddSingleton<ILog, Log>();
             services.AddMvc();
         }
 
@@ -84,6 +86,7 @@ namespace SystemHub
             app.UseRouting();
 
             app.UseWebSockets();
+            app.UseMiddleware<LoggingMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

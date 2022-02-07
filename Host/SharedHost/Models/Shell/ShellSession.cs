@@ -6,14 +6,10 @@ namespace SharedHost.Models.Shell
 {
     public class ShellSession
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
-
         public DateTime Time { get; set; }
 
         public string Output { get; set; }
 
-        public virtual ScriptModel Model { get; set; }
+        public int ModelID { get; set; }
     }
 }

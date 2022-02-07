@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using DbSchema.DbSeeding;
 using SharedHost.Auth;
 using DbSchema.SystemDb.Data;
+using SharedHost.Logging;
 using System.Text;
 
 namespace Authenticator.Controllers
@@ -28,14 +29,17 @@ namespace Authenticator.Controllers
         private readonly GlobalDbContext _db;
         private readonly SystemConfig _config;
         private readonly ITokenGenerator _token;
+        private readonly ILog _log;
 
         public ManagerController(UserManager<UserAccount> userManager,
                                  ITokenGenerator token,
+                                 ILog log,
                                  IOptions<SystemConfig> config,
                                  GlobalDbContext db)
         {
             _userManager = userManager;
             _db = db;
+            _log = log;
             _token = token;
             _config = config.Value;
         }
@@ -50,7 +54,7 @@ namespace Authenticator.Controllers
             var account = await _userManager.FindByIdAsync(UserID.ToString());
             
             var result = await _userManager.AddToRoleAsync(account,RoleSeeding.MOD);
-            Serilog.Log.Information(UserID.ToString() + " want to elevate to manager, Description: "+Description);
+            _log.Information(UserID.ToString() + " want to elevate to manager, Description: "+Description);
             return Ok(result);
         }
 

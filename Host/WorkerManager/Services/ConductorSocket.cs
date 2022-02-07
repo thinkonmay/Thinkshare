@@ -33,14 +33,19 @@ namespace WorkerManager.Services
         
         private readonly ITokenGenerator _generator;
 
+        private readonly ILog _log;
+
         private bool Started;
+
 
         public ConductorSocket(IOptions<ClusterConfig> cluster, 
                                ITokenGenerator generator,
+                               ILog log,
                                ILocalStateStore cache)
         {
             _generator = generator;
             _cache = cache;
+            _log = log;
             _config = cluster.Value;
             _scriptmodel = new RestClient();
         }
@@ -57,7 +62,7 @@ namespace WorkerManager.Services
 
                 if(_clientWebSocket.State == WebSocketState.Open)
                 {
-                    Serilog.Log.Information($"Connected to cluster hub");
+                    _log.Information($"Connected to cluster hub");
                 }
                 else
                 {
@@ -77,7 +82,7 @@ namespace WorkerManager.Services
             }
             catch (Exception ex)
             { 
-                Serilog.Log.Information($"Fail to connect to host {ex.Message}");
+                _log.Error($"Fail to connect to host" ,ex);
                 System.Threading.Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
                 await Start();
             }
@@ -99,7 +104,7 @@ namespace WorkerManager.Services
                         if (message.Count > 0)
                         {
                             var receivedMessage = Encoding.UTF8.GetString(memoryStream.ToArray());
-                            if (receivedMessage == "ping") { Serilog.Log.Information("Got ping from system hub"); continue; }
+                            if (receivedMessage == "ping") { _log.Information("Got ping from system hub"); continue; }
                             var WsMessage = JsonConvert.DeserializeObject<Message>(receivedMessage);
                             switch (WsMessage.Opcode)
                             {
@@ -136,10 +141,10 @@ namespace WorkerManager.Services
         async Task RestoreConnection(Exception? exception)
         {
             if(exception != null) {
-                Serilog.Log.Information("Error when connect to sytemhub: " + exception.Message);
-                Serilog.Log.Information(exception.StackTrace);
+                _log.Information("Error when connect to sytemhub: " + exception.Message);
+                _log.Information(exception.StackTrace);
             } else {
-                Serilog.Log.Information("Disconnected from systemhub");
+                _log.Information("Disconnected from systemhub");
             }
             await Start();
         }
@@ -171,7 +176,7 @@ namespace WorkerManager.Services
                     success = true;
                 } catch (Exception ex)
                 { 
-                    Serilog.Log.Information($"Fail to send message to websocket client due to {ex.Message}"); 
+                    _log.Error($"Fail to send message to websocket client",ex); 
                     Thread.Sleep(1000);
                     success = false;
                 }
@@ -253,8 +258,7 @@ namespace WorkerManager.Services
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information($"state syncing failed: {ex.Message}");
-                Serilog.Log.Information(ex.StackTrace);
+                _log.Error($"state syncing failed",ex);
                 await StateSyncing(message);
             }
         }
@@ -281,13 +285,13 @@ namespace WorkerManager.Services
                 }
                 else
                 {
-                    Serilog.Log.Information("Fail to register device with host");
+                    _log.Information("Fail to register device with host");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Serilog.Log.Information($"Fail to register device due to {ex.Message}");
+                _log.Error($"Error register device",ex);
                 return false;
             }
         }
@@ -316,12 +320,12 @@ namespace WorkerManager.Services
             var workerToken = await _generator.GenerateWorkerToken(worker);
             if (await worker.SessionInitialize(workerToken))
             {
-                Serilog.Log.Information("initialize session done");
+                _log.Information("initialize session done");
                 await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
             }
             else 
             {
-                Serilog.Log.Information("Fail to initialize session");
+                _log.Information("Fail to initialize session");
                 await _cache.SetWorkerState(worker.ID, WorkerState.OffRemote);
             }
         }
@@ -339,12 +343,12 @@ namespace WorkerManager.Services
             var workerToken = await _generator.GenerateWorkerToken(worker);
             if(await worker.SessionTerminate(workerToken))
             {
-                Serilog.Log.Information("Terminate session success");
+                _log.Information("Terminate session success");
                 await _cache.SetWorkerState(worker.ID, WorkerState.Open);
             }
             else
             {
-                Serilog.Log.Information("Fail to terminate session");
+                _log.Information("Fail to terminate session");
             }
         }
 
@@ -359,6 +363,7 @@ namespace WorkerManager.Services
             var workerToken = await _generator.GenerateWorkerToken(worker);
             if (await worker.SessionDisconnect(workerToken))
             {
+                _log.Information($"Disconnect worker {GlobalID.ToString()}");
                 await _cache.SetWorkerState(worker.ID,WorkerState.OffRemote);
             }
         }
@@ -373,6 +378,7 @@ namespace WorkerManager.Services
             var workerToken = await _generator.GenerateWorkerToken(worker);
             if (await worker.SessionReconnect(workerToken))
             {
+                _log.Information($"Reconnect worker {GlobalID.ToString()}");
                 await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
             }
         }

@@ -38,25 +38,5 @@ namespace Conductor.Controllers
         }
 
 
-        [Cluster]
-        [HttpPost("Add")]
-        public async Task<IActionResult> UpdateShellSession([FromBody] List<ShellSession> session, int WorkerID, string ClusterName)
-        {
-            var ClusterID = HttpContext.Items["ClusterID"];
-            var cluster = _db.Clusters.Find(System.Int32.Parse(ClusterID.ToString()));
-            var worker = cluster.WorkerNode.Where(x => x.ID == WorkerID).First();
-
-            if (worker == null)
-            {
-                return BadRequest();
-            }
-
-            worker.Shells.Union(session);
-            _db.Update(worker);
-
-            await _db.SaveChangesAsync();
-
-            return Ok();
-        }
     }
 }

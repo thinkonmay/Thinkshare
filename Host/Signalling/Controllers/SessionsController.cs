@@ -32,9 +32,11 @@ namespace Signalling.Controllers
         [HttpGet("Handshake")]
         public async Task Get(string token)
         {
+            throw new Exception();
             var context = ControllerContext.HttpContext;
             if (context.WebSockets.IsWebSocketRequest)
             {
+
                 var request = new RestRequest(new Uri(_config.SessionTokenValidator))
                     .AddQueryParameter("token", token);
                 request.Method = Method.POST;

@@ -5,6 +5,7 @@ using System.Linq;
 using WorkerManager.Models;
 using SharedHost.Models.Shell;
 using Newtonsoft.Json;
+using WorkerManager.Interfaces;
 using System;
 
 namespace WorkerManager
@@ -43,10 +44,6 @@ namespace WorkerManager
         Task CacheScriptModel(List<ScriptModel> models);
 
         Task<List<ScriptModel>> GetScriptModel();
-
-        Task Log(Log token);
-
-        Task<List<Log>> GetLog(DateTime Start);
     }
 
 
@@ -58,8 +55,12 @@ namespace WorkerManager
     {
         private IDistributedCache _cache;
 
-        public LocalStateStore(IDistributedCache cache)
+        private readonly ILog _log;
+
+        public LocalStateStore(IDistributedCache cache,
+                               ILog log)
         {
+            _log = log;
             _cache = cache;
         }
 
@@ -114,14 +115,14 @@ namespace WorkerManager
 
         public async Task SetWorkerRemoteToken(int WorkerID, string token)
         {
-            Serilog.Log.Information("Caching remote token "+ token + " from WorkerNode: " + WorkerID);
+            _log.Information("Caching remote token "+ token + " from WorkerNode: " + WorkerID);
             await _cache.SetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString(), token, null,null);
         }
 
         public async Task<string> GetWorkerRemoteToken (int WorkerID)
         {
             var cachedValue = await _cache.GetRecordAsync<string>("Worker_Session_Token_" + WorkerID.ToString());
-            Serilog.Log.Information("Getting remote token "+ cachedValue + " from WorkerNode: " + WorkerID);
+            _log.Information("Getting remote token "+ cachedValue + " from WorkerNode: " + WorkerID);
             return cachedValue;
         }
 
@@ -150,22 +151,6 @@ namespace WorkerManager
 
 
 
-        public async Task Log(Log log)
-        {
-            var logs = await _cache.GetRecordAsync<List<Log>>("Log" + 
-                log.LogTime.DayOfYear+log.LogTime.Hour.ToString());
-            if(logs == null){logs = new List<Log>();}
-            logs.Add(log);
-            await _cache.SetRecordAsync<List<Log>>("Log" + 
-                log.LogTime.DayOfYear+log.LogTime.Hour, logs, null,null);
-        }
-
-        public async Task<List<Log>> GetLog(DateTime Time)
-        {
-            var cachedValue = await _cache.GetRecordAsync<List<Log>>("Log"+
-                Time.DayOfYear.ToString()+Time.Hour.ToString());
-            return cachedValue;
-        }
 
 
 

@@ -32,12 +32,16 @@ namespace WorkerManager.Controllers
 
         private readonly IPortProxy _port;
 
+        private readonly ILog _log;
+
         public WorkerController( ITokenGenerator token,
                                 ILocalStateStore cache,
                                 IClusterInfor infor,
+                                ILog log,
                                 IPortProxy port,
                                 IOptions<ClusterConfig> config)
         {
+            _log = log;
             _cache = cache;
             _infor = infor;
             _config = config.Value;
@@ -82,11 +86,12 @@ namespace WorkerManager.Controllers
                     await _cache.CacheWorkerInfor(node);
                     await _cache.SetWorkerState(node.ID, WorkerState.Open);
                     var Token = await _tokenGenerator.GenerateWorkerToken(node);
+                    _log.Information($"Successfully register worker node on computer {model.Name} at url {model.AgentUrl}");
                     return Ok(AuthResponse.GenerateSuccessful(null,Token,null));
                 }
                 else
                 {
-                    Serilog.Log.Information("Fail to register device");
+                    _log.Information("Fail to register device");
                     return BadRequest();
                 }
             }
@@ -96,6 +101,7 @@ namespace WorkerManager.Controllers
                 node.model.AgentUrl = model.AgentUrl;
                 await _cache.CacheWorkerInfor(node);
                 var result = await _tokenGenerator.GenerateWorkerToken(cachednode.First());
+                _log.Information($"Successfully worker node on computer {model.Name} at url {model.AgentUrl}");
                 return Ok(AuthResponse.GenerateSuccessful(null,result,null));
             }
         }
@@ -119,7 +125,6 @@ namespace WorkerManager.Controllers
         public async Task<IActionResult> shouldContinue()
         {
             var workerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
-
             var currentState = await _cache.GetWorkerState(workerID);
             return (currentState == WorkerState.OnSession)? Ok() : BadRequest();
         }
@@ -130,7 +135,7 @@ namespace WorkerManager.Controllers
         {
             var workerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
 
-            Serilog.Log.Information("Worker node get remote token: "+ workerID);
+            _log.Information("Worker node get remote token: "+ workerID);
             var remoteToken = await _cache.GetWorkerRemoteToken(workerID);
 
             return Ok(new AuthenticationRequest{
@@ -150,8 +155,8 @@ namespace WorkerManager.Controllers
         [HttpPost("log")]
         public async Task<IActionResult> Log([FromBody] string log)
         {
-            var WorkerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
-            Serilog.Log.Information($"Log from workernode {WorkerID} : {log}");
+            var WorkerID = (string)HttpContext.Items["WorkerID"];
+            _log.Worker(log,WorkerID);
             return Ok();
         }
     }

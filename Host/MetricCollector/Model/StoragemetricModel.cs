@@ -12,9 +12,6 @@ namespace MetricCollector.Model
         public string DeviceID { get; set; } 
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     public class StorageDataModel
     {
         public DateTime Time { get; set; }

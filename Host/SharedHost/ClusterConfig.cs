@@ -9,6 +9,6 @@
         public string ScriptModelUrl {get;set;}
         public string ClusterRegisterUrl{get;set;}
         public string WorkerRegisterUrl{get;set;}
-        public string PortReleaseUrl {get;set;}
+        public string LogUrl {get;set;}
     }
 }

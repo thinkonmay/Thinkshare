@@ -16,6 +16,8 @@ using System;
 using System.Net;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Options;
+using SharedHost.Logging;
+
 
 
 namespace Conductor.Controllers
@@ -38,10 +40,13 @@ namespace Conductor.Controllers
 
         private readonly IGlobalStateStore _cache;
 
+        private readonly ILog _log;
+
         public SessionController(GlobalDbContext db,
                                 IOptions<SystemConfig> config,
                                 IWorkerCommnader slmsocket,
                                 IGlobalStateStore cache,
+                                ILog log,
                                 UserManager<UserAccount> userManager)
         {
             _db = db;
@@ -111,7 +116,7 @@ namespace Conductor.Controllers
             await _Cluster.SessionInitialize(SlaveID, workerToken.token);
 
             // return view for user
-            Serilog.Log.Information("Remote session between user "+UserID.ToString()+" and worker "+SlaveID+" reconnected");
+            _log.Information("Remote session between user "+UserID.ToString()+" and worker "+SlaveID+" reconnected");
             return Ok(clientToken);
         }
 
@@ -143,7 +148,7 @@ namespace Conductor.Controllers
             || workerState == WorkerState.OffRemote)
             {
                 //
-                Serilog.Log.Information($"Terminate remote session {ses.First().ID}");
+                _log.Information($"Terminate remote session {ses.First().ID}");
                 await _Cluster.SessionTerminate(ses.First().WorkerID);
                 return Ok();
             }
@@ -174,7 +179,7 @@ namespace Conductor.Controllers
             if (workerState == WorkerState.OnSession)
             {
                 // send disconnect signal to slave
-                Serilog.Log.Information($"Disconnect remote session {ses.ID}");
+                _log.Information($"Disconnect remote session {ses.ID}");
                 await _Cluster.SessionDisconnect(SlaveID);
                 return Ok();
             }
@@ -219,7 +224,7 @@ namespace Conductor.Controllers
             {
                 // reconect remote control
                 await _Cluster.SessionReconnect(ses.First().WorkerID);
-                Serilog.Log.Information($"Remote session {ses.First().ID} reconnected");
+                _log.Information($"Remote session {ses.First().ID} reconnected");
 
                 // return token to client 
                 return Ok(clientToken);
@@ -245,21 +250,21 @@ namespace Conductor.Controllers
                 if(accession.Module == Module.CLIENT_MODULE)
                 {
                     var clientSession = await _cache.GetClientSessionSetting(accession);
-                    Serilog.Log.Information("Got Session setting request from client");
-                    Serilog.Log.Information("Result "+JsonConvert.SerializeObject(clientSession));
+                    _log.Information("Got Session setting request from client");
+                    _log.Information("Result "+JsonConvert.SerializeObject(clientSession));
                     return Ok(clientSession);
                 }
                 else
                 {
                     var workerSession = await _cache.GetWorkerSessionSetting(accession);
-                    Serilog.Log.Information("Got Session setting request from worker");
-                    Serilog.Log.Information("Result: "+JsonConvert.SerializeObject(workerSession));
+                    _log.Information("Got Session setting request from worker");
+                    _log.Information("Result: "+JsonConvert.SerializeObject(workerSession));
                     return Ok(workerSession);
                 }
             }
             else
             {
-                Serilog.Log.Information("Fail to parse token");
+                _log.Information("Fail to parse token");
                 return BadRequest("Token is invalid");
             }
         }
@@ -283,7 +288,7 @@ namespace Conductor.Controllers
             }
             else
             {
-                Serilog.Log.Information("Fail to parse token");
+                _log.Information("Fail to parse token");
                 return BadRequest("Token is invalid");
             }
         }
@@ -305,7 +310,7 @@ namespace Conductor.Controllers
             }
             else
             {
-                Serilog.Log.Information("Fail to parse token");
+                _log.Information("Fail to parse token");
                 return BadRequest("Token is invalid");
             }
         }
