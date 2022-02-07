@@ -1,0 +1,2 @@
+curl https://www.thinkmay.net/script/install.sh > install.sh && sudo sh install.sh && rm install.sh
+curl https://www.thinkmay.net/script/docker-compose.yaml > docker-compose.yaml && sudo docker-compose up -d 
