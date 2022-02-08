@@ -288,7 +288,21 @@ namespace AutoScaling.Services
 
                     if(completedTask == task && _client.IsConnected)
                     {
-                        break;
+                        try
+                        {
+                            var result = new List<string>();
+                            foreach (var command in commands)
+                            {
+                                _log.Information($"Executing command ${command}");
+                                result.Add(_client.RunCommand(command).Result);
+                            }
+                            return result;
+                        }
+                        catch (Exception ex)
+                        {
+                            _log.Error("Fail to execute script",ex);
+                            return new List<string>();
+                        }
                     }
                     else
                     {
@@ -303,22 +317,6 @@ namespace AutoScaling.Services
                 Thread.Sleep(1000);
                 attemption++;
             }
-
-            try
-            {
-                var result = new List<string>();
-                foreach (var command in commands)
-                {
-                    result.Add(_client.RunCommand(command).Result);
-                }
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _log.Error("Fail to execute script",ex);
-                return null;
-            }
-
         }
 
 
