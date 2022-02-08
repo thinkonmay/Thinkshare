@@ -111,7 +111,7 @@ namespace Authenticator.Controllers
             {
                 _log.Information($"Attemp to login automatically to cluster {ClusterName}");
                 var result = await (new RestClient()).ExecuteAsync(
-                    new RestRequest($"http://{instance.IPAdress}/Owner/Login",Method.POST)
+                    new RestRequest($"http://{instance.IPAdress}:5000/Owner/Login",Method.POST)
                         .AddQueryParameter("ClusterName", ClusterName)
                         .AddJsonBody(new LoginModel
                         {
