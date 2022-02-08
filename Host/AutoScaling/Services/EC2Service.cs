@@ -338,7 +338,7 @@ namespace AutoScaling.Services
                 "export TURN_USERNAME="+user ,
                 "export TURN_PASSWORD="+password ,
 
-                "sh /home/ubuntu/pion.sh"
+                "sh /home/ubuntu/pion.sh & disown"
             };
 
             return script;
@@ -351,7 +351,7 @@ namespace AutoScaling.Services
                 "export MANAGER_VERSION=" +version ,
                 "export UI_VERSION=" + uiVersion ,
 
-                "sh /home/ubuntu/setup.sh",
+                "sh /home/ubuntu/setup.sh & disown",
             };
             return script;
         }
