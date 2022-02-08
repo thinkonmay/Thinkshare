@@ -219,7 +219,7 @@ namespace AutoScaling.Services
 
 
             // wait for coturn server to boot up until setup coturn script
-            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword,instance.IPAdress);
+            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
             script = await AccessEC2Instance(instance,coturn);
             string turn_log = "Setting up turn server and got script output:\n";
             script.ForEach(x => turn_log += $"{x}\n");
@@ -252,9 +252,7 @@ namespace AutoScaling.Services
 
 
             // wait for coturn server to boot up until setup coturn script
-            System.Threading.Thread.Sleep(30*1000);
-
-            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword,instance.IPAdress);
+            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
             var script = await AccessEC2Instance(instance,coturn);
             string log = "Setting up turn server and got script output:\n";
             script.ForEach(x => log += $"{x}\n");
@@ -266,31 +264,36 @@ namespace AutoScaling.Services
         {
             MemoryStream keyStream = new MemoryStream(Encoding.UTF8.GetBytes(instance.keyPair.PrivateKey));
             var keyFiles = new[] { new PrivateKeyFile(keyStream) };
-
             var methods = new List<AuthenticationMethod>();
             methods.Add(new PrivateKeyAuthenticationMethod("ubuntu", keyFiles));
-
             var con = new ConnectionInfo(instance.IPAdress, 22, "ubuntu", methods.ToArray());
 
-            var _client = new SshClient(con);
-
+            SshClient _client = null;
             int attemption = 0;
-            bool success = false;
-            while (!success)
+            while (true)
             {
+                _client = new SshClient(con);
                 if(attemption == 30)
                 {
                     _log.Warning("Fail to connect to EC2 instance multipletime");
-                    return null;
+                    return new List<string>();
                 }
 
                 try
                 {
-                    _client.Connect();
-                    if(_client.IsConnected)
+                    var task = Task.Run(() =>  _client.Connect());
+
+                    var timeout = Task.Delay(5000);
+                    var completedTask = await Task.WhenAny(task, timeout);
+
+                    if(completedTask == task && _client.IsConnected)
                     {
-                        success = true;
                         break;
+                    }
+                    else
+                    {
+                        _client.Dispose();
+                        throw new Exception("Connection timeout");
                     }
                 }
                 catch (Exception exception)
@@ -300,7 +303,6 @@ namespace AutoScaling.Services
                 Thread.Sleep(1000);
                 attemption++;
             }
-
 
             try
             {
@@ -328,16 +330,14 @@ namespace AutoScaling.Services
 
 
 
-        List<string> SetupTurnScript(string user, string password, string IP)
+        List<string> SetupTurnScript(string user, string password)
         {
             var script = new List<string>
             {
-                $"export DEBIAN_FRONTEND=noninteractive" ,
                 $"export TURN_USERNAME=${user}" ,
                 $"export TURN_PASSWORD=${password}" ,
-                $"export PUBLIC_IP=${IP}" ,
 
-                "curl https://www.thinkmay.net/script/pion.sh > setup.sh && sudo sh setup.sh"
+                "sh /home/ubuntu/pion.sh"
             };
 
             return script;
@@ -350,8 +350,7 @@ namespace AutoScaling.Services
                 $"export MANAGER_VERSION=${version}" ,
                 $"export UI_VERSION=${uiVersion}" ,
 
-                "curl https://www.thinkmay.net/script/install.sh > install.sh && sudo sh install.sh" ,
-                "curl https://www.thinkmay.net/script/docker-compose.yaml > docker-compose.yaml && sudo docker-compose up -d"
+                "sh /home/ubuntu/setup.sh",
             };
             return script;
         }

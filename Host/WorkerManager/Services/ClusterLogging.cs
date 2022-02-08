@@ -16,11 +16,11 @@ namespace WorkerManager.Services
     {
         private RestClient _client;
         private readonly ClusterConfig _config;
-        private readonly LocalStateStore _cache;
+        private readonly ILocalStateStore _cache;
         private GlobalCluster _infor;
 
         public Log(IOptions<ClusterConfig> config,
-                   LocalStateStore cache)
+                   ILocalStateStore cache)
         {
             _config = config.Value;
             _cache = cache;
