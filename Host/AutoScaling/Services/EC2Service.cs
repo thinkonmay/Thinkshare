@@ -222,13 +222,13 @@ namespace AutoScaling.Services
             var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
             script = await AccessEC2Instance(instance,coturn);
             string turn_log = "Setting up turn server and got script output:\n";
-            script.ForEach(x => turn_log += $"{x}\n");
+            script.ForEach(x => turn_log = turn_log + x +"\n");
             _log.Information(turn_log);
 
             var cluster = SetupClusterScript("development","2022-01-03");
             script = await AccessEC2Instance(instance,cluster);
             string docker_log = "Setting up worker manager and got script output:\n";
-            script.ForEach(x => docker_log += $"{x}\n");
+            script.ForEach(x => docker_log = docker_log + x +"\n");
             _log.Information(docker_log);
             return result;
         }
@@ -255,7 +255,7 @@ namespace AutoScaling.Services
             var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
             var script = await AccessEC2Instance(instance,coturn);
             string log = "Setting up turn server and got script output:\n";
-            script.ForEach(x => log += $"{x}\n");
+            script.ForEach(x => log = log+"x"+"\n");
             _log.Information(log);
             return result;
         }
@@ -289,17 +289,14 @@ namespace AutoScaling.Services
                     {
                         await task;
                         if(!_client.IsConnected)
-                        {
-                            _client.Dispose();
                             throw new Exception("connection is not setup properly");
-                        }
 
                         try
                         {
                             var result = new List<string>();
                             foreach (var command in commands)
                             {
-                                _log.Information($"Executing command ${command}");
+                                _log.Information("Executing command " +command);
                                 result.Add(_client.RunCommand(command).Result);
                             }
                             return result;
@@ -312,7 +309,6 @@ namespace AutoScaling.Services
                     }
                     else
                     {
-                        _client.Dispose();
                         throw new Exception("Connection timeout");
                     }
                 }
@@ -320,6 +316,7 @@ namespace AutoScaling.Services
                 {
                     _log.Error("Fail to connect to EC2 instance",exception);
                 }
+                _client.Dispose();
                 Thread.Sleep(1000);
                 attemption++;
             }
@@ -338,8 +335,8 @@ namespace AutoScaling.Services
         {
             var script = new List<string>
             {
-                $"export TURN_USERNAME=${user}" ,
-                $"export TURN_PASSWORD=${password}" ,
+                "export TURN_USERNAME="+user ,
+                "export TURN_PASSWORD="+password ,
 
                 "sh /home/ubuntu/pion.sh"
             };
@@ -351,8 +348,8 @@ namespace AutoScaling.Services
         {
             var script = new List<string>
             {
-                $"export MANAGER_VERSION=${version}" ,
-                $"export UI_VERSION=${uiVersion}" ,
+                "export MANAGER_VERSION=" +version ,
+                "export UI_VERSION=" + uiVersion ,
 
                 "sh /home/ubuntu/setup.sh",
             };
