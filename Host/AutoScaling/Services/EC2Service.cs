@@ -293,8 +293,9 @@ namespace AutoScaling.Services
                         catch (Exception ex)
                         {
                             _log.Error("Fail to execute script",ex);
-                            return;
                         }
+
+                        return;
                     }
                     else
                     {
