@@ -282,12 +282,18 @@ namespace AutoScaling.Services
                 try
                 {
                     var task = Task.Run(() =>  _client.Connect());
+                    var timeout = Task.Delay(TimeSpan.FromSeconds(5));
 
-                    var timeout = Task.Delay(5000);
                     var completedTask = await Task.WhenAny(task, timeout);
-
-                    if(completedTask == task && _client.IsConnected)
+                    if(completedTask == task)
                     {
+                        await task;
+                        if(!_client.IsConnected)
+                        {
+                            _client.Dispose();
+                            throw new Exception("connection is not setup properly");
+                        }
+
                         try
                         {
                             var result = new List<string>();
