@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Collections.Generic;
 using DbSchema.SystemDb.Data;
 using Newtonsoft.Json;
@@ -29,7 +30,6 @@ namespace AutoScaling.Controllers
 
         private readonly IGlobalStateStore _cache;
 
-        private readonly RestClient _client;
 
         private readonly SystemConfig _config;
         
@@ -45,7 +45,6 @@ namespace AutoScaling.Controllers
         {
             _cache = cache;
             _db = db;
-            _client = new RestClient(config.Value.Authenticator);
             _instanceSetting = instanceSetting.Value;
             _config = config.Value;
             _ec2 = ec2;
@@ -70,8 +69,7 @@ namespace AutoScaling.Controllers
 
             if(refreshCluster.Count() == 0)
             {
-                var CoturnRequest = new RestRequest(_config.AutoScaling+"/Instance/Coturn");
-                CoturnRequest.Method = Method.GET;
+                var CoturnRequest = new RestRequest($"{_config.AutoScaling}/Instance/Coturn",Method.GET);
 
                 var client = new RestClient();
                 client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
@@ -101,11 +99,10 @@ namespace AutoScaling.Controllers
 
 
 
-            var request = new RestRequest(_config.Authenticator+"/Token/Grant/Cluster")
+            var request = new RestRequest($"{_config.Authenticator}/Token/Grant/Cluster",Method.POST)
                 .AddJsonBody(cluster);
-            request.Method = Method.POST;
-            
-            var result = await _client.ExecuteAsync(request);
+            var result = await (new RestClient()).ExecuteAsync(request);
+
             var Token = JsonConvert.DeserializeObject<string>(result.Content);
             return Ok(new AuthenticationRequest{
                 token = Token,
