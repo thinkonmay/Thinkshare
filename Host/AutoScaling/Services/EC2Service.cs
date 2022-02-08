@@ -325,8 +325,8 @@ namespace AutoScaling.Services
         {
             var script = new List<string>
             {
-                "export TURN_USERNAME="+user ,
-                "export TURN_PASSWORD="+password ,
+                "export TURN_USERNAME="+user + " && " +
+                "export TURN_PASSWORD="+password + " && " +
 
                 "sh /home/ubuntu/pion.sh"
             };
@@ -338,8 +338,8 @@ namespace AutoScaling.Services
         {
             var script = new List<string>
             {
-                "export MANAGER_VERSION=" +version ,
-                "export UI_VERSION=" + uiVersion ,
+                "export MANAGER_VERSION=" +version + " && " +
+                "export UI_VERSION=" + uiVersion + " && " +
 
                 "sh /home/ubuntu/setup.sh",
             };
