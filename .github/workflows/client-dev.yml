@@ -4,18 +4,16 @@ on:
   push:
     branches: [ dev ]
     paths: 
-    - 'Client/website/**'
+    - 'Client/**'
   pull_request:
     branches: [ dev ]
     paths: 
-    - 'Client/website/**'
+    - 'Client/**'
   workflow_dispatch:
 
 #setup environment variable
 env:
-  SERVICE_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/service-page:latest
-  LANDING_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/landing-page:latest
-  LOGIN_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/login-page:latest
+  SERVICE_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/service-page:development
 
   
 jobs:
@@ -33,22 +31,19 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         context: Client/website/service-page 
+        file: Client/website/service-page/Dockerfile.development
         push: true
         tags: ${{ env.SERVICE_PAGE_IMAGE }}
 
-  build-landing:
+  deploy:
     runs-on: ubuntu-latest
+    needs: [ "build-service" ]
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-    - name: Log in to Docker Hub
-      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: LandingPage 
-      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-      with:
-        context: Client/website/landing-page
-        push: true
-        tags: ${{ env.LANDING_PAGE_IMAGE }}
+      - name: setup
+        uses: ianbelcher/eks-kubectl-action@master
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ap-southeast-1
+          cluster_name: thinkmay-eks
+          args: rollout restart deployment -n frontend-development
