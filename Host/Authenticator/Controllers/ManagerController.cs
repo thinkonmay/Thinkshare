@@ -122,13 +122,14 @@ namespace Authenticator.Controllers
 
                 if(result.StatusCode == HttpStatusCode.OK)
                 {
-                    if(JsonConvert.DeserializeObject<AuthResponse>(result.Content).Token == null)
+                    if(JsonConvert.DeserializeObject<AuthResponse>(result.Content).Token != null)
                     {
+                        _log.Information($"Login to cluster automatically success");
                         success = true;
                     }
                     else
                     {
-                        _log.Warning("Unable to login to cluster automatically");
+                        _log.Warning($"Unable to login to cluster automatically, result : {result.Content}");
                         break;
                     }
                 }
