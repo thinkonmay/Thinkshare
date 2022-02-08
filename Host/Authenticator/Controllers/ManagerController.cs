@@ -31,18 +31,15 @@ namespace Authenticator.Controllers
         private readonly UserManager<UserAccount> _userManager;
         private readonly GlobalDbContext _db;
         private readonly SystemConfig _config;
-        private readonly SignInManager<UserAccount> _signInManager;
         private readonly ITokenGenerator _token;
         private readonly ILog _log;
 
         public ManagerController(UserManager<UserAccount> userManager,
-                                 SignInManager<UserAccount> signInManager,
                                  ITokenGenerator token,
                                  ILog log,
                                  IOptions<SystemConfig> config,
                                  GlobalDbContext db)
         {
-            _signInManager = signInManager;
             _userManager = userManager;
             _db = db;
             _log = log;

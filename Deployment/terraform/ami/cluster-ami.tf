@@ -22,3 +22,8 @@ resource "aws_ami_from_instance" "cluster_dev" {
   name               = "cluser_dev"
   source_instance_id = "i-012daf26780120bd7"
 }
+
+resource "aws_ami_from_instance" "cluster_v1" {
+  name               = "cluster_v1"
+  source_instance_id = "i-0b2752f50102de004"
+}

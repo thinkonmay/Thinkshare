@@ -15,7 +15,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["cluser_dev"]
+    values = ["cluster_v1"]
   }
 
 
