@@ -9,4 +9,8 @@ RUN npm install --production
 
 COPY . .
 
+ENV PORT=80
+
+ENV HOST_URL=host.thinkmay.net
+RUN echo $HOST_URL > public/API.js
 CMD [ "npm", "start" ]

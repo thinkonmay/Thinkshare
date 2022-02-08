@@ -4,7 +4,7 @@ import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import { isElectron } from "../util/checkdevice.js"
 const HOUR5 = 5 * 60 * 60 * 1000;
-const MINUTES59 = 59 * 60 * 1000;
+
 let authorizeElectron = false;
 
 function serializeArrToObject(serializeArr) {

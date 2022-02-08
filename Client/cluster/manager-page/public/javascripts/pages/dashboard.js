@@ -406,26 +406,7 @@ function setState(serviceState, slaveID) {
 	var button = document.getElementById(`button${slaveID}`);
 	button.innerHTML = slaveState(serviceState, slaveID);
 
-	// if (serviceState === "ON_SESSION") {
-	// 	var initbutt = document.getElementById(`disconnect${slaveID}`)
-	// 	initbutt.addEventListener("click", async function () {
-	// 		await API.disconnectSession(slaveID)
-	// 	});
-	// 	var terminatebutt = document.getElementById(`terminate${slaveID}`)
-	// 	terminatebutt.addEventListener("click", async function () {
-	// 		await API.terminateSession(slaveID)
-	// 	});
-	// }
-	// if (serviceState === "OFF_REMOTE") {
-	// 	var recbutt = document.getElementById(`reconnect${slaveID}`)
-	// 	recbutt.addEventListener("click", async function () {
-	// 		RemotePage.sessionReconnect(slaveID)
-	// 	});
-	// 	var terminatebutt = document.getElementById(`terminate${slaveID}`)
-	// 	terminatebutt.addEventListener("click", async function () {
-	// 		await API.terminateSession(slaveID)
-	// 	});;
-	// }
+
 	if (serviceState === "DEVICE_OPEN") {
 		var connbutt = document.getElementById(`connect${slaveID}`)
 		connbutt.addEventListener("click", async function () {

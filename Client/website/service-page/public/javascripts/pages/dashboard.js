@@ -16,6 +16,7 @@ let sessionInfor;
 API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
+
 API.getSetting().then(async data => {
 	var body = await data.json()
 	$(`[value=${Setting.DecodeCoreEngine(parseInt(body.engine))}]`).attr('checked', true);
@@ -270,7 +271,9 @@ async function prepare_worker_dashboard() {
 
 async function connectToClientHub() {
 	// using websocket to connect to systemhub
-	const Websocket = new WebSocket(API.UserHub + `?token=${getCookie("token")}`)
+	const Websocket = new WebSocket(
+		await API.getUserHub(getCookie("token")));
+
 	Websocket.addEventListener('open', onWebsocketOpen);
 	Websocket.addEventListener('message', onClientHubEvent);
 	Websocket.addEventListener('error', onWebsocketClose);
