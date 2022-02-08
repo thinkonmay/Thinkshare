@@ -40,9 +40,13 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: authenticator
+            name: conductor
             port:
               number: 80
+
+
+
+
 
       - path: /Log/*
         pathType: Prefix

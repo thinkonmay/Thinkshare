@@ -48,6 +48,15 @@ spec:
 
 
 
+      - path: /Log/*
+        pathType: Prefix
+        backend:
+          service:
+            name: metric-collector
+            port:
+              number: 80
+
+
 
 
       - path: /Account/*
