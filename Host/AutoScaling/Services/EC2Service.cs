@@ -220,16 +220,10 @@ namespace AutoScaling.Services
 
             // wait for coturn server to boot up until setup coturn script
             var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
-            script = await AccessEC2Instance(instance,coturn);
-            string turn_log = "Setting up turn server and got script output:\n";
-            script.ForEach(x => turn_log = turn_log + x +"\n");
-            _log.Information(turn_log);
+            await AccessEC2Instance(instance,coturn);
 
             var cluster = SetupClusterScript("development","2022-01-03");
-            script = await AccessEC2Instance(instance,cluster);
-            string docker_log = "Setting up worker manager and got script output:\n";
-            script.ForEach(x => docker_log = docker_log + x +"\n");
-            _log.Information(docker_log);
+            await AccessEC2Instance(instance,cluster);
             return result;
         }
 
@@ -253,14 +247,11 @@ namespace AutoScaling.Services
 
             // wait for coturn server to boot up until setup coturn script
             var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
-            var script = await AccessEC2Instance(instance,coturn);
-            string log = "Setting up turn server and got script output:\n";
-            script.ForEach(x => log = log+"x"+"\n");
-            _log.Information(log);
+            await AccessEC2Instance(instance,coturn);
             return result;
         }
 
-        private async Task<List<string>?> AccessEC2Instance (EC2Instance instance, List<string> commands)
+        private async Task AccessEC2Instance (EC2Instance instance, List<string> commands)
         {
             MemoryStream keyStream = new MemoryStream(Encoding.UTF8.GetBytes(instance.keyPair.PrivateKey));
             var keyFiles = new[] { new PrivateKeyFile(keyStream) };
@@ -276,7 +267,7 @@ namespace AutoScaling.Services
                 if(attemption == 30)
                 {
                     _log.Warning("Fail to connect to EC2 instance multipletime");
-                    return new List<string>();
+                    return;
                 }
 
                 try
@@ -293,18 +284,16 @@ namespace AutoScaling.Services
 
                         try
                         {
-                            var result = new List<string>();
                             foreach (var command in commands)
                             {
                                 _log.Information("Executing command " +command);
-                                result.Add(_client.RunCommand(command).Result);
+                                Task.Run(() => _client.RunCommand(command));
                             }
-                            return result;
                         }
                         catch (Exception ex)
                         {
                             _log.Error("Fail to execute script",ex);
-                            return new List<string>();
+                            return;
                         }
                     }
                     else
@@ -338,7 +327,7 @@ namespace AutoScaling.Services
                 "export TURN_USERNAME="+user ,
                 "export TURN_PASSWORD="+password ,
 
-                "sh /home/ubuntu/pion.sh & disown"
+                "sh /home/ubuntu/pion.sh"
             };
 
             return script;
@@ -351,7 +340,7 @@ namespace AutoScaling.Services
                 "export MANAGER_VERSION=" +version ,
                 "export UI_VERSION=" + uiVersion ,
 
-                "sh /home/ubuntu/setup.sh & disown",
+                "sh /home/ubuntu/setup.sh",
             };
             return script;
         }
