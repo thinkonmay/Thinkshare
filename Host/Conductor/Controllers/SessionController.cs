@@ -50,6 +50,7 @@ namespace Conductor.Controllers
                                 UserManager<UserAccount> userManager)
         {
             _db = db;
+            _log = log;
             _cache = cache;
             _Cluster = slmsocket;
             _userManager = userManager;
