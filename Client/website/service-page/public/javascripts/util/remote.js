@@ -97,7 +97,7 @@ export const getRemotePage = async (token, engine) => {
     if (engine == CoreEngine('GSTREAMER')) {
         window.location.assign(`thinkmay://token=${token}/`);
     } else {
-        remote = await ( (await fetch('REMOTE.js')).text() )
+        var remote = await ( (await fetch('REMOTE.js')).text() )
 
         var width = window.innerWidth * 0.66;
         // define the height in
