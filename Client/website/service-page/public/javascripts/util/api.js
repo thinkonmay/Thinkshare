@@ -12,6 +12,7 @@ var Session;
 
 var Manager;
 var Cluster;
+var Clusters;
 
 var Setting;
 
@@ -39,6 +40,7 @@ const setup = async () => {
 	Session = `https://${host}/Account/History`
 
 	Manager = `https://${host}/Manager/Request`
+	Clusters = `https://${host}/Manager/Cluster`
 	Cluster = `https://${host}/Manager/ManagedCluster/Request`
 
 	Setting = `https://${host}/Setting`
@@ -123,6 +125,13 @@ export const requestCluster = async (name, password)=> {
 		method: "POST",
 		headers: genHeaders(),
 		body: `"${password}"`
+	})
+}
+export const getClusters = async () => {
+	await setup();
+	return fetch(Clusters, {
+		method: "GET",
+		headers: genHeaders(),
 	})
 }
 
