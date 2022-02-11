@@ -156,7 +156,9 @@ $(document).ready(() => {
         if (isElectron()) {
             window.location.assign(`loginThinkmay://`);
             $('#gSignIn').html('')
+
             $('#formLogin').attr('style', 'display: none')
+            $('#formRegister').attr('style', 'display: none')
             $('#authorizeForm ').removeAttr('style')
             // openLinkInIE("https://service.thinkmay.net/token-auth")
             /// create box to set token id
