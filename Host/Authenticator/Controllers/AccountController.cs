@@ -289,13 +289,13 @@ namespace Authenticator.Controllers
         /// <returns></returns>
         [User]
         [HttpGet("Roles")]
-        public async Task<IActionResult> UserGetSession()
+        public async Task<IActionResult> UserGetRoles()
         {
-            return Ok(new AuthenticationResponse
+            return Ok(new 
             {
-                IsAdmin   = (string)context.Items["IsAdmin"],
-                IsManager = (string)context.Items["IsManager"],
-                IsUser    = (string)context.Items["IsUser"];
+                IsAdmin   = (string)HttpContext.Items["IsAdmin"],
+                IsManager = (string)HttpContext.Items["IsManager"],
+                IsUser    = (string)HttpContext.Items["IsUser"],
             });
         }
 
