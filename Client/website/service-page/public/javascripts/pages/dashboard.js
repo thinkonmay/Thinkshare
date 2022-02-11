@@ -13,17 +13,114 @@ import * as Setting from "./setting.js"
 
 let datasets = [];
 let sessionInfor;
+
 API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
-function
-setClusterManagerForm() 
+function 
+clusterFormGen(isManager)
 {
-	API.getRoles().then(async data => {
-		$("#fullName").html((await data.json()));
-	})
+	var form = document.getElementById("ClusterForm");
+	if(isManager === true)
+	{
+		form.innerHTML = 
+		`
+		<label class="col-sm-3 col-form-label">
+			ClusterName
+		</label>
+		<div class="col-sm-9">
+		<input type="text" class="form-control" id="clusterNameCtrler"
+			placeholder=" ClusterName ">
+		</div>
+		<label class="col-sm-3 col-form-label">
+			Password
+		</label>
+		<div class="col-sm-9">
+		<input type="password" class="form-control" id="passwordCtrler"
+			placeholder=" Type your password here ">
+		</div>
+		`;
+	}
+	else
+	{
+		form.innerHTML = 
+		`
+		<label class="col-sm-3 col-form-label">
+			<b>Description</b> 
+			<br>
+			<i>Is there any specific requirement that we can support? </i>
+		</label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control" id="descriptionCtrler"
+				style="height: 100px;" placeholder=" Why do you want to host your own worker node ? ">
+		</div>
+		`;
+	}
 }
+
+async function 
+isManager(){
+	var isManager = (await (await API.getRoles()).json()).isManager;
+	return isManager === "true";
+}
+
+function 
+managerRegister() {
+	Utils.newSwal.fire({
+		title: "Registering",
+		text: "Please wait . . .",
+		didOpen: async () => {
+			if(await isManager())
+			{
+				var password = document.getElementById("passwordCtrler").value;
+				var name =     document.getElementById("clusterNameCtrler").value;
+				API.requestCluster(name,password)
+					.then(async data => {
+						const response = await data.text()
+						if (data.status == 200) {
+							Utils.newSwal.fire({
+								title: "Success",
+								text: `You are able to host your own worker using cluster name ${name}`,
+								icon: "success",
+								didOpen: () => {  }
+							})
+						} else 
+						{
+							Utils.newSwal.fire({
+								title: "Failed",
+								text: `Unable to request cluster ${name}: ${response}`,
+								icon: "error",
+								didOpen: () => {  }
+							})
+						}
+					})
+					.catch(Utils.fetchErrorHandler)
+			}
+			else
+			{
+				var des = document.getElementById("descriptionCtrler").value;
+				API.managerRegister(des)
+					.then(async data => {
+						const response = await data.json()
+						if (data.status == 200) {
+							if (response.errors == null) {
+								Utils.newSwal.fire({
+									title: "Success",
+									text: "Now you can create your own cluster",
+									icon: "success",
+									didOpen: () => { clusterFormGen(true); }
+								})
+							} else {
+								Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
+							}
+						} else Utils.responseErrorHandler(response)
+					})
+					.catch(Utils.fetchErrorHandler)
+			}
+		}
+	});
+};
 
 API.getSetting().then(async data => {
 	var body = await data.json()
@@ -36,44 +133,13 @@ API.getSetting().then(async data => {
 
 })
 
-var clusterName, description;
-function
-setupClusterRegister()
-{
-    $("#clusterNameCtrler").on("change", function() { clusterName = this.value; });
-    $("#descriptionCtrler").on("change", function() { description = this.value; })
 
-    $('#submitChangeInfoCtrler').click(() => {
-        Utils.newSwal.fire({
-            title: "Đang đăng kí",
-            text: "Vui lòng chờ . . .",
-            didOpen: () => {
-                console.log(body)
-                API.setInfor(body)
-                    .then(async data => {
-                        if (data.status == 200) {
-                            body = await (await API.getInfor()).json();
-                            Utils.newSwal.fire({
-                                title: "Thành công!",
-                                text: "Thông tin của bạn đã được cập nhật",
-                                icon: "success",
-                            })
-                        } else {
-                            Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
-                        }
-                    })
-                    .catch(status ? Utils.fetchErrorHandler : "")
-            }
-        })
-
-    });
-
-}
 
 $(document).ready(async () => {
 	document.querySelector(".preloader").style.opacity = "0";
 	document.querySelector(".preloader").style.display = "none";
 
+	clusterFormGen(await isManager());
 	if (getCookie("show-tutorial") == "true") {
 		$('#checkboxTutorial').attr("checked", true)
 	}
@@ -125,6 +191,8 @@ $(document).ready(async () => {
 		display.mode = Setting.QoEMode(value);
 		await Setting.updateSetting(display);
 	});
+
+	$('[id="submitClusterCtrler"]').click(managerRegister);
 
 	// Resolution
 	$('[name="res"]').click(async function () {
@@ -228,11 +296,7 @@ $(document).ready(async () => {
 	await prepare_user_infor();
 	await prepare_worker_dashboard();
 	await setDataForChart();
-	setupClusterRegister();
-
-
 	// set data for chart to anaylize hour used
-
 })
 
 function handleCheckedTab() {

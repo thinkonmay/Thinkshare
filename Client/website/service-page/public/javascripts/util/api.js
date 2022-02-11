@@ -39,7 +39,7 @@ const setup = async () => {
 	Session = `https://${host}/Account/History`
 
 	Manager = `https://${host}/Manager/Request`
-	Cluster = `https://${host}/Cluster/Request`
+	Cluster = `https://${host}/Manager/ManagedCluster/Request`
 
 	Setting = `https://${host}/Setting`
 
@@ -103,6 +103,26 @@ export const register = async body => {
 			jobs: body.jobs,
 			phoneNumber: body.phonenumber
 		})
+	})
+}
+
+
+
+
+
+export const managerRegister = async des => {
+	await setup();
+	return fetch(`${Manager}?Description=${des}`, {
+		method: "POST",
+		headers: genHeaders(),
+	})
+}
+export const requestCluster = async (name, password)=> {
+	await setup();
+	return fetch(Cluster+`?ClusterName=${name}`, {
+		method: "POST",
+		headers: genHeaders(),
+		body: `"${password}"`
 	})
 }
 
