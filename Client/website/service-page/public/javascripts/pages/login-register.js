@@ -111,8 +111,8 @@ function loginCallback(result) {
 
 const googleLoginUser = async (userForm) => {
     Utils.newSwal.fire({
-        title: "Đang đăng nhập",
-        text: "Vui lòng chờ . . .",
+        title: "Signing",
+        text: "Wait a minute . . .",
         didOpen: () => {
             API.tokenExchange(userForm)
                 .then(async data => {
@@ -126,7 +126,7 @@ const googleLoginUser = async (userForm) => {
                                 window.location.replace(API.Dashboard)
                         } else {
                             console.log(response.error);
-                            Utils.responseError("Error!", "There is some error happen :< you may want to try again", "error")
+                            Utils.responseError("Error!", "Login Error an unexpected error occurred please try logging in again", "error")
                         }
                     } else Utils.responseErrorHandler(response)
                 })
@@ -137,7 +137,7 @@ const googleLoginUser = async (userForm) => {
 
 // Sign-in failure callback
 function onFailure() {
-    alert("Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại! ")
+    alert("Login Error an unexpected error occurred please try logging in again")
 }
 
 function openLinkInIE(url) {
