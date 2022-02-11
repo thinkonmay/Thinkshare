@@ -17,6 +17,14 @@ API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
+function
+setClusterManagerForm() 
+{
+	API.getRoles().then(async data => {
+		$("#fullName").html((await data.json()));
+	})
+}
+
 API.getSetting().then(async data => {
 	var body = await data.json()
 	$(`[value=${Setting.DecodeCoreEngine(parseInt(body.engine))}]`).attr('checked', true);

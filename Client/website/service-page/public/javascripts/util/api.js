@@ -7,6 +7,7 @@ var Login;
 var Register;
 var Token;
 var Infor;
+var Roles;
 var Session;
 
 var Manager;
@@ -34,6 +35,7 @@ const setup = async () => {
 	Register = `https://${host}/Account/Register`
 	Token = `https://${host}/Account/ExchangeToken`
 	Infor = `https://${host}/Account/Infor`
+	Roles = `https://${host}/Account/Roles`
 	Session = `https://${host}/Account/History`
 
 	Manager = `https://${host}/Manager/Request`
@@ -308,6 +310,25 @@ export const getInfor = async () => {
 		}
 	})
 }
+
+/**
+ * 
+ * @returns 
+ */
+export const getRoles = async () => {
+	await setup();
+	return fetch(Roles, {
+		method: "GET",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
 
 export const getSetting = async () => {
 	await setup();
