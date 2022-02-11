@@ -193,8 +193,6 @@ $(document).ready(async () => {
 		setCookie("logout", "true")
 		setCookie("token", null, 1)
 
-		deleteCookie("token", "/", document.domain)
-
 		try {
 			gapi.auth.signOut();
 			window.location = "/login"
