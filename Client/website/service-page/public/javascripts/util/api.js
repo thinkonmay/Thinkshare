@@ -7,10 +7,12 @@ var Login;
 var Register;
 var Token;
 var Infor;
+var Roles;
 var Session;
 
 var Manager;
 var Cluster;
+var Clusters;
 
 var Setting;
 
@@ -34,10 +36,12 @@ const setup = async () => {
 	Register = `https://${host}/Account/Register`
 	Token = `https://${host}/Account/ExchangeToken`
 	Infor = `https://${host}/Account/Infor`
+	Roles = `https://${host}/Account/Roles`
 	Session = `https://${host}/Account/History`
 
 	Manager = `https://${host}/Manager/Request`
-	Cluster = `https://${host}/Cluster/Request`
+	Clusters = `https://${host}/Manager/Cluster`
+	Cluster = `https://${host}/Manager/ManagedCluster/Request`
 
 	Setting = `https://${host}/Setting`
 
@@ -101,6 +105,33 @@ export const register = async body => {
 			jobs: body.jobs,
 			phoneNumber: body.phonenumber
 		})
+	})
+}
+
+
+
+
+
+export const managerRegister = async des => {
+	await setup();
+	return fetch(`${Manager}?Description=${des}`, {
+		method: "POST",
+		headers: genHeaders(),
+	})
+}
+export const requestCluster = async (name, password)=> {
+	await setup();
+	return fetch(Cluster+`?ClusterName=${name}`, {
+		method: "POST",
+		headers: genHeaders(),
+		body: `"${password}"`
+	})
+}
+export const getClusters = async () => {
+	await setup();
+	return fetch(Clusters, {
+		method: "GET",
+		headers: genHeaders(),
 	})
 }
 
@@ -308,6 +339,25 @@ export const getInfor = async () => {
 		}
 	})
 }
+
+/**
+ * 
+ * @returns 
+ */
+export const getRoles = async () => {
+	await setup();
+	return fetch(Roles, {
+		method: "GET",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
 
 export const getSetting = async () => {
 	await setup();

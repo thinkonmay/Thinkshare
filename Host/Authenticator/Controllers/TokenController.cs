@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Authenticator.Interfaces;
 using SharedHost.Models.User;
@@ -42,24 +43,26 @@ namespace Authenticator.Controllers
         [Route("Challenge/User")]
         public async Task<IActionResult> Challene([FromBody] AuthenticationRequest request)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return BadRequest(); 
+
+            try
             {
                 var account = await _tokenGenerator.ValidateUserToken(request.token);
                 var roles = await _userManager.GetRolesAsync(account);
-                var resp = new AuthenticationResponse
-                { 
+                var resp = new AuthenticationResponse { 
                     UserID = account.Id.ToString(),
                     IsAdmin = (roles).Contains(RoleSeeding.ADMIN),
                     IsManager = (roles).Contains(RoleSeeding.MOD),
                     IsUser = (roles).Contains(RoleSeeding.USER),
                     ValidatedBy = _config.Authenticator
                 };
-
+                    
                 return Ok(resp);
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest(); 
+                return BadRequest();
             }
         }
 
@@ -75,11 +78,15 @@ namespace Authenticator.Controllers
         [Route("Challenge/Session")]
         public async Task<IActionResult> SessionChallenge(string token)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return BadRequest(); 
+
+            try
             {
-                return Ok(await _tokenGenerator.ValidateSessionToken(token));
+                var result = await _tokenGenerator.ValidateSessionToken(token); 
+                return Ok(result);
             }
-            else
+            catch (Exception ex)
             {
                 return BadRequest();
             }
@@ -91,14 +98,29 @@ namespace Authenticator.Controllers
         [Route("Challenge/Cluster")]
         public async Task<IActionResult> ClusterChallange([FromBody] AuthenticationRequest request)
         {
-            return Ok(await _tokenGenerator.ValidateClusterToken(request.token));
+            if (!ModelState.IsValid)
+                return BadRequest(); 
+
+            try
+            {
+                var result = await _tokenGenerator.ValidateClusterToken(request.token);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost]
         [Route("Grant/Cluster")]
         public async Task<IActionResult> GrantCluster([FromBody] GlobalCluster Cluster)
         {
-            return Ok(await _tokenGenerator.GenerateClusterJwt(Cluster));
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var result = await _tokenGenerator.GenerateClusterJwt(Cluster);
+            return Ok(result);
         }
 
         /// <summary>
@@ -110,19 +132,15 @@ namespace Authenticator.Controllers
         [Route("Grant/Session")]
         public async Task<IActionResult> SessionGrant([FromBody] SessionAccession access)
         {
-            if (ModelState.IsValid)
-            {
-                var token = await _tokenGenerator.GenerateSessionJwt(access);
-                return Ok(new AuthenticationRequest
-                {
-                    token = token,
-                    Validator = _config.Authenticator
-                });
-            }
-            else
-            {
+            if (!ModelState.IsValid)
                 return BadRequest();
-            }
+
+            var token = await _tokenGenerator.GenerateSessionJwt(access);
+            return Ok(new AuthenticationRequest
+            {
+                token = token,
+                Validator = _config.Authenticator
+            });
         }
     }
 }

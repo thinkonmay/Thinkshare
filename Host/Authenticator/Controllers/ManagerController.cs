@@ -62,6 +62,16 @@ namespace Authenticator.Controllers
         }
 
         [Manager]
+        [HttpGet("Cluster")]
+        public async Task<IActionResult> GetClusters()
+        {
+            var UserID = int.Parse((string)HttpContext.Items["UserID"]);
+            var result = _db.Clusters.Where(x => x.OwnerID == UserID);
+            return Ok(result);
+        }
+
+
+        [Manager]
         [HttpPost("ManagedCluster/Request")]
         public async Task<IActionResult> RequestCluster(string ClusterName, [FromBody] string password)
         {

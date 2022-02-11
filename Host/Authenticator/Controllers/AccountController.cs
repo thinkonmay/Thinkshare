@@ -283,7 +283,21 @@ namespace Authenticator.Controllers
 
 
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [User]
+        [HttpGet("Roles")]
+        public async Task<IActionResult> UserGetRoles()
+        {
+            return Ok(new 
+            {
+                IsAdmin   = (string)HttpContext.Items["IsAdmin"],
+                IsManager = (string)HttpContext.Items["IsManager"],
+                IsUser    = (string)HttpContext.Items["IsUser"],
+            });
+        }
 
 
         /// <summary>
