@@ -52,10 +52,9 @@ function register(body, status) {
                         if (data.status == 200) {
                             if (response.errors == null) {
                                 setCookie("token", response.token, HOUR5)
-                                ReceiveToken(response.token)
                                 Utils.newSwal.fire({
-                                    title: "Thành công!",
-                                    text: "Chuyển hướng tới bảng điều khiển sau 2s",
+                                    title: "Successfully!",
+                                    text: "Redirecting to the dashboard",
                                     icon: "success",
                                     didOpen: () => {
                                         setTimeout(() => {
