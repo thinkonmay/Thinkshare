@@ -117,6 +117,22 @@ namespace Authenticator.Controllers
                     user.Jobs = model.Jobs;
                 }
 
+                UserAccount userWithEmail = await _userManager.FindByEmailAsync(model.Email);
+                if(userWithEmail != null)
+                {
+                    var errors = new List<IdentityError>();
+                    errors.Add(new IdentityError{
+                        Code = "Invalid email",
+                        Description = "This email has been registered as an account"
+                    });
+
+                    return new AuthResponse
+                    {
+                        Errors = errors,
+                        UserName = model.UserName,
+                    };
+                }
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -156,7 +172,6 @@ namespace Authenticator.Controllers
 
                 var payload = await GoogleJsonWebSignature.ValidateAsync(request.token, validationSettings);
                 var user = await _userManager.FindByEmailAsync(payload.Email);
-
                 if (user == null)
                 {
                     user = new UserAccount
