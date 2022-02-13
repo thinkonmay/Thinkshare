@@ -4,7 +4,7 @@ import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import { isElectron } from "../util/checkdevice.js"
 const HOUR5 = 5 * 60 * 60 * 1000;
-const MINUTES59 = 59 * 60 * 1000;
+
 let authorizeElectron = false;
 
 function serializeArrToObject(serializeArr) {
@@ -52,10 +52,9 @@ function register(body, status) {
                         if (data.status == 200) {
                             if (response.errors == null) {
                                 setCookie("token", response.token, HOUR5)
-                                ReceiveToken(response.token)
                                 Utils.newSwal.fire({
-                                    title: "Thành công!",
-                                    text: "Chuyển hướng tới bảng điều khiển sau 2s",
+                                    title: "Successfully!",
+                                    text: "Redirecting to the dashboard",
                                     icon: "success",
                                     didOpen: () => {
                                         setTimeout(() => {
@@ -111,8 +110,8 @@ function loginCallback(result) {
 
 const googleLoginUser = async (userForm) => {
     Utils.newSwal.fire({
-        title: "Đang đăng nhập",
-        text: "Vui lòng chờ . . .",
+        title: "Signing",
+        text: "Wait a minute . . .",
         didOpen: () => {
             API.tokenExchange(userForm)
                 .then(async data => {
@@ -126,7 +125,7 @@ const googleLoginUser = async (userForm) => {
                                 window.location.replace(API.Dashboard)
                         } else {
                             console.log(response.error);
-                            Utils.responseError("Error!", "There is some error happen :< you may want to try again", "error")
+                            Utils.responseError("Error!", "Login Error an unexpected error occurred please try logging in again", "error")
                         }
                     } else Utils.responseErrorHandler(response)
                 })
@@ -137,7 +136,7 @@ const googleLoginUser = async (userForm) => {
 
 // Sign-in failure callback
 function onFailure() {
-    alert("Đã xảy ra lỗi trong quá trình Đăng Nhập, Vui Lòng thử lại! ")
+    alert("Login Error an unexpected error occurred please try logging in again")
 }
 
 function openLinkInIE(url) {
@@ -156,7 +155,9 @@ $(document).ready(() => {
         if (isElectron()) {
             window.location.assign(`loginThinkmay://`);
             $('#gSignIn').html('')
+
             $('#formLogin').attr('style', 'display: none')
+            $('#formRegister').attr('style', 'display: none')
             $('#authorizeForm ').removeAttr('style')
             // openLinkInIE("https://service.thinkmay.net/token-auth")
             /// create box to set token id

@@ -16,6 +16,11 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: frontend-development
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: kube-logging
 ---
 apiVersion: v1

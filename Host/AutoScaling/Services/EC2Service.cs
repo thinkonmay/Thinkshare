@@ -154,40 +154,48 @@ namespace AutoScaling.Services
 
         public async Task<bool> TerminateInstance(ClusterInstance instance)
         {
-            AmazonEC2Client _ec2Client;
-            if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
+            try
             {
-                _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
-            }
-            else
-            {
-                return false;
-            }
-
-            var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
-            if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
-            {
-                return false;
-            }
-
-            await _ec2Client.DeleteKeyPairAsync(new DeleteKeyPairRequest( instance.keyPair.Name ));            
-            await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
-            {
-                InstanceIds = new List<string> {
-                    instance.InstanceID
-                }
-            });
-
-
-            while(true)
-            {
-                var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
-
-                if (infor.Reservations.First().Instances.First().State.Name == InstanceStateName.Terminated )
+                AmazonEC2Client _ec2Client;
+                if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
                 {
-                    return true;
+                    _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
                 }
-                System.Threading.Thread.Sleep(1000);
+                else
+                {
+                    return false;
+                }
+
+                var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
+                if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
+                {
+                    return false;
+                }
+
+                await _ec2Client.DeleteKeyPairAsync(new DeleteKeyPairRequest( instance.keyPair.Name ));            
+                await _ec2Client.TerminateInstancesAsync(new TerminateInstancesRequest
+                {
+                    InstanceIds = new List<string> {
+                        instance.InstanceID
+                    }
+                });
+
+
+                while(true)
+                {
+                    var infor = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
+
+                    if (infor.Reservations.First().Instances.First().State.Name == InstanceStateName.Terminated )
+                    {
+                        return true;
+                    }
+                    System.Threading.Thread.Sleep(1000);
+                }
+            }
+            catch(Exception ex)
+            {
+                _log.Error("Fail to terminate instance",ex);
+                return false;
             }
         }
 
@@ -211,17 +219,11 @@ namespace AutoScaling.Services
 
 
             // wait for coturn server to boot up until setup coturn script
-            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword,instance.IPAdress);
-            script = await AccessEC2Instance(instance,coturn);
-            string turn_log = "Setting up turn server and got script output:\n";
-            script.ForEach(x => turn_log += $"{x}\n");
-            _log.Information(turn_log);
+            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
+            await AccessEC2Instance(instance,coturn);
 
             var cluster = SetupClusterScript("development","2022-01-03");
-            script = await AccessEC2Instance(instance,cluster);
-            string docker_log = "Setting up worker manager and got script output:\n";
-            script.ForEach(x => docker_log += $"{x}\n");
-            _log.Information(docker_log);
+            await AccessEC2Instance(instance,cluster);
             return result;
         }
 
@@ -244,63 +246,70 @@ namespace AutoScaling.Services
 
 
             // wait for coturn server to boot up until setup coturn script
-            System.Threading.Thread.Sleep(30*1000);
-
-            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword,instance.IPAdress);
-            var script = await AccessEC2Instance(instance,coturn);
-            string log = "Setting up turn server and got script output:\n";
-            script.ForEach(x => log += $"{x}\n");
-            _log.Information(log);
+            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
+            await AccessEC2Instance(instance,coturn);
             return result;
         }
 
-        private async Task<List<string>?> AccessEC2Instance (EC2Instance instance, List<string> commands)
+        private async Task AccessEC2Instance (EC2Instance instance, List<string> commands)
         {
             MemoryStream keyStream = new MemoryStream(Encoding.UTF8.GetBytes(instance.keyPair.PrivateKey));
             var keyFiles = new[] { new PrivateKeyFile(keyStream) };
-
             var methods = new List<AuthenticationMethod>();
             methods.Add(new PrivateKeyAuthenticationMethod("ubuntu", keyFiles));
-
             var con = new ConnectionInfo(instance.IPAdress, 22, "ubuntu", methods.ToArray());
 
-            var _client = new SshClient(con);
-
+            SshClient _client = null;
             int attemption = 0;
-            bool success = false;
-            while (!success)
+            while (true)
             {
+                _client = new SshClient(con);
                 if(attemption == 30)
                 {
                     _log.Warning("Fail to connect to EC2 instance multipletime");
-                    return null;
+                    return;
                 }
 
                 try
                 {
-                    _client.Connect();
-                    if(_client.IsConnected)
+                    var task = Task.Run(() =>  _client.Connect());
+                    var timeout = Task.Delay(TimeSpan.FromSeconds(5));
+
+                    var completedTask = await Task.WhenAny(task, timeout);
+                    if(completedTask == task)
                     {
-                        success = true;
-                        break;
+                        await task;
+                        if(!_client.IsConnected)
+                            throw new Exception("connection is not setup properly");
+
+                        try
+                        {
+                            foreach (var command in commands)
+                            {
+                                _log.Information("Executing command " +command);
+                                Task.Run(() => _client.RunCommand(command));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _log.Error("Fail to execute script",ex);
+                        }
+
+                        return;
+                    }
+                    else
+                    {
+                        throw new Exception("Connection timeout");
                     }
                 }
                 catch (Exception exception)
                 {
                     _log.Error("Fail to connect to EC2 instance",exception);
                 }
+                _client.Dispose();
                 Thread.Sleep(1000);
                 attemption++;
             }
-
-
-            var result = new List<string>();
-            foreach (var command in commands)
-            {
-                result.Add(_client.RunCommand(command).Result);
-            }
-
-            return result;
         }
 
 
@@ -312,16 +321,14 @@ namespace AutoScaling.Services
 
 
 
-        List<string> SetupTurnScript(string user, string password, string IP)
+        List<string> SetupTurnScript(string user, string password)
         {
             var script = new List<string>
             {
-                $"export DEBIAN_FRONTEND=noninteractive" ,
-                $"export TURN_USERNAME=${user}" ,
-                $"export TURN_PASSWORD=${password}" ,
-                $"export PUBLIC_IP=${IP}" ,
+                "export TURN_USERNAME="+user + " && " +
+                "export TURN_PASSWORD="+password + " && " +
 
-                "curl https://www.thinkmay.net/script/pion.sh > setup.sh && sudo sh setup.sh"
+                "sh /home/ubuntu/pion.sh"
             };
 
             return script;
@@ -331,11 +338,10 @@ namespace AutoScaling.Services
         {
             var script = new List<string>
             {
-                $"export MANAGER_VERSION=${version}" ,
-                $"export UI_VERSION=${uiVersion}" ,
+                "export MANAGER_VERSION=" +version + " && " +
+                "export UI_VERSION=" + uiVersion + " && " +
 
-                "curl https://www.thinkmay.net/script/install.sh > install.sh && sudo sh install.sh" ,
-                "curl https://www.thinkmay.net/script/docker-compose.yaml > docker-compose.yaml && sudo docker-compose up -d"
+                "sh /home/ubuntu/setup.sh",
             };
             return script;
         }

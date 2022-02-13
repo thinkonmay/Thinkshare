@@ -19,7 +19,7 @@ export function responseErrorHandler(response) {
 	const errors = keys.map(key => response.errors[key])
 	const msg = keys.map((key, index) => `${key}: ${errors[index]}`).join(", ")
 	newSwal.fire({
-		title: "Lỗi!",
+		title: "Error!",
 		text: msg,
 		icon: "error"
 	})
@@ -27,7 +27,7 @@ export function responseErrorHandler(response) {
 
 export function fetchErrorHandler(error) {
 	newSwal.fire({
-		title: "Lỗi!",
+		title: "Error!",
 		text: error.message,
 		icon: "error"
 	})

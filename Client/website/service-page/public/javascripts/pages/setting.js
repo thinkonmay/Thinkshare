@@ -238,8 +238,8 @@ $(document).ready(async() => {
 
     $('#submitChangeInfoCtrler').click(() => {
         Utils.newSwal.fire({
-            title: "Đang đăng kí",
-            text: "Vui lòng chờ . . .",
+            title: "Updating",
+            text: "Wait a minute",
             didOpen: () => {
                 console.log(body)
                 API.setInfor(body)
@@ -247,12 +247,12 @@ $(document).ready(async() => {
                         if (data.status == 200) {
                             body = await (await API.getInfor()).json();
                             Utils.newSwal.fire({
-                                title: "Thành công!",
-                                text: "Thông tin của bạn đã được cập nhật",
+                                title: "Success!",
+                                text: "User information has been updated successfully",
                                 icon: "success",
                             })
                         } else {
-                            Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
+                            Utils.responseError("Error!", "The change has failed, check your information and try again.", "error")
                         }
                     })
                     .catch(status ? Utils.fetchErrorHandler : "")

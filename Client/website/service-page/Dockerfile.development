@@ -9,8 +9,8 @@ COPY . .
 
 ENV PORT=80
 
-ENV REMOTE_URL=remote.thinkmay.net
-ENV HOST_URL=host.thinkmay.net
+ENV REMOTE_URL=rmtdev.thinkmay.net
+ENV HOST_URL=development.thinkmay.net
 
 RUN echo $REMOTE_URL > public/REMOTE.js
 RUN echo $HOST_URL > public/API.js

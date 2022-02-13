@@ -16,33 +16,21 @@ namespace WorkerManager.Services
     {
         private RestClient _client;
         private readonly ClusterConfig _config;
-        private readonly LocalStateStore _cache;
-        private GlobalCluster _infor;
+        private string IPaddress;
 
-        public Log(IOptions<ClusterConfig> config,
-                   LocalStateStore cache)
+        public Log(IOptions<ClusterConfig> config)
         {
             _config = config.Value;
-            _cache = cache;
             _client = new RestClient(_config.LogUrl);
             GetClusterInfor();
         }
 
         async Task GetClusterInfor ()
         {
-            var cluster = await _cache.GetClusterInfor();
-            while(cluster.ClusterToken == null)
-            {
-                cluster = await _cache.GetClusterInfor();
-                Thread.Sleep(1000);
-            }
-
-            var request = new RestRequest(_config.ClusterInforUrl)
-                .AddHeader("Authorization",cluster.ClusterToken);
-            request.Method = Method.GET;
-
-            var result = await _client.ExecuteAsync(request);
-            _infor = JsonConvert.DeserializeObject<GlobalCluster>(result.Content);
+            var result = (
+                await (new RestClient()).ExecuteAsync(
+                    new RestRequest("http://icanhazip.com",Method.GET))
+            ).Content.Replace("\\r\\n", "").Replace("\\n", "").Trim();
         }
 
         public void Information(string information)
@@ -56,14 +44,14 @@ namespace WorkerManager.Services
                         timestamp = DateTime.Now,
                         Type = "Infor",
                         Log = information,
-                        Source = _infor.Name
+                        Source = "ClusterIP : " + IPaddress
                     }));
             });
         }
 
         public void Worker(string information, string WorkerID)
         {
-            Console.WriteLine(information);
+            Console.WriteLine($"worker log output {information}");
             Task.Run(async () => 
             {
                 await _client.ExecuteAsync(
@@ -72,7 +60,7 @@ namespace WorkerManager.Services
                         timestamp = DateTime.Now,
                         Type = "Worker",
                         Log = information,
-                        Source = _infor.Name
+                        Source = $"workerID : {WorkerID.ToString()}"
                     }));
             });
         }
@@ -89,23 +77,7 @@ namespace WorkerManager.Services
                         StackTrace = exception.StackTrace,
                         Message = exception.Message,
                         Log = message,
-                        Source = _infor.Name
-                    }));
-            });
-        }
-
-        public void Warning(string message)
-        {
-            Console.WriteLine(message);
-            Task.Run(async () => 
-            {
-                await _client.ExecuteAsync(
-                    new RestRequest("Infor",Method.POST)
-                    .AddJsonBody(new GenericLogModel{
-                        timestamp = DateTime.Now,
-                        Type = "Warning",
-                        Log = message,
-                        Source = _infor.Name
+                        Source = "ClusterIP : " + IPaddress
                     }));
             });
         }

@@ -37,23 +37,15 @@ namespace WorkerManager
 
             if(REDIS_IP == null)
             {
-                Console.WriteLine("Missing environment variable");
                 Console.WriteLine("Using default connection string");
+                REDIS_IP = "localhost";
+            }
 
-                services.AddStackExchangeRedisCache(options =>
-                {
-                    options.Configuration = "localhost:6379";
-                    options.InstanceName = "Cluster";
-                });
-            }
-            else
+            services.AddStackExchangeRedisCache(options =>
             {
-                services.AddStackExchangeRedisCache(options =>
-                {
-                    options.Configuration = REDIS_IP+":6379";
-                    options.InstanceName = "Cluster";
-                });
-            }
+                options.Configuration = REDIS_IP+":6379";
+                options.InstanceName = "Cluster";
+            });
 
             services.AddControllers();            
             services.AddSwaggerGen(c =>

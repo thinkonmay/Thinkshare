@@ -1,41 +1,69 @@
 import { getCookie } from "./cookie.js"
 
-let currentURL = document.URL
-let subdomain = currentURL.slice(0, 28)
-const host = "https://host.thinkmay.net"
+
+
+var host;
+var Login;
+var Register;
+var Token;
+var Infor;
+var Roles;
+var Session;
+
+var Manager;
+var Cluster;
+var Clusters;
+
+var Setting;
+
+var InitializeSession;
+var TerminateSession;
+var DisconnectSession;
+var ReconnectSession;
+
+var FetchSlave;
+var FetchSession;
+var FetchInfor;
+
+const setup = async () => {
+	if(host != null)
+		return;
+
+	host = await ( (await fetch('API.js')).text() )
+
+
+	Login = `https://${host}/Account/Login`
+	Register = `https://${host}/Account/Register`
+	Token = `https://${host}/Account/ExchangeToken`
+	Infor = `https://${host}/Account/Infor`
+	Roles = `https://${host}/Account/Roles`
+	Session = `https://${host}/Account/History`
+
+	Manager = `https://${host}/Manager/Request`
+	Clusters = `https://${host}/Manager/Cluster`
+	Cluster = `https://${host}/Manager/ManagedCluster/Request`
+
+	Setting = `https://${host}/Setting`
+
+	InitializeSession = `https://${host}/Session/Initialize`
+	TerminateSession = `https://${host}/Session/Terminate`
+	DisconnectSession = `https://${host}/Session/Disconnect`
+	ReconnectSession = `https://${host}/Session/Reconnect`
+
+	FetchSlave = `https://${host}/Fetch/Node`
+	FetchSession = `https://${host}/Fetch/Session`
+	FetchInfor = `https://${host}/Fetch/Worker/Infor`
+}
+
 
 // local api
 export const Dashboard = "/dashboard"
 
 
-// thinkmay api
-// Account API
-const Login = `${host}/Account/Login`
-const Register = `${host}/Account/Register`
-const Token = `${host}/Account/ExchangeToken`
-const Infor = `${host}/Account/Infor`
-const Session = `${host}/Account/History`
-
-const Manager = `${host}/Manager/Request`
-const Cluster = `${host}/Cluster/Request`
-
-const Setting = `${host}/Setting`
-
-// Session API
-const InitializeSession = `${host}/Session/Initialize`
-const TerminateSession = `${host}/Session/Terminate`
-const DisconnectSession = `${host}/Session/Disconnect`
-const ReconnectSession = `${host}/Session/Reconnect`
-
-const SessionInfor = `${host}/Session/Setting`
-
-export const UserHub = `wss://host.thinkmay.net/Hub/User`
-
-// User API
-const FetchSlave = `${host}/Fetch/Node`
-const FetchSession = `${host}/Fetch/Session`
-const FetchInfor = `${host}/Fetch/Worker/Infor`
-
+export const getUserHub = async (token) => {
+	await setup();
+	return `wss://${host}/Hub/User?token=${token}`
+}
 
 export const genHeaders = () => {
 	const token = getCookie("token")
@@ -51,7 +79,8 @@ export const genHeaders = () => {
 	)
 }
 
-export const login = body => {
+export const login = async body => {
+	await setup();
 	return fetch(Login, {
 		method: "POST",
 		headers: genHeaders(),
@@ -62,7 +91,8 @@ export const login = body => {
 	})
 }
 
-export const register = body => {
+export const register = async body => {
+	await setup();
 	return fetch(Register, {
 		method: "POST",
 		headers: genHeaders(),
@@ -82,6 +112,28 @@ export const register = body => {
 
 
 
+export const managerRegister = async des => {
+	await setup();
+	return fetch(`${Manager}?Description=${des}`, {
+		method: "POST",
+		headers: genHeaders(),
+	})
+}
+export const requestCluster = async (name, password)=> {
+	await setup();
+	return fetch(Cluster+`?ClusterName=${name}`, {
+		method: "POST",
+		headers: genHeaders(),
+		body: `"${password}"`
+	})
+}
+export const getClusters = async () => {
+	await setup();
+	return fetch(Clusters, {
+		method: "GET",
+		headers: genHeaders(),
+	})
+}
 
 
 
@@ -91,7 +143,13 @@ export const register = body => {
 
 
 
-export const tokenExchange = body => {
+
+
+
+
+
+export const tokenExchange = async body => {
+	await setup();
 	return fetch(Token, {
 		method: "POST",
 		headers: genHeaders(),
@@ -110,7 +168,8 @@ export const tokenExchange = body => {
 
 
 
-export const fetchSlave = () => {
+export const fetchSlave = async () => {
+	await setup();
 	return fetch(FetchSlave, {
 		method: "GET",
 		headers: genHeaders()
@@ -123,7 +182,8 @@ export const fetchSlave = () => {
 	})
 }
 
-export const fetchSession = () => {
+export const fetchSession = async () => {
+	await setup();
 	return fetch(FetchSession, {
 		method: "GET",
 		headers: genHeaders()
@@ -135,7 +195,8 @@ export const fetchSession = () => {
 		}
 	})
 }
-export const fetchInfor = (workerID) => {
+export const fetchInfor = async (workerID) => {
+	await setup();
 	return fetch(FetchInfor+"?WorkerID="+workerID, {
 		method: "GET",
 	}, function (error) {
@@ -147,7 +208,8 @@ export const fetchInfor = (workerID) => {
 	})
 }
 
-export const getSession = () => {
+export const getSession = async () => {
+	await setup();
 	return fetch(Session, {
 		method: "GET",
 		headers: genHeaders()
@@ -176,7 +238,8 @@ export const getSession = () => {
 
 
 
-export const terminateSession = SlaveID => {
+export const terminateSession = async SlaveID => {
+	await setup();
 	return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
 		method: "DELETE",
 		headers: genHeaders()
@@ -189,7 +252,8 @@ export const terminateSession = SlaveID => {
 	})
 }
 
-export const disconnectSession = SlaveID => {
+export const disconnectSession = async SlaveID => {
+	await setup();
 	return fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
 		method: "POST",
 		headers: genHeaders()
@@ -202,7 +266,8 @@ export const disconnectSession = SlaveID => {
 	})
 }
 
-export const reconnectSession = (SlaveID) => {
+export const reconnectSession = async (SlaveID) => {
+	await setup();
 	return fetch(ReconnectSession + "?SlaveID=" + SlaveID, {
 		method: "POST",
 		headers: genHeaders()
@@ -216,7 +281,8 @@ export const reconnectSession = (SlaveID) => {
 }
 
 
-export const initializeSession = (SlaveID) => {
+export const initializeSession = async (SlaveID) => {
+	await setup();
 	return fetch(InitializeSession + "?SlaveID=" + SlaveID, {
 		method: "POST",
 		headers: genHeaders()
@@ -260,7 +326,8 @@ export const initializeSession = (SlaveID) => {
  * 
  * @returns 
  */
-export const getInfor = () => {
+export const getInfor = async () => {
+	await setup();
 	return fetch(Infor, {
 		method: "GET",
 		headers: genHeaders()
@@ -273,7 +340,27 @@ export const getInfor = () => {
 	})
 }
 
-export const getSetting = () => {
+/**
+ * 
+ * @returns 
+ */
+export const getRoles = async () => {
+	await setup();
+	return fetch(Roles, {
+		method: "GET",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+
+export const getSetting = async () => {
+	await setup();
 	return fetch(Setting+"/Get", {
 		method: "GET",
 		headers: genHeaders()
@@ -286,7 +373,8 @@ export const getSetting = () => {
 	})
 }
 
-export const setInfor = (body) => {
+export const setInfor = async (body) => {
+	await setup();
 	return fetch(Infor, {
 		method: "POST",
 		headers: genHeaders(),
@@ -300,7 +388,8 @@ export const setInfor = (body) => {
 	})
 }
 
-export const setSetting = (body) => {
+export const setSetting = async (body) => {
+	await setup();
 	return fetch(Setting+"/Set", {
 		method: "POST",
 		headers: genHeaders(),

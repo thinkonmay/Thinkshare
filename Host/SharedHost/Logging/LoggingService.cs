@@ -15,7 +15,7 @@ namespace SharedHost.Logging
         void Warning(string message);
         void Worker (GenericLogModel model);
         void Cluster(GenericLogModel model);
-        void Cluster(ErrorLogModel model);
+        void Cluster(ErrorLogModel model,string serverity);
     }
 
     public class Log : ILog
@@ -173,7 +173,7 @@ namespace SharedHost.Logging
             {
                 Task.Run(async () => 
                 {
-                    await _client.ExecuteAsync(new RestRequest($"{ClusterIndex}/_doc",Method.POST)
+                    await _client.ExecuteAsync(new RestRequest($"{WorkerIndex}/_doc",Method.POST)
                         .AddJsonBody(
                             model
                         ));
@@ -186,16 +186,26 @@ namespace SharedHost.Logging
         }
 
 
-        public void Cluster(ErrorLogModel model)
+        public void Cluster(ErrorLogModel model, string serverity)
         {
             if (ElasticSearch)
             {
                 Task.Run(async () => 
                 {
-                    await _client.ExecuteAsync(new RestRequest($"{ClusterIndex}/_doc",Method.POST)
-                        .AddJsonBody(
-                            model
-                        ));
+                    if(serverity == FatalIndex)
+                    {
+                        await _client.ExecuteAsync(new RestRequest($"{FatalIndex}/_doc",Method.POST)
+                            .AddJsonBody(
+                                model
+                            ));
+                    }
+                    else if (serverity == ErrorIndex)
+                    {
+                        await _client.ExecuteAsync(new RestRequest($"{ErrorIndex}/_doc",Method.POST)
+                            .AddJsonBody(
+                                model
+                            ));
+                    }
                 });
             }
             else
@@ -203,6 +213,12 @@ namespace SharedHost.Logging
                 Console.WriteLine($"Error on cluster {model.Message} : {model.StackTrace}");
             }
         }
+
+
+
+
+
+
         public void Cluster(GenericLogModel model)
         {
             if (ElasticSearch)

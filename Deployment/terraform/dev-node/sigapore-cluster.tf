@@ -36,7 +36,7 @@ module "ec2_instance" {
   associate_public_ip_address = true
   availability_zone =    "${var.region}a"
   
-  instance_type          = "c5a.xlarge"
+  instance_type          = "t3.medium"
   key_name = module.key_pair.key_pair_key_name
   monitoring             = true
   
@@ -50,6 +50,10 @@ module "ec2_instance" {
   tags = {
       "Name": "Thinkmay dev node"
   }
+}
+
+output "id" {
+  value = module.ec2_instance.id
 }
 
 output "ip" {

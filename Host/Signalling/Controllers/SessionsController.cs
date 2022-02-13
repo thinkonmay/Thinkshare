@@ -32,7 +32,6 @@ namespace Signalling.Controllers
         [HttpGet("Handshake")]
         public async Task Get(string token)
         {
-            throw new Exception();
             var context = ControllerContext.HttpContext;
             if (context.WebSockets.IsWebSocketRequest)
             {

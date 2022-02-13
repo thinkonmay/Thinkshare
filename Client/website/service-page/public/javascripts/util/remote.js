@@ -38,7 +38,7 @@ async function setupDevice() {
 }
 
 
-export const sessionInitialize = async(SlaveID) => {
+export const sessionInitialize = async (SlaveID) => {
     await setupDevice();
 
     initializeSession(parseInt(SlaveID)).then(async response => {
@@ -47,13 +47,13 @@ export const sessionInitialize = async(SlaveID) => {
             getSetting().then(async _data => {
                 let _body = await _data.json();
 
-                check_remote_condition(SlaveID, token.token, _body.engine);
+                await check_remote_condition(SlaveID, token.token, _body.engine);
             })
         } else {}
     })
 }
 
-export const sessionReconnect = async(SlaveID) => {
+export const sessionReconnect = async (SlaveID) => {
     await setupDevice();
 
     reconnectSession(parseInt(SlaveID)).then(async response => {
@@ -62,14 +62,14 @@ export const sessionReconnect = async(SlaveID) => {
             getSetting().then(async _data => {
                 let _body = await _data.json();
 
-                check_remote_condition(SlaveID, token.token, _body.engine);
+                await check_remote_condition(SlaveID, token.token, _body.engine);
             })
         } else {}
     })
 }
 
 var session_queue = [];
-export function check_remote_condition(workerID, token, engine) {
+export async function check_remote_condition (workerID, token, engine) {
     var item = session_queue.find(x => x.id == workerID);
     if (item == undefined) {
         session_queue.push({ id: workerID, token: token, engine: engine });
@@ -92,16 +92,17 @@ export function check_remote_condition(workerID, token, engine) {
     }
 }
 
-const RemotePageUrl = "https://remote.thinkmay.net/Parsec"
 
-export const getRemotePage = (token, engine) => {
+export const getRemotePage = async (token, engine) => {
     if (engine == CoreEngine('GSTREAMER')) {
         window.location.assign(`thinkmay://token=${token}/`);
     } else {
+        var remote = await ( (await fetch('REMOTE.js')).text() )
+
         var width = window.innerWidth * 0.66;
         // define the height in
         var height = width * window.innerHeight / window.innerWidth;
         // Ratio the hight to the width as the user screen ratio
-        window.open(RemotePageUrl + "?token=" + token, 'newwindow', 'width=' + width + ', height=' + height + ', top=' + ((window.innerHeight - height) / 2) + ', left=' + ((window.innerWidth - width) / 2));
+        window.open(`https://${remote}/Remote?token=${token}`, 'newwindow', 'width=' + width + ', height=' + height + ', top=' + ((window.innerHeight - height) / 2) + ', left=' + ((window.innerWidth - width) / 2));
     }
 }

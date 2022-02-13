@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: frontend-development
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+
+  - host: svcdev.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: service-page
+            port:
+              number: 80
+
+
+  - host: rmtdev.thinkmay.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: remote
+            port:
+              number: 80

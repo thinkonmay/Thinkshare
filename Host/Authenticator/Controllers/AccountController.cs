@@ -117,6 +117,22 @@ namespace Authenticator.Controllers
                     user.Jobs = model.Jobs;
                 }
 
+                UserAccount userWithEmail = await _userManager.FindByEmailAsync(model.Email);
+                if(userWithEmail != null)
+                {
+                    var errors = new List<IdentityError>();
+                    errors.Add(new IdentityError{
+                        Code = "Invalid email",
+                        Description = "This email has been registered as an account"
+                    });
+
+                    return new AuthResponse
+                    {
+                        Errors = errors,
+                        UserName = model.UserName,
+                    };
+                }
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -156,7 +172,6 @@ namespace Authenticator.Controllers
 
                 var payload = await GoogleJsonWebSignature.ValidateAsync(request.token, validationSettings);
                 var user = await _userManager.FindByEmailAsync(payload.Email);
-
                 if (user == null)
                 {
                     user = new UserAccount
@@ -185,7 +200,7 @@ namespace Authenticator.Controllers
                 var resp = new AuthenticationRequest
                 {
                     token = token,
-                    Validator = "host.thinkmay.net"
+                    Validator = "authenticator"
                 };
                 return Ok(resp);
             }
@@ -283,7 +298,21 @@ namespace Authenticator.Controllers
 
 
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [User]
+        [HttpGet("Roles")]
+        public async Task<IActionResult> UserGetRoles()
+        {
+            return Ok(new 
+            {
+                IsAdmin   = (string)HttpContext.Items["IsAdmin"],
+                IsManager = (string)HttpContext.Items["IsManager"],
+                IsUser    = (string)HttpContext.Items["IsUser"],
+            });
+        }
 
 
         /// <summary>
