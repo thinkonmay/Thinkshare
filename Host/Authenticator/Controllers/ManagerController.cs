@@ -21,6 +21,7 @@ using DbSchema.SystemDb.Data;
 using SharedHost.Logging;
 using SharedHost.Models.Auth;
 using System.Text;
+using System.Linq;
 
 namespace Authenticator.Controllers
 {
@@ -65,8 +66,10 @@ namespace Authenticator.Controllers
         [HttpGet("Cluster")]
         public async Task<IActionResult> GetClusters()
         {
+            var result = new List<object>();
             var UserID = int.Parse((string)HttpContext.Items["UserID"]);
-            var result = _db.Clusters.Where(x => x.OwnerID == UserID);
+            var clusters = _db.Clusters.Where(x => x.OwnerID == UserID).ToList();
+            clusters.ForEach(x => result.Add(x.Name));
             return Ok(result);
         }
 
