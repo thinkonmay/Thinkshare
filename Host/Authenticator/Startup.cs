@@ -116,18 +116,18 @@ namespace Authenticator
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
-
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .WithMethods("GET", "POST")
                 .AllowCredentials()
                 .SetIsOriginAllowed(origin => true)); // allow any origin
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "signalling v1"));
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
 
             app.UseRouting();
