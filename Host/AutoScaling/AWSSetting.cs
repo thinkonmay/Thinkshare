@@ -8,5 +8,7 @@
         public string SSHkeyPath {get;set;}
         public string CredentialPath{get;set;}
         public string ConfigPath{get;set;}
+        public string ClusterManagerVersion {get;set;}
+        public string ClusterUIVersion {get;set;}
     }
 }
