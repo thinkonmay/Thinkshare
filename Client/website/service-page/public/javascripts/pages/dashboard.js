@@ -67,6 +67,7 @@ function
 	Utils.newSwal.fire({
 		title: "Registering",
 		text: "Please wait . . .",
+		showConfirmButton: false,
 		didOpen: async () => {
 			if (await isManager()) {
 				var password = document.getElementById("passwordCtrler").value;
