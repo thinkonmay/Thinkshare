@@ -133,6 +133,18 @@ $(document).ready(async () => {
 	document.querySelector(".preloader").style.opacity = "0";
 	document.querySelector(".preloader").style.display = "none";
 
+
+	$('[name="download-app"]').click(function () {
+		let value;
+		fetch('https://api.github.com/repos/thinkonmay/Thinkremote/releases?page=1&per_page=100/assets/')
+			.then(response => response.json())
+			.then(data => {
+				value = data
+				let url = `https://github.com/thinkonmay/Thinkremote/releases/download/${value[0].tag_name}/Thinkremote.msi`
+				window.location.href = url
+			});
+	})
+
 	clusterFormGen(await isManager());
 	if (getCookie("show-tutorial") == "true") {
 		$('#checkboxTutorial').attr("checked", true)
