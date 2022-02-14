@@ -1,4 +1,20 @@
 /* selected  ////////////////////////////////////////////////*/
+.btn-download {
+  border-radius: 3px;
+  background-color: DodgerBlue;
+  border: none;
+  color: white;
+  padding: 12px 30px;
+  margin-left: 40px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Darker background on mouse-over */
+.btn-download:hover {
+  background-color: RoyalBlue;
+}
+
 .control-group {
   display: inline-block;
   vertical-align: top;
@@ -214,7 +230,7 @@ body h1 {
 
 .tabs .slider {
   position: relative;
-  width: 50%;
+  width: 33.33333%;
   transition: all 0.33s cubic-bezier(0.38, 0.8, 0.32, 1.07);
 }
 

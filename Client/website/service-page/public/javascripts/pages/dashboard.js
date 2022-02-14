@@ -242,12 +242,16 @@ $(document).ready(async () => {
 
 	$(".next-tab").click(() => {
 		let value = null;
+		if($('#NativeApp').attr('checked') == 'checked') {
+			value = 'HowToUse'
+			$("#NativeApp").attr('checked', false)
+		}
 		if ($("#HowToUse").attr('checked') == 'checked') {
 			value = 'ShorcutKey';
 			$("#HowToUse").attr('checked', false)
 		}
 		if ($("#ShorcutKey").attr('checked') == 'checked') {
-			value = 'HowToUse';
+			value = 'NativeApp';
 			$("#ShorcutKey").attr('checked', false)
 		}
 		if (value != null) {
