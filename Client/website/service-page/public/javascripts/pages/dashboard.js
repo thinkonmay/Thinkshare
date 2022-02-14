@@ -18,14 +18,12 @@ API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
-function 
-clusterFormGen(isManager)
-{
+function
+	clusterFormGen(isManager) {
 	var form = document.getElementById("ClusterForm");
-	if(isManager === true)
-	{
-		form.innerHTML = 
-		`
+	if (isManager === true) {
+		form.innerHTML =
+			`
 		<label class="col-sm-3 col-form-label">
 			ClusterName
 		</label>
@@ -42,10 +40,9 @@ clusterFormGen(isManager)
 		</div>
 		`;
 	}
-	else
-	{
-		form.innerHTML = 
-		`
+	else {
+		form.innerHTML =
+			`
 		<label class="col-sm-3 col-form-label">
 			<b>Description</b> 
 			<br>
@@ -59,23 +56,22 @@ clusterFormGen(isManager)
 	}
 }
 
-async function 
-isManager(){
+async function
+	isManager() {
 	var isManager = (await (await API.getRoles()).json()).isManager;
 	return isManager === "true";
 }
 
-function 
-managerRegister() {
+function
+	managerRegister() {
 	Utils.newSwal.fire({
 		title: "Registering",
 		text: "Please wait . . .",
 		didOpen: async () => {
-			if(await isManager())
-			{
+			if (await isManager()) {
 				var password = document.getElementById("passwordCtrler").value;
-				var name =     document.getElementById("clusterNameCtrler").value;
-				API.requestCluster(name,password)
+				var name = document.getElementById("clusterNameCtrler").value;
+				API.requestCluster(name, password)
 					.then(async data => {
 						const response = await data.text()
 						if (data.status == 200) {
@@ -83,22 +79,20 @@ managerRegister() {
 								title: "Success",
 								text: `You are able to host your own worker using cluster name ${name}`,
 								icon: "success",
-								didOpen: () => {  }
+								didOpen: () => { }
 							})
-						} else 
-						{
+						} else {
 							Utils.newSwal.fire({
 								title: "Failed",
 								text: `Unable to request cluster ${name}: ${response}`,
 								icon: "error",
-								didOpen: () => {  }
+								didOpen: () => { }
 							})
 						}
 					})
 					.catch(Utils.fetchErrorHandler)
 			}
-			else
-			{
+			else {
 				var des = document.getElementById("descriptionCtrler").value;
 				API.managerRegister(des)
 					.then(async data => {
@@ -242,7 +236,7 @@ $(document).ready(async () => {
 
 	$(".next-tab").click(() => {
 		let value = null;
-		if($('#NativeApp').attr('checked') == 'checked') {
+		if ($('#NativeApp').attr('checked') == 'checked') {
 			value = 'HowToUse'
 			$("#NativeApp").attr('checked', false)
 		}
@@ -468,29 +462,43 @@ function setState(serviceState, slaveID, queue) {
 
 	if (serviceState === "ON_SESSION") {
 
-		var initbutt = document.getElementById(`disconnect${slaveID}`)
-		initbutt.addEventListener("click", async function () {
+		var initbtn = document.getElementById(`disconnect${slaveID}`)
+		initbtn.addEventListener("click", async function () {
 			await API.disconnectSession(slaveID)
 		});
-		var terminatebutt = document.getElementById(`terminate${slaveID}`)
-		terminatebutt.addEventListener("click", async function () {
+		var terminatebtn = document.getElementById(`terminate${slaveID}`)
+		terminatebtn.addEventListener("click", async function () {
 			await API.terminateSession(slaveID)
 		});
 	}
 	if (serviceState === "OFF_REMOTE") {
-		var recbutt = document.getElementById(`reconnect${slaveID}`)
-		recbutt.addEventListener("click", async function () {
-			RemotePage.sessionReconnect(slaveID)
+		var recbtn = document.getElementById(`reconnect${slaveID}`)
+		recbtn.addEventListener("click", async function () {
+			Utils.newSwal.fire({
+				title: "Processing",
+				text: "Wait a minute . . .",
+				didOpen: () => {
+					Swal.showLoading()
+					RemotePage.sessionReconnect(slaveID)
+				}
+			})
 		});
-		var terminatebutt = document.getElementById(`terminate${slaveID}`)
-		terminatebutt.addEventListener("click", async function () {
+		var terminatebtn = document.getElementById(`terminate${slaveID}`)
+		terminatebtn.addEventListener("click", async function () {
 			await API.terminateSession(slaveID)
 		});;
 	}
 	if (serviceState === "DEVICE_OPEN") {
-		var connbutt = document.getElementById(`connect${slaveID}`)
-		connbutt.addEventListener("click", async function () {
-			RemotePage.sessionInitialize(slaveID)
+		var connectbtn = document.getElementById(`connect${slaveID}`)
+		connectbtn.addEventListener("click", async function () {
+			Utils.newSwal.fire({
+				title: "Processing",
+				text: "Wait a minute . . .",
+				didOpen: () => {
+					Swal.showLoading()
+					RemotePage.sessionInitialize(slaveID)
+				}
+			})
 		});
 	}
 }

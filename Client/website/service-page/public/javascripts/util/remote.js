@@ -3,6 +3,8 @@ import { reconnectSession } from "./api.js"
 import { initializeSession } from "./api.js"
 import { isElectron } from "./checkdevice.js"
 import { Codec, CoreEngine, DeviceType } from "../pages/setting.js"
+import * as Utils from "./utils.js"
+
 
 ////////////// setting
 async function setupDevice() {
@@ -49,7 +51,7 @@ export const sessionInitialize = async (SlaveID) => {
 
                 await check_remote_condition(SlaveID, token.token, _body.engine);
             })
-        } else {}
+        } else { }
     })
 }
 
@@ -64,12 +66,12 @@ export const sessionReconnect = async (SlaveID) => {
 
                 await check_remote_condition(SlaveID, token.token, _body.engine);
             })
-        } else {}
+        } else { }
     })
 }
 
 var session_queue = [];
-export async function check_remote_condition (workerID, token, engine) {
+export async function check_remote_condition(workerID, token, engine) {
     var item = session_queue.find(x => x.id == workerID);
     if (item == undefined) {
         session_queue.push({ id: workerID, token: token, engine: engine });
@@ -90,6 +92,13 @@ export async function check_remote_condition (workerID, token, engine) {
             }
         }
     }
+    Utils.newSwal.fire({
+        title: "Successfully!",
+        text: "Connect to device successfully",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 1500
+    })
 }
 
 
@@ -97,7 +106,7 @@ export const getRemotePage = async (token, engine) => {
     if (engine == CoreEngine('GSTREAMER')) {
         window.location.assign(`thinkmay://token=${token}/`);
     } else {
-        var remote = await ( (await fetch('REMOTE.js')).text() )
+        var remote = await ((await fetch('REMOTE.js')).text())
 
         var width = window.innerWidth * 0.66;
         // define the height in
