@@ -769,13 +769,13 @@
   <script>
     function WindowsVersion() {
       let value;
-      fetch('https://api.github.com/repos/thinkonmay/personal-cloud-computing/releases?page=1&per_page=100/assets/')
+      fetch('https://api.github.com/repos/thinkonmay/Thinkremote/releases?page=1&per_page=100/assets/')
         .then(response => response.json())
         .then(data => {
           value = data
           document.getElementById('WindowsTagName').innerHTML = ``
           for (let i in value) {
-            let url = `https://github.com/thinkonmay/personal-cloud-computing/releases/download/${value[i].tag_name}/personal-cloud-computing-window.msi`
+            let url = `https://github.com/thinkonmay/Thinkremote/releases/download/${value[i].tag_name}/Thinkremote.msi`
             if (i == 0)
               document.getElementById('WindowsTagName').innerHTML += `<li class="n1"> <a href="${url}"> ${value[i].tag_name} (Highly Recommended) </a></li>`
             else
@@ -783,7 +783,6 @@
 
           }
         });
-
     }
   </script>
 
