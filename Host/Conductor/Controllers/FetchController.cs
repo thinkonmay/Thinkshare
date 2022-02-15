@@ -58,11 +58,17 @@ namespace Conductor.Controllers
             var result = new Dictionary<int,string>();
             var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
             var allowedWorkers = await _rbac.AllowedWorker(UserID); 
-            allowedWorkers.ForEach(x => Task.Run(async () => {
-                if(await _cache.GetWorkerState(x.ID) == WorkerState.Open) {
-                    result.Add(x.ID,WorkerState.Open);
-                }}).Wait());
+            allowedWorkers.ForEach(x => result.Add(x.ID,WorkerState.Open));
             return Ok(result);
+        }
+
+        [User]
+        [HttpGet("Cluster")]
+        public async Task<IActionResult> FetchCluster()
+        {
+            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
+            var allowedClusters = await _rbac.AllowedCluster(UserID); 
+            return Ok(allowedClusters);
         }
 
 

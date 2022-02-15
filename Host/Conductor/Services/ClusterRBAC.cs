@@ -30,12 +30,13 @@ namespace Conductor.Services
         public async Task<List<GlobalCluster>> AllowedCluster(int UserID)
         {
             var clusters = new List<GlobalCluster>();
+
             _db.Roles.Where(x => x.UserID == UserID).ToList()
                 .ForEach(x => clusters.Add(x.Cluster));
 
             _db.Clusters.Where(x => x.OwnerID == UserID).ToList()
                 .ForEach(x => clusters.Add(x));
-                
+
             return clusters;
         }
 
@@ -47,7 +48,7 @@ namespace Conductor.Services
 
             workers.ForEach(x => Task.Run(async () => {
                 var isOpen = (await _cache.GetWorkerState(x.ID)) == WorkerState.Open;
-                var obtained = _db.RemoteSessions.Where(x => x.WorkerID == x.ID && !x.EndTime.HasValue).Any();
+                var obtained = _db.RemoteSessions.Where(y => y.WorkerID == x.ID && !y.EndTime.HasValue).Any();
                 if(!isOpen || obtained) { workers.Remove(x); }
             }).Wait());
            
@@ -74,20 +75,12 @@ namespace Conductor.Services
             var ClusterID = _db.Clusters
                 .Where(x => x.WorkerNode.Contains(worker)).First().ID;
 
-            var guestRole = _db.Roles.Where(x => 
-                                 (x.UserID == UserID) &&
-                                 (x.ClusterID == ClusterID) &&
-                                 (x.Start < DateTime.Now) &&
-                                 (DateTime.Now < x.Endtime));
-
-            var ownerRole = _db.Clusters.Where(x => x.OwnerID == UserID &&
-                                 x.ID == ClusterID);
-
+            var isAllowed = await IsAllowedCluster(UserID,WorkerID);
 
             var isOpen = (await _cache.GetWorkerState(WorkerID)) == WorkerState.Open;
             var obtained = _db.RemoteSessions.Where(x => x.WorkerID == WorkerID && !x.EndTime.HasValue).Any();
 
-            return (((guestRole != null) || (ownerRole != null)) && isOpen && !obtained);
+            return (isAllowed && isOpen && !obtained);
         }
     }
 }
