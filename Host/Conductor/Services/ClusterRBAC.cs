@@ -61,10 +61,9 @@ namespace Conductor.Services
         public bool IsAllowedWorker(int UserID, int WorkerID)
         {
             var worker = _db.Devices.Find(WorkerID);
-            var ClusterID = _db.Clusters
-                .Where(x => x.WorkerNode.Contains(worker)).First().ID;
+            var ClusterID = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First().ID;
 
-            var isAllowed = IsAllowedCluster(UserID,WorkerID);
+            var isAllowed = IsAllowedCluster(UserID,ClusterID);
             var obtained = _db.RemoteSessions.Where(x => x.WorkerID == WorkerID && !x.EndTime.HasValue).Any();
 
             return isAllowed && !obtained;
