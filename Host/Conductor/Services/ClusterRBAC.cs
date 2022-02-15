@@ -17,11 +17,7 @@ namespace Conductor.Services
     {
         private readonly GlobalDbContext _db;
 
-        private readonly IGlobalStateStore _cache;
-
-        public ClusterRBAC(IOptions<SystemConfig> config, 
-                            GlobalDbContext dbContext, 
-                            IGlobalStateStore cache)
+        public ClusterRBAC( GlobalDbContext dbContext)
         {
             _db = dbContext;
         }
@@ -45,16 +41,10 @@ namespace Conductor.Services
             var workers = new List<WorkerNode>();
             var clusters = await AllowedCluster(UserID);
             clusters.ForEach(x => x.WorkerNode.ForEach(y => workers.Add(y)));
-            workers.RemoveAll(x => {
-                var remove = false;
-                Task.Run(async () => remove = !await IsAllowedWorker(UserID,x.ID)).Wait();
-                return remove;
-            });
-           
             return workers;
         }
 
-        public async Task<bool> IsAllowedWorker(int UserID, int ClusterID)
+        public bool IsAllowedCluster(int UserID, int ClusterID)
         {
             var guestRole = _db.Roles.Where(x => 
                                  (x.UserID == UserID) &&
@@ -68,18 +58,16 @@ namespace Conductor.Services
             return guestRole || ownerRole;
         }
 
-        public async Task<bool> IsAllowedCluster(int UserID, int WorkerID)
+        public bool IsAllowedWorker(int UserID, int WorkerID)
         {
             var worker = _db.Devices.Find(WorkerID);
             var ClusterID = _db.Clusters
                 .Where(x => x.WorkerNode.Contains(worker)).First().ID;
 
-            var isAllowed = await IsAllowedCluster(UserID,WorkerID);
-
-            var isOpen = (await _cache.GetWorkerState(WorkerID)) == WorkerState.Open;
+            var isAllowed = IsAllowedCluster(UserID,WorkerID);
             var obtained = _db.RemoteSessions.Where(x => x.WorkerID == WorkerID && !x.EndTime.HasValue).Any();
 
-            return (isAllowed && isOpen && !obtained);
+            return isAllowed && !obtained;
         }
     }
 }

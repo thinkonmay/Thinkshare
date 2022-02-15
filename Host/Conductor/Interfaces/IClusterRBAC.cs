@@ -7,9 +7,9 @@ namespace Conductor.Interfaces
 {
     public interface IClusterRBAC
     {
-        Task<bool> IsAllowedCluster(int UserID, int ClusterID);
+        bool IsAllowedCluster(int UserID, int ClusterID);
 
-        Task<bool> IsAllowedWorker(int UserID, int WorkerID);
+        bool IsAllowedWorker(int UserID, int WorkerID);
 
         Task<List<WorkerNode>> AllowedWorker(int UserID);
 
