@@ -41,16 +41,12 @@ namespace Conductor.Services
             var clusters = await this.AllowedCluster(UserID);
             clusters.ForEach(x => x.WorkerNode.ForEach(y => workers.Add(y)));
 
-            for(int i = 0; i < workers.Count(); i++)
-            {
-                var x = workers[i]; 
+            workers.ForEach(x => Task.Run(async () => {
                 var isOpen = (await _cache.GetWorkerState(x.ID)) == WorkerState.Open;
                 var obtained = _db.RemoteSessions.Where(x => x.WorkerID == x.ID && !x.EndTime.HasValue).Any();
-                if(!isOpen || obtained)
-                {
-                    workers.RemoveAt(i);
-                }
-            }
+                if(!isOpen || obtained) { workers.Remove(x); }
+            }).Wait());
+           
             return workers;
         }
 

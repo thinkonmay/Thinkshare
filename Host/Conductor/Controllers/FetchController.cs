@@ -58,11 +58,10 @@ namespace Conductor.Controllers
             var result = new Dictionary<int,string>();
             var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
             var allowedWorkers = await _rbac.AllowedWorker(UserID); 
-            allowedWorkers.ForEach(async x => {
-                if(await _cache.GetWorkerState(x.ID) == WorkerState.Open)
-                {
+            allowedWorkers.ForEach(x => Task.Run(async () => {
+                if(await _cache.GetWorkerState(x.ID) == WorkerState.Open) {
                     result.Add(x.ID,WorkerState.Open);
-                }});
+                }}).Wait());
             return Ok(result);
         }
 
@@ -77,9 +76,9 @@ namespace Conductor.Controllers
                                                         (s.StartTime.HasValue) &&
                                                        !(s.EndTime.HasValue)).ToList();
             
-            session.ForEach(async x => {
+            session.ForEach(x => Task.Run(async () => {
                 result.TryAdd(x.WorkerID, await _cache.GetWorkerState(x.WorkerID));
-                });
+                }).Wait());
             return Ok(result);
         }
 
