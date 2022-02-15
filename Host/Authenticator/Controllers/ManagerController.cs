@@ -106,7 +106,6 @@ namespace Authenticator.Controllers
                 Name = ClusterName,
                 Register = DateTime.Now,
 
-                Private = true,
                 SelfHost = false,
 
                 InstanceID = instance.ID,

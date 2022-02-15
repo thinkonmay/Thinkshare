@@ -28,15 +28,11 @@ namespace Conductor.Controllers
             _db = db;
         }
 
-
-
         [HttpGet("Model/All")]
         public IActionResult Model()
         {
             var model = _db.ScriptModels.ToList();
             return Ok(model);
         }
-
-
     }
 }

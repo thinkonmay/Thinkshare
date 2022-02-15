@@ -42,19 +42,23 @@ namespace Conductor.Controllers
 
         private readonly ILog _log;
 
+        private readonly IClusterRBAC _rbac;
+
         public SessionController(GlobalDbContext db,
                                 IOptions<SystemConfig> config,
                                 IWorkerCommnader slmsocket,
                                 IGlobalStateStore cache,
+                                IClusterRBAC rbac,
                                 ILog log,
                                 UserManager<UserAccount> userManager)
         {
             _db = db;
             _log = log;
+            _rbac = rbac;
             _cache = cache;
             _Cluster = slmsocket;
-            _userManager = userManager;
             _config = config.Value;
+            _userManager = userManager;
         }
 
         [User]
@@ -62,18 +66,12 @@ namespace Conductor.Controllers
         public async Task<IActionResult> Create(int SlaveID)
         {
             var UserID = Int32.Parse((string)HttpContext.Items["UserID"]);
-
             var worker = _db.Devices.Find(SlaveID);
-            var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
-            if(globalCluster.Private && globalCluster.OwnerID != UserID) {return Unauthorized();}
+            var globalCluster = _db.Clusters
+                .Where(x => x.WorkerNode.Contains(worker)).First();
 
-            var workerState = await _Cluster.GetWorkerState(SlaveID);
-
-            // search for availability of slave device
-            if (workerState != WorkerState.Open ||
-                _db.RemoteSessions.Where(x => x.WorkerID == SlaveID && 
-                                             !x.EndTime.HasValue).Any())
-            { return BadRequest("Device Not Available"); }
+            if(!await _rbac.IsAllowedWorker(UserID,SlaveID))
+                return Unauthorized();
 
             /*create new session with gevin session request from user*/
             var sess = new RemoteSession()
@@ -195,7 +193,7 @@ namespace Conductor.Controllers
             var UserID = HttpContext.Items["UserID"];
 
             // get session from database
-            var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID&& 
+            var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID && 
                                                s.ClientId == Int32.Parse(UserID.ToString())&& 
                                                s.StartTime.HasValue &&
                                               !s.EndTime.HasValue);

@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\PortForward.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\GlobalCluster.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\ClusterRBAC.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\ClusterCredential.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\Message\EventModel.cs" />
