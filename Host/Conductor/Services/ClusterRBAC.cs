@@ -44,12 +44,9 @@ namespace Conductor.Services
         {
             var workers = new List<WorkerNode>();
             var clusters = await AllowedCluster(UserID);
-            clusters.ForEach(x => x.WorkerNode.ForEach(y => workers.Add(y)));
-
+            clusters.ForEach(x => x.WorkerNode.ForEach(y => workers.Add(y)))
             workers.ForEach(x => Task.Run(async () => {
-                var isOpen = (await _cache.GetWorkerState(x.ID)) == WorkerState.Open;
-                var obtained = _db.RemoteSessions.Where(y => y.WorkerID == x.ID && !y.EndTime.HasValue).Any();
-                if(!isOpen || obtained) { workers.Remove(x); }
+                if(!await IsAllowedWorker(UserID,x.ID)) { workers.Remove(x); }
             }).Wait());
            
             return workers;
@@ -61,12 +58,12 @@ namespace Conductor.Services
                                  (x.UserID == UserID) &&
                                  (x.ClusterID == ClusterID) &&
                                  (x.Start < DateTime.Now) &&
-                                 (DateTime.Now < x.Endtime));
+                                 (DateTime.Now < x.Endtime)).Any();
 
             var ownerRole = _db.Clusters.Where(x => x.OwnerID == UserID &&
-                                 x.ID == ClusterID);
+                                 x.ID == ClusterID).Any();
 
-            return ((guestRole != null) || (ownerRole != null));
+            return guestRole || ownerRole;
         }
 
         public async Task<bool> IsAllowedCluster(int UserID, int WorkerID)
