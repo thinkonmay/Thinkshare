@@ -32,13 +32,17 @@ namespace Conductor.Services
             var clusters = new List<GlobalCluster>();
             _db.Roles.Where(x => x.UserID == UserID).ToList()
                 .ForEach(x => clusters.Add(x.Cluster));
+
+            _db.Clusters.Where(x => x.OwnerID == UserID).ToList()
+                .ForEach(x => clusters.Add(x));
+                
             return clusters;
         }
 
         public async Task<List<WorkerNode>> AllowedWorker(int UserID)
         {
             var workers = new List<WorkerNode>();
-            var clusters = await this.AllowedCluster(UserID);
+            var clusters = await AllowedCluster(UserID);
             clusters.ForEach(x => x.WorkerNode.ForEach(y => workers.Add(y)));
 
             workers.ForEach(x => Task.Run(async () => {
