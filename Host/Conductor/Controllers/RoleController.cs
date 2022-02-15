@@ -53,20 +53,24 @@ namespace Conductor.Controllers
 
 
         [Cluster]
-        [HttpPost("Grant")]
+        [HttpPost("Role")]
         public async Task<IActionResult> GrantAccess(string UserName, 
                                                      DateTime start, 
-                                                     DateTime end,
-                                                     string Description)
+                                                     DateTime? end,
+                                                     [FromBody] string Description)
         {
-            var account = _userManager.FindByNameAsync(UserName);
             var ClusterID = Int32.Parse(HttpContext.Items["ClusterID"].ToString());
+
+            var account = _userManager.FindByNameAsync(UserName);
+            if(account == null)
+                return BadRequest("Cannot find this account");
+
             var role = new ClusterRole 
             {
                 UserID = account.Id,
                 ClusterID = ClusterID,
                 Start = start,
-                Endtime = end,
+                Endtime = end ? end : null,
                 Description = Description
             };
             _db.Roles.Add(role);
@@ -75,8 +79,8 @@ namespace Conductor.Controllers
         }
 
         [Cluster]
-        [HttpPost("Remove")]
-        public async Task<IActionResult> GrantAccess(int RoleID) 
+        [HttpDelete("Role")]
+        public async Task<IActionResult> DeleteAccess(int RoleID) 
         {
             var ClusterID = Int32.Parse(HttpContext.Items["ClusterID"].ToString());
             var role = _db.Roles.Find(RoleID);
@@ -87,6 +91,16 @@ namespace Conductor.Controllers
             _db.Roles.Update(role);
             await _db.SaveChangesAsync();
             return Ok();
+        }
+
+        [Cluster]
+        [HttpGet("Role")]
+        public async Task<IActionResult> DeleteAccess() 
+        {
+            var ClusterID = Int32.Parse(HttpContext.Items["ClusterID"].ToString());
+            var roles = _db.Roles.Where(x => (x.ClusterID = ClusterID) &&
+                                             (DateTime.Now < x.Endtime));
+            return Ok(roles);
         }
     }
 }

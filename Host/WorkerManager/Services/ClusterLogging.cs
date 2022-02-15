@@ -21,7 +21,7 @@ namespace WorkerManager.Services
         public Log(IOptions<ClusterConfig> config)
         {
             _config = config.Value;
-            _client = new RestClient(_config.LogUrl);
+            _client = new RestClient($"https://{_config.Domain}{_config.LogUrl}");
             GetClusterInfor();
         }
 

@@ -52,7 +52,7 @@ namespace WorkerManager
                 var _config = scope.ServiceProvider.GetRequiredService<IOptions<ClusterConfig>>().Value;
                 var _cache  = scope.ServiceProvider.GetRequiredService<ILocalStateStore>();
                 var _client = new RestClient();
-                var request = new RestRequest(new Uri(_config.ScriptModelUrl));
+                var request = new RestRequest(new Uri($"https://{_config.Domain}{_config.ScriptModelUrl}"));
                 request.Method = Method.GET;
 
                 var result = await _client.ExecuteAsync(request);
