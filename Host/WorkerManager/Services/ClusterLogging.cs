@@ -51,30 +51,32 @@ namespace WorkerManager.Services
 
         public void Worker(string information, string WorkerID)
         {
-            Console.WriteLine($"worker log output {information}");
+            Console.WriteLine("worker log output :");
+            Console.WriteLine(information);
             Task.Run(async () => 
             {
                 await _client.ExecuteAsync(
                     new RestRequest("Worker",Method.POST)
                     .AddJsonBody(new GenericLogModel{
-                        timestamp = DateTime.Now,
-                        Type = "Worker",
                         Log = information,
+                        timestamp = DateTime.Now,
+                        Type = "Worker generic log",
                         Source = $"workerID : {WorkerID.ToString()}"
                     }));
             });
         }
-        public void Worker(string information, string WorkerID, string ModelID)
+        public void Worker(string output, string WorkerID, string ModelID)
         {
-            Console.WriteLine($"worker log output {information}");
+            Console.WriteLine("worker log script output :");
+            Console.WriteLine(output);
             Task.Run(async () => 
             {
                 await _client.ExecuteAsync(
                     new RestRequest("Worker",Method.POST)
                     .AddJsonBody(new GenericLogModel{
+                        Log = output,
                         timestamp = DateTime.Now,
-                        Type = $"Worker Script Model {ModelID}",
-                        Log = information,
+                        Type = $"Worker script output, model: {ModelID}",
                         Source = $"workerID : {WorkerID.ToString()}"
                     }));
             });
@@ -82,7 +84,7 @@ namespace WorkerManager.Services
 
         public void Error(string message, Exception exception)
         {
-            Console.WriteLine($"{message} : {exception.Message} at {exception.StackTrace}");
+            Console.WriteLine($"{message} : {exception.Message} \nat {exception.StackTrace}");
             Task.Run(async () => 
             {
                 await _client.ExecuteAsync(
@@ -99,19 +101,17 @@ namespace WorkerManager.Services
 
         public static void Fatal(string message, Exception ex)
         {
-            Console.WriteLine($"[FATAL]: {ex.Message} : {ex.StackTrace}");
+            Console.WriteLine($"[FATAL]: {ex.Message} : at\n{ex.StackTrace}");
             Task.Run(async () => 
             {
-                var result = await (new RestClient()).ExecuteAsync(
-                    new RestRequest($"Fatal",Method.POST)
+                var result = await (new RestClient("https://host.thinkmay.net/Log")).ExecuteAsync(
+                    new RestRequest("Fatal",Method.POST)
                         .AddJsonBody(new ErrorLogModel{
                             timestamp = DateTime.Now,
                             StackTrace = ex.StackTrace,
                             Message = ex.Message,
                             Log = message,
                         }));
-                if(result.StatusCode != HttpStatusCode.OK) 
-                    throw new Exception();
             }).Wait();
         }
     }

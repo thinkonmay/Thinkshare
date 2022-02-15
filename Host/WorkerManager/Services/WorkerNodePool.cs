@@ -33,32 +33,24 @@ namespace WorkerManager.Services
 
         public bool Start()
         {
-            if(!isRunning)
-            {
-                isRunning = true;
-                _systemHeartBeat =  Task.Run(() => SystemHeartBeat());
-                _workerShell =      Task.Run(() => GetWorkerMetric());
-                return true;
-            }
-            else
-            {
+            if(isRunning)
                 return false;
-            }
+
+            isRunning = true;
+            _systemHeartBeat =  Task.Run(() => SystemHeartBeat());
+            _workerShell =      Task.Run(() => GetWorkerMetric());
+            return true;
         }
 
         public bool Stop()
         {
-            if(isRunning)
-            {
-                isRunning = false;
-                _workerShell.Wait();
-                _systemHeartBeat.Wait();
-                return true;
-            }
-            else
-            {
+            if(!isRunning)
                 return false;
-            }
+
+            isRunning = false;
+            _workerShell.Wait();
+            _systemHeartBeat.Wait();
+            return true;
         }
 
 
