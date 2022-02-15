@@ -44,7 +44,7 @@ namespace Conductor.Services
         {
             var workers = new List<WorkerNode>();
             var clusters = await AllowedCluster(UserID);
-            clusters.ForEach(x => x.WorkerNode.ForEach(y => workers.Add(y)))
+            clusters.ForEach(x => x.WorkerNode.ForEach(y => workers.Add(y)));
             workers.ForEach(x => Task.Run(async () => {
                 if(!await IsAllowedWorker(UserID,x.ID)) { workers.Remove(x); }
             }).Wait());
