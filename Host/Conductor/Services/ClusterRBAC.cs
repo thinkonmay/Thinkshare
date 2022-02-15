@@ -27,10 +27,13 @@ namespace Conductor.Services
         {
             var clusters = new List<GlobalCluster>();
 
-            _db.Roles.Where(x => x.UserID == UserID).ToList()
+            _db.Roles.Where(x => (x.UserID == UserID) && 
+                                 (x.Endtime > DateTime.Now) &&
+                                 (x.Start < DateTime.Now)).ToList()
                 .ForEach(x => clusters.Add(x.Cluster));
 
-            _db.Clusters.Where(x => x.OwnerID == UserID).ToList()
+            _db.Clusters.Where(x => (x.OwnerID == UserID) && 
+                                    (!x.Unregister.HasValue)).ToList()
                 .ForEach(x => clusters.Add(x));
 
             return clusters;
