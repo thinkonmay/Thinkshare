@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\EC2Instance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\EC2KeyPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\PortForward.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\InstanceSetting.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\GlobalCluster.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\ClusterRBAC.cs" />

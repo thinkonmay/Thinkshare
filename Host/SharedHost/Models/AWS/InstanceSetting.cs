@@ -1,4 +1,4 @@
-namespace AutoScaling
+namespace SharedHost.Models.AWS
 {
     public class InstanceSetting 
     {
