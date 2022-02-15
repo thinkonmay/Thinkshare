@@ -80,7 +80,6 @@ namespace AutoScaling.Controllers
                     Name = ClusterName,
                     Register = DateTime.Now,
 
-                    Private = true,
                     SelfHost = true,
 
                     InstanceID = instance.ID,
@@ -152,7 +151,6 @@ namespace AutoScaling.Controllers
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
-            Cluster.Private = Private;
             Cluster.SelfHost = SelfHost;
 
             _db.Update(Cluster);

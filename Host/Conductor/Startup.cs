@@ -97,7 +97,9 @@ namespace Conductor
             services.AddTransient<IClientHub,ClientHub>();
             services.AddTransient<IWorkerCommnader,WorkerCommander>();
             services.AddTransient<IGlobalStateStore,GlobalStateStore>();
+            services.AddTransient<IClusterRBAC,ClusterRBAC>();
             services.AddSingleton<ILog, Log>();
+
             services.Configure<SystemConfig>(Configuration.GetSection("SystemConfig"));
         }
 

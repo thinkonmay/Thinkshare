@@ -23,18 +23,6 @@ namespace WorkerManager.Services
             _cache = cache;
         }
 
-        public async Task<bool> IsPrivate()
-        {
-            var cluster = await _cache.GetClusterInfor();
-
-            var request = new RestRequest(_config.ClusterInforUrl, Method.GET)
-                .AddHeader("Authorization",cluster.ClusterToken);
-            var instanceResult = (await (new RestClient()).ExecuteAsync(request));
-
-            var instance =  JsonConvert.DeserializeObject<GlobalCluster>(instanceResult.Content);
-            return instance.Private;
-        }
-
         public async Task<bool> IsSelfHost()
         {
             var cluster = await _cache.GetClusterInfor();

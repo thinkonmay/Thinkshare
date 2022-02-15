@@ -14,9 +14,6 @@ using SharedHost.Logging;
 
 namespace Conductor.Controllers
 {
-    /// <summary>
-    /// Routes used by user to fetch information about the system
-    /// </summary>
     [ApiController]
     [Route("/Fetch")]
     [Produces("application/json")]
@@ -32,17 +29,21 @@ namespace Conductor.Controllers
 
         private readonly ILog _log;
 
+        private readonly IClusterRBAC _rbac;
+
 
         public FetchController(GlobalDbContext db, 
                             UserManager<UserAccount> userManager,
                             ILog log,
+                            IClusterRBAC rbac,
                             IWorkerCommnader slm,
                             IGlobalStateStore cache)
         {
-            _cache = cache;
-            _slmsocket = slm;
             _db = db;
             _log = log;
+            _rbac = rbac;
+            _cache = cache;
+            _slmsocket = slm;
             _userManager = userManager;
         }
 
@@ -54,22 +55,20 @@ namespace Conductor.Controllers
         [HttpGet("Node")]
         public async Task<IActionResult> FetchNode()
         {
-            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
-            var publicCluster = _db.Clusters.Where(x => x.Private == false || x.OwnerID == UserID );
-
             var result = new Dictionary<int,string>();
-            foreach (var cluster in publicCluster)
-            {
-                var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
-                foreach (var state in snapshoot)
-                {
-                    if (state.Value == WorkerState.Open)
-                    {
-                        result.TryAdd(state.Key,state.Value);
-                    }
-                }
-            }
+            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
+            var allowedWorkers = await _rbac.AllowedWorker(UserID); 
+            allowedWorkers.ForEach(x => result.Add(x.ID,WorkerState.Open));
             return Ok(result);
+        }
+
+        [User]
+        [HttpGet("Cluster")]
+        public async Task<IActionResult> FetchCluster()
+        {
+            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
+            var allowedClusters = await _rbac.AllowedCluster(UserID); 
+            return Ok(allowedClusters);
         }
 
 
@@ -79,17 +78,13 @@ namespace Conductor.Controllers
         {
             var result = new Dictionary<int,string>();
             var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
-            var session = _db.RemoteSessions.Where(s => s.ClientId == UserID &&
-                                                   s.StartTime.HasValue &&
-                                                  !s.EndTime.HasValue).ToList();
+            var session = _db.RemoteSessions.Where(s => (s.ClientId == UserID) &&
+                                                        (s.StartTime.HasValue) &&
+                                                       !(s.EndTime.HasValue)).ToList();
             
-            _log.Information("Fetching session from cache");
-            _log.Information("User "+UserID+" has "+session.Count().ToString()+" session");
-
-            foreach (var x in session)
-            {
+            session.ForEach(x => Task.Run(async () => {
                 result.TryAdd(x.WorkerID, await _cache.GetWorkerState(x.WorkerID));
-            }
+                }).Wait());
             return Ok(result);
         }
 
