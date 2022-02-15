@@ -477,6 +477,16 @@ async function createSlave(workerID, workerState, queue) {
         </div>
       </div>
     </div>`)
+
+	if (workerState == "OFF_REMOTE" && queue != null) {
+		Utils.newSwal.fire({
+			title: "Successfully!",
+			text: "You was out of control Device",
+			icon: "info",
+			showConfirmButton: false,
+			timer: 1500
+		})
+	}
 	setState(workerState, slave.id, queue);
 }
 

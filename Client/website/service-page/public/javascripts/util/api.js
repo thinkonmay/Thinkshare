@@ -1,5 +1,5 @@
 import { getCookie } from "./cookie.js"
-
+import * as Utils from "../util/utils.js"
 
 
 var host;
@@ -26,10 +26,10 @@ var FetchSession;
 var FetchInfor;
 
 const setup = async () => {
-	if(host != null)
+	if (host != null)
 		return;
 
-	host = await ( (await fetch('API.js')).text() )
+	host = await ((await fetch('API.js')).text())
 
 
 	Login = `https://${host}/Account/Login`
@@ -119,9 +119,9 @@ export const managerRegister = async des => {
 		headers: genHeaders(),
 	})
 }
-export const requestCluster = async (name, password)=> {
+export const requestCluster = async (name, password) => {
 	await setup();
-	return fetch(Cluster+`?ClusterName=${name}`, {
+	return fetch(Cluster + `?ClusterName=${name}`, {
 		method: "POST",
 		headers: genHeaders(),
 		body: `"${password}"`
@@ -197,7 +197,7 @@ export const fetchSession = async () => {
 }
 export const fetchInfor = async (workerID) => {
 	await setup();
-	return fetch(FetchInfor+"?WorkerID="+workerID, {
+	return fetch(FetchInfor + "?WorkerID=" + workerID, {
 		method: "GET",
 	}, function (error) {
 		if (401 == error.response.status) {
@@ -240,30 +240,45 @@ export const getSession = async () => {
 
 export const terminateSession = async SlaveID => {
 	await setup();
-	return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
-		method: "DELETE",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
+	Utils.newSwal.fire({
+		title: "Processing",
+		text: "Wait a minute . . .",
+		didOpen: () => {
+			Swal.showLoading()
+			return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
+				method: "DELETE",
+				headers: genHeaders()
+			}, function (error) {
+				if (401 == error.response.status) {
+					window.location.replace(API.Login)
+				} else {
+					return Promise.reject(error);
+				}
+			})
 		}
 	})
 }
 
 export const disconnectSession = async SlaveID => {
 	await setup();
-	return fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
-		method: "POST",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
+	Utils.newSwal.fire({
+		title: "Processing",
+		text: "Wait a minute . . .",
+		didOpen: () => {
+			Swal.showLoading()
+			return fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
+				method: "POST",
+				headers: genHeaders()
+			}, function (error) {
+				if (401 == error.response.status) {
+					window.location.replace(API.Login)
+				} else {
+					return Promise.reject(error);
+				}
+			})
 		}
 	})
+
 }
 
 export const reconnectSession = async (SlaveID) => {
@@ -361,7 +376,7 @@ export const getRoles = async () => {
 
 export const getSetting = async () => {
 	await setup();
-	return fetch(Setting+"/Get", {
+	return fetch(Setting + "/Get", {
 		method: "GET",
 		headers: genHeaders()
 	}, function (error) {
@@ -390,10 +405,10 @@ export const setInfor = async (body) => {
 
 export const setSetting = async (body) => {
 	await setup();
-	return fetch(Setting+"/Set", {
+	return fetch(Setting + "/Set", {
 		method: "POST",
 		headers: genHeaders(),
-		body: JSON.stringify({ 
+		body: JSON.stringify({
 			device: body.device,
 			engine: body.engine,
 			audioCodec: body.audioCodec,

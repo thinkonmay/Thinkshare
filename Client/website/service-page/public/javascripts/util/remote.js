@@ -83,6 +83,13 @@ export async function check_remote_condition(workerID, token, engine) {
                     session_queue.splice(i, 1);
                 }
             }
+            Utils.newSwal.fire({
+                title: "Successfully!",
+                text: "Connect to device successfully",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1500
+            })
         } else if (token != null && item.token == null) {
             getRemotePage(token, engine);
             for (var i = 0; i < session_queue.length; i++) {
@@ -90,15 +97,15 @@ export async function check_remote_condition(workerID, token, engine) {
                     session_queue.splice(i, 1);
                 }
             }
+            Utils.newSwal.fire({
+                title: "Successfully!",
+                text: "Connect to device successfully",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1500
+            })
         }
     }
-    Utils.newSwal.fire({
-        title: "Successfully!",
-        text: "Connect to device successfully",
-        icon: "success",
-        showConfirmButton: false,
-        timer: 1500
-    })
 }
 
 
