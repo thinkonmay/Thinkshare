@@ -59,7 +59,7 @@ namespace WorkerManager.Middleware
                 }
 
 
-                var request = new RestRequest(_config.OwnerAuthorizeUrl,Method.GET)
+                var request = new RestRequest($"https://{_config.Domain}{_config.OwnerAuthorizeUrl}",Method.GET)
                     .AddHeader("Authorization",token);
 
                 var result = await (new RestClient()).ExecuteAsync(request);

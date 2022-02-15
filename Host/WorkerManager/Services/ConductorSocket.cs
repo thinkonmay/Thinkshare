@@ -269,7 +269,7 @@ namespace WorkerManager.Services
         {
             try
             {
-                var request = new RestRequest(_config.WorkerRegisterUrl,Method.POST)
+                var request = new RestRequest($"https://{_config.Domain}{_config.WorkerRegisterUrl}",Method.POST)
                     .AddHeader("Authorization",(await _cache.GetClusterInfor()).ClusterToken)
                     .AddJsonBody(model.model);
 

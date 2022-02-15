@@ -68,7 +68,7 @@ namespace WorkerManager.Controllers
             if(!cachednode.Any())
             {
                 var client = new RestClient();
-                var request = new RestRequest(_config.WorkerRegisterUrl)
+                var request = new RestRequest($"https://{_config.Domain}{_config.WorkerRegisterUrl}")
                     .AddHeader("Authorization",Cluster.ClusterToken)
                     .AddJsonBody(model);
                 request.Method = Method.POST;

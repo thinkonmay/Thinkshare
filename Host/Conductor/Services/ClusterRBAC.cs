@@ -29,7 +29,8 @@ namespace Conductor.Services
 
             _db.Roles.Where(x => (x.UserID == UserID) && 
                                  (x.Endtime > DateTime.Now) &&
-                                 (x.Start < DateTime.Now)).ToList()
+                                 (x.Start < DateTime.Now) &&
+                                 (!x.Cluster.Unregister.HasValue)).ToList()
                 .ForEach(x => clusters.Add(x.Cluster));
 
             _db.Clusters.Where(x => (x.OwnerID == UserID) && 
