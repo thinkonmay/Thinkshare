@@ -60,7 +60,7 @@ namespace Conductor.Controllers
                                                      string Description)
         {
             var account = _userManager.FindByNameAsync(UserName);
-            var ClusterID = int.Parse((string)HttpContext.Items["ClusterID"]);
+            var ClusterID = Int32.Parse(HttpContext.Items["ClusterID"].ToString());
             var role = new ClusterRole 
             {
                 UserID = account.Id,
@@ -78,7 +78,7 @@ namespace Conductor.Controllers
         [HttpPost("Remove")]
         public async Task<IActionResult> GrantAccess(int RoleID) 
         {
-            var ClusterID = int.Parse((string)HttpContext.Items["ClusterID"]);
+            var ClusterID = Int32.Parse(HttpContext.Items["ClusterID"].ToString());
             var role = _db.Roles.Find(RoleID);
             if (role.ClusterID != ClusterID)
                 return Unauthorized();
