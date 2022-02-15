@@ -17,11 +17,7 @@ namespace Conductor.Services
     {
         private readonly GlobalDbContext _db;
 
-        private readonly IGlobalStateStore _cache;
-
-        public ClusterRBAC(IOptions<SystemConfig> config, 
-                            GlobalDbContext dbContext, 
-                            IGlobalStateStore cache)
+        public ClusterRBAC( GlobalDbContext dbContext)
         {
             _db = dbContext;
         }
@@ -45,41 +41,29 @@ namespace Conductor.Services
             var workers = new List<WorkerNode>();
             var clusters = await AllowedCluster(UserID);
             clusters.ForEach(x => x.WorkerNode.ForEach(y => workers.Add(y)));
-            workers.RemoveAll(x => {
-                var remove = false;
-                Task.Run(async () => remove = !await IsAllowedWorker(UserID,x.ID)).Wait();
-                return remove;
-            });
-           
             return workers;
         }
 
-        public async Task<bool> IsAllowedWorker(int UserID, int ClusterID)
+        public bool IsAllowed(int UserID, GlobalCluster Cluster)
         {
             var guestRole = _db.Roles.Where(x => 
                                  (x.UserID == UserID) &&
-                                 (x.ClusterID == ClusterID) &&
+                                 (x.ClusterID == Cluster.ID) &&
                                  (x.Start < DateTime.Now) &&
                                  (DateTime.Now < x.Endtime)).Any();
 
-            var ownerRole = _db.Clusters.Where(x => x.OwnerID == UserID &&
-                                 x.ID == ClusterID).Any();
+            var ownerRole = (Cluster.OwnerID == UserID);
 
             return guestRole || ownerRole;
         }
 
-        public async Task<bool> IsAllowedCluster(int UserID, int WorkerID)
+        public bool IsAllowed(int UserID, WorkerNode worker)
         {
-            var worker = _db.Devices.Find(WorkerID);
-            var ClusterID = _db.Clusters
-                .Where(x => x.WorkerNode.Contains(worker)).First().ID;
+            var Cluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
+            var isAllowed = IsAllowed(UserID,Cluster);
+            var obtained = _db.RemoteSessions.Where(x => x.WorkerID == worker.ID && !x.EndTime.HasValue).Any();
 
-            var isAllowed = await IsAllowedCluster(UserID,WorkerID);
-
-            var isOpen = (await _cache.GetWorkerState(WorkerID)) == WorkerState.Open;
-            var obtained = _db.RemoteSessions.Where(x => x.WorkerID == WorkerID && !x.EndTime.HasValue).Any();
-
-            return (isAllowed && isOpen && !obtained);
+            return isAllowed && !obtained;
         }
     }
 }
