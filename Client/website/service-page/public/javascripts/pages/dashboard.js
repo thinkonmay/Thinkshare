@@ -330,22 +330,23 @@ async function prepare_worker_dashboard() {
 		document.getElementById("slavesInUses").innerHTML = " ";
 		document.getElementById("availableSlaves").innerHTML = " ";
 
+		// Enhance performance loading
 		let sessions
-		API.fetchSession().then(async data => {
-			sessions =  await data.json()
-		})
 		let slaves
-		API.fetchSlave().then(async data => {
-			slaves =  await data.json()
+		API.fetchSession().then(async sessionsData => {
+			API.fetchSlave().then(async slavesData => {
+				sessions = await sessionsData.json()
+				slaves = await slavesData.json()
+				for (var worker in sessions) {
+					createSlave(worker, sessions[worker], "slavesInUses");
+				}
+				for (var worker in slaves) {
+					createSlave(worker, slaves[worker], "availableSlaves");
+				}
+			})
 		})
 
 
-		for (var worker in sessions) {
-			createSlave(worker, sessions[worker], "slavesInUses");
-		}
-		for (var worker in slaves) {
-			createSlave(worker, slaves[worker], "availableSlaves");
-		}
 
 
 
