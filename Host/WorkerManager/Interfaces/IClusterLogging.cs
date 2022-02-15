@@ -10,5 +10,6 @@ namespace WorkerManager.Interfaces
         void Information(string information);
         void Error(string message, Exception exception);
         void Worker(string information, string WorkerID);
+        void Worker(string information, string WorkerID, string ModelID);
     }
 }

@@ -54,7 +54,7 @@ namespace SystemHub.Services
                     {
                         SendMessage(socket.Value, "ping");
                     }
-                    Thread.Sleep((int)TimeSpan.FromSeconds(4).TotalMilliseconds);
+                    Thread.Sleep(TimeSpan.FromSeconds(4));
                 }
             }catch (Exception ex)
             {

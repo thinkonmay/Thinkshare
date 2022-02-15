@@ -64,6 +64,21 @@ namespace WorkerManager.Services
                     }));
             });
         }
+        public void Worker(string information, string WorkerID, string ModelID)
+        {
+            Console.WriteLine($"worker log output {information}");
+            Task.Run(async () => 
+            {
+                await _client.ExecuteAsync(
+                    new RestRequest("Worker",Method.POST)
+                    .AddJsonBody(new GenericLogModel{
+                        timestamp = DateTime.Now,
+                        Type = $"Worker Script Model {ModelID}",
+                        Log = information,
+                        Source = $"workerID : {WorkerID.ToString()}"
+                    }));
+            });
+        }
 
         public void Error(string message, Exception exception)
         {
@@ -82,7 +97,7 @@ namespace WorkerManager.Services
             });
         }
 
-        public static void Fatal(string message,Exception ex)
+        public static void Fatal(string message, Exception ex)
         {
             Console.WriteLine($"[FATAL]: {ex.Message} : {ex.StackTrace}");
             Task.Run(async () => 
@@ -95,7 +110,8 @@ namespace WorkerManager.Services
                             Message = ex.Message,
                             Log = message,
                         }));
-                var _ = result.StatusCode != HttpStatusCode.OK ? throw new Exception() : 0;
+                if(result.StatusCode != HttpStatusCode.OK) 
+                    throw new Exception();
             }).Wait();
         }
     }

@@ -83,7 +83,7 @@ namespace WorkerManager.Services
             catch (Exception ex)
             { 
                 _log.Error($"Fail to connect to host" ,ex);
-                System.Threading.Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
                 await Start();
             }
         }
@@ -252,8 +252,7 @@ namespace WorkerManager.Services
                             }
                         }
                     }
-
-                    Thread.Sleep((int)TimeSpan.FromMilliseconds(50).TotalMilliseconds);
+                    Thread.Sleep(TimeSpan.FromMilliseconds(50));
                 }
             }
             catch (Exception ex)

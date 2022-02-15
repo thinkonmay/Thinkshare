@@ -57,7 +57,7 @@ namespace Signalling.Services
                 {
                     _log.Information($"SessionID: ${item.Key.ID}, Module: "+((item.Key.Module == Module.CLIENT_MODULE) ? "CLIENT" : "WORKER"));
                 }
-                Thread.Sleep((int)TimeSpan.FromSeconds(20).TotalMilliseconds);
+                Thread.Sleep(TimeSpan.FromSeconds(20));
             }
         }
 
