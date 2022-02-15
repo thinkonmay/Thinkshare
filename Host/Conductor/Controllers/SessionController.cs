@@ -22,9 +22,6 @@ using SharedHost.Logging;
 
 namespace Conductor.Controllers
 {
-    /// <summary>
-    /// Routes related to session initialize/termination process
-    /// </summary>
     [ApiController]
     [Route("/Session")]
     [Produces("application/json")]

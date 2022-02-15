@@ -14,9 +14,6 @@ using SharedHost.Logging;
 
 namespace Conductor.Controllers
 {
-    /// <summary>
-    /// Routes used by user to fetch information about the system
-    /// </summary>
     [ApiController]
     [Route("/Fetch")]
     [Produces("application/json")]
