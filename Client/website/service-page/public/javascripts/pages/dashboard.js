@@ -329,8 +329,15 @@ async function prepare_worker_dashboard() {
 	try {
 		document.getElementById("slavesInUses").innerHTML = " ";
 		document.getElementById("availableSlaves").innerHTML = " ";
-		const sessions = await (await API.fetchSession()).json()
-		const slaves = await (await API.fetchSlave()).json()
+
+		let sessions
+		API.fetchSession().then(async data => {
+			sessions =  await data.json()
+		})
+		let slaves
+		API.fetchSlave().then(async data => {
+			slaves =  await data.json()
+		})
 
 
 		for (var worker in sessions) {
@@ -339,6 +346,10 @@ async function prepare_worker_dashboard() {
 		for (var worker in slaves) {
 			createSlave(worker, slaves[worker], "availableSlaves");
 		}
+
+
+
+
 	} catch (err) {
 		(new Promise(resolve => setTimeout(resolve, 5000)))
 			.then(() => {
