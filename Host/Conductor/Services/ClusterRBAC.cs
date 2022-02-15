@@ -44,27 +44,24 @@ namespace Conductor.Services
             return workers;
         }
 
-        public bool IsAllowedCluster(int UserID, int ClusterID)
+        public bool IsAllowed(int UserID, GlobalCluster Cluster)
         {
             var guestRole = _db.Roles.Where(x => 
                                  (x.UserID == UserID) &&
-                                 (x.ClusterID == ClusterID) &&
+                                 (x.ClusterID == Cluster.ID) &&
                                  (x.Start < DateTime.Now) &&
                                  (DateTime.Now < x.Endtime)).Any();
 
-            var ownerRole = _db.Clusters.Where(x => x.OwnerID == UserID &&
-                                 x.ID == ClusterID).Any();
+            var ownerRole = (Cluster.OwnerID == UserID);
 
             return guestRole || ownerRole;
         }
 
-        public bool IsAllowedWorker(int UserID, int WorkerID)
+        public bool IsAllowed(int UserID, WorkerNode worker)
         {
-            var worker = _db.Devices.Find(WorkerID);
-            var ClusterID = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First().ID;
-
-            var isAllowed = IsAllowedCluster(UserID,ClusterID);
-            var obtained = _db.RemoteSessions.Where(x => x.WorkerID == WorkerID && !x.EndTime.HasValue).Any();
+            var Cluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
+            var isAllowed = IsAllowed(UserID,Cluster);
+            var obtained = _db.RemoteSessions.Where(x => x.WorkerID == worker.ID && !x.EndTime.HasValue).Any();
 
             return isAllowed && !obtained;
         }

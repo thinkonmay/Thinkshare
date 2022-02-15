@@ -67,7 +67,7 @@ namespace Conductor.Controllers
             var globalCluster = _db.Clusters
                 .Where(x => x.WorkerNode.Contains(worker)).First();
 
-            if(!_rbac.IsAllowedWorker(UserID,SlaveID))
+            if(!_rbac.IsAllowed(UserID,worker))
                 return Unauthorized();
 
             /*create new session with gevin session request from user*/
