@@ -109,13 +109,8 @@ namespace WorkerManager.Controllers
         [HttpGet("Cluster/Infor")]
         public async Task<IActionResult> Infor()
         {
-            var cluster = await _cache.GetClusterInfor();
-
-            var request = new RestRequest($"https://{_config.Domain}{_config.ClusterInforUrl}",Method.GET)
-                .AddHeader("Authorization",cluster.ClusterToken);
-
-            var result = await _client.ExecuteAsync(request);
-            return Ok(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
+            var cluster = await _infor.Infor();
+            return Ok(cluster);
         }
 
         [HttpPost("Cluster/isRegistered")]

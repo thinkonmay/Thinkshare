@@ -55,8 +55,7 @@ namespace AutoScaling.Controllers
 
         [Manager]
         [HttpGet("Token")]
-        public async Task<IActionResult> NewCluster(string ClusterName,
-                                                    string region)
+        public async Task<IActionResult> NewCluster(string ClusterName)
         {
             var ManagerID = Int32.Parse(HttpContext.Items["UserID"].ToString());
             var cluster = _db.Clusters.Where(x => x.Name == ClusterName && 
@@ -106,7 +105,18 @@ namespace AutoScaling.Controllers
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+            Cluster.WorkerNode = null;
+            Cluster.Owner = null;
             return Ok(Cluster);
+        }
+
+        [Cluster]
+        [HttpGet("Instance")]
+        public async Task<IActionResult> getInstance()
+        {
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+            return Ok(Cluster.instance);
         }
     }
 }
