@@ -391,12 +391,6 @@ function onClientHubEvent(event) {
 
 		createSlave(workerID, "OFF_REMOTE", "slavesInUses");
 	}
-	if (message_json.EventName === "ReportSessionReconnected") {
-		var workerID = parseInt(message_json.Message)
-
-		RemotePage.check_remote_condition(workerID, null, null);
-		createSlave(workerID, "ON_SESSION", "slavesInUses");
-	}
 	if (message_json.EventName === "ReportSessionOn") {
 		var workerID = parseInt(message_json.Message)
 
@@ -432,9 +426,10 @@ function onWebsocketClose(event) {
 };
 
 async function createSlave(workerID, workerState, queue) {
+	var slave = await (await API.fetchInfor(workerID)).json();
+
 	var queues = ["slavesInUses", "availableSlaves"]
 	for (var item in queues) {
-
 		var worker = document.getElementById(`${queues[item]}${workerID}`);
 		if (worker != null) {
 			worker.remove();
@@ -443,16 +438,6 @@ async function createSlave(workerID, workerState, queue) {
 
 	if (queue == null)
 		return;
-
-	try {
-		var slave = await (await API.fetchInfor(workerID)).json();
-	} catch (error) {
-		(new Promise(resolve => setTimeout(resolve, 5000)))
-			.then(async () => {
-				if (document.getElementById(`${queue}${workerID}`) == null)
-					await createSlave(workerID, workerState, queue);
-			});
-	}
 
 	if (document.getElementById(`${queue}${workerID}`) == null)
 		append(queue, `

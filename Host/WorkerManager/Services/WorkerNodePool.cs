@@ -4,8 +4,9 @@ using System.Linq;
 using WorkerManager.Interfaces;
 using SharedHost.Models.Device;
 using System.Threading.Tasks;
-
 using WorkerManager.Models;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace WorkerManager.Services
 {
@@ -38,7 +39,7 @@ namespace WorkerManager.Services
 
             isRunning = true;
             _systemHeartBeat =  Task.Run(() => SystemHeartBeat());
-            _workerShell =      Task.Run(() => GetWorkerMetric());
+            // _workerShell =      Task.Run(() => GetWorkerMetric()); // TODO
             return true;
         }
 
@@ -60,22 +61,27 @@ namespace WorkerManager.Services
             {
                 try
                 {
+                    var updated = new Dictionary<int,string>();
                     var workers = await _cache.GetClusterState();
                     foreach (var keyValue in workers)
                     {
                         var worker = await _cache.GetWorkerInfor(keyValue.Key);
                         var success = await worker.PingWorker();
-
                         worker.agentFailedPing = success ? 0 : (worker.agentFailedPing + 1);
+                        _log.Worker($"Ping failed {worker.agentFailedPing} time", keyValue.Key.ToString());
                         await _cache.CacheWorkerInfor(worker);
+                        bool failMultipletime = (worker.agentFailedPing > 3);
+                        bool currentlyDisconnected = (keyValue.Value == WorkerState.Disconnected);
 
-                        string newState = null;
-                        newState = ((keyValue.Value == WorkerState.Disconnected) && success) ? WorkerState.Open : null;
-                        newState = (worker.agentFailedPing > 3) ? WorkerState.Disconnected : null;
 
-                        if(newState != null)
-                            await _cache.SetWorkerState(keyValue.Key, newState);
+                        var currentState = await _cache.GetWorkerState(keyValue.Key);
+                        if(success)
+                            updated[keyValue.Key] = currentlyDisconnected ? WorkerState.Open         : currentState;
+                        else
+                            updated[keyValue.Key] = failMultipletime      ? WorkerState.Disconnected : currentState;
+                        await _cache.SetWorkerState(keyValue.Key,updated[keyValue.Key]);
                     }
+                    _log.Information(JsonConvert.SerializeObject(updated));
                 }
                 catch (Exception ex)
                 {
