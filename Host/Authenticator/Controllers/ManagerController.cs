@@ -22,7 +22,6 @@ using SharedHost.Logging;
 using SharedHost.Models.Auth;
 using System.Text;
 using System.Linq;
-using SharedHost.Model;
 
 namespace Authenticator.Controllers
 {
