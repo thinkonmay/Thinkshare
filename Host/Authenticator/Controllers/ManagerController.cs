@@ -110,8 +110,6 @@ namespace Authenticator.Controllers
                 Name = ClusterName,
                 Register = DateTime.Now,
 
-                SelfHost = false,
-
                 InstanceID = instance.ID,
                 WorkerNode = new List<WorkerNode>(),
                 

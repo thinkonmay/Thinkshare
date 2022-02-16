@@ -15,9 +15,6 @@ using Microsoft.Extensions.Options;
 
 namespace AutoScaling.Controllers
 {
-    /// <summary>
-    /// Routes used by user to fetch information about the system
-    /// </summary>
     [ApiController]
     [Route("/Port")]
     [Produces("application/json")]
@@ -56,37 +53,30 @@ namespace AutoScaling.Controllers
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
-            if(cluster.SelfHost)
+
+            int InstancePort = 0;
+            for (int i = _instanceSetting.PortMinValue; i < _instanceSetting.PortMaxValue; i++)
             {
-                return BadRequest();
-            }
-            else
-            {
-                int InstancePort = 0;
-                for (int i = _instanceSetting.PortMinValue; i < _instanceSetting.PortMaxValue; i++)
+                if(cluster.instance.portForwards
+                    .Where(x => x.InstancePort == i && 
+                                !x.End.HasValue)
+                    .Count() == 0)
                 {
-                    if(cluster.instance.portForwards
-                        .Where(x => x.InstancePort == i && 
-                                   !x.End.HasValue)
-                        .Count() == 0)
-                    {
-                        InstancePort = i;
-                        break;
-                    }
+                    InstancePort = i;
+                    break;
                 }
-                var port = new PortForward{
-                    LocalPort = InstancePort,
-                    InstancePort = InstancePort,
-                    Start = DateTime.Now
-                };
-
-                cluster.instance.portForwards.Add(port);
-                _db.Update(cluster);
-                await _db.SaveChangesAsync();
-
-                return Ok(port);
             }
+            var port = new PortForward{
+                LocalPort = InstancePort,
+                InstancePort = InstancePort,
+                Start = DateTime.Now
+            };
 
+            cluster.instance.portForwards.Add(port);
+            _db.Update(cluster);
+            await _db.SaveChangesAsync();
+
+            return Ok(port);
         }
 
         [Cluster]
@@ -95,21 +85,15 @@ namespace AutoScaling.Controllers
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
-            if(cluster.SelfHost)
-            {
-                return BadRequest();
-            }
-            else
-            {
-                var port = cluster.instance.portForwards.Where( x => 
-                     x.InstancePort == InstancePort &&
-                    !x.End.HasValue).First();
-                port.End = DateTime.Now;
 
-                _db.Update(port);
-                await _db.SaveChangesAsync();
-                return Ok();
-            }
+            var port = cluster.instance.portForwards.Where( x => 
+                    x.InstancePort == InstancePort &&
+                !x.End.HasValue).First();
+            port.End = DateTime.Now;
+
+            _db.Update(port);
+            await _db.SaveChangesAsync();
+            return Ok();
         }
     }
 }

@@ -60,41 +60,9 @@ namespace AutoScaling.Controllers
         {
             GlobalCluster cluster;
             var ManagerID = Int32.Parse(HttpContext.Items["UserID"].ToString());
-            var refreshCluster = _db.Clusters
+            var cluster = _db.Clusters
                 .Where(x => x.Name == ClusterName && 
-                            x.OwnerID == ManagerID);
-
-            if(refreshCluster.Count() == 0)
-            {
-                var CoturnRequest = new RestRequest($"{_config.AutoScaling}/Instance/Coturn",Method.GET)
-                                            .AddQueryParameter("region",region);
-
-                var client = new RestClient();
-                client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
-                var coturnResult = await client.ExecuteAsync(CoturnRequest);
-                var instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content);
-                cluster = new GlobalCluster
-                {
-                    Name = ClusterName,
-                    Register = DateTime.Now,
-
-                    SelfHost = true,
-
-                    InstanceID = instance.ID,
-                    WorkerNode = new List<WorkerNode>(),
-
-                    OwnerID = ManagerID
-                };
-
-                _db.Clusters.Add(cluster);
-                await _db.SaveChangesAsync();
-            }
-            else
-            {
-                cluster = refreshCluster.First();
-            }
-
-
+                            x.OwnerID == ManagerID).First();
 
             var request = new RestRequest($"{_config.Authenticator}/Token/Grant/Cluster",Method.POST)
                 .AddJsonBody(cluster);
@@ -141,19 +109,6 @@ namespace AutoScaling.Controllers
             var ClusterID = HttpContext.Items["ClusterID"];
             var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
             return Ok(Cluster);
-        }
-
-        [Cluster]
-        [HttpPost("Infor")]
-        public async Task<IActionResult> setInfor(bool Private, bool SelfHost)
-        {
-            var ClusterID = HttpContext.Items["ClusterID"];
-            var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
-            Cluster.SelfHost = SelfHost;
-
-            _db.Update(Cluster);
-            await _db.SaveChangesAsync();
-            return Ok();
         }
     }
 }

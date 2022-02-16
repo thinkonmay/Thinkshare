@@ -6,8 +6,6 @@ namespace WorkerManager.Interfaces
 {
     public interface IClusterInfor
     {
-        Task<bool> IsSelfHost();
-
         Task<bool> IsRegistered();
 
         Task<GlobalCluster> Infor();

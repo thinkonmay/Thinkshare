@@ -117,7 +117,6 @@ namespace WorkerManager.Services
         public async Task SetupSSHClient()
         {
                 var cluster = await _infor.Infor();
-                if(cluster.SelfHost){return;}
                 _log.Information($"Attempting to establish ssh connection with instance");
                 ClusterInstance instance = cluster.instance;
 
