@@ -400,12 +400,13 @@ function onClientHubEvent(event) {
 	if (message_json.EventName === "ReportSessionTerminated") {
 		var workerID = parseInt(message_json.Message)
 
-		createSlave(workerID, null, null);
+		createSlave(workerID, null, "slavesInUses");
 	}
+
 	if (message_json.EventName === "ReportSlaveObtained") {
 		var workerID = parseInt(message_json.Message)
 
-		createSlave(workerID, null, null);
+		createSlave(workerID, null, "availableSlaves");
 	}
 	if (message_json.EventName === "ReportNewSlaveAvailable") {
 		var workerID = parseInt(message_json.Message)
@@ -428,19 +429,10 @@ function onWebsocketClose(event) {
 async function createSlave(workerID, workerState, queue) {
 	var slave = await (await API.fetchInfor(workerID)).json();
 
-	var queues = ["slavesInUses", "availableSlaves"]
-	for (var item in queues) {
-		var worker = document.getElementById(`${queues[item]}${workerID}`);
-		if (worker != null) {
-			worker.remove();
-		}
-	}
+	var worker = document.getElementById(`${queue}${workerID}`);
+	if (worker != null) { worker.remove() }
 
-	if (queue == null)
-		return;
-
-	if (document.getElementById(`${queue}${workerID}`) == null)
-		append(queue, `
+	append(queue, `
     <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
       <div class="card bg-light d-flex flex-fill">
         <div style="text-alignt: center" class="card-header text-muted border-bottom-0">
