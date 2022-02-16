@@ -40,7 +40,7 @@ namespace AutoScaling.Controllers
         }
 
 
-        [HttpGet("Managed")]
+        [HttpPost("Managed")]
         public async Task<IActionResult> ManagedInstance(string region,
                                                          string name,
                                                          int OwnerID,

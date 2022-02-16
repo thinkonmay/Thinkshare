@@ -63,7 +63,7 @@ namespace Authenticator.Controllers
         }
 
         [Manager]
-        [HttpGet("Cluster")]
+        [HttpGet("Clusters")]
         public async Task<IActionResult> GetClusters()
         {
             var result = new List<object>();
@@ -79,7 +79,7 @@ namespace Authenticator.Controllers
 
 
         [Manager]
-        [HttpPost("ManagedCluster/Request")]
+        [HttpPost("Cluster/Request")]
         public async Task<IActionResult> RequestCluster(string ClusterName, 
                                                         string region,
                                                         [FromBody] string password)
@@ -96,7 +96,7 @@ namespace Authenticator.Controllers
             if(_db.Clusters.Where(x => x.Name == ClusterName && x.OwnerID == user.Id).Any())
                 return BadRequest("Choose a different name");
 
-            var request = new RestRequest($"{_config.AutoScaling}/Instance/Managed",Method.GET)
+            var request = new RestRequest($"{_config.AutoScaling}/Instance/Managed",Method.POST)
                                     .AddQueryParameter("region",region)
                                     .AddQueryParameter("name",ClusterName)
                                     .AddQueryParameter("OwnerID",UserID)
