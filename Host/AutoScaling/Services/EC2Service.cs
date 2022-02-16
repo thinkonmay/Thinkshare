@@ -192,7 +192,7 @@ namespace AutoScaling.Services
             var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
             await AccessEC2Instance(instance,coturn);
 
-            var cluster = SetupClusterScript("development","2022-01-03");
+            var cluster = SetupClusterScript(_aws.ClusterManagerVersion,_aws.ClusterUIVersion);
             await AccessEC2Instance(instance,cluster);
             return result;
         }

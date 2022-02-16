@@ -14,6 +14,7 @@ on:
 #setup environment variable
 env:
   SERVICE_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/service-page:development
+  CLUSTER_PAGE_IMAGE:  ${{ secrets.DOCKER_USERNAME }}/cluster-ui:development
 
   
 jobs:
@@ -34,6 +35,23 @@ jobs:
         file: Client/website/service-page/Dockerfile.development
         push: true
         tags: ${{ env.SERVICE_PAGE_IMAGE }}
+
+  build-cluster-ui:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Log in to Docker Hub
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: ServicePage 
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: Client/cluster/manager-page 
+        push: true
+        tags: ${{ env.CLUSTER_PAGE_IMAGE }}
 
   deploy:
     runs-on: ubuntu-latest

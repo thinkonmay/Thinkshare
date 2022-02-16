@@ -9,6 +9,10 @@ namespace SharedHost.Models.AWS
 
         public string CredentialPath {get;set;}
 
+        public string ClusterManagerVersion {get;set;}
+
+        public string ClusterUIVersion {get;set;}
+
         public List<RegionConfig> regions {get;set;}
     }
 
