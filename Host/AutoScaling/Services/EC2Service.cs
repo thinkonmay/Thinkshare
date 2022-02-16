@@ -169,7 +169,6 @@ namespace AutoScaling.Services
 
         public async Task<ClusterInstance> SetupManagedCluster(string region)
         {
-            var script = new List<string>();
             var instance = await LaunchInstances(region);
             var result = new ClusterInstance
             {
@@ -191,9 +190,10 @@ namespace AutoScaling.Services
             // wait for coturn server to boot up until setup coturn script
             try
             {
-                var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
-                var cluster = SetupClusterScript(_aws.ClusterManagerVersion,_aws.ClusterUIVersion);
-                await AccessEC2Instance(instance,coturn.AddRange(cluster));
+                var script = new List<string>();
+                script.AddRange(SetupTurnScript(result.TurnUser,result.TurnPassword));
+                script.AddRange(SetupClusterScript(_aws.ClusterManagerVersion,_aws.ClusterUIVersion));
+                await AccessEC2Instance(instance,script);
             }
             catch (Exception ex)
             {
@@ -252,7 +252,7 @@ namespace AutoScaling.Services
             while (true)
             {
                 _client = new SshClient(con);
-                _client.ConnectionInfo.Timeout = TimeSpan.FromMinutes(2);
+                _client.ConnectionInfo.Timeout = TimeSpan.FromMinutes(5);
 
                 if(attemption == 3)
                     throw new Exception("Fail to connect to instance multiple times");
