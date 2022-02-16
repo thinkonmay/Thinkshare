@@ -178,6 +178,7 @@ namespace AutoScaling.Services
                 InstanceName = instance.InstanceName,
                 PrivateIP = instance.PrivateIP,
                 keyPair = instance.keyPair,
+                Region = region,
                 portForwards = new List<PortForward>(),
             };
 
@@ -206,6 +207,7 @@ namespace AutoScaling.Services
                 InstanceName = instance.InstanceName,
                 PrivateIP = instance.PrivateIP,
                 keyPair = instance.keyPair,
+                Region = region,
                 portForwards = new List<PortForward>(),
             };
 
