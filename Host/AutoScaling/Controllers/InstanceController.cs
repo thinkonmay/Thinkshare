@@ -47,6 +47,9 @@ namespace AutoScaling.Controllers
                                                          [FromBody] LoginModel model)
         {
             var instance = await _ec2.SetupManagedCluster(region);
+            if(instanceEquals == null)
+                return BadRequest();
+
             var cluster = new GlobalCluster
             {
                 Name = name,
@@ -69,6 +72,9 @@ namespace AutoScaling.Controllers
         public async Task<IActionResult> CoturnInstance(string region)
         {
             var instance = await _ec2.SetupCoturnService(region);
+            if(instanceEquals == null)
+                return BadRequest();
+
             _db.Instances.Add(instance);
             await _db.SaveChangesAsync();
 

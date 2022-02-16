@@ -189,11 +189,18 @@ namespace AutoScaling.Services
 
 
             // wait for coturn server to boot up until setup coturn script
-            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
-            await AccessEC2Instance(instance,coturn);
-
-            var cluster = SetupClusterScript(_aws.ClusterManagerVersion,_aws.ClusterUIVersion);
-            await AccessEC2Instance(instance,cluster);
+            try
+            {
+                var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
+                var cluster = SetupClusterScript(_aws.ClusterManagerVersion,_aws.ClusterUIVersion);
+                await AccessEC2Instance(instance,coturn.AddRange(cluster));
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Fail to connect to instance terminating instance",ex);
+                await TerminateInstance(result);
+                return null;
+            }
             return result;
         }
 
@@ -217,9 +224,18 @@ namespace AutoScaling.Services
             result.TurnPassword = (new Random()).Next().ToString();
 
 
-            // wait for coturn server to boot up until setup coturn script
-            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
-            await AccessEC2Instance(instance,coturn);
+            try
+            {
+                // wait for coturn server to boot up until setup coturn script
+                var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
+                await AccessEC2Instance(instance,coturn);
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Fail to connect to instance terminating instance",ex);
+                await TerminateInstance(result);
+                return null;
+            }
             return result;
         }
 
