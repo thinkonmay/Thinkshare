@@ -58,11 +58,9 @@ namespace AutoScaling.Controllers
         public async Task<IActionResult> NewCluster(string ClusterName,
                                                     string region)
         {
-            GlobalCluster cluster;
             var ManagerID = Int32.Parse(HttpContext.Items["UserID"].ToString());
-            var cluster = _db.Clusters
-                .Where(x => x.Name == ClusterName && 
-                            x.OwnerID == ManagerID).First();
+            var cluster = _db.Clusters.Where(x => x.Name == ClusterName && 
+                                                  x.OwnerID == ManagerID).First();
 
             var request = new RestRequest($"{_config.Authenticator}/Token/Grant/Cluster",Method.POST)
                 .AddJsonBody(cluster);
