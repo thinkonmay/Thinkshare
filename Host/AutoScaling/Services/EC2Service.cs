@@ -117,7 +117,7 @@ namespace AutoScaling.Services
                     break;
                 }
                 _log.Information("waiting for ec2 instance to get desired state: "+ waitingTime);
-                System.Threading.Thread.Sleep(1000);
+                Thread.Sleep(TimeSpan.FromSeconds(1));
                 waitingTime++;
             }
             _log.Information("EC2 instance create finished after : "+ waitingTime);
@@ -236,50 +236,32 @@ namespace AutoScaling.Services
             while (true)
             {
                 _client = new SshClient(con);
-                if(attemption == 30)
-                {
-                    _log.Warning("Fail to connect to EC2 instance multipletime");
-                    return;
-                }
+                _client.ConnectionInfo.Timeout = TimeSpan.FromMinutes(2);
+
+                if(attemption == 3)
+                    throw new Exception("Fail to connect to instance multiple times");
 
                 try
                 {
-                    var task = Task.Run(() =>  _client.Connect());
-                    var timeout = Task.Delay(TimeSpan.FromMinutes(1));
+                    _client.Connect();
 
-                    var completedTask = await Task.WhenAny(task, timeout);
-                    if(completedTask == task)
+                    if(!_client.IsConnected)
+                        throw new Exception("connection is not setup properly");
+
+                    foreach (var command in commands)
                     {
-                        await task;
-                        if(!_client.IsConnected)
-                            throw new Exception("connection is not setup properly");
-
-                        try
-                        {
-                            foreach (var command in commands)
-                            {
-                                _log.Information("Executing command " +command);
-                                Task.Run(() => _client.RunCommand(command));
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _log.Error("Fail to execute script",ex);
-                        }
-
-                        return;
+                        _log.Information("Executing command " +command);
+                        Task.Run(() => _client.RunCommand(command));
                     }
-                    else
-                    {
-                        throw new Exception("Connection timeout");
-                    }
+
+                    return;
                 }
                 catch (Exception exception)
                 {
                     _log.Error("Fail to connect to EC2 instance",exception);
                 }
                 _client.Dispose();
-                Thread.Sleep(1000);
+                Thread.Sleep(TimeSpan.FromSeconds(1));
                 attemption++;
             }
         }
