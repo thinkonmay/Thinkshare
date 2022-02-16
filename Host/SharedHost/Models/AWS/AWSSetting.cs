@@ -33,6 +33,7 @@ namespace SharedHost.Models.AWS
 
         public const string South_Korea = "SouthKorea";
 
+        // not supported
         public const string Australia = "Australia";
 
         public const string Tokyo = "Tokyo";
@@ -41,30 +42,22 @@ namespace SharedHost.Models.AWS
         {
             switch (region)
             {
-                case "US-West":
+                case US_West:
                     return true;
-
-                case "US-East":
+                case US_East:
                     return true;
-
-                case "Canada":
+                case Canada:
                     return true;
-
-                case "Singapore":
+                case Singapore:
                     return true;
-
-                case "India":
+                case India:
                     return true;
-
-                case "South-Korea":
+                case South_Korea:
                     return true;
-
-                case "Australia":
+                case Australia:
                     return true;
-
-                case "Tokyo":
+                case Tokyo:
                     return true;
-                
                 default:
                     return false;
             }

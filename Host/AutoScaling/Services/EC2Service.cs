@@ -74,7 +74,7 @@ namespace AutoScaling.Services
                     }
                 },
 
-                ImageId = _aws.AMI,
+                ImageId = _aws.regions.Where(x => x.region == region).First().AMI,
                 InstanceType = _aws.InstanceType,
                 KeyName = keyPair.Name,
                 
