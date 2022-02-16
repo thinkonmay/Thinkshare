@@ -245,7 +245,7 @@ namespace AutoScaling.Services
                 try
                 {
                     var task = Task.Run(() =>  _client.Connect());
-                    var timeout = Task.Delay(TimeSpan.FromSeconds(5));
+                    var timeout = Task.Delay(TimeSpan.FromMinutes(1));
 
                     var completedTask = await Task.WhenAny(task, timeout);
                     if(completedTask == task)

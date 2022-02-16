@@ -72,6 +72,29 @@ namespace AutoScaling.Controllers
             });
         }
 
+        [Cluster]
+        [HttpPost("Unregister")]
+        public async Task<IActionResult> UnregisterCluster()
+        {
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+
+            if(cluster == null)  
+                BadRequest("cluster not found"); 
+
+            var success = await _ec2.TerminateInstance(cluster.instance);
+
+            if(!success)
+                return BadRequest();
+
+            cluster.instance.End = DateTime.Now;
+            cluster.instance.portForwards.ForEach(x => x.End = DateTime.Now);
+            cluster.Unregister = DateTime.Now;
+            _db.Update(cluster);
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
+
 
         [Cluster]
         [HttpPost("Worker/Register")]

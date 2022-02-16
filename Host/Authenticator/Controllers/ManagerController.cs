@@ -68,8 +68,12 @@ namespace Authenticator.Controllers
         {
             var result = new List<object>();
             var UserID = int.Parse((string)HttpContext.Items["UserID"]);
-            var clusters = _db.Clusters.Where(x => x.OwnerID == UserID).ToList();
-            clusters.ForEach(x => result.Add(x.Name));
+            var clusters = _db.Clusters.Where(x => x.OwnerID == UserID && 
+                                             !x.Unregister.HasValue).ToList();
+
+            clusters.ForEach(x => result.Add(new {
+                Name = x.Name,
+                URL  = $"https://{x.instance.IPAdress}:3000/"}));
             return Ok(result);
         }
 
@@ -83,112 +87,27 @@ namespace Authenticator.Controllers
             if(!Region.CorrectTypo(region))
                 return BadRequest("Incorrect region");
 
-            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
-            var user = await _userManager.FindByIdAsync(UserID.ToString());
+            var UserID = HttpContext.Items["UserID"].ToString();
+            var user = await _userManager.FindByIdAsync(UserID);
 
             if(! await _userManager.CheckPasswordAsync(user,password))
                 return BadRequest("Invalid password");
 
-            if(_db.Clusters.Where(x => x.Name == ClusterName && x.OwnerID == Int32.Parse(UserID.ToString()) ).Any())
+            if(_db.Clusters.Where(x => x.Name == ClusterName && x.OwnerID == user.Id).Any())
                 return BadRequest("Choose a different name");
 
             var request = new RestRequest($"{_config.AutoScaling}/Instance/Managed",Method.GET)
-                                    .AddQueryParameter("region",region);
+                                    .AddQueryParameter("region",region)
+                                    .AddQueryParameter("name",ClusterName)
+                                    .AddQueryParameter("OwnerID",UserID)
+                                    .AddJsonBody(new LoginModel{
+                                        UserName = user.UserName,
+                                        Password = password}) ;
 
             var client = new RestClient();
             client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
             var coturnResult = await client.ExecuteAsync(request);
-            var instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content);
-            if(coturnResult == null)
-            {
-                return BadRequest("Fail to intialize cluster");
-            }
-
-            var cluster = new GlobalCluster
-            {
-                Name = ClusterName,
-                Register = DateTime.Now,
-
-                InstanceID = instance.ID,
-                WorkerNode = new List<WorkerNode>(),
-                
-                OwnerID = UserID,
-            };
-
-            _db.Clusters.Add(cluster);
-            await _db.SaveChangesAsync();
-
-
-            bool success = false;
-            while (!success)
-            {
-                _log.Information($"Attemp to login automatically to cluster {ClusterName}");
-                var result = await (new RestClient()).ExecuteAsync(
-                    new RestRequest($"http://{instance.IPAdress}:5000/Owner/Login",Method.POST)
-                        .AddQueryParameter("ClusterName", ClusterName)
-                        .AddJsonBody(new LoginModel
-                        {
-                            UserName = user.UserName,
-                            Password = password
-                        })
-                );
-
-                if(result.StatusCode == HttpStatusCode.OK)
-                {
-                    if(JsonConvert.DeserializeObject<AuthResponse>(result.Content).Token != null)
-                    {
-                        _log.Information($"Login to cluster automatically success");
-                        success = true;
-                    }
-                    else
-                    {
-                        _log.Warning($"Unable to login to cluster automatically, result : {result.Content}");
-                        break;
-                    }
-                }
-                else
-                {
-                    Thread.Sleep(TimeSpan.FromSeconds(5));
-                }
-            }
-
-
-            return Ok(instance.IPAdress);
-        }
-
-        [Manager]
-        [HttpPost("Cluster/Unregister")]
-        public async Task<IActionResult> UnregisterCluster(string ClusterName)
-        {
-            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
-            var cluster = _db.Clusters
-                .Where(x => x.Name == ClusterName && 
-                            x.OwnerID == UserID && 
-                           !x.Unregister.HasValue).First();
-            if(cluster == null) { BadRequest("cluster not found"); }
-
-            var clusterRequest = new RestRequest($"{_config.AutoScaling}/Instance/Terminate",Method.POST)
-                .AddQueryParameter("ID",cluster.instance.ID.ToString());
-
-            var client = new RestClient();
-            client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
-            var clusterResult = await client.ExecuteAsync(clusterRequest); 
-
-            if(clusterResult == null || clusterResult.StatusCode != HttpStatusCode.OK)
-                return BadRequest("Fail to terminate cluster");
-
-            var success = JsonConvert.DeserializeObject<bool>(clusterResult.Content);
-            if (success)
-            {
-                cluster.Unregister = DateTime.Now;
-                _db.Update(cluster);
-                await _db.SaveChangesAsync();
-                return Ok();
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return Ok(JsonConvert.DeserializeObject<GlobalCluster>(coturnResult.Content));
         }
     }
 }
