@@ -403,15 +403,15 @@ function onClientHubEvent(event) {
 		createSlave(workerID, null, "slavesInUses");
 	}
 
-	if (message_json.EventName === "ReportSlaveObtained") {
-		var workerID = parseInt(message_json.Message)
-
-		createSlave(workerID, null, "availableSlaves");
-	}
 	if (message_json.EventName === "ReportNewSlaveAvailable") {
 		var workerID = parseInt(message_json.Message)
 
 		createSlave(workerID, "DEVICE_OPEN", "availableSlaves")
+	}
+	if (message_json.EventName === "ReportSlaveObtained") {
+		var workerID = parseInt(message_json.Message)
+
+		createSlave(workerID, null, "availableSlaves");
 	}
 }
 
@@ -428,42 +428,35 @@ function onWebsocketClose(event) {
 
 async function createSlave(workerID, workerState, queue) {
 	var slave = await (await API.fetchInfor(workerID)).json();
-
 	var worker = document.getElementById(`${queue}${workerID}`);
-	if (worker != null) { worker.remove() }
-
-	append(queue, `
-    <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
-      <div class="card bg-light d-flex flex-fill">
-        <div style="text-alignt: center" class="card-header text-muted border-bottom-0">
-		<img width="20px" height="20px" src="images/window-logo.png" alt="user-avatar" class="img-fluid">
+	if(workerState == null)
+		worker.remove();
+	if(worker == null)
+	{
+		append(queue, `
+		<div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
+		<div class="card bg-light d-flex flex-fill">
+			<div style="text-alignt: center" class="card-header text-muted border-bottom-0">
+			<img width="20px" height="20px" src="images/window-logo.png" alt="user-avatar" class="img-fluid">
+			</div>
+			<div class="card-body pt-0">
+			<div class="row">
+				<h2 class="lead"><b>Device</b></h2>
+				<ul class="ml-4 mb-0 fa-ul text-muted">
+				<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>CPU: ${slave.cpu}</li>
+				<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
+				<li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
+				<li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
+				</ul>
+			</div>
+			</div>
+			<div class="devicebutton">
+			<div class="row slaveState" id="${queue}button${slave.id}"></div>
+			</div>
 		</div>
-        <div class="card-body pt-0">
-          <div class="row">
-			<h2 class="lead"><b>Device</b></h2>
-			<ul class="ml-4 mb-0 fa-ul text-muted">
-			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>CPU: ${slave.cpu}</li>
-			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
-			<li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
-			<li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
-			</ul>
-          </div>
-        </div>
-        <div class="devicebutton">
-          <div class="row slaveState" id="${queue}button${slave.id}"></div>
-        </div>
-      </div>
-    </div>`)
-
-	if (workerState == "OFF_REMOTE" && queue != null) {
-		Utils.newSwal.fire({
-			title: "Successfully!",
-			text: "You was out of control Device",
-			icon: "info",
-			showConfirmButton: false,
-			timer: 1500
-		})
+		</div>`)
 	}
+
 	setState(workerState, slave.id, queue);
 }
 
@@ -471,6 +464,17 @@ async function createSlave(workerID, workerState, queue) {
 function setState(serviceState, slaveID, queue) {
 	var button = document.getElementById(`${queue}button${slaveID}`);
 	button.innerHTML = slaveState(serviceState, slaveID);
+
+	// ??? why?
+	if (serviceState == "OFF_REMOTE") {
+		Utils.newSwal.fire({
+			title: "Successfully!",
+			text: "",
+			icon: "info",
+			showConfirmButton: false,
+			timer: 1500
+		})
+	}
 
 	if (serviceState === "ON_SESSION") {
 
