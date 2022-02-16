@@ -44,11 +44,6 @@ namespace SystemHub
                     Version =
                     "v1"
                 });
-
-                var xmlFilePath = Path.Combine(AppContext.BaseDirectory,
-                $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
-
-                c.IncludeXmlComments(xmlFilePath);
             });
 
             services.AddDbContext<GlobalDbContext>(options =>

@@ -70,7 +70,7 @@ namespace Conductor.Controllers
                 UserID = account.Id,
                 ClusterID = ClusterID,
                 Start = start,
-                Endtime = end ? end : null,
+                Endtime = end,
                 Description = Description
             };
             _db.Roles.Add(role);
@@ -98,7 +98,7 @@ namespace Conductor.Controllers
         public async Task<IActionResult> DeleteAccess() 
         {
             var ClusterID = Int32.Parse(HttpContext.Items["ClusterID"].ToString());
-            var roles = _db.Roles.Where(x => (x.ClusterID = ClusterID) &&
+            var roles = _db.Roles.Where(x => (x.ClusterID == ClusterID) &&
                                              (DateTime.Now < x.Endtime));
             return Ok(roles);
         }

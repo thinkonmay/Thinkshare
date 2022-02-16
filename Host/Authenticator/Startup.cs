@@ -64,12 +64,6 @@ namespace Authenticator
                     Version =
                     "v1"
                 });
-
-                var xmlFilePath = Path.Combine(AppContext.BaseDirectory,
-                $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
-
-                c.IncludeXmlComments(xmlFilePath);
-
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
                     Name = "Authorization",
