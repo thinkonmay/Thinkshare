@@ -34,9 +34,25 @@ function
 		<label class="col-sm-3 col-form-label">
 			Password
 		</label>
+		
 		<div class="col-sm-9">
 		<input type="password" class="form-control" id="passwordCtrler"
 			placeholder=" Type your password here ">
+		</div>
+		<label class="col-sm-3 col-form-label">
+			Region
+		</label>
+		<div class="col-sm-9">
+			<select class="form-control" id="regionCtrler">
+				<option value="US-West">US West</option>
+				<option value="US-East">US East</option>
+				<option value="Canada">Canada</option>
+				<option value="Singapore">Singapore</option>
+				<option value="India">India</option>
+				<option value="South_Korea">South Korea</option>
+				<option value="Australia">Australia</option>
+				<option value="Tokyo">Tokyo</option>
+			</select>
 		</div>
 		`;
 	}
@@ -72,7 +88,8 @@ function
 			if (await isManager()) {
 				var password = document.getElementById("passwordCtrler").value;
 				var name = document.getElementById("clusterNameCtrler").value;
-				API.requestCluster(name, password)
+				var region = document.getElementById("regionCtrler").value
+				API.requestCluster(name, password, region)
 					.then(async data => {
 						const response = await data.text()
 						if (data.status == 200) {
