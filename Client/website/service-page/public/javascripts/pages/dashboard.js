@@ -466,15 +466,15 @@ function setState(serviceState, slaveID, queue) {
 	button.innerHTML = slaveState(serviceState, slaveID);
 
 	// ??? why?
-	if (serviceState == "OFF_REMOTE") {
-		Utils.newSwal.fire({
-			title: "Successfully!",
-			text: "",
-			icon: "info",
-			showConfirmButton: false,
-			timer: 1500
-		})
-	}
+	// if (serviceState == "OFF_REMOTE") {
+	// 	Utils.newSwal.fire({
+	// 		title: "Successfully!",
+	// 		text: "",
+	// 		icon: "info",
+	// 		showConfirmButton: false,
+	// 		timer: 1500
+	// 	})
+	// }
 
 	if (serviceState === "ON_SESSION") {
 

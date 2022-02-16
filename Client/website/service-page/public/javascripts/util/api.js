@@ -240,45 +240,30 @@ export const getSession = async () => {
 
 export const terminateSession = async SlaveID => {
 	await setup();
-	Utils.newSwal.fire({
-		title: "Processing",
-		text: "Wait a minute . . .",
-		didOpen: () => {
-			Swal.showLoading()
-			return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
-				method: "DELETE",
-				headers: genHeaders()
-			}, function (error) {
-				if (401 == error.response.status) {
-					window.location.replace(API.Login)
-				} else {
-					return Promise.reject(error);
-				}
-			})
+	return fetch(TerminateSession + "?SlaveID=" + SlaveID, {
+		method: "DELETE",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
 		}
 	})
 }
 
 export const disconnectSession = async SlaveID => {
 	await setup();
-	Utils.newSwal.fire({
-		title: "Processing",
-		text: "Wait a minute . . .",
-		didOpen: () => {
-			Swal.showLoading()
-			return fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
-				method: "POST",
-				headers: genHeaders()
-			}, function (error) {
-				if (401 == error.response.status) {
-					window.location.replace(API.Login)
-				} else {
-					return Promise.reject(error);
-				}
-			})
+	return fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
+		method: "POST",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(API.Login)
+		} else {
+			return Promise.reject(error);
 		}
 	})
-
 }
 
 export const reconnectSession = async (SlaveID) => {
