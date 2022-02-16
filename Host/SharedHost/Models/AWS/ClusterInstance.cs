@@ -13,6 +13,8 @@ namespace SharedHost.Models.AWS
 
         public string TurnPassword {get;set;}
 
+        public string Region {get;set;}
+
         public DateTime? Registered {get;set;}
 
         public virtual List<PortForward> portForwards {get;set;}

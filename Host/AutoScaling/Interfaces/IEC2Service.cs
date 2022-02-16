@@ -7,7 +7,7 @@ namespace AutoScaling.Interfaces
     public interface IEC2Service
     {
         Task<bool> TerminateInstance(ClusterInstance instance);
-        Task<ClusterInstance> SetupManagedCluster();
-        Task<ClusterInstance> SetupCoturnService();
+        Task<ClusterInstance> SetupManagedCluster(string region);
+        Task<ClusterInstance> SetupCoturnService(string region);
     }
 }

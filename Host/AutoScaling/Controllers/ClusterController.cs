@@ -30,7 +30,6 @@ namespace AutoScaling.Controllers
 
         private readonly IGlobalStateStore _cache;
 
-
         private readonly SystemConfig _config;
         
         private readonly InstanceSetting _instanceSetting;
@@ -56,7 +55,8 @@ namespace AutoScaling.Controllers
 
         [Manager]
         [HttpGet("Token")]
-        public async Task<IActionResult> NewCluster(string ClusterName)
+        public async Task<IActionResult> NewCluster(string ClusterName,
+                                                    string region)
         {
             GlobalCluster cluster;
             var ManagerID = Int32.Parse(HttpContext.Items["UserID"].ToString());
@@ -64,12 +64,10 @@ namespace AutoScaling.Controllers
                 .Where(x => x.Name == ClusterName && 
                             x.OwnerID == ManagerID);
 
-
-
-
             if(refreshCluster.Count() == 0)
             {
-                var CoturnRequest = new RestRequest($"{_config.AutoScaling}/Instance/Coturn",Method.GET);
+                var CoturnRequest = new RestRequest($"{_config.AutoScaling}/Instance/Coturn",Method.GET)
+                                            .AddQueryParameter("region",region);
 
                 var client = new RestClient();
                 client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;

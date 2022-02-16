@@ -55,7 +55,8 @@ namespace WorkerManager.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(string? ClusterName, [FromBody] LoginModel login)
+        public async Task<IActionResult> Login(string? ClusterName, 
+                                              [FromBody] LoginModel login)
         {
             bool registered = await _infor.IsRegistered();
 
@@ -80,6 +81,7 @@ namespace WorkerManager.Controllers
                     var tokenResult = await _client.ExecuteAsync( 
                         new RestRequest($"https://{_config.Domain}{_config.ClusterRegisterUrl}",Method.GET)
                             .AddHeader("Authorization",cluster.OwnerToken)
+                            .AddQueryParameter("region", ClusterName)
                             .AddQueryParameter("ClusterName", ClusterName));
                     if (tokenResult.StatusCode == HttpStatusCode.OK)
                     {

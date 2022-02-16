@@ -28,9 +28,9 @@ namespace AutoScaling.Controllers
 
 
         [HttpGet("Managed")]
-        public async Task<IActionResult> ManagedInstance()
+        public async Task<IActionResult> ManagedInstance(string region)
         {
-            var instance = await _ec2.SetupManagedCluster();
+            var instance = await _ec2.SetupManagedCluster(region);
             _db.Instances.Add(instance);
             await _db.SaveChangesAsync();
 
@@ -38,9 +38,9 @@ namespace AutoScaling.Controllers
         }
 
         [HttpGet("Coturn")]
-        public async Task<IActionResult> CoturnInstance()
+        public async Task<IActionResult> CoturnInstance(string region)
         {
-            var instance = await _ec2.SetupCoturnService();
+            var instance = await _ec2.SetupCoturnService(region);
             _db.Instances.Add(instance);
             await _db.SaveChangesAsync();
 

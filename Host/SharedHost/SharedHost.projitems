@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserInforModel.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\ClusterInstance.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\AWSSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\EC2Instance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\EC2KeyPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\PortForward.cs" />

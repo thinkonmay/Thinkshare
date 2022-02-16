@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Amazon.Runtime;
 using Amazon;
 using Amazon.Runtime.CredentialManagement;
+using AutoScaling.Models;
 
 
 namespace AutoScaling.Services
@@ -23,8 +24,6 @@ namespace AutoScaling.Services
     public class EC2Service : IEC2Service
     {
         private readonly AWSSetting _aws;
-
-        private readonly RegionEndpoint _defaultRegion;
 
         private readonly CredentialProfileStoreChain _cred;
 
@@ -35,35 +34,20 @@ namespace AutoScaling.Services
         public EC2Service(IOptions<AWSSetting> aws,
                           ILog log)
         {
-            _aws = aws.Value;
-
-            _log = log;
-
-            _defaultRegion = RegionEndpoint.APSoutheast1;
-
             defaultProfile = "default";
-
-            _cred = new CredentialProfileStoreChain(_aws.CredentialPath);
+            _aws = aws.Value;
+            _log = log;
         }
 
 
-        private async Task<EC2KeyPair> CreateKeyPair()
+        private async Task<EC2KeyPair> CreateKeyPair(string region)
         {
-            AmazonEC2Client _ec2Client;
-            if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
-            {
-                _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
-            }
-            else
-            {
-                return null;
-            }
+            AmazonEC2Client _ec2Client = AWSregion.GetRegionClient(_aws,region);
 
             CreateKeyPairResponse response =
                 await _ec2Client.CreateKeyPairAsync(new CreateKeyPairRequest{
                     KeyName = (new Random()).Next().ToString()
                 });            
-
 
             return new EC2KeyPair {
                 PrivateKey = response.KeyPair.KeyMaterial,
@@ -74,19 +58,11 @@ namespace AutoScaling.Services
 
 
 
-        private async Task<EC2Instance> LaunchInstances()
+        private async Task<EC2Instance> LaunchInstances(string region)
         {
-            AmazonEC2Client _ec2Client;
-            if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
-            {
-                _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
-            }
-            else
-            {
-                return null;
-            }
+            AmazonEC2Client _ec2Client = AWSregion.GetRegionClient(_aws,region);
 
-            var keyPair = await CreateKeyPair();
+            var keyPair = await CreateKeyPair(region);
 
 
             var response = await _ec2Client.RunInstancesAsync(new RunInstancesRequest
@@ -156,15 +132,7 @@ namespace AutoScaling.Services
         {
             try
             {
-                AmazonEC2Client _ec2Client;
-                if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
-                {
-                    _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
-                }
-                else
-                {
-                    return false;
-                }
+                AmazonEC2Client _ec2Client = AWSregion.GetRegionClient(_aws,instance.Region);
 
                 var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
                 if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
@@ -199,10 +167,10 @@ namespace AutoScaling.Services
             }
         }
 
-        public async Task<ClusterInstance> SetupManagedCluster()
+        public async Task<ClusterInstance> SetupManagedCluster(string region)
         {
             var script = new List<string>();
-            var instance = await LaunchInstances();
+            var instance = await LaunchInstances(region);
             var result = new ClusterInstance
             {
                 IPAdress = instance.IPAdress,
@@ -228,9 +196,9 @@ namespace AutoScaling.Services
         }
 
 
-        public async Task<ClusterInstance> SetupCoturnService()
+        public async Task<ClusterInstance> SetupCoturnService(string region)
         {
-            var instance = await LaunchInstances();
+            var instance = await LaunchInstances(region);
             var result = new ClusterInstance
             {
                 IPAdress = instance.IPAdress,

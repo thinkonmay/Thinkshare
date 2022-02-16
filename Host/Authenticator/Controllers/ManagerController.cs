@@ -22,6 +22,7 @@ using SharedHost.Logging;
 using SharedHost.Models.Auth;
 using System.Text;
 using System.Linq;
+using SharedHost.Model;
 
 namespace Authenticator.Controllers
 {
@@ -76,21 +77,24 @@ namespace Authenticator.Controllers
 
         [Manager]
         [HttpPost("ManagedCluster/Request")]
-        public async Task<IActionResult> RequestCluster(string ClusterName, [FromBody] string password)
+        public async Task<IActionResult> RequestCluster(string ClusterName, 
+                                                        string region,
+                                                        [FromBody] string password)
         {
+            if(!Region.CorrectTypo(region))
+                return BadRequest("Incorrect region");
+
             var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
             var user = await _userManager.FindByIdAsync(UserID.ToString());
 
             if(! await _userManager.CheckPasswordAsync(user,password))
                 return BadRequest("Invalid password");
 
-
             if(_db.Clusters.Where(x => x.Name == ClusterName && x.OwnerID == Int32.Parse(UserID.ToString()) ).Any())
-            {
                 return BadRequest("Choose a different name");
-            }
 
-            var request = new RestRequest($"{_config.AutoScaling}/Instance/Managed",Method.GET);
+            var request = new RestRequest($"{_config.AutoScaling}/Instance/Managed",Method.GET)
+                                    .AddQueryParameter("region",region);
 
             var client = new RestClient();
             client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
