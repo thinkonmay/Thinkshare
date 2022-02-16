@@ -43,7 +43,7 @@ function
 			Region
 		</label>
 		<div class="col-sm-9">
-			<select class="form-control" id="genderCtrler">
+			<select class="form-control" id="regionCtrler">
 				<option value="US-West">US West</option>
 				<option value="US-East">US East</option>
 				<option value="Canada">Canada</option>
