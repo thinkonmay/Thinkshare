@@ -1,21 +1,22 @@
-﻿namespace SharedHost.Models.AWS 
+﻿using System.Collections.Generic;
+
+
+namespace SharedHost.Models.AWS 
 {
     public class AWSSetting
     {
-        public string Keyname { get; set; }
-
         public string InstanceType {get;set;}
 
-        public string AMI{get;set;}
+        public string CredentialPath {get;set;}
 
-        public string SSHkeyPath {get;set;}
+        public List<RegionConfig> regions {get;set;}
+    }
 
-        public string CredentialPath{get;set;}
+    public class RegionConfig
+    {
+        public string region {get;set;}
 
-        public string ConfigPath{get;set;}
-
-
-
+        public string AMI {get;set;}
     }
 
     public class Region
@@ -30,7 +31,7 @@
 
         public const string India = "India";
 
-        public const string South_Korea = "South-Korea";
+        public const string South_Korea = "SouthKorea";
 
         public const string Australia = "Australia";
 

@@ -173,6 +173,7 @@ namespace AutoScaling.Services
             var instance = await LaunchInstances(region);
             var result = new ClusterInstance
             {
+                Start = DateTime.Now,
                 IPAdress = instance.IPAdress,
                 InstanceID = instance.InstanceID,
                 InstanceName = instance.InstanceName,
@@ -202,6 +203,7 @@ namespace AutoScaling.Services
             var instance = await LaunchInstances(region);
             var result = new ClusterInstance
             {
+                Start = DateTime.Now,
                 IPAdress = instance.IPAdress,
                 InstanceID = instance.InstanceID,
                 InstanceName = instance.InstanceName,
