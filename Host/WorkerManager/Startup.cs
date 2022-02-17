@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 using WorkerManager.Middleware;
 using SharedHost;
+using SharedHost.Models.AWS;
 
 
 namespace WorkerManager

@@ -12,6 +12,6 @@ namespace Conductor.Interfaces
         
         Task SessionInitialize(int ID, string token);
 
-        Task<string> GetWorkerState(int WorkerID);
+        Task<bool> WaitForDesiredState(int WorkerID, string desiredState);
     }
 }

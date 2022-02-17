@@ -66,40 +66,27 @@ namespace WorkerManager.Models
 
         public async Task<bool> PingWorker()
         {
-            using (var timeoutCancellation = new CancellationTokenSource())
+            try
             {
-                var originalTask = Ping();
-                var delayTask = Task.Delay(TimeSpan.FromMilliseconds(1000));
-                var completedTask = await Task.WhenAny(originalTask, delayTask);
-                // Cancel timeout to stop either task:
-                // - Either the original task completed, so we need to cancel the delay task.
-                // - Or the timeout expired, so we need to cancel the original task.
-                // Canceling will not affect a task, that is already completed.
-                timeoutCancellation.Cancel();
-                if (completedTask == originalTask)
-                {
-                    // original task completed
-                    return await originalTask;
-                }
-                else
-                {
-                    // timeout
-                    return false;
-                }
+                var client = new RestClient();
+                client.Timeout = (int)TimeSpan.FromSeconds(1).TotalMilliseconds;
+                var request = new RestRequest($"{model.AgentUrl}/ping");
+                var result = await client.ExecuteAsync(request,Method.POST);
+                return result.StatusCode == HttpStatusCode.OK;
+            }
+            catch
+            {
+                return false;
             }
         } 
 
-        async Task<bool> Ping()
+        public async Task<IRestResponse> Execute(string script)
         {
-            IRestResponse result;
-            var request = new RestRequest(model.AgentUrl + "/ping");
-            result = await (new RestClient()).ExecuteAsync(request,Method.GET);
-
-            if(result.StatusCode == HttpStatusCode.OK) { 
-                return true; 
-            } else { 
-                return false; 
-            }
+            var client = new RestClient();
+            client.Timeout = (int)TimeSpan.FromSeconds(5).TotalMilliseconds;
+            return await client.ExecuteAsync(
+                          new RestRequest($"{model.AgentUrl}/Shell")
+                          .AddBody(script),Method.POST);
         }
     }
 }

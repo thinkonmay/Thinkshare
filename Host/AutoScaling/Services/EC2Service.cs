@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Amazon.Runtime;
 using Amazon;
 using Amazon.Runtime.CredentialManagement;
+using AutoScaling.Models;
 
 
 namespace AutoScaling.Services
@@ -23,8 +24,6 @@ namespace AutoScaling.Services
     public class EC2Service : IEC2Service
     {
         private readonly AWSSetting _aws;
-
-        private readonly RegionEndpoint _defaultRegion;
 
         private readonly CredentialProfileStoreChain _cred;
 
@@ -35,35 +34,20 @@ namespace AutoScaling.Services
         public EC2Service(IOptions<AWSSetting> aws,
                           ILog log)
         {
-            _aws = aws.Value;
-
-            _log = log;
-
-            _defaultRegion = RegionEndpoint.APSoutheast1;
-
             defaultProfile = "default";
-
-            _cred = new CredentialProfileStoreChain(_aws.CredentialPath);
+            _aws = aws.Value;
+            _log = log;
         }
 
 
-        private async Task<EC2KeyPair> CreateKeyPair()
+        private async Task<EC2KeyPair> CreateKeyPair(string region)
         {
-            AmazonEC2Client _ec2Client;
-            if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
-            {
-                _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
-            }
-            else
-            {
-                return null;
-            }
+            AmazonEC2Client _ec2Client = AWSregion.GetRegionClient(_aws,region);
 
             CreateKeyPairResponse response =
                 await _ec2Client.CreateKeyPairAsync(new CreateKeyPairRequest{
                     KeyName = (new Random()).Next().ToString()
                 });            
-
 
             return new EC2KeyPair {
                 PrivateKey = response.KeyPair.KeyMaterial,
@@ -74,19 +58,11 @@ namespace AutoScaling.Services
 
 
 
-        private async Task<EC2Instance> LaunchInstances()
+        private async Task<EC2Instance> LaunchInstances(string region)
         {
-            AmazonEC2Client _ec2Client;
-            if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
-            {
-                _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
-            }
-            else
-            {
-                return null;
-            }
+            AmazonEC2Client _ec2Client = AWSregion.GetRegionClient(_aws,region);
 
-            var keyPair = await CreateKeyPair();
+            var keyPair = await CreateKeyPair(region);
 
 
             var response = await _ec2Client.RunInstancesAsync(new RunInstancesRequest
@@ -98,7 +74,7 @@ namespace AutoScaling.Services
                     }
                 },
 
-                ImageId = _aws.AMI,
+                ImageId = _aws.regions.Where(x => x.region == region).First().AMI,
                 InstanceType = _aws.InstanceType,
                 KeyName = keyPair.Name,
                 
@@ -141,7 +117,7 @@ namespace AutoScaling.Services
                     break;
                 }
                 _log.Information("waiting for ec2 instance to get desired state: "+ waitingTime);
-                System.Threading.Thread.Sleep(1000);
+                Thread.Sleep(TimeSpan.FromSeconds(1));
                 waitingTime++;
             }
             _log.Information("EC2 instance create finished after : "+ waitingTime);
@@ -156,15 +132,7 @@ namespace AutoScaling.Services
         {
             try
             {
-                AmazonEC2Client _ec2Client;
-                if (_cred.TryGetAWSCredentials(defaultProfile, out AWSCredentials awsCredentials))
-                {
-                    _ec2Client = new AmazonEC2Client(awsCredentials,_defaultRegion);
-                }
-                else
-                {
-                    return false;
-                }
+                AmazonEC2Client _ec2Client = AWSregion.GetRegionClient(_aws,instance.Region);
 
                 var prestaterequets  = await _ec2Client.DescribeInstancesAsync(new DescribeInstancesRequest { InstanceIds = new List<string> { instance.InstanceID } });
                 if(prestaterequets.Reservations.First().Instances.First().State.Name != InstanceStateName.Running)
@@ -199,17 +167,18 @@ namespace AutoScaling.Services
             }
         }
 
-        public async Task<ClusterInstance> SetupManagedCluster()
+        public async Task<ClusterInstance> SetupManagedCluster(string region)
         {
-            var script = new List<string>();
-            var instance = await LaunchInstances();
+            var instance = await LaunchInstances(region);
             var result = new ClusterInstance
             {
+                Start = DateTime.Now,
                 IPAdress = instance.IPAdress,
                 InstanceID = instance.InstanceID,
                 InstanceName = instance.InstanceName,
                 PrivateIP = instance.PrivateIP,
                 keyPair = instance.keyPair,
+                Region = region,
                 portForwards = new List<PortForward>(),
             };
 
@@ -219,25 +188,35 @@ namespace AutoScaling.Services
 
 
             // wait for coturn server to boot up until setup coturn script
-            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
-            await AccessEC2Instance(instance,coturn);
-
-            var cluster = SetupClusterScript(_aws.ClusterManagerVersion,_aws.ClusterUIVersion);
-            await AccessEC2Instance(instance,cluster);
+            try
+            {
+                var script = new List<string>();
+                script.AddRange(SetupTurnScript(result.TurnUser,result.TurnPassword));
+                script.AddRange(SetupClusterScript(_aws.ClusterManagerVersion,_aws.ClusterUIVersion));
+                await AccessEC2Instance(instance,script);
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Fail to connect to instance terminating instance",ex);
+                await TerminateInstance(result);
+                return null;
+            }
             return result;
         }
 
 
-        public async Task<ClusterInstance> SetupCoturnService()
+        public async Task<ClusterInstance> SetupCoturnService(string region)
         {
-            var instance = await LaunchInstances();
+            var instance = await LaunchInstances(region);
             var result = new ClusterInstance
             {
+                Start = DateTime.Now,
                 IPAdress = instance.IPAdress,
                 InstanceID = instance.InstanceID,
                 InstanceName = instance.InstanceName,
                 PrivateIP = instance.PrivateIP,
                 keyPair = instance.keyPair,
+                Region = region,
                 portForwards = new List<PortForward>(),
             };
 
@@ -245,9 +224,18 @@ namespace AutoScaling.Services
             result.TurnPassword = (new Random()).Next().ToString();
 
 
-            // wait for coturn server to boot up until setup coturn script
-            var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
-            await AccessEC2Instance(instance,coturn);
+            try
+            {
+                // wait for coturn server to boot up until setup coturn script
+                var coturn = SetupTurnScript(result.TurnUser,result.TurnPassword);
+                await AccessEC2Instance(instance,coturn);
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Fail to connect to instance terminating instance",ex);
+                await TerminateInstance(result);
+                return null;
+            }
             return result;
         }
 
@@ -264,50 +252,32 @@ namespace AutoScaling.Services
             while (true)
             {
                 _client = new SshClient(con);
-                if(attemption == 30)
-                {
-                    _log.Warning("Fail to connect to EC2 instance multipletime");
-                    return;
-                }
+                _client.ConnectionInfo.Timeout = TimeSpan.FromMinutes(5);
+
+                if(attemption == 3)
+                    throw new Exception("Fail to connect to instance multiple times");
 
                 try
                 {
-                    var task = Task.Run(() =>  _client.Connect());
-                    var timeout = Task.Delay(TimeSpan.FromSeconds(5));
+                    _client.Connect();
 
-                    var completedTask = await Task.WhenAny(task, timeout);
-                    if(completedTask == task)
+                    if(!_client.IsConnected)
+                        throw new Exception("connection is not setup properly");
+
+                    foreach (var command in commands)
                     {
-                        await task;
-                        if(!_client.IsConnected)
-                            throw new Exception("connection is not setup properly");
-
-                        try
-                        {
-                            foreach (var command in commands)
-                            {
-                                _log.Information("Executing command " +command);
-                                Task.Run(() => _client.RunCommand(command));
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _log.Error("Fail to execute script",ex);
-                        }
-
-                        return;
+                        _log.Information("Executing command " +command);
+                        Task.Run(() => _client.RunCommand(command));
                     }
-                    else
-                    {
-                        throw new Exception("Connection timeout");
-                    }
+
+                    return;
                 }
                 catch (Exception exception)
                 {
                     _log.Error("Fail to connect to EC2 instance",exception);
                 }
                 _client.Dispose();
-                Thread.Sleep(1000);
+                Thread.Sleep(TimeSpan.FromSeconds(1));
                 attemption++;
             }
         }

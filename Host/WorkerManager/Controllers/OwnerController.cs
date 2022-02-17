@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using WorkerManager.Middleware;
 using System.Linq;
+using System.Collections.Generic;
 using SharedHost.Models.Auth;
 using RestSharp;
 using Newtonsoft.Json;
@@ -54,7 +55,8 @@ namespace WorkerManager.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(string? ClusterName, [FromBody] LoginModel login)
+        public async Task<IActionResult> Login(string? ClusterName, 
+                                              [FromBody] LoginModel login)
         {
             bool registered = await _infor.IsRegistered();
 
@@ -62,7 +64,7 @@ namespace WorkerManager.Controllers
                 return BadRequest("Cluster haven't been registered");
 
             var loginResult = await _client.ExecuteAsync(
-                new RestRequest( _config.OwnerAccountUrl,Method.POST)
+                new RestRequest($"https://{_config.Domain}{_config.OwnerAccountUrl}",Method.POST)
                     .AddJsonBody(login));
 
             if(loginResult.StatusCode != HttpStatusCode.OK) {return BadRequest();}
@@ -77,8 +79,9 @@ namespace WorkerManager.Controllers
                     cluster.OwnerToken = jsonresult.Token;
                     cluster.OwnerName = jsonresult.UserName;
                     var tokenResult = await _client.ExecuteAsync( 
-                        new RestRequest(_config.ClusterRegisterUrl,Method.GET)
+                        new RestRequest($"https://{_config.Domain}{_config.ClusterRegisterUrl}",Method.GET)
                             .AddHeader("Authorization",cluster.OwnerToken)
+                            .AddQueryParameter("region", ClusterName)
                             .AddQueryParameter("ClusterName", ClusterName));
                     if (tokenResult.StatusCode == HttpStatusCode.OK)
                     {
@@ -102,23 +105,19 @@ namespace WorkerManager.Controllers
             return Ok(jsonresult);
         }
 
-
-
         [Owner]
         [HttpGet("Cluster/Infor")]
         public async Task<IActionResult> Infor()
         {
-            var cluster = await _cache.GetClusterInfor();
-
-            var request = new RestRequest(_config.ClusterInforUrl)
-                .AddHeader("Authorization",cluster.ClusterToken);
-            request.Method = Method.GET;
-
-            var result = await _client.ExecuteAsync(request);
-            return Ok(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
+            var cluster = await _infor.Infor();
+            return Ok(cluster);
         }
 
-
+        [HttpPost("Cluster/isRegistered")]
+        public async Task<IActionResult> isRegistered()
+        {
+            return Ok(await _infor.IsRegistered());
+        }
 
         [Owner]
         [HttpGet("Worker/State")]
@@ -128,12 +127,82 @@ namespace WorkerManager.Controllers
             return Ok(result);
         }
 
-
-
-        [HttpPost("Cluster/isRegistered")]
-        public async Task<IActionResult> isRegistered()
+        [Owner]
+        [HttpDelete("Cluster/Unregister")]
+        public async Task<IActionResult> Unregister()
         {
-            return Ok(await _infor.IsRegistered());
+            var key = await _cache.GetClusterInfor();
+            var request = new RestRequest(
+                $"https://{_config.Domain}{_config.UnregisterURL}",Method.DELETE)
+                    .AddHeader("Authorization",key.ClusterToken);
+            var restResponse = await _client.ExecuteAsync(request);
+            return restResponse.StatusCode == HttpStatusCode.OK ? Ok() : BadRequest(restResponse.Content);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [Owner]
+        [HttpPost("Cluster/Role")]
+        public async Task<IActionResult> AddRole(DateTime? Start,
+                                                 DateTime? End,
+                                                 string UserName)
+        {
+            var cluster = await _cache.GetClusterInfor();
+            var request = new RestRequest($"https://{_config.Domain}{_config.ClusterRole}", Method.POST)
+                .AddHeader("Authorization",cluster.ClusterToken)
+                .AddJsonBody(new ClusterRoleRequest
+                {
+                    Start = Start,
+                    Endtime = End,
+                    User = UserName,
+                    Description = "Created by cluster owner"
+                });
+
+            var result = await _client.ExecuteAsync(request);
+            return (result.StatusCode == HttpStatusCode.OK) ? Ok() : BadRequest();
+        }
+
+        [Owner]
+        [HttpDelete("Cluster/Role")]
+        public async Task<IActionResult> RemoveRole(int RoleID)
+        {
+            var cluster = await _cache.GetClusterInfor();
+            var request = new RestRequest($"https://{_config.Domain}{_config.ClusterRole}",Method.DELETE)
+                .AddQueryParameter("RoleID",RoleID.ToString())
+                .AddHeader("Authorization",cluster.ClusterToken);
+
+            var result = await _client.ExecuteAsync(request);
+            return result.StatusCode == HttpStatusCode.OK ? Ok() : BadRequest();
+        }
+
+        [Owner]
+        [HttpGet("Cluster/Role")]
+        public async Task<IActionResult> ClusterRole()
+        {
+            var cluster = await _cache.GetClusterInfor();
+            var request = new RestRequest($"https://{_config.Domain}{_config.ClusterRole}",Method.GET)
+                .AddHeader("Authorization",cluster.ClusterToken);
+
+            var result = await _client.ExecuteAsync(request);
+            return Ok(JsonConvert.DeserializeObject<List<ClusterRole>>(result.Content));
         }
     }
 }

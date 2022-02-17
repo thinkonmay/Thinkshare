@@ -7,7 +7,3 @@ WORKDIR /src
 COPY . .
 
 CMD ["sleep", "10000m"]
-
-FROM ubuntu:latest AS UBUNTU
-
-CMD ["sleep", "10000m"]

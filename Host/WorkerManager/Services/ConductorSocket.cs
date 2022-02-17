@@ -57,7 +57,7 @@ namespace WorkerManager.Services
                 var token = (await _cache.GetClusterInfor()).ClusterToken;
                 _clientWebSocket = new ClientWebSocket();
                 await _clientWebSocket.ConnectAsync(
-                    new Uri(_config.ClusterHub+"?token=" + token), 
+                    new Uri($"wss://{_config.Domain}{_config.ClusterHub}?token={token}"), 
                     CancellationToken.None);
 
                 if(_clientWebSocket.State == WebSocketState.Open)
@@ -83,7 +83,7 @@ namespace WorkerManager.Services
             catch (Exception ex)
             { 
                 _log.Error($"Fail to connect to host" ,ex);
-                System.Threading.Thread.Sleep((int)TimeSpan.FromSeconds(10).TotalMilliseconds);
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
                 await Start();
             }
         }
@@ -195,9 +195,9 @@ namespace WorkerManager.Services
         {
             Dictionary<int, string> syncedState = JsonConvert.DeserializeObject<Dictionary<int,string>>(message.Data); 
 
-            try
+            while (true)
             {
-                while (true)
+                try
                 {
                     var clusterSnapshoot = await _cache.GetClusterState();
                     // check for every different between 
@@ -252,14 +252,12 @@ namespace WorkerManager.Services
                             }
                         }
                     }
-
-                    Thread.Sleep((int)TimeSpan.FromMilliseconds(50).TotalMilliseconds);
                 }
-            }
-            catch (Exception ex)
-            {
-                _log.Error($"state syncing failed",ex);
-                await StateSyncing(message);
+                catch (Exception ex)
+                {
+                    _log.Error($"state syncing failed",ex);
+                }
+                Thread.Sleep(TimeSpan.FromMilliseconds(50));
             }
         }
 
@@ -269,7 +267,7 @@ namespace WorkerManager.Services
         {
             try
             {
-                var request = new RestRequest(_config.WorkerRegisterUrl,Method.POST)
+                var request = new RestRequest($"https://{_config.Domain}{_config.WorkerRegisterUrl}",Method.POST)
                     .AddHeader("Authorization",(await _cache.GetClusterInfor()).ClusterToken)
                     .AddJsonBody(model.model);
 
@@ -311,22 +309,23 @@ namespace WorkerManager.Services
 
         public async Task Initialize(int ID, string remoteToken)
         {
-            var state = await _cache.GetWorkerState(ID);
-            if(state != WorkerState.Open){return;}
-
-
             var worker = await _cache.GetWorkerInfor(ID);
-            await _cache.SetWorkerRemoteToken(ID,remoteToken);
             var workerToken = await _generator.GenerateWorkerToken(worker);
+
+            var state = await _cache.GetWorkerState(ID);
+            if(state != WorkerState.Open)
+                return;
             if (await worker.SessionInitialize(workerToken))
             {
-                _log.Information("initialize session done");
                 await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
+                _log.Information("initialize session done");
+                await _cache.SetWorkerRemoteToken(ID,remoteToken);
             }
             else 
             {
-                _log.Information("Fail to initialize session");
                 await _cache.SetWorkerState(worker.ID, WorkerState.OffRemote);
+                _log.Information("Fail to initialize session");
+                await _cache.SetWorkerRemoteToken(ID,remoteToken);
             }
         }
 
@@ -334,17 +333,20 @@ namespace WorkerManager.Services
 
         public async Task Terminate(int GlobalID)
         {
-            var state = await _cache.GetWorkerState(GlobalID);
-            if(state != WorkerState.OnSession && state != WorkerState.OffRemote){return;}
-
             var worker = await _cache.GetWorkerInfor(GlobalID);
-            await _cache.SetWorkerRemoteToken(GlobalID,"none");
-
             var workerToken = await _generator.GenerateWorkerToken(worker);
+            var state = await _cache.GetWorkerState(GlobalID);
+
+            if(state != WorkerState.OnSession && 
+               state != WorkerState.OffRemote)
+               return;
+
             if(await worker.SessionTerminate(workerToken))
             {
-                _log.Information("Terminate session success");
                 await _cache.SetWorkerState(worker.ID, WorkerState.Open);
+                _log.Information("Terminate session success");
+
+                await _cache.SetWorkerRemoteToken(GlobalID,"none");
             }
             else
             {
@@ -355,31 +357,33 @@ namespace WorkerManager.Services
 
         public async Task Disconnect(int GlobalID)
         {
-            var state = await _cache.GetWorkerState(GlobalID);
-            if(state != WorkerState.OnSession){return;}
-
             var worker = await _cache.GetWorkerInfor(GlobalID);
-
             var workerToken = await _generator.GenerateWorkerToken(worker);
+            var state = await _cache.GetWorkerState(GlobalID);
+
+            if(state != WorkerState.OnSession)
+                return;
+
             if (await worker.SessionDisconnect(workerToken))
             {
-                _log.Information($"Disconnect worker {GlobalID.ToString()}");
                 await _cache.SetWorkerState(worker.ID,WorkerState.OffRemote);
+                _log.Information($"Disconnect worker {GlobalID.ToString()}");
             }
         }
 
         public async Task Reconnect(int GlobalID)
         {
-            var state = await _cache.GetWorkerState(GlobalID);
-            if(state != WorkerState.OffRemote){return;}
-
             var worker = await _cache.GetWorkerInfor(GlobalID);
-
             var workerToken = await _generator.GenerateWorkerToken(worker);
+
+            var state = await _cache.GetWorkerState(GlobalID);
+            if(state != WorkerState.OffRemote)
+                return;
+
             if (await worker.SessionReconnect(workerToken))
             {
-                _log.Information($"Reconnect worker {GlobalID.ToString()}");
                 await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
+                _log.Information($"Reconnect worker {GlobalID.ToString()}");
             }
         }
     }

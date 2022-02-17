@@ -37,6 +37,7 @@ namespace DbSchema.SystemDb.Data
 
 
         public DbSet<GlobalCluster> Clusters{ get; set; }
+        public DbSet<ClusterRole> Roles{ get; set; }
         public DbSet<WorkerNode> Devices { get; set; }
         public DbSet<RemoteSession> RemoteSessions { get; set; }
         public DbSet<ScriptModel> ScriptModels { get; set; }

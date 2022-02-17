@@ -13,6 +13,7 @@ using SharedHost.Models.User;
 using DbSchema.CachedState;
 using SharedHost.Auth;
 using SharedHost.Logging;
+using SharedHost.Models.AWS;
 
 namespace AutoScaling
 {

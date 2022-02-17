@@ -23,10 +23,6 @@ namespace SharedHost.Models.Cluster
 
         public DateTime? Unregister { get; set; }
 
-        public bool Private { get;set; }
-
-        public bool SelfHost {get;set;}
-
         public virtual List<WorkerNode> WorkerNode { get; set; }
 
         public int? InstanceID {get;set;}

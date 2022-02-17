@@ -12,17 +12,15 @@ for (let i = 0; i < currentURL.length; i++) {
 host += ":5000"
 
 
-
-// local api
-export const Dashboard = "/dashboard"
-export const Initialize = "/initialize"
-export const Reconnect = "/reconnect"
+const Login = "/login"
 
 // owner api
-const LoginRoute = `${host}/Owner/Login`
-const GetWorkerStateRoute = `${host}/Owner/Worker/State`
-const GetInforClusterRoute = `${host}/Owner/Cluster/Infor`
-const IsRegisteredRoute = `${host}/Owner/Cluster/isRegistered`
+const LoginRoute = 				`${host}/Owner/Login`
+const GetInforClusterRoute = 	`${host}/Owner/Cluster/Infor`
+const IsRegisteredRoute = 		`${host}/Owner/Cluster/isRegistered`
+const UnRegisteredRoute = 		`${host}/Owner/Cluster/Unregister`
+const GetWorkerStateRoute = 	`${host}/Owner/Worker/State`
+const SetupRoleRoute = 			`${host}/Owner/Cluster/Role`
 
 
 
@@ -38,20 +36,6 @@ export const genHeaders = () => {
 	)
 }
 
-export const genHeadersUser = () => {
-	const token = getCookie("token")
-	return Object.assign({
-			"Content-Type": "application/json"
-		},
-		token ? {
-			Authorization: `Bearer ${token}`
-		} : {}
-	)
-}
-
-
-
-
 
 
 export const login = body => {
@@ -65,32 +49,13 @@ export const login = body => {
 	})
 }
 
-export const registerCluster = (isPrivate, Name) => {
-	RegisterClusterRoute = `${host}/Owner/Register`
-	if (isPrivate) {
-		RegisterClusterRoute += `?isPrivate=true&ClusterName=${Name}`
-	} else {
-		RegisterClusterRoute += `?isPrivate=false&ClusterName=${Name}`
-	}
-	return fetch(RegisterClusterRoute, {
-		method: "POST",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
 export const getInforClusterRoute = () => {
 	return fetch(GetInforClusterRoute, {
 		method: "GET",
 		headers: genHeaders()
 	}, function (error) {
 		if (401 == error.response.status) {
-			window.location.replace(API.Login)
+			window.location.replace(Login)
 		} else {
 			return Promise.reject(error);
 		}
@@ -104,7 +69,35 @@ export const getWorkerStateRoute = () => {
 		headers: genHeaders(),
 	}, function (error) {
 		if (401 == error.response.status) {
-			window.location.replace(API.Login)
+			window.location.replace(Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+
+
+export const UnRegister = () => {
+	return fetch(UnRegisteredRoute, {
+		method: "DELETE",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+export const isRegistered = () => {
+	return fetch(IsRegisteredRoute, {
+		method: "POST",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(Login)
 		} else {
 			return Promise.reject(error);
 		}
@@ -114,13 +107,63 @@ export const getWorkerStateRoute = () => {
 
 
 
-export const isRegistered = () => {
-	return fetch(IsRegisteredRoute, {
+
+
+
+
+
+
+
+
+
+
+
+
+export const getExistingRole = () => {
+	return fetch(SetupRoleRoute, {
+		method: "GET",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+export const createPermanentNewRole = (user) => {
+	return fetch(`${SetupRoleRoute}?UserName=${user}`, {
 		method: "POST",
 		headers: genHeaders()
 	}, function (error) {
 		if (401 == error.response.status) {
-			window.location.replace(API.Login)
+			window.location.replace(Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+export const createNewRole = (start,end,user) => {
+	return fetch(`${SetupRoleRoute}?Start=${start}&End=${end}&UserName=${user}`, {
+		method: "POST",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
+export const deleteRole = () => {
+	return fetch(SetupRoleRoute, {
+		method: "DELETE",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(Login)
 		} else {
 			return Promise.reject(error);
 		}

@@ -30,7 +30,6 @@ namespace AutoScaling.Controllers
 
         private readonly IGlobalStateStore _cache;
 
-
         private readonly SystemConfig _config;
         
         private readonly InstanceSetting _instanceSetting;
@@ -58,46 +57,9 @@ namespace AutoScaling.Controllers
         [HttpGet("Token")]
         public async Task<IActionResult> NewCluster(string ClusterName)
         {
-            GlobalCluster cluster;
             var ManagerID = Int32.Parse(HttpContext.Items["UserID"].ToString());
-            var refreshCluster = _db.Clusters
-                .Where(x => x.Name == ClusterName && 
-                            x.OwnerID == ManagerID);
-
-
-
-
-            if(refreshCluster.Count() == 0)
-            {
-                var CoturnRequest = new RestRequest($"{_config.AutoScaling}/Instance/Coturn",Method.GET);
-
-                var client = new RestClient();
-                client.Timeout = (int)TimeSpan.FromMinutes(10).TotalMilliseconds;
-                var coturnResult = await client.ExecuteAsync(CoturnRequest);
-                var instance = JsonConvert.DeserializeObject<ClusterInstance>(coturnResult.Content);
-                cluster = new GlobalCluster
-                {
-                    Name = ClusterName,
-                    Register = DateTime.Now,
-
-                    Private = true,
-                    SelfHost = true,
-
-                    InstanceID = instance.ID,
-                    WorkerNode = new List<WorkerNode>(),
-
-                    OwnerID = ManagerID
-                };
-
-                _db.Clusters.Add(cluster);
-                await _db.SaveChangesAsync();
-            }
-            else
-            {
-                cluster = refreshCluster.First();
-            }
-
-
+            var cluster = _db.Clusters.Where(x => x.Name == ClusterName && 
+                                                  x.OwnerID == ManagerID).First();
 
             var request = new RestRequest($"{_config.Authenticator}/Token/Grant/Cluster",Method.POST)
                 .AddJsonBody(cluster);
@@ -108,6 +70,29 @@ namespace AutoScaling.Controllers
                 token = Token,
                 Validator = "Autoscaling",
             });
+        }
+
+        [Cluster]
+        [HttpDelete("Unregister")]
+        public async Task<IActionResult> UnregisterCluster()
+        {
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+
+            if(cluster == null)  
+                BadRequest("cluster not found"); 
+
+            var success = await _ec2.TerminateInstance(cluster.instance);
+
+            if(!success)
+                return BadRequest("fail to terminate instance");
+
+            cluster.instance.End = DateTime.Now;
+            cluster.instance.portForwards.ForEach(x => x.End = DateTime.Now);
+            cluster.Unregister = DateTime.Now;
+            _db.Update(cluster);
+            await _db.SaveChangesAsync();
+            return Ok();
         }
 
 
@@ -143,21 +128,18 @@ namespace AutoScaling.Controllers
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+            Cluster.WorkerNode = null;
+            Cluster.Owner = null;
             return Ok(Cluster);
         }
 
         [Cluster]
-        [HttpPost("Infor")]
-        public async Task<IActionResult> setInfor(bool Private, bool SelfHost)
+        [HttpGet("Instance")]
+        public async Task<IActionResult> getInstance()
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
-            Cluster.Private = Private;
-            Cluster.SelfHost = SelfHost;
-
-            _db.Update(Cluster);
-            await _db.SaveChangesAsync();
-            return Ok();
+            return Ok(Cluster.instance);
         }
     }
 }

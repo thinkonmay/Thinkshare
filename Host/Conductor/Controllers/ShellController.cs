@@ -11,9 +11,6 @@ using SharedHost.Models.User;
 
 namespace Conductor.Controllers
 {
-    /// <summary>
-    /// Route use by admin to create shell remote session with slave devices
-    /// </summary>
     [Route("/Shell")]
     [ApiController]
     public class ShellController : Controller
@@ -28,15 +25,11 @@ namespace Conductor.Controllers
             _db = db;
         }
 
-
-
         [HttpGet("Model/All")]
         public IActionResult Model()
         {
             var model = _db.ScriptModels.ToList();
             return Ok(model);
         }
-
-
     }
 }

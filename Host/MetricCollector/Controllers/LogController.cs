@@ -13,17 +13,17 @@ namespace MetricCollector.Controllers
     [ApiController]
     [Route("/Log")]
     [Produces("application/json")]
-    public class ReportMetricController : ControllerBase
+    public class LogController : ControllerBase
     {
-
         private readonly IScriptGetter _getter;
+
         private readonly SystemConfig _config;
 
         private readonly ILog _log;
 
-        public ReportMetricController(ILog log, 
-                                      IScriptGetter getter, 
-                                      IOptions<SystemConfig> config)
+        public LogController(ILog log, 
+                            IScriptGetter getter, 
+                            IOptions<SystemConfig> config)
         {
             _log = log;
             _getter = getter;

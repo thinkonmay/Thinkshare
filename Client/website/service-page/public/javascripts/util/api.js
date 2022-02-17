@@ -1,5 +1,5 @@
 import { getCookie } from "./cookie.js"
-
+import * as Utils from "../util/utils.js"
 
 
 var host;
@@ -9,6 +9,7 @@ var Token;
 var Infor;
 var Roles;
 var Session;
+var Password;
 
 var Manager;
 var Cluster;
@@ -26,33 +27,33 @@ var FetchSession;
 var FetchInfor;
 
 const setup = async () => {
-	if(host != null)
+	if (host != null)
 		return;
 
-	host = await ( (await fetch('API.js')).text() )
+	host = await ((await fetch('API.js')).text())
 
+	Login = 				`https://${host}/Account/Login`
+	Register = 				`https://${host}/Account/Register`
+	Token = 				`https://${host}/Account/ExchangeToken`
+	Infor = 				`https://${host}/Account/Infor`
+	Roles = 				`https://${host}/Account/Roles`
+	Session = 				`https://${host}/Account/History`
+	Password = 				`https://${host}/Account/Password/Update`
 
-	Login = `https://${host}/Account/Login`
-	Register = `https://${host}/Account/Register`
-	Token = `https://${host}/Account/ExchangeToken`
-	Infor = `https://${host}/Account/Infor`
-	Roles = `https://${host}/Account/Roles`
-	Session = `https://${host}/Account/History`
+	Manager = 				`https://${host}/Manager/Request`
+	Clusters = 				`https://${host}/Manager/Clusters`
+	Cluster = 				`https://${host}/Manager/Cluster/Request`
 
-	Manager = `https://${host}/Manager/Request`
-	Clusters = `https://${host}/Manager/Cluster`
-	Cluster = `https://${host}/Manager/ManagedCluster/Request`
+	Setting = 				`https://${host}/Setting`
 
-	Setting = `https://${host}/Setting`
+	InitializeSession = 	`https://${host}/Session/Initialize`
+	TerminateSession = 		`https://${host}/Session/Terminate`
+	DisconnectSession = 	`https://${host}/Session/Disconnect`
+	ReconnectSession = 		`https://${host}/Session/Reconnect`
 
-	InitializeSession = `https://${host}/Session/Initialize`
-	TerminateSession = `https://${host}/Session/Terminate`
-	DisconnectSession = `https://${host}/Session/Disconnect`
-	ReconnectSession = `https://${host}/Session/Reconnect`
-
-	FetchSlave = `https://${host}/Fetch/Node`
-	FetchSession = `https://${host}/Fetch/Session`
-	FetchInfor = `https://${host}/Fetch/Worker/Infor`
+	FetchSlave = 			`https://${host}/Fetch/Node`
+	FetchSession = 			`https://${host}/Fetch/Session`
+	FetchInfor = 			`https://${host}/Fetch/Worker/Infor`
 }
 
 
@@ -91,6 +92,18 @@ export const login = async body => {
 	})
 }
 
+export const updatePassword = async body => {
+	await setup();
+	return fetch(Password, {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({
+			Old: body.Old,
+			New: body.New
+		})
+	})
+}
+
 export const register = async body => {
 	await setup();
 	return fetch(Register, {
@@ -119,9 +132,18 @@ export const managerRegister = async des => {
 		headers: genHeaders(),
 	})
 }
-export const requestCluster = async (name, password)=> {
+
+
+/**
+ * 
+ * @param {*} name 
+ * @param {*} password 
+ * @param {*} region 
+ * @returns 
+ */
+export const requestCluster = async (name, password, region) => {
 	await setup();
-	return fetch(Cluster+`?ClusterName=${name}`, {
+	return fetch(Cluster + `?ClusterName=${name}&region=${region}`, {
 		method: "POST",
 		headers: genHeaders(),
 		body: `"${password}"`
@@ -197,7 +219,7 @@ export const fetchSession = async () => {
 }
 export const fetchInfor = async (workerID) => {
 	await setup();
-	return fetch(FetchInfor+"?WorkerID="+workerID, {
+	return fetch(FetchInfor + "?WorkerID=" + workerID, {
 		method: "GET",
 	}, function (error) {
 		if (401 == error.response.status) {
@@ -361,7 +383,7 @@ export const getRoles = async () => {
 
 export const getSetting = async () => {
 	await setup();
-	return fetch(Setting+"/Get", {
+	return fetch(Setting + "/Get", {
 		method: "GET",
 		headers: genHeaders()
 	}, function (error) {
@@ -390,10 +412,10 @@ export const setInfor = async (body) => {
 
 export const setSetting = async (body) => {
 	await setup();
-	return fetch(Setting+"/Set", {
+	return fetch(Setting + "/Set", {
 		method: "POST",
 		headers: genHeaders(),
-		body: JSON.stringify({ 
+		body: JSON.stringify({
 			device: body.device,
 			engine: body.engine,
 			audioCodec: body.audioCodec,

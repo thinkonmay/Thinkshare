@@ -18,11 +18,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Auth\UserInforModel.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\ClusterInstance.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\AWSSetting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\EC2Instance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\EC2KeyPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\PortForward.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AWS\InstanceSetting.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\GlobalCluster.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\ClusterRBAC.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Cluster\ClusterCredential.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Models\Message\EventModel.cs" />

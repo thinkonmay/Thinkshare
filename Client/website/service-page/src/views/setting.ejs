@@ -10,6 +10,26 @@
 </head>
 
 <body>
+
+  <!--====== PRELOADER PART START ======-->
+  <div class="preloader">
+    <div class="loader">
+      <div class="spinner">
+        <div class="spinner-container">
+          <div class="spinner-rotator">
+            <div class="spinner-left">
+              <div class="spinner-circle"></div>
+            </div>
+            <div class="spinner-right">
+              <div class="spinner-circle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--====== PRELOADER PART ENDS ======-->
+
     <div class="container-scroller">
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
@@ -61,6 +81,8 @@
             <div class="main-panel">
                 <div class="content-wrapper" style="overflow-y: scroll;">
                     <div class="row">
+                        
+
                         <div class="col-md-10 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
@@ -155,6 +177,36 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-md-10 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Update Password</h4>
+                                    <p class="card-description">
+                                        Update or change your password
+                                    </p>
+                                    <form class="forms-sample">
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">Old Password</label>
+                                            <div class="col-sm-9">
+                                                <input type="password" class="form-control" id="oldPasswordCtrler"
+                                                    placeholder="Old password (leave empty if you have signed up with google)">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">New Passowrd</label>
+                                            <div class="col-sm-9">
+                                                <input type="password" class="form-control" id="newPasswordCtrler"
+                                                    placeholder="New password">
+                                            </div>
+                                        </div>
+                                        <button id="submitChangePasswordCtrler" class="btn btn-primary me-2"
+                                            type="button">Submit</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
                         <footer class="footer">
                             <div class="d-sm-flex justify-content-center justify-content-sm-between">
                                 <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">

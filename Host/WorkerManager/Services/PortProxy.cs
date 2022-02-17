@@ -8,10 +8,10 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Net;
 using System.Linq;
+using SharedHost.Models.AWS;
 using System.IO;
 using WorkerManager.Interfaces;
 using SharedHost.Models.Cluster;
-using SharedHost.Models.AWS;
 using WorkerManager;
 using System.Threading;
 using Microsoft.Extensions.Options;
@@ -117,7 +117,6 @@ namespace WorkerManager.Services
         public async Task SetupSSHClient()
         {
                 var cluster = await _infor.Infor();
-                if(cluster.SelfHost){return;}
                 _log.Information($"Attempting to establish ssh connection with instance");
                 ClusterInstance instance = cluster.instance;
 

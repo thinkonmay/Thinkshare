@@ -23,42 +23,6 @@ namespace WorkerManager.Services
             _cache = cache;
         }
 
-        public async Task<bool> IsPrivate()
-        {
-            var cluster = await _cache.GetClusterInfor();
-
-            var request = new RestRequest(_config.ClusterInforUrl, Method.GET)
-                .AddHeader("Authorization",cluster.ClusterToken);
-            var instanceResult = (await (new RestClient()).ExecuteAsync(request));
-
-            var instance =  JsonConvert.DeserializeObject<GlobalCluster>(instanceResult.Content);
-            return instance.Private;
-        }
-
-        public async Task<bool> IsSelfHost()
-        {
-            var cluster = await _cache.GetClusterInfor();
-
-            var request = new RestRequest(_config.ClusterInforUrl, Method.GET)
-                .AddHeader("Authorization",cluster.ClusterToken);
-            var instanceResult = (await (new RestClient()).ExecuteAsync(request));
-
-            var instance =  JsonConvert.DeserializeObject<GlobalCluster>(instanceResult.Content);
-            return instance.SelfHost;
-        }
-
-        public async Task<List<PortForward>> PortForward()
-        {
-            var cluster = await _cache.GetClusterInfor();
-
-            var request = new RestRequest(_config.ClusterInforUrl, Method.GET)
-                .AddHeader("Authorization",cluster.ClusterToken);
-            var instanceResult = (await (new RestClient()).ExecuteAsync(request));
-
-            var instance =  JsonConvert.DeserializeObject<GlobalCluster>(instanceResult.Content);
-            return instance.instance.portForwards;
-        }
-
         public async Task<bool> IsRegistered()
         {
             return ((await _cache.GetClusterInfor()).ClusterToken != null);
@@ -68,9 +32,8 @@ namespace WorkerManager.Services
         {
             var cluster = await _cache.GetClusterInfor();
 
-            var request = new RestRequest(_config.ClusterInforUrl)
+            var request = new RestRequest($"https://{_config.Domain}{_config.ClusterInforUrl}",Method.GET)
                 .AddHeader("Authorization",cluster.ClusterToken);
-            request.Method = Method.GET;
 
             var result = await (new RestClient()).ExecuteAsync(request);
             return JsonConvert.DeserializeObject<GlobalCluster>(result.Content);
