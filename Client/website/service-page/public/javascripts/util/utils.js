@@ -32,3 +32,5 @@ export function fetchErrorHandler(error) {
 		icon: "error"
 	})
 }
+
+export function append(id, html) { $(`#${id}`).append(html) }

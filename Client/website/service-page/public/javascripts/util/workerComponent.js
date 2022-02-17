@@ -1,6 +1,9 @@
 import * as API from "./api.js"
+import { append } from "./utils.js";
 
-export async function createSlave(workerID, workerState, queue) {
+export async function 
+createSlave(workerID, workerState, queue) 
+{
 	try 
 	{
 		var slave = await (await API.fetchInfor(workerID)).json();
@@ -41,7 +44,8 @@ export async function createSlave(workerID, workerState, queue) {
 }
 
 
-function setState(serviceState, slaveID, queue) {
+function 
+setState(serviceState, slaveID, queue) {
 	var button = document.getElementById(`${queue}button${slaveID}`);
 	button.innerHTML = slaveState(serviceState, slaveID);
 
@@ -99,7 +103,8 @@ function setState(serviceState, slaveID, queue) {
 	}
 }
 
-function slaveState(state, slaveId) {
+function 
+slaveState(state, slaveId) {
 	const nl = '<div class="w-100"></div>'
 	const btn = {
 		connect: `<button type="button" class="btn btn-info btn-icon-text" id="connect${slaveId}"><i class="ti-file btn-icon-prepend"></i>Connect</button></div>`,

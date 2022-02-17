@@ -2,7 +2,7 @@ import { setSetting, getSetting } from "./api.js"
 import { reconnectSession } from "./api.js"
 import { initializeSession } from "./api.js"
 import { isElectron } from "./checkdevice.js"
-import { Codec, CoreEngine, DeviceType } from "../pages/setting.js"
+import { Codec, CoreEngine, DeviceType } from "./setting-constant.js"
 import * as Utils from "./utils.js"
 
 
