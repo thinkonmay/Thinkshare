@@ -3,22 +3,6 @@ import { setCookie, deleteCookie } from "../util/cookie.js"
 import { appendWorkerNode } from "../util/user-row-component.js"
 import { setDataForChart } from "../util/chart.js"
 
-let dataset = [];
-
-let sessionInfor;
-API.getInfor().then(async data => {
-	let body = await data.json();
-	$("#dashboardSrcImg").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
-	$("#WelcomeUsername").html(body.fullName)
-	$("#avatarSrc").attr("src", (body.avatar) == null ? "images/default_user.png" : body.avatar)
-	$("#fullname").text(body.fullName)
-	$("#jobs").text(body.jobs)
-})
-
-
-
-
-
 $(document).ready(async () => {
 	let nameOfCluster;
 	let timeStampFrom = $("#stamp-time-from").val()

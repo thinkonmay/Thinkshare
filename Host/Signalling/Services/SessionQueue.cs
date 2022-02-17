@@ -52,11 +52,6 @@ namespace Signalling.Services
                         _log.Error("Fail to ping client",ex);
                     }
                 }
-                _log.Information("Current session :");
-                foreach (var item in onlineList)
-                {
-                    _log.Information($"SessionID: ${item.Key.ID}, Module: "+((item.Key.Module == Module.CLIENT_MODULE) ? "CLIENT" : "WORKER"));
-                }
                 Thread.Sleep(TimeSpan.FromSeconds(20));
             }
         }

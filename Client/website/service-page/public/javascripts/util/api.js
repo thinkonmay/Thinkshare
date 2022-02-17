@@ -31,7 +31,6 @@ const setup = async () => {
 
 	host = await ((await fetch('API.js')).text())
 
-
 	Login = 				`https://${host}/Account/Login`
 	Register = 				`https://${host}/Account/Register`
 	Token = 				`https://${host}/Account/ExchangeToken`
