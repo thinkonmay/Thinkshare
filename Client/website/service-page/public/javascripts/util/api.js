@@ -32,27 +32,27 @@ const setup = async () => {
 	host = await ((await fetch('API.js')).text())
 
 
-	Login = `https://${host}/Account/Login`
-	Register = `https://${host}/Account/Register`
-	Token = `https://${host}/Account/ExchangeToken`
-	Infor = `https://${host}/Account/Infor`
-	Roles = `https://${host}/Account/Roles`
-	Session = `https://${host}/Account/History`
+	Login = 				`https://${host}/Account/Login`
+	Register = 				`https://${host}/Account/Register`
+	Token = 				`https://${host}/Account/ExchangeToken`
+	Infor = 				`https://${host}/Account/Infor`
+	Roles = 				`https://${host}/Account/Roles`
+	Session = 				`https://${host}/Account/History`
 
-	Manager = `https://${host}/Manager/Request`
-	Clusters = `https://${host}/Manager/Cluster`
-	Cluster = `https://${host}/Manager/ManagedCluster/Request`
+	Manager = 				`https://${host}/Manager/Request`
+	Clusters = 				`https://${host}/Manager/Clusters`
+	Cluster = 				`https://${host}/Manager/Cluster/Request`
 
-	Setting = `https://${host}/Setting`
+	Setting = 				`https://${host}/Setting`
 
-	InitializeSession = `https://${host}/Session/Initialize`
-	TerminateSession = `https://${host}/Session/Terminate`
-	DisconnectSession = `https://${host}/Session/Disconnect`
-	ReconnectSession = `https://${host}/Session/Reconnect`
+	InitializeSession = 	`https://${host}/Session/Initialize`
+	TerminateSession = 		`https://${host}/Session/Terminate`
+	DisconnectSession = 	`https://${host}/Session/Disconnect`
+	ReconnectSession = 		`https://${host}/Session/Reconnect`
 
-	FetchSlave = `https://${host}/Fetch/Node`
-	FetchSession = `https://${host}/Fetch/Session`
-	FetchInfor = `https://${host}/Fetch/Worker/Infor`
+	FetchSlave = 			`https://${host}/Fetch/Node`
+	FetchSession = 			`https://${host}/Fetch/Session`
+	FetchInfor = 			`https://${host}/Fetch/Worker/Infor`
 }
 
 

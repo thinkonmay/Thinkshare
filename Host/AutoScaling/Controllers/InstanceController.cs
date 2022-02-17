@@ -95,8 +95,7 @@ namespace AutoScaling.Controllers
                 if(result.StatusCode == HttpStatusCode.OK)
                 {
                     var response = JsonConvert.DeserializeObject<AuthResponse>(result.Content);
-                    if(response.Token  != null &&
-                       response.Errors != null)
+                    if(response.Token  != null)
                     {
                         _log.Information($"Login to cluster automatically success");
                         return;
