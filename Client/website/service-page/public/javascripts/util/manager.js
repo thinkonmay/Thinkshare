@@ -8,17 +8,17 @@ async function checkManager() { return "true" === (await (await API.getRoles()).
 
 
 export async function
-    clusterFormGen() {
-    var isManager = await checkManager();
-    if (isManager === true) {
-        API.getClusters().then(async data => {
-            var body = await data.json()
-            if (body.length == 0) {
-
-            }
-            body.forEach(element => {
-                document.getElementById('clusterBoard').innerHTML +=
-                    `<div class="d-flex align-items-center justify-content-between py-2 border-bottom" style="padding-bottom: 0px !important">
+	clusterFormGen() {
+	var isManager = await checkManager();
+	if (isManager === true) {
+		API.getClusters().then(async data => {
+			var body = await data.json()
+			if (body.length == 0)
+				document.getElementById('clusterBoard').innerHTML = `<h4>You don't have any cluster 😞</h4>`
+			else
+			body.forEach(element => {
+				document.getElementById('clusterBoard').innerHTML +=
+					`<div class="d-flex align-items-center justify-content-between py-2 border-bottom" style="padding-bottom: 0px !important">
 					<div class="d-flex">
 						<i class="menu-icon mdi mdi-desktop-tower" style="font-size: 32px;"></i>
 						<div class="ms-3" style="margin-top: 5px;">
