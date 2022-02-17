@@ -24191,7 +24191,7 @@ dl li {
   padding-left: 30px;
   position: relative;
   list-style-type: none;
-  margin-bottom: 0;
+  margin-bottom: 15px;
 }
 
 .rtl .bullet-line-list {

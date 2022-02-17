@@ -18,6 +18,26 @@ API.getInfor().then(async data => {
 	$("#fullName").html((await data.json()).fullName)
 })
 
+let versionList;
+fetch('https://api.github.com/repos/thinkonmay/Thinkremote/releases?page=1&per_page=100/assets/')
+	.then(async response => {
+		versionList = await response.json()
+		let versionListForm = document.getElementById('versionDownload')
+		for (let i in versionList) {
+			if(i == 8) break;
+			let url = `https://github.com/thinkonmay/Thinkremote/releases/download/${versionList[i].tag_name}/Thinkremote.msi`
+			versionListForm.innerHTML +=
+				`
+				<li>
+					<div class="d-flex justify-content-between">
+					<div><span class="text-light-green">${versionList[i].tag_name}</span> ${versionList[i].name}</div>
+					<a href="${url}" ><button type="button" class="btn btn-outline-success btn-fw" style="margin-top: 0px">Download</button></a>
+					</div>
+				</li>
+			`
+		}
+	})
+
 function
 	clusterFormGen(isManager) {
 	var form = document.getElementById("ClusterForm");
@@ -147,14 +167,14 @@ API.getSetting().then(async data => {
 
 
 isManager().then(result => {
-	if(!result)
+	if (!result)
 		return;
-	API.getClusters().then(async data =>{
+	API.getClusters().then(async data => {
 		var body = await data.json()
 
 		body.forEach(element => {
 			append("clusterBoard",
-			` <h5>Cluster Name: ${element.name}, <a href="${element.url}">Access cluster dashboard here</a></h5> `)
+				` <h5>Cluster Name: ${element.name}, <a href="${element.url}">Access cluster dashboard here</a></h5> `)
 		});
 
 	})
@@ -162,19 +182,17 @@ isManager().then(result => {
 
 
 $(document).ready(async () => {
+
+
+
+
 	document.querySelector(".preloader").style.opacity = "0";
 	document.querySelector(".preloader").style.display = "none";
 
 
 	$('[name="download-app"]').click(function () {
-		let value;
-		fetch('https://api.github.com/repos/thinkonmay/Thinkremote/releases?page=1&per_page=100/assets/')
-			.then(response => response.json())
-			.then(data => {
-				value = data
-				let url = `https://github.com/thinkonmay/Thinkremote/releases/download/${value[0].tag_name}/Thinkremote.msi`
-				window.location.href = url
-			});
+		let url = `https://github.com/thinkonmay/Thinkremote/releases/download/${versionList[0].tag_name}/Thinkremote.msi`
+		window.location.href = url
 	})
 
 	clusterFormGen(await isManager());
@@ -458,16 +476,14 @@ function onWebsocketClose(event) {
 };
 
 async function createSlave(workerID, workerState, queue) {
-	try 
-	{
-			
+	try {
+
 		var slave = await (await API.fetchInfor(workerID)).json();
 		var worker = document.getElementById(`${queue}${workerID}`);
-		if(workerState == null)
+		if (workerState == null)
 			worker.remove();
 
-		if(worker == null)
-		{
+		if (worker == null) {
 			append(queue, `
 			<div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
 			<div class="card bg-light d-flex flex-fill">
@@ -494,7 +510,7 @@ async function createSlave(workerID, workerState, queue) {
 
 		setState(workerState, slave.id, queue);
 	} catch (error) {
-		
+
 	}
 }
 
