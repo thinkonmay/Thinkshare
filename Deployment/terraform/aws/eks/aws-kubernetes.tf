@@ -68,39 +68,20 @@ module "eks" {
       }
     }
     requested_node_2 = {
-      desired_capacity = 2
-      max_capacity     = 2
-      min_capacity     = 2
+      desired_capacity = 8
+      max_capacity     = 8
+      min_capacity     = 8
 
-      instance_types = ["t3.medium"]
+      instance_types = ["t3a.small"]
       capacity_type  = "ON_DEMAND"
       aws_availability_zones = "ap-southeast-1b"
       
       
       k8s_labels = {
-        Environment = "production"
-        Color = "RED"
+        Purpose = "compute"
       }
       update_config = {
-        max_unavailable_percentage = 0# or set `max_unavailable`
-      }
-    }
-    requested_node_3 = {
-      desired_capacity = 1
-      max_capacity     = 1
-      min_capacity     = 1
-
-      instance_types = ["t3.small"]
-      capacity_type  = "ON_DEMAND"
-      aws_availability_zones = "ap-southeast-1b"
-      
-      
-      k8s_labels = {
-        Environment = "production"
-        Color = "RED"
-      }
-      update_config = {
-        max_unavailable_percentage = 0# or set `max_unavailable`
+        max_unavailable_percentage = 0 # or set `max_unavailable`
       }
     }
   }

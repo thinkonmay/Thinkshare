@@ -13,15 +13,16 @@ spec:
    app: systemhub
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: systemhub
-  namespace: development
+  namespace: backend
 spec:
+  serviceName: systemhub
+  replicas: 1
   selector:
     matchLabels:
       app: systemhub
-  replicas: 1
   strategy:
     type: Recreate
   template:
@@ -36,9 +37,11 @@ spec:
         resources:
           requests:
             memory: "400Mi"
-            cpu: "200m"
+            cpu: "400m"
           limits:
             memory: "500Mi"
-            cpu: "400m"
+            cpu: "500m"
         ports:
         - containerPort: 80
+      nodeSelector:
+        node.kubernetes.io/instance-type: t3a.small

@@ -43,3 +43,5 @@ spec:
             cpu: "300m"
         ports:
         - containerPort: 80
+      nodeSelector:
+        node.kubernetes.io/instance-type: t3a.small

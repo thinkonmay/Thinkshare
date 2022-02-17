@@ -25,10 +25,10 @@ spec:
           mountPath: /data
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "700m"
+            memory: "2Gi"
+            cpu: "1000m"
           limits:
-            memory: "1500Mi"
+            memory: "3Gi"
             cpu: "1000m"
       volumes:
       - name: data
@@ -37,6 +37,7 @@ spec:
           fsType: ext4
       nodeSelector:
         topology.kubernetes.io/zone: ap-southeast-1b
+        node.kubernetes.io/instance-type: t3.medium
 ---
 apiVersion: v1
 kind: Service

@@ -20,10 +20,10 @@ spec:
         resources:
           limits:
             cpu: 1000m
-            memory: 1Gi
+            memory: 3Gi
           requests:
-            cpu: 700m
-            memory: 700Mi 
+            cpu: 1000m
+            memory: 2Gi
         ports:
         - containerPort: 9200
           name: rest
@@ -73,3 +73,4 @@ spec:
           fsType: ext4
       nodeSelector:
         topology.kubernetes.io/zone: ap-southeast-1b
+        node.kubernetes.io/instance-type: t3.medium

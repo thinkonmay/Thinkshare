@@ -36,10 +36,10 @@ spec:
         resources:
           requests:
             memory: "500Mi"
-            cpu: "300m"
+            cpu: "500m"
           limits:
             memory: "700Mi"
-            cpu: "500m"
+            cpu: "700m"
         ports:
         - containerPort: 80
 
@@ -61,5 +61,7 @@ spec:
         secret: 
           secretName: coturn-ssh
           defaultMode: 256
+      nodeSelector:
+        node.kubernetes.io/instance-type: t3a.small
 
 

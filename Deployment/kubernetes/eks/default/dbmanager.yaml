@@ -43,12 +43,14 @@ spec:
         resources:
           requests:
             memory: "300Mi"
-            cpu: "500m"
+            cpu: "300m"
           limits:
             memory: "500Mi"
-            cpu: "700m"
+            cpu: "500m"
         ports:
         - containerPort: 80
         envFrom:
         - configMapRef:
             name: dbmanager-config
+      nodeSelector:
+        node.kubernetes.io/instance-type: t3a.small

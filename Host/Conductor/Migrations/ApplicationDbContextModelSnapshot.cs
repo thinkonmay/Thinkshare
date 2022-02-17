@@ -174,6 +174,9 @@ namespace Authenticator.Migrations
                     b.Property<string>("PrivateIP")
                         .HasColumnType("text");
 
+                    b.Property<string>("Region")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("Registered")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
@@ -245,6 +248,37 @@ namespace Authenticator.Migrations
                     b.ToTable("PortForward");
                 });
 
+            modelBuilder.Entity("SharedHost.Models.Cluster.ClusterRole", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("ClusterID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("Endtime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("Start")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ClusterID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("SharedHost.Models.Cluster.GlobalCluster", b =>
                 {
                     b.Property<int>("ID")
@@ -261,16 +295,10 @@ namespace Authenticator.Migrations
                     b.Property<int>("OwnerID")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("Private")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime?>("Register")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("current_timestamp");
-
-                    b.Property<bool>("SelfHost")
-                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("Unregister")
                         .HasColumnType("timestamp without time zone");
@@ -519,6 +547,25 @@ namespace Authenticator.Migrations
                     b.HasOne("SharedHost.Models.AWS.ClusterInstance", null)
                         .WithMany("portForwards")
                         .HasForeignKey("ClusterInstanceID");
+                });
+
+            modelBuilder.Entity("SharedHost.Models.Cluster.ClusterRole", b =>
+                {
+                    b.HasOne("SharedHost.Models.Cluster.GlobalCluster", "Cluster")
+                        .WithMany()
+                        .HasForeignKey("ClusterID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SharedHost.Models.User.UserAccount", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cluster");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SharedHost.Models.Cluster.GlobalCluster", b =>

@@ -35,10 +35,12 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "500Mi"
-            cpu: "200m"
-          limits:
-            memory: "700Mi"
+            memory: "300Mi"
             cpu: "300m"
+          limits:
+            memory: "500Mi"
+            cpu: "500m"
         ports:
         - containerPort: 80
+      nodeSelector:
+        node.kubernetes.io/instance-type: t3a.small
