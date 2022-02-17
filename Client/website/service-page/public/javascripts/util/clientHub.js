@@ -1,6 +1,7 @@
 import { createSlave } from "./workerComponent.js";
 import { getCookie } from "./cookie.js";
 import * as API from "./api.js"
+import * as RemotePage from "./remote.js"
 
 export async function connectToClientHub() {
 	const Websocket = new WebSocket( await API.getUserHub(getCookie("token")));
