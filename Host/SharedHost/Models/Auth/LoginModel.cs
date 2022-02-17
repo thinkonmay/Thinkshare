@@ -12,6 +12,14 @@ namespace SharedHost.Models.Auth
         public string Password { get; set; }
     }
 
+    public class UpdatePasswordModel
+    {
+        public string? Old { get; set; }
+
+        [Required]
+        public string New { get; set; }
+    }
+
     public class RegisterModel : LoginModel
     {
         [Required]

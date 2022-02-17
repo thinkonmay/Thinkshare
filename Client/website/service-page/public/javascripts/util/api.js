@@ -9,6 +9,7 @@ var Token;
 var Infor;
 var Roles;
 var Session;
+var Password;
 
 var Manager;
 var Cluster;
@@ -37,6 +38,7 @@ const setup = async () => {
 	Infor = 				`https://${host}/Account/Infor`
 	Roles = 				`https://${host}/Account/Roles`
 	Session = 				`https://${host}/Account/History`
+	Password = 				`https://${host}/Account/Password/Update`
 
 	Manager = 				`https://${host}/Manager/Request`
 	Clusters = 				`https://${host}/Manager/Clusters`
@@ -86,6 +88,18 @@ export const login = async body => {
 		body: JSON.stringify({
 			userName: body.username,
 			password: body.password
+		})
+	})
+}
+
+export const updatePassword = async body => {
+	await setup();
+	return fetch(Password, {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({
+			Old: body.Old,
+			New: body.New
 		})
 	})
 }

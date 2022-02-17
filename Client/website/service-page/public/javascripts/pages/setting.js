@@ -2,8 +2,14 @@ import * as API from "../util/api.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
 
-var body;
-body = await (await API.getInfor()).json();
+var updatePassword =
+{
+    Old: "",
+    New: ""
+};
+
+
+var body = await (await API.getInfor()).json();
 
 export function Codec(key) {
     switch (key) {
@@ -151,7 +157,6 @@ export async function updateSetting(display) {
 }
 
 $(document).ready(async() => {
-
     $("#usernameCtrler").attr("placeholder", body.userName)
     $("#fullnameCtrler").attr("placeholder", body.fullName)
     $("#jobsCtrler").attr("placeholder", body.jobs)
@@ -182,10 +187,16 @@ $(document).ready(async() => {
         body.avatar = this.value
     })
 
+    $("#newPasswordCtrler").on("change", function() {
+        updatePassword.New = this.value
+    })
+    $("#oldPasswordCtrler").on("change", function() {
+        updatePassword.Old = this.value
+    })
+
     $("#langVN").on("change", function() {
         window.location = '/dashboard/vi'
     })
-
     $("#langEN").on("change", function() {
         window.location = '/dashboard/en'
     })
@@ -236,6 +247,29 @@ $(document).ready(async() => {
         await updateSetting(display);
     })
 
+    $('#submitChangePasswordCtrler').click(() => {
+        Utils.newSwal.fire({
+            title: "Updating",
+            text: "Wait a minute",
+            didOpen: () => {
+                console.log(body)
+                API.updatePassword(updatePassword)
+                    .then(async data => {
+                        if (data.status == 200) {
+                            Utils.newSwal.fire({
+                                title: "Success!",
+                                text: "User information has been updated successfully",
+                                icon: "success",
+                            })
+                        } else {
+                            Utils.responseError("Error!", "The change has failed, check your information and try again.", "error")
+                        }
+                    })
+                    .catch()
+            }
+        })
+    });
+
     $('#submitChangeInfoCtrler').click(() => {
         Utils.newSwal.fire({
             title: "Updating",
@@ -258,7 +292,6 @@ $(document).ready(async() => {
                     .catch(status ? Utils.fetchErrorHandler : "")
             }
         })
-
     });
 
     $('#submitDisplayCtrler').click(() => {

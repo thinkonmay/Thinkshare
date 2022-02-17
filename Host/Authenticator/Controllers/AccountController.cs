@@ -13,7 +13,6 @@ using DbSchema.SystemDb.Data;
 using SharedHost;
 using SharedHost.Models.ResponseModel;
 using Google.Apis.Auth;
-using SharedHost.Auth;
 using DbSchema.CachedState;
 using SharedHost.Logging;
 using Microsoft.Extensions.Options;
@@ -50,11 +49,6 @@ namespace Authenticator.Controllers
             _db = db;
         }
 
-        /// <summary>
-        /// login to server with email/username and password
-        /// </summary>
-        /// <param name="model">login model</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("Login")]
         public async Task<AuthResponse> Login([FromBody] LoginModel model)
@@ -88,12 +82,6 @@ namespace Authenticator.Controllers
 
 
 
-
-        /// <summary>
-        /// register new account with server
-        /// </summary>
-        /// <param name="model">register model</param>
-        /// <returns></returns>
         [HttpPost]
         [Route("Register")]
         public async Task<AuthResponse> Register([FromBody] RegisterModel model)
@@ -217,10 +205,6 @@ namespace Authenticator.Controllers
 
 
 
-        /// <summary>
-        /// get personal information of user
-        /// </summary>
-        /// <returns></returns>
         [User]
         [HttpGet("Infor")]
         public async Task<IActionResult> GetInfor()
@@ -240,10 +224,6 @@ namespace Authenticator.Controllers
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         [User]
         [HttpPost("Infor")]
         public async Task<IActionResult> SetAccountInfor([FromBody] UserInforModel infor)
@@ -298,10 +278,6 @@ namespace Authenticator.Controllers
 
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         [User]
         [HttpGet("Roles")]
         public async Task<IActionResult> UserGetRoles()
@@ -315,10 +291,6 @@ namespace Authenticator.Controllers
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
         [User]
         [HttpGet("History")]
         public async Task<IActionResult> UserGetSession()
@@ -343,6 +315,23 @@ namespace Authenticator.Controllers
             }
             return Ok(ret);
         }
-        
+
+
+        [User]
+        [HttpPost("Password/Update")]
+        public async Task<IActionResult> UserGetRoles([FromBody] UpdatePasswordModel model)
+        {
+            IdentityResult result;
+            var UserID = HttpContext.Items["UserID"];
+            var account = await _userManager.FindByIdAsync(UserID.ToString());
+            var hasPassword = await _userManager.HasPasswordAsync(account);
+
+            if(hasPassword)
+                result = await _userManager.ChangePasswordAsync(account,model.Old,model.New);
+            else
+                result = await _userManager.AddPasswordAsync(account,model.New);
+
+            return Ok(result);
+        }
     }
 }
