@@ -146,14 +146,18 @@ API.getSetting().then(async data => {
 })
 
 
-API.getClusters().then(async data =>{
-	var body = await data.json()
+isManager().then(result => {
+	if(!result)
+		return;
+	API.getClusters().then(async data =>{
+		var body = await data.json()
 
-	body.forEach(element => {
-		append("clusterBoard",
-		` <h5>Cluster Name: ${element.name}, <a href="${element.url}">Access cluster dashboard here</a></h5> `)
-	});
+		body.forEach(element => {
+			append("clusterBoard",
+			` <h5>Cluster Name: ${element.name}, <a href="${element.url}">Access cluster dashboard here</a></h5> `)
+		});
 
+	})
 })
 
 
@@ -454,37 +458,44 @@ function onWebsocketClose(event) {
 };
 
 async function createSlave(workerID, workerState, queue) {
-	var slave = await (await API.fetchInfor(workerID)).json();
-	var worker = document.getElementById(`${queue}${workerID}`);
-	if(workerState == null)
-		worker.remove();
-	if(worker == null)
+	try 
 	{
-		append(queue, `
-		<div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
-		<div class="card bg-light d-flex flex-fill">
-			<div style="text-alignt: center" class="card-header text-muted border-bottom-0">
-			<img width="20px" height="20px" src="images/window-logo.png" alt="user-avatar" class="img-fluid">
-			</div>
-			<div class="card-body pt-0">
-			<div class="row">
-				<h2 class="lead"><b>Device</b></h2>
-				<ul class="ml-4 mb-0 fa-ul text-muted">
-				<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>CPU: ${slave.cpu}</li>
-				<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
-				<li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
-				<li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
-				</ul>
-			</div>
-			</div>
-			<div class="devicebutton">
-			<div class="row slaveState" id="${queue}button${slave.id}"></div>
-			</div>
-		</div>
-		</div>`)
-	}
+			
+		var slave = await (await API.fetchInfor(workerID)).json();
+		var worker = document.getElementById(`${queue}${workerID}`);
+		if(workerState == null)
+			worker.remove();
 
-	setState(workerState, slave.id, queue);
+		if(worker == null)
+		{
+			append(queue, `
+			<div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
+			<div class="card bg-light d-flex flex-fill">
+				<div style="text-alignt: center" class="card-header text-muted border-bottom-0">
+				<img width="20px" height="20px" src="images/window-logo.png" alt="user-avatar" class="img-fluid">
+				</div>
+				<div class="card-body pt-0">
+				<div class="row">
+					<h2 class="lead"><b>Device</b></h2>
+					<ul class="ml-4 mb-0 fa-ul text-muted">
+					<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>CPU: ${slave.cpu}</li>
+					<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
+					<li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
+					<li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
+					</ul>
+				</div>
+				</div>
+				<div class="devicebutton">
+				<div class="row slaveState" id="${queue}button${slave.id}"></div>
+				</div>
+			</div>
+			</div>`)
+		}
+
+		setState(workerState, slave.id, queue);
+	} catch (error) {
+		
+	}
 }
 
 
