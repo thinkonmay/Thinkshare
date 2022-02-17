@@ -16,9 +16,9 @@ export async function
 	if (isManager === true) {
 		API.getClusters().then(async data => {
 			var body = await data.json()
-			if (body.length == 0) {
-
-			}
+			if (body.length == 0)
+				document.getElementById('clusterBoard').innerHTML = `<h4>You haven't any Cluster 😞</h4>`
+			else
 			body.forEach(element => {
 				document.getElementById('clusterBoard').innerHTML +=
 					`<div class="d-flex align-items-center justify-content-between py-2 border-bottom" style="padding-bottom: 0px !important">
