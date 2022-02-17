@@ -46,6 +46,7 @@ module "eks" {
   node_groups_defaults = {
     ami_type  = "AL2_x86_64"
     disk_size = 20
+    aws_availability_zones = "ap-southeast-1b"
   }
 
   node_groups = {
@@ -56,7 +57,6 @@ module "eks" {
 
       instance_types = ["t3.medium"]
       capacity_type  = "ON_DEMAND"
-      aws_availability_zones = "ap-southeast-1b"
       
       
       k8s_labels = {
@@ -67,21 +67,21 @@ module "eks" {
         max_unavailable_percentage = 0# or set `max_unavailable`
       }
     }
-    requested_node_2 = {
-      desired_capacity = 8
-      max_capacity     = 8
-      min_capacity     = 8
+    requested_node_3 = {
+      desired_capacity = 2
+      max_capacity     = 2
+      min_capacity     = 2
 
-      instance_types = ["t3a.small"]
+      instance_types = ["t3.medium"]
       capacity_type  = "ON_DEMAND"
-      aws_availability_zones = "ap-southeast-1b"
       
       
       k8s_labels = {
-        Purpose = "compute"
+        Environment = "production"
+        Color = "RED"
       }
       update_config = {
-        max_unavailable_percentage = 0 # or set `max_unavailable`
+        max_unavailable_percentage = 0# or set `max_unavailable`
       }
     }
   }

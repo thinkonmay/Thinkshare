@@ -53,4 +53,4 @@ spec:
         - configMapRef:
             name: dbmanager-config
       nodeSelector:
-        node.kubernetes.io/instance-type: t3a.small
+        topology.kubernetes.io/zone: ap-southeast-1a

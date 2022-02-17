@@ -44,4 +44,4 @@ spec:
         ports:
         - containerPort: 80
       nodeSelector:
-        node.kubernetes.io/instance-type: t3.medium
+        topology.kubernetes.io/zone: ap-southeast-1a

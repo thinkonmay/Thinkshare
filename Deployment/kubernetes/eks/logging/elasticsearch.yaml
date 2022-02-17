@@ -73,4 +73,3 @@ spec:
           fsType: ext4
       nodeSelector:
         topology.kubernetes.io/zone: ap-southeast-1b
-        node.kubernetes.io/instance-type: t3.medium

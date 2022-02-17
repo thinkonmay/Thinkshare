@@ -62,6 +62,6 @@ spec:
           secretName: coturn-ssh
           defaultMode: 256
       nodeSelector:
-        node.kubernetes.io/instance-type: t3a.small
+        topology.kubernetes.io/zone: ap-southeast-1a
 
 
