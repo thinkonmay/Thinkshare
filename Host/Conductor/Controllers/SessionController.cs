@@ -132,7 +132,7 @@ namespace Conductor.Controllers
 
 
             string workerState = await _cache.GetWorkerState(SlaveID);
-            if(workerState == WorkerState.OnSession || workerState == WorkerState.OffRemote)
+            if(workerState != WorkerState.OnSession || workerState != WorkerState.OffRemote)
                 return BadRequest("State conflict");            
 
             _log.Information($"Terminate remote session {ses.First().ID}");
@@ -162,7 +162,7 @@ namespace Conductor.Controllers
 
             /*slavepool send terminate session signal*/
             var workerState = await _cache.GetWorkerState(ses.First().WorkerID);
-            if (workerState == WorkerState.OnSession)
+            if (workerState != WorkerState.OnSession)
                 return BadRequest("Device not in session");            
 
             _log.Information($"Disconnect remote session {ses.First().ID}");
@@ -187,7 +187,7 @@ namespace Conductor.Controllers
                 return BadRequest(); 
 
             string workerState = await _cache.GetWorkerState(ses.First().WorkerID);
-            if (workerState == WorkerState.OffRemote)
+            if (workerState != WorkerState.OffRemote)
                 return BadRequest("Device not in off remote");            
 
             var userSetting = await _cache.GetUserSetting(UserID);
