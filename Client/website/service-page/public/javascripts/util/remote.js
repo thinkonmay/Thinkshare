@@ -8,11 +8,10 @@ import * as Utils from "./utils.js"
 
 ////////////// setting
 export async function setupDevice() {
-
     var body = await (await getSetting()).json();
     body.device = isElectron() ? DeviceType("WINDOW_APP") : DeviceType("WEB_APP");
 
-    if (deviceCurrent == DeviceType("WEB_APP"))
+    if (body.device == DeviceType("WEB_APP"))
         body.engine = CoreEngine("CHROME");
 
     if (body.engine == CoreEngine("CHROME"))

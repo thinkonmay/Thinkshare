@@ -1,7 +1,6 @@
 import { createSlave } from "./workerComponent.js";
 import { getCookie } from "./cookie.js";
 import * as API from "./api.js"
-import * as RemotePage from "./remote.js"
 
 export async function connectToClientHub() {
 	const Websocket = new WebSocket( await API.getUserHub(getCookie("token")));
@@ -32,7 +31,6 @@ function onClientHubEvent(event) {
 	if (message_json.EventName === "ReportSessionOn") {
 		var workerID = parseInt(message_json.Message)
 
-		RemotePage.check_remote_condition(workerID, null, null);
 		createSlave(workerID, "ON_SESSION", "slavesInUses")
 	}
 	if (message_json.EventName === "ReportSessionTerminated") {

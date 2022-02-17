@@ -189,7 +189,7 @@ function
                     catch (error)
                     {
                         Utils.newSwal.fire({
-                            title: "Failed",
+                            title: error,
                             icon: "error",
                             showConfirmButton: false,
                             timer: 1500
