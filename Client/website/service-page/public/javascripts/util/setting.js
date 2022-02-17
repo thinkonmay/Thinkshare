@@ -58,7 +58,6 @@ prepare_setting()
 		await Setting.updateSetting(display);
 	});
 
-	$('[id="submitClusterCtrler"]').click(managerRegister);
 
 	// Resolution
 	$('[name="res"]').click(async function () {

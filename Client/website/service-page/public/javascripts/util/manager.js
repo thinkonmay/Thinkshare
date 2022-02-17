@@ -1,28 +1,43 @@
 import * as API from "./api.js"
 import { append } from "./utils.js";
+import { managerRegister, requestCluster } from "./api.js"
 
 
 async function
-checkManager() 
-{
+checkManager() {
 	return "true" === (await (await API.getRoles()).json()).isManager;
 }
 
 
 
 export async function
-clusterFormGen() {
-    var isManager = await checkManager();
+	clusterFormGen() {
+	var isManager = await checkManager();
 	if (isManager === true) {
-        API.getClusters().then(async data =>{
-            var body = await data.json()
-            body.forEach(element => {
-                append("clusterBoard",
-                ` <h5>Cluster Name: ${element.name}, <a href="${element.url}">Access cluster dashboard here</a></h5> `)
-            });
-        })
+		API.getClusters().then(async data => {
+			var body = await data.json()
+			if (body.length == 0) {
 
-        var form = document.getElementById("ClusterForm");
+			}
+			body.forEach(element => {
+				document.getElementById('clusterBoard').innerHTML +=
+					`<div class="d-flex align-items-center justify-content-between py-2 border-bottom" style="padding-bottom: 0px !important">
+					<div class="d-flex">
+						<i class="menu-icon mdi mdi-desktop-tower" style="font-size: 32px;"></i>
+						<div class="ms-3" style="margin-top: 5px;">
+							<p class="ms-1 mb-1 fw-bold">Cluster Name: ${element.name}</p>
+						</div>
+					</div>
+					<a href="${element.url}">
+						<button type="button" class="btn btn-outline-primary btn-fw"
+						style="margin-top: 0px">Access</button>
+					</a>
+				</div>
+				`
+			});
+		})
+
+		var form = document.getElementById("ClusterForm");
 		form.innerHTML =
 			`
 		<label class="col-sm-3 col-form-label">
@@ -70,5 +85,6 @@ clusterFormGen() {
 				style="height: 100px;" placeholder=" Why do you want to host your own worker node ? ">
 		</div>
 		`;
+		$('[id="submitClusterCtrler"]').click(managerRegister);
 	}
 }

@@ -13,16 +13,22 @@ import { prepare_tutorial_popup } from "../util/popup.js"
 $(document).ready(async () => {
 	document.querySelector(".preloader").style.opacity = "0";
 	document.querySelector(".preloader").style.display = "none";
+	try{
 
-	await prepare_tutorial_popup();
-	await prepare_user_infor();
-	await prepare_worker_dashboard();
-	await setDataForChart();
-	await prepare_download_button();
-	await clusterFormGen();
-	await prepare_user_setting();
-	await prepare_setting();
-	await connectToClientHub();
+		await prepare_tutorial_popup();
+		await prepare_user_infor();
+		await prepare_worker_dashboard();
+		await setDataForChart();
+		await prepare_download_button();
+		await clusterFormGen();
+		await prepare_user_setting();
+		await prepare_setting();
+		await connectToClientHub();
+	} catch{
+		setTimeout(function(){
+			location.reload();
+		}, 5000)
+	}
 
 	$('#logout').click(() => {
 		setCookie("logout", "true")
