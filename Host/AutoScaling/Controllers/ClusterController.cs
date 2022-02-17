@@ -55,8 +55,7 @@ namespace AutoScaling.Controllers
 
         [Manager]
         [HttpGet("Token")]
-        public async Task<IActionResult> NewCluster(string ClusterName,
-                                                    string region)
+        public async Task<IActionResult> NewCluster(string ClusterName)
         {
             var ManagerID = Int32.Parse(HttpContext.Items["UserID"].ToString());
             var cluster = _db.Clusters.Where(x => x.Name == ClusterName && 
@@ -71,6 +70,29 @@ namespace AutoScaling.Controllers
                 token = Token,
                 Validator = "Autoscaling",
             });
+        }
+
+        [Cluster]
+        [HttpPost("Unregister")]
+        public async Task<IActionResult> UnregisterCluster()
+        {
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+
+            if(cluster == null)  
+                BadRequest("cluster not found"); 
+
+            var success = await _ec2.TerminateInstance(cluster.instance);
+
+            if(!success)
+                return BadRequest();
+
+            cluster.instance.End = DateTime.Now;
+            cluster.instance.portForwards.ForEach(x => x.End = DateTime.Now);
+            cluster.Unregister = DateTime.Now;
+            _db.Update(cluster);
+            await _db.SaveChangesAsync();
+            return Ok();
         }
 
 
@@ -106,7 +128,18 @@ namespace AutoScaling.Controllers
         {
             var ClusterID = HttpContext.Items["ClusterID"];
             var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+            Cluster.WorkerNode = null;
+            Cluster.Owner = null;
             return Ok(Cluster);
+        }
+
+        [Cluster]
+        [HttpGet("Instance")]
+        public async Task<IActionResult> getInstance()
+        {
+            var ClusterID = HttpContext.Items["ClusterID"];
+            var Cluster = _db.Clusters.Find(Int32.Parse(ClusterID.ToString()));
+            return Ok(Cluster.instance);
         }
     }
 }

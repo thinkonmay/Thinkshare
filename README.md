@@ -1,5 +1,5 @@
-# Personal Cloud Computing
-A platform allow user to hire personal computer from the others, developed by Thinkmay
+# Thinkshare
+A platform allow user to hire computers from the others, developed by Thinkmay
 ## Mission:
 Our ultimate goal is to change how technology serve human and shape our knowledge about the world
 
@@ -25,13 +25,13 @@ The following steps will configure your Ubuntu machine for building and testing 
     * `git clone https://github.com/pigeatgarlic/personal-cloud-computing`
 
 ## Testing 
-Personal cloud computing repo contain 2 test for token generator and websocket connection
+Thinkshare repo contain 2 test for token generator and websocket connection
 * Token generator test:
     * `cd Test/Token`
     * `dotnet test`
 
 # Deployment
-Personal cloud computing server is deployed using terraform on AWS elastic kubernetes service
+Thinkshare server is deployed using terraform on AWS elastic kubernetes service
 
 * Terraform configuration:
     * `Deployment/terraform/prod/eks`
@@ -45,7 +45,7 @@ More information about terraform and kubernetes can be found at:
 
 
 ## GitHub Actions
-Personal cloud computing use github action as  the main method for continous intergrations and continous deployment (CI/CD) as well as docker image versioning
+Thinkshare use github action as  the main method for continous intergrations and continous deployment (CI/CD) as well as docker image versioning
 
 Whenever a push or a pull request is apply on mster branch, github action will automatically build and push new docker image with the tag base on current date 
 * For example: pigeatgarlic/authenticator:2021-12-03 
@@ -54,13 +54,13 @@ Whenever a push or a pull request is apply on mster branch, github action will a
 The definitions for the build processes are located in `/.github/workflows/` folder.
 
 # Database
-Personal cloud computing database use postgresql as user database and redis to store state of the system
+Thinkshare database use postgresql as user database and redis to store state of the system
 * More information about postgresql can be found at https://www.postgresql.org/
 * More information about redis can be found at https://redis.io/
 
 
 ## Infrastructure
-Personal cloud computing database is hosted by AWS relational database service (RDS) and managed by postgreadmin
+Thinkshare database is hosted by AWS relational database service (RDS) and managed by postgreadmin
 * To access database manager, goto https://database.thinkmay.net/ with admin credential
 
 ## Migrations 

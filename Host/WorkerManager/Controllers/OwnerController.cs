@@ -109,13 +109,8 @@ namespace WorkerManager.Controllers
         [HttpGet("Cluster/Infor")]
         public async Task<IActionResult> Infor()
         {
-            var cluster = await _cache.GetClusterInfor();
-
-            var request = new RestRequest($"https://{_config.Domain}{_config.ClusterInforUrl}",Method.GET)
-                .AddHeader("Authorization",cluster.ClusterToken);
-
-            var result = await _client.ExecuteAsync(request);
-            return Ok(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
+            var cluster = await _infor.Infor();
+            return Ok(cluster);
         }
 
         [HttpPost("Cluster/isRegistered")]
@@ -123,8 +118,6 @@ namespace WorkerManager.Controllers
         {
             return Ok(await _infor.IsRegistered());
         }
-
-
 
         [Owner]
         [HttpGet("Worker/State")]
@@ -134,6 +127,17 @@ namespace WorkerManager.Controllers
             return Ok(result);
         }
 
+        [Owner]
+        [HttpDelete("Cluster/Unregister")]
+        public async Task<IActionResult> Unregister()
+        {
+            var key = await _cache.GetClusterInfor();
+            var request = new RestRequest(
+                $"https://{_config.Domain}{_config.UnregisterURL}",Method.POST)
+                    .AddHeader("Authentication",key.ClusterToken);
+            var restResponse = await _client.ExecuteAsync(request);
+            return restResponse.StatusCode == HttpStatusCode.OK ? Ok() : BadRequest();
+        }
 
 
 

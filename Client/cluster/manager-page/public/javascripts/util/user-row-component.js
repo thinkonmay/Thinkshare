@@ -1,7 +1,23 @@
 var indexPost = 0
 import * as API from "./api.js"
 
-export function appendWorkerNode(os, cpu, gpu, id, raMcapacity, register, state) {
+/**
+ * 
+ * @param {*} os 
+ * @param {*} cpu 
+ * @param {*} gpu 
+ * @param {*} id 
+ * @param {*} raMcapacity 
+ * @param {*} register 
+ * @param {*} state 
+ */
+export function appendWorkerNode(os, 
+                                 cpu, 
+                                 gpu, 
+                                 id, 
+                                 raMcapacity, 
+                                 register, 
+                                 state) {
 
     var date = new Date(register);
 
@@ -35,6 +51,3 @@ export function appendWorkerNode(os, cpu, gpu, id, raMcapacity, register, state)
 export function append(id, html) {
     $(`#${id}`).append(html)
 }
-$(document).ready(async () => {
-
-})

@@ -1,21 +1,26 @@
-﻿namespace SharedHost.Models.AWS 
+﻿using System.Collections.Generic;
+
+
+namespace SharedHost.Models.AWS 
 {
     public class AWSSetting
     {
-        public string Keyname { get; set; }
-
         public string InstanceType {get;set;}
 
-        public string AMI{get;set;}
+        public string CredentialPath {get;set;}
 
-        public string SSHkeyPath {get;set;}
+        public string ClusterManagerVersion {get;set;}
 
-        public string CredentialPath{get;set;}
+        public string ClusterUIVersion {get;set;}
 
-        public string ConfigPath{get;set;}
+        public List<RegionConfig> regions {get;set;}
+    }
 
+    public class RegionConfig
+    {
+        public string region {get;set;}
 
-
+        public string AMI {get;set;}
     }
 
     public class Region
@@ -30,8 +35,9 @@
 
         public const string India = "India";
 
-        public const string South_Korea = "South-Korea";
+        public const string South_Korea = "SouthKorea";
 
+        // not supported
         public const string Australia = "Australia";
 
         public const string Tokyo = "Tokyo";
@@ -40,30 +46,22 @@
         {
             switch (region)
             {
-                case "US-West":
+                case US_West:
                     return true;
-
-                case "US-East":
+                case US_East:
                     return true;
-
-                case "Canada":
+                case Canada:
                     return true;
-
-                case "Singapore":
+                case Singapore:
                     return true;
-
-                case "India":
+                case India:
                     return true;
-
-                case "South-Korea":
+                case South_Korea:
                     return true;
-
-                case "Australia":
+                case Australia:
                     return true;
-
-                case "Tokyo":
+                case Tokyo:
                     return true;
-                
                 default:
                     return false;
             }

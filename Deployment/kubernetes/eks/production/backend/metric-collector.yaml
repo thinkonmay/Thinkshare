@@ -1,44 +1,45 @@
+
 apiVersion: v1
 kind: Service
 metadata:
-  name: signalling
+  name: metric-collector
   namespace: backend
   labels:
-    app: signalling
+    app: metric-collector
 spec:
   type: NodePort
   ports:
-   - port: 80
+  - port: 80    
   selector:
-   app: signalling
+   app: metric-collector
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: signalling
+  name: metric-collector
   namespace: backend
 spec:
   selector:
     matchLabels:
-      app: signalling
+      app: metric-collector
   replicas: 1
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: signalling
+        app: metric-collector
     spec:
       containers:
-      - name: signalling
-        image: pigeatgarlic/signalling:2022-02-13
+      - name: metric-collector
+        image: pigeatgarlic/metric-collector:2022-02-13
         imagePullPolicy: Always
         resources:
           requests:
+            memory: "500Mi"
+            cpu: "300m"
+          limits:
             memory: "700Mi"
             cpu: "500m"
-          limits:
-            memory: "1000Mi"
-            cpu: "700m"
         ports:
         - containerPort: 80

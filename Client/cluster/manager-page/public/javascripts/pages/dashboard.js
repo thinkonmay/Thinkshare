@@ -1,15 +1,7 @@
 import * as API from "../util/api.js"
-import * as RemotePage from "../util/remote-page-cookies.js"
-import {
-	getCookie,
-	setCookie,
-	deleteCookie
-} from "../util/cookie.js"
-import * as Utils from "../util/utils.js"
-import * as CheckDevice from "../util/checkdevice.js"
-import {
-	appendWorkerNode
-} from "../util/user-row-component.js"
+import { setCookie, deleteCookie } from "../util/cookie.js"
+import { appendWorkerNode } from "../util/user-row-component.js"
+import { setDataForChart } from "../util/chart.js"
 
 let dataset = [];
 
@@ -29,17 +21,10 @@ API.getInfor().then(async data => {
 
 $(document).ready(async () => {
 	let nameOfCluster;
-	let isPrivate;
-	let isConfigPrivate;
-	let turnIP
-	let turnUSER
-	let turnPASSWORD
-
 	let timeStampFrom = $("#stamp-time-from").val()
 	let timeStampTo = $("#stamp-time-to").val()
 
 
-	setCurrentDateTimeLog()
 	$("#stamp-time-from").on("change", function () {
 		timeStampFrom = $("#stamp-time-from").val()
 	})
@@ -48,161 +33,13 @@ $(document).ready(async () => {
 	})
 
 
-	$("#getLogWithTime").click(() => {
-		API.getWorkerLogTimeStamp(logViewId, String(new Date(timeStampFrom)).slice(4,24), String(new Date(timeStampTo)).slice(4,24)).then(async data => {
-			let body = await data.json();
-			dataLog[logViewId] = body;
-			append('WorkerNode-Log', `<p></p>`)
-			for (let i = 0; i <= dataLog[logViewId].length; i++)
-				append('WorkerNode-Log', `
-				<tr>
-				<td>
-					<b>${dataLog[logViewId].at(i).id}</b>
-				</td> 
-				<td>
-					<b>${dataLog[logViewId].at(i).content}</b>
-				</td>
-				<td>
-				  <b>${dataLog[logViewId].at(i).logTime}</b>
-				</td>
-			  </tr>
-				`)
-		})
-	})
-
-	API.isRegistered().then(async data => {
-		if (data.status == 200) {
-			$('#RegisterButton').hide()
-		}
-	})
-
-	$("#isConfigPrivate").on("change", function () {
-		if (this.value == "private")
-			isConfigPrivate = true;
-		else isConfigPrivate = false;
-	})
-
-
-	$("#changePrivate").click(() => {
-		// if (isConfigPrivate == undefined)
-		// 	isConfigPrivate = true;
-		// Utils.newSwal.fire({
-		// 	title: "Config...",
-		// 	text: "Wait a min",
-		// 	didOpen: () => {
-		// 		Swal.showLoading()
-		// 		API.changePrivate(isConfigPrivate)
-		// 			.then(async data => {
-		// 				console.log(data)
-		// 				if (data.status == 200) {
-		// 					var status = await (await API.getClusterToken()).status
-		// 					if (status == 200)
-		// 						Utils.newSwal.fire({
-		// 							title: "Completed!",
-		// 							text: "Redirect to dashboard after 2s",
-		// 							icon: "success",
-		// 							didOpen: () => {
-		// 								setTimeout(() => {
-		// 									window.location.href = "/dashboard"
-		// 								}, 2000)
-		// 							}
-		// 						})
-		// 					else {
-		// 						Utils.responseError("ERROR", "Save your token to database fail! \n Please reload and try again!", "error")
-		// 					}
-		// 				} else Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
-		// 			})
-		// 			.catch(Utils.fetchErrorHandler)
-		// 	}
-		// })
-	})
-
-	$("#turnIP").on("change", function () {
-		turnIP = $("#turnIP").val();
-	})
-	$("#turnUSER").on("change", function () {
-		turnUSER = $("#turnUSER").val();
-	})
-	$("#turnPASSWORD").on("change", function () {
-		turnPASSWORD = $("#turnPASSWORD").val();
-	})
-
-
-	$("#changeTURN").click(() => {
-		if (turnIP.length >= 1 && turnPASSWORD.length >= 1 && turnUSER.length >= 1) {
-			Utils.newSwal.fire({
-				title: "Config...",
-				text: "Wait a min",
-				didOpen: () => {
-					Swal.showLoading()
-					API.setTurn(turnIP, turnUSER.turnPASSWORD).then(async data => {
-						if (data.status) {
-							Utils.newSwal.fire({
-								title: "Completed!",
-								text: "Redirect to dashboard after 2s",
-								icon: "success",
-								didOpen: () => {
-									setTimeout(() => {
-										window.location.href = "/dashboard"
-									}, 2000)
-								}
-							})
-						}
-					}).catch(Utils.fetchErrorHandler)
-				}
-			})
-		}
-	})
-
-
-
 	$("#nameCluster").on("change", function () {
 		nameOfCluster = this.value;
-	})
-	$("#isPrivate").on("change", function () {
-		if (this.value == "private")
-			isPrivate = true;
-		else isPrivate = false;
-	})
-
-	$('#register').click(() => {
-		if (isPrivate == undefined)
-			isPrivate = true;
-		Utils.newSwal.fire({
-			title: "Register...",
-			text: "Wait a min",
-			didOpen: () => {
-				Swal.showLoading()
-				API.registerCluster(isPrivate, nameOfCluster)
-					.then(async data => {
-						console.log(data)
-						if (data.status == 200) {
-							var status = await (await API.getClusterToken()).status
-							if (status == 200)
-								Utils.newSwal.fire({
-									title: "Completed!",
-									text: "Redirect to dashboard after 2s",
-									icon: "success",
-									didOpen: () => {
-										setTimeout(() => {
-											window.location.href = "/dashboard"
-										}, 2000)
-									}
-								})
-							else {
-								Utils.responseError("ERROR", "Save your token to database fail! \n Please reload and try again!", "error")
-							}
-						} else Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
-					})
-					.catch(Utils.fetchErrorHandler)
-			}
-		})
 	})
 
 	$('#logout').click(() => {
 		setCookie("logout", "true")
 		setCookie("token", null, 1)
-
 		deleteCookie("token", "/", document.domain)
 
 		try {
@@ -214,36 +51,6 @@ $(document).ready(async () => {
 	})
 
 
-	tutorial()
-
-	if (CheckDevice.isElectron()) {
-		// desktop app
-	} else {
-		// website
-	}
-
-	if (CheckDevice.isWindows()) {
-		// Windows
-	} else if (CheckDevice.isMacintosh()) {
-		// Macintosh (MacOS)
-	}
-
-	try {
-		const userinfor = await (await API.getInfor()).json()
-		// const sessions = await (await API.fetchSession()).json()
-		// const slaves = await (await API.fetchSlave()).json()
-		// sessionInfor = await (await API.getSession()).json()
-		document.getElementById("WelcomeUsername").innerHTML = userinfor.fullName;
-
-		for (const slave of sessions) {
-			createSlave(slave, "slavesInUses");
-		}
-		for (const slave of slaves) {
-			createSlave(slave, "availableSlaves");
-		}
-	} catch (err) {
-		// location.reload();
-	}
 	$('#analyticCPU').click(() => {
 		setDataForChart('#1F3BB3', 'CPU', false);
 	});
@@ -259,45 +66,31 @@ $(document).ready(async () => {
 	})
 
 
-
-	// using websocket to connect to systemhub
-	// const Websocket = new WebSocket(API.UserHub + `?token=${getCookie("token")}`)
-	// Websocket.addEventListener('open', onWebsocketOpen);
-	// Websocket.addEventListener('message', onClientHubEvent);
-	// Websocket.addEventListener('error', onWebsocketClose);
-	// Websocket.addEventListener('close', onWebsocketClose);
-
 	let _ClusterInfor = await (await API.getInforClusterRoute()).json()
-	// for (let i = 0; i < ClusterInfor["workerNode"].length; i++)
-	if (_ClusterInfor != undefined) {
-		let data = _ClusterInfor["workerNode"];
-		var date = new Date(_ClusterInfor["register"])
-		append('Cluster-Infor', `
-		<div>
-			<h4 class="card-title card-title-dash">Name: ${_ClusterInfor["name"]}</h4> 
-			<h6 class="card-subtitle card-subtitle-dash">Private: ${_ClusterInfor["private"]}</h6> 
-		</div>
-		<div>
-			<h4 class="card-title card-title-dash">Turn IP: ${_ClusterInfor["turnIP"]}</h4> 
-			<h6 class="card-subtitle card-subtitle-dash">Register: ${String(date).slice(0, 24)}</h6>
-		</div>
-		<div>
-       		<a href="#popup3" id="turnServerConfig" class="bn11">Change TURN Server</a>
-       		<a href="#popup4" id="privateConfig" class="bn11">Change Private</a>
-		</div>
-		`)
-		for (let i = 0; i < data.length; i++) {
-			let workerNodeId = data.at(i).id
-			let workerState = await (await API.getWorkerStateRoute()).json();
-			let state = workerState[workerNodeId]
 
-			dataLog[workerNodeId] = await (await API.getWorkerLog(workerNodeId)).json();
+	let data = _ClusterInfor["workerNode"];
+	var date = new Date(_ClusterInfor["register"])
+	append('Cluster-Infor', `
+	<div>
+		<h4 class="card-title card-title-dash">Name: ${_ClusterInfor["name"]}</h4> 
+	</div>
+	<div>
+		<h6 class="card-subtitle card-subtitle-dash">Register: ${String(date).slice(0, 24)}</h6>
+	</div>
+	`)
 
-
-			appendWorkerNode(data.at(i).os, data.at(i).cpu, data.at(i).gpu, data.at(i).id, data.at(i).raMcapacity, data.at(i).register, state)
-		}
+	let workerState = await (await API.getWorkerStateRoute()).json();
+	for (let i = 0; i < data.length; i++) {
+		let workerNodeId = data.at(i).id
+		let state = workerState[workerNodeId]
+		appendWorkerNode(data.at(i).os, 
+		                 data.at(i).cpu, 
+						 data.at(i).gpu, 
+						 data.at(i).id, 
+						 data.at(i).raMcapacity, 
+						 data.at(i).register, 
+						 state)
 	}
-
 })
 
 function setCurrentDateTimeLog() {
@@ -316,310 +109,6 @@ function setCurrentDateTimeLog() {
 	});
 }
 
-function onClientHubEvent(event) {
-	try {
-		if (event.data === "ping") {
-			console.log("ping host successful")
-			return;
-		}
-		var message_json = JSON.parse(event.data);
-	} catch (e) {
-		console.log("Error parsing incoming JSON: " + event.data);
-		return;
-	}
 
-	if (message_json.EventName === "ReportSessionDisconnected") {
-		var slaveId = message_json.Message
-		setState("OFF_REMOTE", slaveId)
-	}
-	if (message_json.EventName === "ReportSessionReconnected") {
-		var slaveId = message_json.Message
-		setState("ON_SESSION", slaveId);
-	}
-	if (message_json.EventName === "ReportSessionTerminated") {
-		var slaveId = message_json.Message
-		var slave = document.getElementById(`slavesInUses${slaveId}`);
-		slave.remove()
-	}
-	if (message_json.EventName === "ReportSlaveObtained") {
-		var slaveId = message_json.Message
-		var slave = document.getElementById(`availableSlaves${slaveId}`);
-		slave.remove()
-	}
-	if (message_json.EventName === "ReportSessionInitialized") {
-		var device = JSON.parse(message_json.Message)
-		device.os = device.OS;
-		device.raMcapacity = device.RAMcapacity;
-		device.gpu = device.GPU;
-		device.id = device.ID;
-		device.cpu = device.CPU;
-		device.serviceState = "ON_SESSION";
-		createSlave(device, "slavesInUses")
-	}
-	if (message_json.EventName === "ReportNewSlaveAvailable") {
-		var device = JSON.parse(message_json.Message)
-		device.os = device.OS;
-		device.raMcapacity = device.RAMcapacity;
-		device.gpu = device.GPU;
-		device.id = device.ID;
-		device.cpu = device.CPU;
-		createSlave(device, "availableSlaves")
-	}
-}
-
-function onWebsocketOpen() {
-	console.log("connected to client hub");
-}
-
-function onWebsocketClose(event) {
-	// location.reload();
-};
-
-function createSlave(slave, queue) {
-	append(queue, `
-    <div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${slave.id}">
-      <div class="card bg-light d-flex flex-fill">
-        <div style="text-alignt: center" class="card-header text-muted border-bottom-0">
-		<img width="20px" height="20px" src="images/window-logo.png" alt="user-avatar" class="img-fluid">
-		</div>
-        <div class="card-body pt-0">
-          <div class="row">
-			<h2 class="lead"><b>Device</b></h2>
-			<ul class="ml-4 mb-0 fa-ul text-muted">
-			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>CPU: ${slave.cpu}</li>
-			<li class="small"><span class="fa-li"><i class="fab fa-windows"></i></span>OS: ${slave.os}</li>
-			<li class="small"><span class="fa-li"><i class="fas fa-memory"></i></span>RAM: ${Math.round(slave.raMcapacity / 1024)}GB</li>
-			<li class="small"><span class="fa-li"><i class="fas fa-tv"></i></span>GPU: ${slave.gpu}</li>
-			</ul>
-          </div>
-        </div>
-        <div class="devicebutton">
-          <div class="row slaveState" id="button${slave.id}"></div>
-        </div>
-      </div>
-    </div>`)
-	setState(slave.serviceState, slave.id);
-}
-
-
-function setState(serviceState, slaveID) {
-	var button = document.getElementById(`button${slaveID}`);
-	button.innerHTML = slaveState(serviceState, slaveID);
-
-
-	if (serviceState === "DEVICE_OPEN") {
-		var connbutt = document.getElementById(`connect${slaveID}`)
-		connbutt.addEventListener("click", async function () {
-			RemotePage.sessionInitialize(slaveID)
-		});
-	}
-}
-
-function slaveState(state, slaveId) {
-	const nl = '<div class="w-100"></div>'
-	const btn = {
-		connect: `<button type="button" class="btn btn-info btn-icon-text" id="connect${slaveId}"><i class="ti-file btn-icon-prepend"></i>Connect</button></div>`,
-		disconnect: `<button type="button" class="btn btn-outline-warning btn-icon-text" id="disconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Disconnect</button>`,
-		reconnect: `<button type="button" class="btn btn-outline-warning btn-icon-text" id="reconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Reconnect</button>`,
-		terminate: `<button type="button" class="btn btn-danger btn-icon-text" id="terminate${slaveId}"><i class="ti-upload btn-icon-prepend"></i>Terminate</button>`
-	}
-	if (state === "ON_SESSION") {
-		return btn.disconnect + btn.terminate
-	}
-	if (state === "OFF_REMOTE") {
-		return btn.reconnect + btn.terminate
-	}
-	if (state === "DEVICE_DISCONNECTED") {
-		return ""
-	}
-	if (state === "DEVICE_OPEN") {
-		return btn.connect
-	}
-}
-
-function append(id, html) {
-	$(`#${id}`).append(html)
-}
-
-
-function serialize(obj, prefix) {
-	var str = [],
-		p
-	for (p in obj) {
-		if (obj.hasOwnProperty(p)) {
-			var k = prefix ? prefix + "[" + p + "]" : p,
-				v = obj[p]
-			str.push(
-				v !== null && typeof v === "object" ?
-				serialize(v, k) :
-				encodeURIComponent(k) + "=" + encodeURIComponent(v)
-			)
-		}
-	}
-	return str.join("&")
-}
-
-function popUpTurorial(id, name_shortcut, excute_shortcut, src_shortcut) {
-	$(`${id}`).click(function (e) {
-		$("#name_shorcut").text(name_shortcut);
-		$("#excute_shortcut").text(excute_shortcut)
-		document.getElementById("videoHiddenMouse").src = `/videos/${src_shortcut}.gif`
-		$('.popup-wrap').fadeIn(500);
-		$('.popup-box').removeClass('transform-out').addClass('transform-in');
-		var vid = document.getElementById("videoHiddenMouse");
-		vid.autoplay = true;
-		vid.load();
-
-		e.preventDefault();
-	});
-
-}
-
-async function tutorial() {
-
-	$('#tutorialButton').click(() => {
-		$('#content').show()
-	})
-
-	$('#exitButton').click(() => {
-		$('#content').hide()
-	})
-
-	await popUpTurorial('#hiddenMouse', 'Hidden Mouse', 'Ctrl + Shift + P', 'Hidden_Mouse_x2.5')
-	await popUpTurorial('#fullScreen', 'Full Screen', 'Ctrl + Shift + F', 'Full_Screen_x2.5')
-
-
-	$('.popup-close').click(function (e) {
-		$('.popup-wrap').fadeOut(500);
-		$('.popup-box').removeClass('transform-in').addClass('transform-out');
-
-		e.preventDefault();
-	});
-}
-
-function setDataForChart(color, nameLabel, checkStateChange) {
-	if (checkStateChange) {
-		document.getElementById('stateChange').innerHTML = "<canvas id=\"performanceLine\"></canvas>"
-	}
-	let datasetRAM = []
-	let datasetCPU = []
-	let datasetGPU = []
-	let datasetNetwork = []
-	switch (nameLabel) {
-		case 'RAM':
-			setDataForChart('52CDFF', 'FixState', true)
-			datasetRAM = [11, 51, 22, 40, 95, 43, 2, 30, 22, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 12, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
-			break;
-		case 'CPU':
-			setDataForChart('52CDFF', 'FixState', true)
-			datasetCPU = [11, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
-			break;
-		case 'GPU':
-			setDataForChart('52CDFF', 'FixState', true)
-			datasetGPU = [11, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 11, 51, 22, 40, 95, 43, 51, 22, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
-			break;
-		case 'Network':
-			setDataForChart('52CDFF', 'FixState', true)
-			datasetNetwork = [29, 15, 43, 2, 30, 1, 40, 95, 1, 16, 54, 61, 25, 95, 43, 2, 30, 1, 40, 95, 1, 16, 1, 1, 40, 95, 1, 32, 5, 32, 40, 95, 43, 2, 30, 1, 40, 95, 1, 16, 14, 49, 21, 29, 45, 61, 25, 3, 1]
-			break;
-	}
-	let isSetElement = false;
-	// for (let i = 0; i < 7; i++) {
-	// 	datasets[i] = 0;
-	// }
-	// for (let i = 0; i < sessionInfor.length; i++) {
-	// 	datasets[sessionInfor[i].dayofWeek] = sessionInfor[i].sessionTime;
-	// }
-	let _lables = [];
-	for (let index = 0; index <= 60; index++) {
-		_lables.unshift(index);
-	}
-	var salesTopData = null;
-	if ($("#performanceLine").length) {
-		var graphGradient = document.getElementById("performanceLine").getContext('2d');
-		var saleGradientBg = graphGradient.createLinearGradient(5, 0, 5, 100);
-		saleGradientBg.addColorStop(0, 'rgba(0, 0, 0, 0)');
-		saleGradientBg.addColorStop(1, 'rgba(0, 0, 0, 0)');
-		salesTopData = {
-			labels: _lables,
-			datasets: [{
-				label: nameLabel,
-				data: nameLabel == "RAM" ? datasetRAM : nameLabel == "CPU" ? datasetCPU : nameLabel == "GPU" ? datasetGPU : nameLabel == "Network" ? datasetNetwork : [],
-				backgroundColor: saleGradientBg,
-				borderColor: [
-					color,
-				],
-				borderWidth: 1.5,
-				fill: true, // 3: no fill
-				pointBorderWidth: 1,
-				tension: 0.1
-				//pointRadius: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
-				//pointHoverRadius: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-				//pointBackgroundColor: ['#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555', '#e65555'],
-				//pointBorderColor: ['#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff', '#fff',],
-			}]
-		};
-		var salesTopOptions = {
-			responsive: true,
-			maintainAspectRatio: false,
-			scales: {
-				yAxes: [{
-					gridLines: {
-						display: true,
-						drawBorder: false,
-						color: "#F0F0F0",
-						zeroLineColor: '#F0F0F0',
-					},
-					ticks: {
-						beginAtZero: true,
-						autoSkip: false,
-						maxTicksLimit: 4,
-						fontSize: 10,
-						color: "#6B778C"
-					}
-				}],
-				xAxes: [{
-					gridLines: {
-						display: false,
-						drawBorder: false,
-					},
-					ticks: {
-						beginAtZero: false,
-						autoSkip: true,
-						maxTicksLimit: 1,
-						fontSize: 10,
-						color: "#6B778C"
-					}
-				}],
-			},
-			legend: false,
-			legendCallback: function (chart) {
-				if (!isSetElement) {
-					isSetElement = true;
-					var text = [];
-					return text.join("");
-				}
-			},
-			elements: {
-				line: {
-					tension: 0.4,
-				}
-			},
-			tooltips: {
-				backgroundColor: 'rgba(31, 59, 179, 1)',
-			}
-		}
-		var salesTop =
-			new Chart(graphGradient, {
-				type: 'line',
-				data: salesTopData,
-				options: salesTopOptions
-			})
-		document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-(function ($) {
-
-})(jQuery);
+function append(id, html) { $(`#${id}`).append(html) }
+(function ($) { })(jQuery);

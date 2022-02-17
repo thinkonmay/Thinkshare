@@ -12,8 +12,10 @@ function serializeArrToObject(serializeArr) {
 	return obj
 }
 
+API.isRegistered().then(async data => {
+})
+
 function login(body) {
-	console.log(body);
 	Utils.newSwal.fire({
 		title: "Logging",
 		text: "Wait a min. . .",
@@ -37,26 +39,25 @@ function login(body) {
 	})
 }
 
-// Sign-in failure callback
-
 $(document).ready(() => {
-
 	$('#login').click(() => {
 		const body = serializeArrToObject($("form").serializeArray())
 		if (window.login) login(body)
 	})
-$("form").validate(window.login ? Validates.login : Validates.register)
 
-const $textInputs = $("input")
-const $submit = $(".submit")
-const handler = function () {
-	const $validTextInputs = $("input:valid")
-	if ($textInputs.length === $validTextInputs.length) {
-		$submit.attr("disabled", null)
-	} else {
-		$submit.attr("disabled", "")
+	$("form").validate(window.login ? Validates.login : Validates.register)
+
+	const $textInputs = $("input")
+	const $submit = $(".submit")
+
+	const handler = function () {
+		const $validTextInputs = $("input:valid")
+		if ($textInputs.length === $validTextInputs.length) {
+			$submit.attr("disabled", null)
+		} else {
+			$submit.attr("disabled", "")
+		}
 	}
-}
-$("form :input").keyup(handler)
-$("form :input").change(handler)
+	$("form :input").keyup(handler)
+	$("form :input").change(handler)
 })
