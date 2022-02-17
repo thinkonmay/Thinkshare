@@ -132,6 +132,15 @@ export const managerRegister = async des => {
 		headers: genHeaders(),
 	})
 }
+
+
+/**
+ * 
+ * @param {*} name 
+ * @param {*} password 
+ * @param {*} region 
+ * @returns 
+ */
 export const requestCluster = async (name, password, region) => {
 	await setup();
 	return fetch(Cluster + `?ClusterName=${name}&region=${region}`, {
