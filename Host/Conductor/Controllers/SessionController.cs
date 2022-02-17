@@ -132,7 +132,7 @@ namespace Conductor.Controllers
 
 
             string workerState = await _cache.GetWorkerState(SlaveID);
-            if(workerState != WorkerState.OnSession || workerState != WorkerState.OffRemote)
+            if(workerState != WorkerState.OnSession && workerState != WorkerState.OffRemote)
                 return BadRequest("State conflict");            
 
             _log.Information($"Terminate remote session {ses.First().ID}");

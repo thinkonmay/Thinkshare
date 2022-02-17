@@ -3,19 +3,16 @@ import * as Utils from "./utils.js"
 import * as RemotePage from "./remote.js"
 import { append } from "./utils.js";
 
-export async function 
-createSlave(workerID, workerState, queue) 
-{
-	try 
-	{
-		var slave = await (await API.fetchInfor(workerID)).json();
-		var worker = document.getElementById(`${queue}${workerID}`);
-		if(workerState == null)
-			worker.remove();
+export async function
+    createSlave(workerID, workerState, queue) {
+    try {
+        var slave = await (await API.fetchInfor(workerID)).json();
+        var worker = document.getElementById(`${queue}${workerID}`);
+        if (workerState == null)
+            worker.remove();
 
-		if(worker == null)
-		{
-			append(queue, `
+        if (worker == null) {
+            append(queue, `
 			<div class="col-12 col-sm-6 col-md-3 d-flex align-items-stretch flex-column slave" id="${queue}${workerID}">
 			<div class="card bg-light d-flex flex-fill">
 				<div style="text-alignt: center" class="card-header text-muted border-bottom-0">
@@ -37,93 +34,192 @@ createSlave(workerID, workerState, queue)
 				</div>
 			</div>
 			</div>`)
-		}
+        }
 
-		setState(workerState, slave.id, queue);
-	} catch (error) {
-		
-	}
+        setState(workerState, slave.id, queue);
+    } catch (error) {
+
+    }
 }
 
 
-function 
-setState(serviceState, slaveID, queue) {
-	var button = document.getElementById(`${queue}button${slaveID}`);
-	button.innerHTML = slaveState(serviceState, slaveID);
+function
+    setState(serviceState, slaveID, queue) {
+    var button = document.getElementById(`${queue}button${slaveID}`);
+    button.innerHTML = slaveState(serviceState, slaveID);
 
-	// ??? why?
-	// if (serviceState == "OFF_REMOTE") {
-	// 	Utils.newSwal.fire({
-	// 		title: "Successfully!",
-	// 		text: "",
-	// 		icon: "info",
-	// 		showConfirmButton: false,
-	// 		timer: 1500
-	// 	})
-	// }
+    if (serviceState === "ON_SESSION") {
+        var disconnectButton = document.getElementById(`disconnect${slaveID}`)
+        disconnectButton.addEventListener("click", async function () {
+            Utils.newSwal.fire({
+                title: "Processing",
+                text: "Wait a minute . . .",
+                didOpen: async () => {
+                    Swal.showLoading()
+                    let response = await API.disconnectSession(slaveID)
+                    if (response.ok) {
+                        Utils.newSwal.fire({
+                            title: "Success",
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                    else {
+                        Utils.newSwal.fire({
+                            title: "Failed",
+                            icon: "error",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }
+            })
+        });
 
-	if (serviceState === "ON_SESSION") {
+        var terminateButton = document.getElementById(`terminate${slaveID}`)
+        terminateButton.addEventListener("click", async function () {
+            Utils.newSwal.fire({
+                title: "Processing",
+                text: "Wait a minute . . .",
+                didOpen: async () => {
+                    Swal.showLoading()
+                    var response = await API.terminateSession(slaveID)
+                    if (response.ok) {
+                        Utils.newSwal.fire({
+                            title: "Success",
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                    else {
+                        Utils.newSwal.fire({
+                            title: "Failed",
+                            icon: "error",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }
+            })
+        });
+    }
+    if (serviceState === "OFF_REMOTE") {
+        var reconnectButton = document.getElementById(`reconnect${slaveID}`)
+        reconnectButton.addEventListener("click", async function () {
+            Utils.newSwal.fire({
+                title: "Processing",
+                text: "Wait a minute . . .",
+                didOpen: async () => {
+                    try {
+                        Swal.showLoading()
+                        await RemotePage.setupDevice();
+                        let setting = await(await API.getSetting()).json();
+                        let token =   await(await API.reconnectSession(slaveID)).json();
+                        await RemotePage.getRemotePage(token.token, setting.engine)
+                        Utils.newSwal.fire({
+                            title: "Success",
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                    catch (error)
+                    {
+                        Utils.newSwal.fire({
+                            title: error,
+                            icon: "error",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }
+            })
+        });
+        var terminateButton = document.getElementById(`terminate${slaveID}`)
+        terminateButton.addEventListener("click", async function () {
+            Utils.newSwal.fire({
+                title: "Processing",
+                text: "Wait a minute . . .",
+                didOpen: async () => {
+                    Swal.showLoading()
+                    var response = await API.terminateSession(slaveID)
+                    if (response.ok) {
+                        Utils.newSwal.fire({
+                            title: "Success",
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                    else {
+                        Utils.newSwal.fire({
+                            title: "Failed",
+                            icon: "error",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }
+            })
+        });
+    }
+    if (serviceState === "DEVICE_OPEN") {
+        var connectButton = document.getElementById(`connect${slaveID}`)
+        connectButton.addEventListener("click", async function () {
+            Utils.newSwal.fire({
+                title: "Processing",
+                text: "Wait a minute . . .",
+                didOpen: async () => {
+                    try {
+                        Swal.showLoading()
+                        await RemotePage.setupDevice();
+                        let setting = await(await API.getSetting()).json();
+                        let token =   await(await API.initializeSession(slaveID)).json();
+                        await RemotePage.getRemotePage(token.token, setting.engine)
 
-		var initbtn = document.getElementById(`disconnect${slaveID}`)
-		initbtn.addEventListener("click", async function () {
-			await API.disconnectSession(slaveID)
-		});
-		var terminatebtn = document.getElementById(`terminate${slaveID}`)
-		terminatebtn.addEventListener("click", async function () {
-			await API.terminateSession(slaveID)
-		});
-	}
-	if (serviceState === "OFF_REMOTE") {
-		var recbtn = document.getElementById(`reconnect${slaveID}`)
-		recbtn.addEventListener("click", async function () {
-			Utils.newSwal.fire({
-				title: "Processing",
-				text: "Wait a minute . . .",
-				didOpen: () => {
-					Swal.showLoading()
-					RemotePage.sessionReconnect(slaveID)
-				}
-			})
-		});
-		var terminatebtn = document.getElementById(`terminate${slaveID}`)
-		terminatebtn.addEventListener("click", async function () {
-			await API.terminateSession(slaveID)
-		});;
-	}
-	if (serviceState === "DEVICE_OPEN") {
-		var connectbtn = document.getElementById(`connect${slaveID}`)
-		connectbtn.addEventListener("click", async function () {
-			Utils.newSwal.fire({
-				title: "Processing",
-				text: "Wait a minute . . .",
-				didOpen: () => {
-					Swal.showLoading()
-					RemotePage.sessionInitialize(slaveID)
-				}
-			})
-		});
-	}
+                        Utils.newSwal.fire({
+                            title: "Success",
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                    catch (error)
+                    {
+                        Utils.newSwal.fire({
+                            title: "Failed",
+                            icon: "error",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }
+            })
+        });
+    }
 }
 
-function 
-slaveState(state, slaveId) {
-	const nl = '<div class="w-100"></div>'
-	const btn = {
-		connect: `<button type="button" class="btn btn-info btn-icon-text" id="connect${slaveId}"><i class="ti-file btn-icon-prepend"></i>Connect</button></div>`,
-		disconnect: `<button type="button" class="btn btn-outline-warning btn-icon-text" id="disconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Disconnect</button>`,
-		reconnect: `<button type="button" class="btn btn-outline-warning btn-icon-text" id="reconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Reconnect</button>`,
-		terminate: `<button type="button" class="btn btn-danger btn-icon-text" id="terminate${slaveId}"><i class="ti-upload btn-icon-prepend"></i>Terminate</button>`
-	}
-	if (state === "ON_SESSION") {
-		return btn.disconnect + btn.terminate
-	}
-	if (state === "OFF_REMOTE") {
-		return btn.reconnect + btn.terminate
-	}
-	if (state === "DEVICE_DISCONNECTED") {
-		return ""
-	}
-	if (state === "DEVICE_OPEN") {
-		return btn.connect
-	}
+function
+    slaveState(state, slaveId) {
+    const nl = '<div class="w-100"></div>'
+    const btn = {
+        connect: `<button type="button" class="btn btn-info btn-icon-text" id="connect${slaveId}"><i class="ti-file btn-icon-prepend"></i>Connect</button></div>`,
+        disconnect: `<button type="button" class="btn btn-outline-warning btn-icon-text" id="disconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Disconnect</button>`,
+        reconnect: `<button type="button" class="btn btn-outline-warning btn-icon-text" id="reconnect${slaveId}"><i class="ti-reload btn-icon-prepend"></i>Reconnect</button>`,
+        terminate: `<button type="button" class="btn btn-danger btn-icon-text" id="terminate${slaveId}"><i class="ti-upload btn-icon-prepend"></i>Terminate</button>`
+    }
+    if (state === "ON_SESSION") {
+        return btn.disconnect + btn.terminate
+    }
+    if (state === "OFF_REMOTE") {
+        return btn.reconnect + btn.terminate
+    }
+    if (state === "DEVICE_DISCONNECTED") {
+        return ""
+    }
+    if (state === "DEVICE_OPEN") {
+        return btn.connect
+    }
 }
