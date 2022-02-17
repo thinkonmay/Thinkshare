@@ -3,6 +3,7 @@ import * as Validates from "../validates/index.js"
 import { getCookie, setCookie } from "../util/cookie.js"
 import * as Utils from "../util/utils.js"
 import { isElectron } from "../util/checkdevice.js"
+import { convertDate } from "../util/date-time-convert.js"
 const HOUR5 = 5 * 60 * 60 * 1000;
 
 let authorizeElectron = false;
@@ -43,8 +44,7 @@ function register(body, status) {
         text: "Vui lòng chờ . . .",
         didOpen: () => {
             Swal.showLoading()
-            var date = new Date(body.dob);
-            body.dob = body.dob ? date.toISOString() : "1990-01-01T00:00:00.000Z"; //will return an ISO representation of the date
+            body.dob = convertDate(body.dob)
             body.jobs = body.jobs == null ? "nosetJobs" : body.jobs,
                 API.register(body)
                     .then(async data => {
