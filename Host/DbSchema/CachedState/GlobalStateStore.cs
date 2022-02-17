@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using System;
 using Microsoft.Extensions.Options;
 using RestSharp;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace DbSchema.CachedState
         Task SetUserSetting(int SettingID, UserSetting defaultSetting);
         Task<UserSetting> GetUserSetting(int WorkerID);
 
-        Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, GlobalCluster cluster);
+        Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, WorkerNode cluster);
         Task<SessionClient> GetClientSessionSetting(SessionAccession accession);
         Task<SessionWorker> GetWorkerSessionSetting(SessionAccession accession);
         Task<string?> GetWorkerState(int WorkerID);
@@ -73,19 +74,18 @@ namespace DbSchema.CachedState
 
         public async Task<string?> GetWorkerState(int WorkerID)
         {
-            var clusters = _db.Clusters.Where(X => true);
-            foreach (var item in clusters)
-            {
-                var snapshoot = await this.GetClusterSnapshot(item.ID);
-                foreach (var state in snapshoot)
-                {
-                    if (state.Key == WorkerID)
-                    {
-                        return state.Value;
-                    }
-                }
-            }
-            return null;
+            var worker = _db.Devices.Find(WorkerID);
+
+            if(worker == null)
+                return null;
+
+            var cluster = _db.Clusters.Where(x => 
+                    !x.Unregister.HasValue && 
+                     x.WorkerNode.Contains(worker)).First();
+
+            var snapshoot = await this.GetClusterSnapshot(cluster.ID);
+            snapshoot.TryGetValue(WorkerID,out var state);
+            return state;
         }
 
 
@@ -148,11 +148,15 @@ namespace DbSchema.CachedState
 
 
 
-        public async Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, GlobalCluster cluster)
+        public async Task SetSessionSetting(int SessionID, 
+                                            UserSetting defaultSetting, 
+                                            SystemConfig config, 
+                                            WorkerNode worker)
         {
-            var parsec = JsonConvert.DeserializeObject<ParsecLoginResponse>((await(
-                (new RestClient()).ExecuteAsync(new RestRequest($"{_config.AutoScaling}/Parsec",Method.GET))
-            )).Content);
+            var cluster = _db.Clusters.Where(x => !x.Unregister.HasValue && x.WorkerNode.Contains(worker)).First();
+            
+            if(cluster == null)
+                throw new Exception("Fail to get worker setting");
 
             var sessionWorker = new SessionWorker
             {
@@ -170,7 +174,6 @@ namespace DbSchema.CachedState
 
                 mode = defaultSetting.mode,
                 stuns = config.STUNlist,
-                parsec = parsec
             };
             var sessionClient = new SessionClient
             {
@@ -185,7 +188,6 @@ namespace DbSchema.CachedState
                 videocodec = defaultSetting.videoCodec,
 
                 stuns = config.STUNlist,
-                parsec = parsec
             };
 
             _log.Information("setting up session setting for session id "+ SessionID.ToString());
