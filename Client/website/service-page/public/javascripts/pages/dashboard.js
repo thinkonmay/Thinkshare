@@ -146,6 +146,16 @@ API.getSetting().then(async data => {
 })
 
 
+API.getClusters().then(async data =>{
+	var body = await data.json()
+
+	body.forEach(element => {
+		append("clusterBoard",
+		` <h5>Cluster Name: ${element.name}, <a href="${element.url}">Access cluster dashboard here</a></h5> `)
+	});
+
+})
+
 
 $(document).ready(async () => {
 	document.querySelector(".preloader").style.opacity = "0";

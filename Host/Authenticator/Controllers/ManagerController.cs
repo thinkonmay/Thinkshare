@@ -73,7 +73,7 @@ namespace Authenticator.Controllers
 
             clusters.ForEach(x => result.Add(new {
                 Name = x.Name,
-                URL  = $"http://{x.instance.IPAdress}:3000/"}));
+                URL  = $"http://{x.instance.IPAdress}:8080/login"}));
             return Ok(result);
         }
 
