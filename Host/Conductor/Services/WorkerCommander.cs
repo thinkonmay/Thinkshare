@@ -1,4 +1,7 @@
 ﻿using System.Linq;
+using System.Threading;
+using SharedHost.Models.Device;
+using System;
 using System.Threading.Tasks;
 using RestSharp;
 using Conductor.Interfaces;
@@ -26,25 +29,6 @@ namespace Conductor.Services
             _Cluster =  new RestClient($"{config.Value.SystemHub}/Cluster/Worker");
         }
 
-
-        public async Task<string> GetWorkerState(int WorkerID)
-        {
-            var publicCluster = _db.Clusters.ToList();
-
-            foreach (var cluster in publicCluster)
-            {
-                var snapshoot = await _cache.GetClusterSnapshot(cluster.ID);
-                foreach (var state in snapshoot)
-                {
-                    if (state.Key == WorkerID)
-                    {
-                        return state.Value;
-                    }
-                }
-            }
-
-            return null;
-        }
 
         public async Task SessionReconnect(int WorkerID)
         {
@@ -85,6 +69,24 @@ namespace Conductor.Services
             request.Method = Method.POST;
 
             await _Cluster.ExecuteAsync(request);
+        }
+
+        public async Task<bool> WaitForDesiredState(int WorkerID, 
+                                                    string DesiredState)
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                var state = await _cache.GetWorkerState(WorkerID);
+
+                if(state == WorkerState.Disconnected)
+                    return false;
+                
+                if(state == DesiredState)
+                    return true;
+                
+                Thread.Sleep(TimeSpan.FromMilliseconds(100));
+            }
+            return false;
         }
     }
 }

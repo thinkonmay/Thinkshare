@@ -1,7 +1,5 @@
 import * as API from "./api.js"
 import * as Setting from "./setting-constant.js"
-import { getCookie } from "./cookie.js";
-import { managerRegister } from "./api.js";
 import * as CheckDevice from "./checkdevice.js"
 
 export async function

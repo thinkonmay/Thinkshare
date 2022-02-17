@@ -25,9 +25,7 @@ $(document).ready(async () => {
 		await prepare_setting();
 		await connectToClientHub();
 	} catch{
-		setTimeout(function(){
-			location.reload();
-		}, 5000)
+		location.reload();
 	}
 
 	$('#logout').click(() => {
