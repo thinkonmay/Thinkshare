@@ -18,8 +18,8 @@ const Login = "/login"
 const LoginRoute = 				`${host}/Owner/Login`
 const GetInforClusterRoute = 	`${host}/Owner/Cluster/Infor`
 const IsRegisteredRoute = 		`${host}/Owner/Cluster/isRegistered`
+const UnRegisteredRoute = 		`${host}/Owner/Cluster/Unregister`
 const GetWorkerStateRoute = 	`${host}/Owner/Worker/State`
-
 const SetupRoleRoute = 			`${host}/Owner/Cluster/Role`
 
 
@@ -35,20 +35,6 @@ export const genHeaders = () => {
 		} : {}
 	)
 }
-
-export const genHeadersUser = () => {
-	const token = getCookie("token")
-	return Object.assign({
-			"Content-Type": "application/json"
-		},
-		token ? {
-			Authorization: `Bearer ${token}`
-		} : {}
-	)
-}
-
-
-
 
 
 
@@ -92,6 +78,18 @@ export const getWorkerStateRoute = () => {
 
 
 
+export const UnRegistered = () => {
+	return fetch(UnRegisteredRoute, {
+		method: "DELETE",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
 
 export const isRegistered = () => {
 	return fetch(IsRegisteredRoute, {

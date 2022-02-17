@@ -119,8 +119,6 @@ namespace WorkerManager.Controllers
             return Ok(await _infor.IsRegistered());
         }
 
-
-
         [Owner]
         [HttpGet("Worker/State")]
         public async Task<IActionResult> clusterState()
@@ -129,6 +127,17 @@ namespace WorkerManager.Controllers
             return Ok(result);
         }
 
+        [Owner]
+        [HttpDelete("Cluster/Unregister")]
+        public async Task<IActionResult> Unregister()
+        {
+            var key = await _cache.GetClusterInfor();
+            var request = new RestRequest(
+                $"https://{_config.Domain}{_config.UnregisterURL}",Method.POST)
+                    .AddHeader("Authentication",key.ClusterToken);
+            var restResponse = await _client.ExecuteAsync(request);
+            return restResponse.StatusCode == HttpStatusCode.OK ? Ok() : BadRequest();
+        }
 
 
 

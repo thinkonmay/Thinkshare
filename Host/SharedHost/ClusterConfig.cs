@@ -12,5 +12,6 @@
         public string WorkerRegisterUrl{get;set;}
         public string LogUrl {get;set;}
         public string ClusterRole {get;set;}
+        public string UnregisterURL {get;set;}
     }
 }
