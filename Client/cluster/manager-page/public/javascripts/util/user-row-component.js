@@ -38,10 +38,11 @@ export function appendWorkerNode(os,
     <td>
         <b>${state}</b>
     </td>
-    <td>
-        <a onclick="showDataLog(${id})" href="#popup1" id="detailBtn${id}" class="bn11">Detail</a>
-    </td>
     </tr>`);
+
+    // <td>
+    //     <a onclick="showDataLog(${id})" href="#popup1" id="detailBtn${id}" class="bn11">Detail</a>
+    // </td>
 
     
 

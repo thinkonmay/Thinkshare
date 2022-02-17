@@ -115,3 +115,24 @@ export function setDataForChart(color, nameLabel, checkStateChange) {
 		document.getElementById('performance-line-legend').innerHTML = salesTop.generateLegend();
 	}
 }
+
+let dataLog = [];
+let logViewId
+export function showDataLog(id) {
+    logViewId = id;
+    console.log(dataLog[id].length)
+    var logField = document.getElementById('WorkerNode-Log')
+    logField.innerHTML = '<p></p>'
+    for (let i = 0; i <= dataLog[id].length; i++)
+    logField.innerHTML = logField.innerHTML + `<tr>
+        <td>
+            <b>${dataLog[id].at(i).id}</b>
+        </td> 
+        <td>
+            <b>${dataLog[id].at(i).content}</b>
+        </td>
+        <td>
+        <b>${dataLog[id].at(i).logTime}</b>
+        </td>
+    </tr>`
+}

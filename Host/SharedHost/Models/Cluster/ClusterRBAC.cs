@@ -13,7 +13,7 @@ namespace SharedHost.Models.Cluster
         [Key]
         public int ID { get; set; }
 
-        public DateTime Start { get; set; }
+        public DateTime? Start { get; set; }
 
         public DateTime? Endtime { get; set; }
 
@@ -29,6 +29,17 @@ namespace SharedHost.Models.Cluster
 
         [ForeignKey("UserID")]
         public virtual UserAccount User { get; set; }
+    }
+
+    public class ClusterRoleRequest
+    {
+        public DateTime? Start { get; set; }
+
+        public DateTime? Endtime { get; set; }
+
+        public string Description {get;set;}
+
+        public string User {get;set;}
     }
 }
 

@@ -78,7 +78,7 @@ export const getWorkerStateRoute = () => {
 
 
 
-export const UnRegistered = () => {
+export const UnRegister = () => {
 	return fetch(UnRegisteredRoute, {
 		method: "DELETE",
 		headers: genHeaders()

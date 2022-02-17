@@ -161,23 +161,23 @@ namespace WorkerManager.Controllers
 
         [Owner]
         [HttpPost("Cluster/Role")]
-        public async Task<IActionResult> AddRole(DateTime Start,
+        public async Task<IActionResult> AddRole(DateTime? Start,
                                                  DateTime? End,
                                                  string UserName)
         {
             var cluster = await _cache.GetClusterInfor();
             var request = new RestRequest($"https://{_config.Domain}{_config.ClusterRole}", Method.POST)
-                .AddQueryParameter("UserName",UserName)
-                .AddQueryParameter("start",Start.ToString())
-                .AddQueryParameter("end",End.ToString())
-                .AddJsonBody("Created by cluster owner")
-                .AddHeader("Authorization",cluster.ClusterToken);
+                .AddHeader("Authorization",cluster.ClusterToken)
+                .AddJsonBody(new ClusterRoleRequest
+                {
+                    Start = Start,
+                    Endtime = End,
+                    User = UserName,
+                    Description = "Created by cluster owner"
+                });
 
             var result = await _client.ExecuteAsync(request);
-            if(result.StatusCode != HttpStatusCode.OK)
-                return BadRequest(result.Content);
-
-            return Ok();
+            return (result.StatusCode == HttpStatusCode.OK) ? Ok() : BadRequest();
         }
 
         [Owner]
@@ -190,7 +190,7 @@ namespace WorkerManager.Controllers
                 .AddHeader("Authorization",cluster.ClusterToken);
 
             var result = await _client.ExecuteAsync(request);
-            return Ok(JsonConvert.DeserializeObject<GlobalCluster>(result.Content));
+            return result.StatusCode == HttpStatusCode.OK ? Ok() : BadRequest();
         }
 
         [Owner]

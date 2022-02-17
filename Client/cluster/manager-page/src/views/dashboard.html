@@ -42,10 +42,10 @@
       <div class="navbar-menu-wrapper d-flex align-items-top">
         <ul class="navbar-nav">
           <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
-            <h1 class="welcome-text">Hi , <span id="WelcomeUsername" class="text-black fw-bold">
+            <h1 class="welcome-text">Hi, <span id="OwnerName" class="text-black fw-bold">
                 Owner
             </span></h1>
-            <h3 class="welcome-sub-text">Welcome to your cluster dashboard</h3>
+            <h3 class="welcome-sub-text">Welcome to your cluster <h3 id="ClusterName"></h3> dashboard</h3>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
@@ -90,9 +90,15 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/setting">
-              <i class="mdi mdi-account-settings menu-icon"></i>
-              <span class="menu-title">Setting</span>
+            <a class="nav-link" href="#popup1">
+              <i class="mdi mdi-account-multiple-plus menu-icon"></i>
+              <span class="menu-title">Allow others to access</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="DeleteCluster">
+              <i class="mdi mdi-delete menu-icon"></i>
+              <span class="menu-title">Delete this cluster</span>
             </a>
           </li>
           <li class="nav-item" id="logout">
@@ -113,7 +119,6 @@
               <div class="home-tab">
                 <div class="tab-content tab-content-basic">
                   <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
-
                     <div class="row">
                       <div class="row flex-grow">
                         <div class="col-12 grid-margin stretch-card">
@@ -130,7 +135,6 @@
                                       <th>Information</th>
                                     </tr>
                                   </thead>
-
                                   <tbody id="WorkerNode-Table">
                                   </tbody>
                                 </table>
@@ -139,6 +143,7 @@
                           </div>
                         </div>
                       </div>
+
                       <div id="popup1" class="overlay" style="overflow-y: scroll;">
                         <div class="popup">
                           <a class="close" href="#">&times;</a>
@@ -148,101 +153,38 @@
                                 <div class="card card-rounded">
                                   <div class="card-body">
                                     <div class="tabs">
-                                      <input type="radio" id="tab1" name="tab-control" checked>
-                                      <input type="radio" id="tab2" name="tab-control">
+                                      <input type="radio" id="tab1" name="tab-control">
                                       <ul>
-                                        <li title="Features"><label for="tab1"
-                                            role="button"><br><span>Monitor</span></label></li>
-                                        <li title="Delivery Contents"><label for="tab2"
-                                            role="button"><br><span>Logs</span></label></li>
+                                        <li title="Delivery Contents"><label for="tab1"
+                                            role="button"><br><span>Role</span></label></li>
                                       </ul>
-                                      <div class="slider">
-                                        <div class="indicator"></div>
-                                      </div>
                                       <div class="content" style="overflow: hidden;">
-                                        <section>
                                           <div class="d-sm-flex justify-content-between align-items-start">
                                             <div>
-                                              <h4 class="card-title card-title-dash">Monitor Worker Node
+                                              <h4 class="card-title card-title-dash">Cluster booking calendar
                                               </h4>
-                                              <h5 class="card-subtitle card-subtitle-dash"> $nameOfWorkerNode
-                                              </h5>
-                                            </div>
-                                            <div id="performance-line-legend"></div>
-                                          </div>
-                                          <div class="form-group row">
-                                            <div class="col-sm-3">
-                                              <div class="form-check" id="remoteCoreOption1">
-                                                <label class="form-check-label">
-                                                  <input name="optionsRemoteCore" type="radio" class="form-check-input"
-                                                    id="analyticCPU">
-                                                  CPU
-                                                  <i class="input-helper"></i><i class="input-helper"></i></label>
-                                              </div>
-                                            </div>
-                                            <div class="col-sm-3">
-                                              <div class="form-check" id="remoteCoreOption2">
-                                                <label class="form-check-label">
-                                                  <input name="optionsRemoteCore" type="radio" class="form-check-input"
-                                                    id="analyticGPU">
-                                                  GPU
-                                                  <i class="input-helper"></i><i class="input-helper"></i></label>
-                                                </p>
-                                              </div>
-                                            </div>
-                                            <div class="col-sm-3">
-                                              <div class="form-check" id="remoteCoreOption3">
-                                                <label class="form-check-label">
-                                                  <input name="optionsRemoteCore" type="radio" class="form-check-input"
-                                                    id="analyticRAM">
-                                                  RAM
-                                                  <i class="input-helper"></i><i class="input-helper"></i></label>
-                                                </p>
-                                              </div>
-                                            </div>
-                                            <div class="col-sm-3">
-                                              <div class="form-check" id="remoteCoreOption2">
-                                                <label class="form-check-label">
-                                                  <input name="optionsRemoteCore" type="radio" class="form-check-input"
-                                                    id="analyticNetwork">
-                                                  Network
-                                                  <i class="input-helper"></i><i class="input-helper"></i></label>
-                                                </p>
-                                              </div>
                                             </div>
                                           </div>
-                                          <div id="stateChange" class="chartjs-wrapper mt-5">
-                                            <canvas id="performanceLine"></canvas>
-                                          </div>
-                                        </section>
-                                        <section>
-                                          <div class="d-sm-flex justify-content-between align-items-start">
-                                            <div>
-                                              <h4 class="card-title card-title-dash">Log of device
-                                              </h4>
-                                              <h5 class="card-subtitle card-subtitle-dash"> $nameOfWorkerNode
-                                              </h5>
-                                            </div>
-                                          </div>
-                                          <label for="meeting-time">Choose a time for your appointment:</label>
+                                          <label for="meeting-time">Choose a time frame</label>
+
                                           <input type="datetime-local" id="stamp-time-from" name="meeting-time"
                                             value="2021-06-12T19:30" min="2018-06-07T00:00" max="2021-06-14T00:00">
                                           <input type="datetime-local" id="stamp-time-to" name="meeting-time"
                                             value="2021-06-12T19:30" min="2018-06-07T00:00" max="2021-06-14T00:00">
+                                          <input type="string" id="bookUser">
+                                          <button class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" id="AddBooking">Book</button>
 
-                                          <button class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" id="getLogWithTime">View Log</button>
                                           <table class="table select-table">
                                             <thead>
                                               <tr>
                                                 <th>Id</th>
-                                                <th>Description</th>
-                                                <th>Log Time</th>
+                                                <th>Start</th>
+                                                <th>End</th>
+                                                <th>UserName</th>
                                               </tr>
                                             </thead>
-
                                             <tbody id="WorkerNode-Log"></tbody>
                                           </table>
-                                        </section>
                                       </div>
                                     </div>
                                   </div>
@@ -252,6 +194,8 @@
                           </div>
                         </div>
                       </div>
+
+<!-- 
                       <div id="popup2" class="overlay">
                         <div class="popup">
                           <a class="close" href="#">&times;</a>
@@ -287,7 +231,6 @@
                                             class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">Register</a>
                                         </div>
                                       </div>
-
                                     </div>
                                   </div>
                                 </div>
@@ -295,8 +238,9 @@
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div id="popup3" class="overlay">
+                      </div> -->
+
+                      <!-- <div id="popup3" class="overlay">
                         <div class="popup">
                           <a class="close" href="#">&times;</a>
                           <div class="col-lg-8 d-flex flex-column">
@@ -341,7 +285,9 @@
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> -->
+
+<!-- 
                       <div id="popup4" class="overlay">
                         <div class="popup">
                           <a class="close" href="#">&times;</a>
@@ -372,7 +318,6 @@
                                             class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">Change</a>
                                         </div>
                                       </div>
-
                                     </div>
                                   </div>
                                 </div>
@@ -380,7 +325,8 @@
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </div> -->
+
                     </div>
                   </div>
                 </div>
@@ -389,9 +335,9 @@
           </div>
           <footer class="footer">
             <div class="d-sm-flex justify-content-center justify-content-sm-between">
-
-              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"><a target="_blank"
-                  href="https://www.thinkmay.net/">ThinkMay</a></span>
+              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
+                <a target="_blank" href="https://www.thinkmay.net/">ThinkMay</a>
+              </span>
             </div>
           </footer>
         </div>
@@ -407,29 +353,6 @@
   </div>
   <!-- container-scroller -->
   <!-- plugins:js -->
-  <script>
-    let dataLog = [];
-    let logViewId
-    function showDataLog(id) {
-      logViewId = id;
-      console.log(dataLog[id].length)
-      var logField = document.getElementById('WorkerNode-Log')
-      logField.innerHTML = '<p></p>'
-      for (let i = 0; i <= dataLog[id].length; i++)
-        logField.innerHTML = logField.innerHTML + `<tr>
-          <td>
-              <b>${dataLog[id].at(i).id}</b>
-          </td> 
-          <td>
-              <b>${dataLog[id].at(i).content}</b>
-          </td>
-          <td>
-            <b>${dataLog[id].at(i).logTime}</b>
-          </td>
-        </tr>`
-    }
-  </script>
-
   <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 
   <script src="../../vendors/js/vendor.bundle.base.js"></script>
