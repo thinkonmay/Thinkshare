@@ -133,10 +133,10 @@ namespace WorkerManager.Controllers
         {
             var key = await _cache.GetClusterInfor();
             var request = new RestRequest(
-                $"https://{_config.Domain}{_config.UnregisterURL}",Method.POST)
+                $"https://{_config.Domain}{_config.UnregisterURL}",Method.DELETE)
                     .AddHeader("Authentication",key.ClusterToken);
             var restResponse = await _client.ExecuteAsync(request);
-            return restResponse.StatusCode == HttpStatusCode.OK ? Ok() : BadRequest();
+            return restResponse.StatusCode == HttpStatusCode.OK ? Ok() : BadRequest(restResponse.Content);
         }
 
 

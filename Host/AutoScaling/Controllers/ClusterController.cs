@@ -73,7 +73,7 @@ namespace AutoScaling.Controllers
         }
 
         [Cluster]
-        [HttpPost("Unregister")]
+        [HttpDelete("Unregister")]
         public async Task<IActionResult> UnregisterCluster()
         {
             var ClusterID = HttpContext.Items["ClusterID"];
@@ -85,7 +85,7 @@ namespace AutoScaling.Controllers
             var success = await _ec2.TerminateInstance(cluster.instance);
 
             if(!success)
-                return BadRequest();
+                return BadRequest("fail to terminate instance");
 
             cluster.instance.End = DateTime.Now;
             cluster.instance.portForwards.ForEach(x => x.End = DateTime.Now);

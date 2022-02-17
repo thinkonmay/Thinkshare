@@ -41,12 +41,12 @@ prepare_cluster_infor()
 		confirmButtonText: 'Yes, delete it!'
 		}).then(async (result) => {
 			if (result.isConfirmed) {
-				await API.UnRegister();
-				Swal.fire(
-				'Deleted!',
-				'Your cluster has been deleted.',
-				'success'
-				)
+				var res = await API.UnRegister();
+
+				if(res.ok)
+					Swal.fire('Success!', 'Cluster deleted.', 'success')
+				else	
+					Swal.fire('Fail!', 'Cluster deletion failed.', 'error')
 		}})
 	});
 }

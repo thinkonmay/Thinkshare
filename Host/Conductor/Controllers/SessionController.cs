@@ -33,8 +33,6 @@ namespace Conductor.Controllers
 
         private readonly IWorkerCommnader _Cluster;
 
-        private readonly UserManager<UserAccount> _userManager;
-
         private readonly IGlobalStateStore _cache;
 
         private readonly ILog _log;
@@ -46,8 +44,7 @@ namespace Conductor.Controllers
                                 IWorkerCommnader slmsocket,
                                 IGlobalStateStore cache,
                                 IClusterRBAC rbac,
-                                ILog log,
-                                UserManager<UserAccount> userManager)
+                                ILog log)
         {
             _db = db;
             _log = log;
@@ -55,7 +52,6 @@ namespace Conductor.Controllers
             _cache = cache;
             _Cluster = slmsocket;
             _config = config.Value;
-            _userManager = userManager;
         }
 
         [User]
@@ -64,8 +60,6 @@ namespace Conductor.Controllers
         {
             var UserID = Int32.Parse((string)HttpContext.Items["UserID"]);
             var worker = _db.Devices.Find(SlaveID);
-            var globalCluster = _db.Clusters
-                .Where(x => x.WorkerNode.Contains(worker)).First();
 
             if(!_rbac.IsAllowed(UserID,worker))
                 return Unauthorized();
@@ -105,6 +99,7 @@ namespace Conductor.Controllers
             var workerToken = JsonConvert.DeserializeObject<AuthenticationRequest>((new RestClient()).Post(workerTokenRequest).Content);
 
             /*create session from client device capability*/
+            var globalCluster = _db.Clusters.Where(x => x.WorkerNode.Contains(worker)).First();
             var userSetting = await _cache.GetUserSetting(UserID);
             await _cache.SetSessionSetting(sess.ID,userSetting,_config, globalCluster);
 
@@ -125,10 +120,6 @@ namespace Conductor.Controllers
         {
             var UserID = Int32.Parse((string)HttpContext.Items["UserID"]);
 
-            var device = _db.Devices.Find(SlaveID);
-
-            string workerState = await _Cluster.GetWorkerState(SlaveID);
-
             // get session information in database
             var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID && 
                                                s.ClientId == UserID && 
@@ -139,6 +130,7 @@ namespace Conductor.Controllers
             if (!ses.Any()) return BadRequest();
 
 
+            string workerState = await _Cluster.GetWorkerState(SlaveID);
             /*slavepool send terminate session signal*/
             if(workerState == WorkerState.OnSession
             || workerState == WorkerState.OffRemote)
@@ -157,12 +149,11 @@ namespace Conductor.Controllers
         public async Task<IActionResult> DisconnectRemoteControl(int SlaveID)
         {
             // get ClientId from request         
-            var UserID = HttpContext.Items["UserID"];
-            var userAccount = await _userManager.FindByIdAsync(UserID.ToString());
+            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
 
             // get session from database
             var ses = _db.RemoteSessions.Where(s => s.WorkerID == SlaveID && 
-                                               s.ClientId == Int32.Parse((string)UserID) &&
+                                               s.ClientId == UserID &&
                                                s.StartTime.HasValue &&
                                               !s.EndTime.HasValue).FirstOrDefault();
 

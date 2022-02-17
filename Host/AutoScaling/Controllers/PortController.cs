@@ -20,8 +20,6 @@ namespace AutoScaling.Controllers
     [Produces("application/json")]
     public class PortController : Controller
     {
-        private readonly UserManager<UserAccount> _userManager;
-
         private readonly GlobalDbContext _db;
 
         private readonly RestClient _client;
@@ -35,13 +33,11 @@ namespace AutoScaling.Controllers
         public PortController(GlobalDbContext db,
                                  IEC2Service ec2,
                                  IOptions<SystemConfig> config,
-                                 IOptions<InstanceSetting> instanceSetting,
-                                 UserManager<UserAccount> userManager)
+                                 IOptions<InstanceSetting> instanceSetting)
         {
             _db = db;
             _client = new RestClient(config.Value.Authenticator);
             _instanceSetting = instanceSetting.Value;
-            _userManager = userManager;
             _config = config.Value;
             _ec2 = ec2;
         }

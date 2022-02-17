@@ -20,7 +20,6 @@ namespace Conductor.Controllers
         private readonly GlobalDbContext _db;
         private readonly IClientHub _clientHubctx;
         private readonly IWorkerCommnader _Cluster;
-        private readonly UserManager<UserAccount> _userManager;
         private readonly IGlobalStateStore _cache;
         private readonly ILog _log;
 
@@ -29,7 +28,6 @@ namespace Conductor.Controllers
                      IClientHub clientHub,
                      IGlobalStateStore cache,
                      ILog log,
-                     UserManager<UserAccount> userManager,
                      IWorkerCommnader SlaveManager)
         {
             _db = db;
@@ -37,7 +35,6 @@ namespace Conductor.Controllers
             _cache = cache;
             _Cluster = SlaveManager;
             _clientHubctx = clientHub;
-            _userManager = userManager;
         }
 
         [HttpPost("Worker/State")]

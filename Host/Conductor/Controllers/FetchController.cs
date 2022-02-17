@@ -19,8 +19,6 @@ namespace Conductor.Controllers
     [Produces("application/json")]
     public class FetchController : Controller
     {
-        private readonly UserManager<UserAccount> _userManager;
-
         private readonly GlobalDbContext _db;
 
         private readonly IWorkerCommnader _slmsocket;
@@ -33,7 +31,6 @@ namespace Conductor.Controllers
 
 
         public FetchController(GlobalDbContext db, 
-                            UserManager<UserAccount> userManager,
                             ILog log,
                             IClusterRBAC rbac,
                             IWorkerCommnader slm,
@@ -44,7 +41,6 @@ namespace Conductor.Controllers
             _rbac = rbac;
             _cache = cache;
             _slmsocket = slm;
-            _userManager = userManager;
         }
 
 

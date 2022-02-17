@@ -17,21 +17,17 @@ namespace Conductor.Controllers
     [Route("/Setting")]
     public class SettingController : ControllerBase
     {
-        private readonly UserManager<UserAccount> _userManager;
-
         private readonly GlobalDbContext _db;
 
         private readonly IGlobalStateStore _cache;
 
         private readonly ILog _log;
 
-        public SettingController( UserManager<UserAccount> userManager,
-                                  IGlobalStateStore cache,
+        public SettingController( IGlobalStateStore cache,
                                   ILog log,
                                   GlobalDbContext db)
         {
             _cache = cache;
-            _userManager = userManager;
             _log = log;
             _db = db;
         }
