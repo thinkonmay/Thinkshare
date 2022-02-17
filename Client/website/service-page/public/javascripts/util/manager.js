@@ -1,14 +1,17 @@
 import * as API from "./api.js"
 
 
+async function
+checkManager() 
+{
+	return "true" === (await (await API.getRoles()).json()).isManager;
+}
 
 
 
 export async function
 clusterFormGen() {
-    var isManager = await API.isManager()
-
-
+    var isManager = await checkManager();
 	if (isManager === true) {
         API.getClusters().then(async data =>{
             var body = await data.json()
