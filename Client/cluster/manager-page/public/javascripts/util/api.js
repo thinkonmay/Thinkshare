@@ -132,8 +132,8 @@ export const getExistingRole = () => {
 	})
 }
 
-export const createNewRole = (start,end,user) => {
-	return fetch(`SetupRoleRoute?Start=${start}&End=${end}&UserName=${user}`, {
+export const createPermanentNewRole = (user) => {
+	return fetch(`${SetupRoleRoute}?UserName=${user}`, {
 		method: "POST",
 		headers: genHeaders()
 	}, function (error) {
@@ -144,6 +144,19 @@ export const createNewRole = (start,end,user) => {
 		}
 	})
 }
+export const createNewRole = (start,end,user) => {
+	return fetch(`${SetupRoleRoute}?Start=${start}&End=${end}&UserName=${user}`, {
+		method: "POST",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+
 export const deleteRole = () => {
 	return fetch(SetupRoleRoute, {
 		method: "DELETE",

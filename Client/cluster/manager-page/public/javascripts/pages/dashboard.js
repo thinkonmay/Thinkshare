@@ -29,13 +29,6 @@ prepare_cluster_infor()
 						 data.at(i).register, 
 						 state)
 	}
-}
-
-$(document).ready(async () => {
-	let timeStampFrom = $("#stamp-time-from").val()
-	let timeStampTo = $("#stamp-time-to").val()
-
-	prepare_cluster_infor();
 
 	$('#DeleteCluster').click(() => {
 		Utils.newSwal.fire({ 
@@ -56,6 +49,14 @@ $(document).ready(async () => {
 				)
 		}})
 	});
+}
+
+function
+setup_cluster_booking()
+{
+	let timeStampFrom = 	$("#stamp-time-from").val()
+	let timeStampTo = 		$("#stamp-time-to").val()
+	let bookUser = 			$("#stamp-time-to").val()
 
 	$("#stamp-time-from").on("change", function () {
 		timeStampFrom = $("#stamp-time-from").val()
@@ -63,6 +64,27 @@ $(document).ready(async () => {
 	$("#stamp-time-to").on("change", function () {
 		timeStampTo = $("#stamp-time-to").val()
 	})
+	$("#bookUser").on("change", function () {
+		bookUser = $("#bookUser").val()
+	})
+
+	$('#AddBooking').click(async () => {
+		var res = await API.createPermanentNewRole(bookUser);
+
+		if(res.ok)
+			Swal.fire('Success!', 'Booking success.', 'success')
+		else	
+			Swal.fire('Fail!', 'Booking failed.', 'error')
+	})
+}
+
+$(document).ready(async () => {
+	setup_cluster_booking();
+	prepare_cluster_infor();
+	set_worker_chart();
+
+
+
 
 	$('#logout').click(() => {
 		setCookie("logout", "true")
@@ -75,8 +97,11 @@ $(document).ready(async () => {
 			window.location = "/login"
 		}
 	})
+})
 
-
+function 
+set_worker_chart()
+{
 	$('#analyticCPU').click(() => {
 		setDataForChart('#1F3BB3', 'CPU', false);
 	});
@@ -90,7 +115,7 @@ $(document).ready(async () => {
 	$('#analyticNetwork').click(() => {
 		setDataForChart('#e65555', "Network", false);
 	})
-})
+}
 
 function setCurrentDateTimeLog() {
 	let currentDate = 	String(new Date().toISOString()).slice(0, 16)

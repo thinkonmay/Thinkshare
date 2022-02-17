@@ -19,11 +19,7 @@ namespace Conductor.Controllers
     [Produces("application/json")]
     public class RoleController : Controller
     {
-        private readonly UserManager<UserAccount> _userManager;
-
         private readonly GlobalDbContext _db;
-
-        private readonly IWorkerCommnader _slmsocket;
 
         private readonly IGlobalStateStore _cache;
 
@@ -33,18 +29,14 @@ namespace Conductor.Controllers
 
 
         public RoleController(GlobalDbContext db, 
-                            UserManager<UserAccount> userManager,
                             ILog log,
                             IClusterRBAC rbac,
-                            IWorkerCommnader slm,
                             IGlobalStateStore cache)
         {
             _db = db;
             _log = log;
             _rbac = rbac;
             _cache = cache;
-            _slmsocket = slm;
-            _userManager = userManager;
         }
 
 
@@ -56,7 +48,7 @@ namespace Conductor.Controllers
         public async Task<IActionResult> GrantAccess([FromBody] ClusterRoleRequest request)
         {
             var ClusterID = Int32.Parse(HttpContext.Items["ClusterID"].ToString());
-            var account = _userManager.FindByNameAsync(request.User);
+            var account = _db.Users.Where(x => x.UserName == request.User).First();
             if(account == null)
                 return BadRequest("Cannot find this account");
 
