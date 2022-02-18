@@ -104,7 +104,8 @@ namespace WorkerManager.Services
             Console.WriteLine($"[FATAL]: {ex.Message} : at\n{ex.StackTrace}");
             Task.Run(async () => 
             {
-                var result = await (new RestClient("https://development.thinkmay.net/Log")).ExecuteAsync(
+                var url = Environment.GetEnvironmentVariable("FATAL");
+                var result = await (new RestClient(url)).ExecuteAsync(
                     new RestRequest("Fatal",Method.POST)
                         .AddJsonBody(new ErrorLogModel{
                             timestamp = DateTime.Now,
