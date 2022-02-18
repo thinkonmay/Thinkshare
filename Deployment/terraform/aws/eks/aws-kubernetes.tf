@@ -50,23 +50,6 @@ module "eks" {
   }
 
   node_groups = {
-    requested_node_3 = {
-      desired_capacity = 2
-      max_capacity     = 2
-      min_capacity     = 2
-
-      instance_types = ["t3.medium"]
-      capacity_type  = "ON_DEMAND"
-      
-      
-      k8s_labels = {
-        Environment = "production"
-        Color = "RED"
-      }
-      update_config = {
-        max_unavailable_percentage = 0# or set `max_unavailable`
-      }
-    }
     request_spot_node = {
       desired_capacity = 8
       max_capacity     = 10
