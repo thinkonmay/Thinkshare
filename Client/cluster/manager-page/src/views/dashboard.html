@@ -44,7 +44,7 @@
           <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
             <h1 class="welcome-text">Hi, <span id="OwnerName" class="text-black fw-bold">
                 Owner
-            </span></h1>
+              </span></h1>
             <h3 class="welcome-sub-text">Welcome to your cluster <h3 id="ClusterName"></h3> dashboard</h3>
           </li>
         </ul>
@@ -159,32 +159,33 @@
                                             role="button"><br><span>Role</span></label></li>
                                       </ul>
                                       <div class="content" style="overflow: hidden;">
-                                          <div class="d-sm-flex justify-content-between align-items-start">
-                                            <div>
-                                              <h4 class="card-title card-title-dash">Cluster booking calendar
-                                              </h4>
-                                            </div>
+                                        <div class="d-sm-flex justify-content-between align-items-start">
+                                          <div>
+                                            <h4 class="card-title card-title-dash">Cluster booking calendar
+                                            </h4>
                                           </div>
-                                          <label for="meeting-time">Choose a time frame</label>
+                                        </div>
+                                        <label for="meeting-time">Choose a time frame</label>
 
-                                          <input type="datetime-local" id="stamp-time-from" name="meeting-time"
-                                            value="2021-06-12T19:30" min="2018-06-07T00:00" max="2021-06-14T00:00">
-                                          <input type="datetime-local" id="stamp-time-to" name="meeting-time"
-                                            value="2021-06-12T19:30" min="2018-06-07T00:00" max="2021-06-14T00:00">
-                                          <input type="string" id="bookUser">
-                                          <button class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" id="AddBooking">Book</button>
+                                        <input type="datetime-local" id="stamp-time-from" name="meeting-time"
+                                          min="2018-06-07T00:00" max="2021-06-14T00:00">
+                                        <input type="datetime-local" id="stamp-time-to" name="meeting-time"
+                                          min="2018-06-07T00:00" max="2021-06-14T00:00">
+                                        <input type="string" id="bookUser" placeholder="username">
+                                        <button class="btn btn-primary btn-lg text-white mb-0 me-0" type="button"
+                                          id="AddBooking">Book</button>
 
-                                          <table class="table select-table">
-                                            <thead>
-                                              <tr>
-                                                <th>Id</th>
-                                                <th>Start</th>
-                                                <th>End</th>
-                                                <th>UserName</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody id="WorkerNode-Log"></tbody>
-                                          </table>
+                                        <!-- <table class="table select-table">
+                                          <thead>
+                                            <tr>
+                                              <th>Id</th>
+                                              <th>Start</th>
+                                              <th>End</th>
+                                              <th>UserName</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody id="WorkerNode-Log"></tbody>
+                                        </table> -->
                                       </div>
                                     </div>
                                   </div>
@@ -195,7 +196,7 @@
                         </div>
                       </div>
 
-<!-- 
+                      <!-- 
                       <div id="popup2" class="overlay">
                         <div class="popup">
                           <a class="close" href="#">&times;</a>
@@ -287,7 +288,7 @@
                         </div>
                       </div> -->
 
-<!-- 
+                      <!-- 
                       <div id="popup4" class="overlay">
                         <div class="popup">
                           <a class="close" href="#">&times;</a>
@@ -373,7 +374,7 @@
   <!-- Custom js for this page-->
   <script src="../../js/Chart.roundedBarCharts.js"></script>
   <!-- End custom js for this page-->
-	<script src="vendors/sweetalert2/sweetalert.min.js"></script>
+  <script src="vendors/sweetalert2/sweetalert.min.js"></script>
   <script type="module" src="../../javascripts/pages/dashboard.js"></script>
 </body>
 
