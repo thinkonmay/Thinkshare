@@ -7,9 +7,9 @@ export function set_current_datetime() {
 		"min": minDate,
 		"value": defaultDate
 	});
-	$('#stamp-time-to').attr({
-		"max": maxDate,
-		"min": minDate,
-		"value": defaultDate
-	});
+	// $('#stamp-time-to').attr({
+	// 	"max": maxDate,
+	// 	"min": minDate,
+	// 	"value": defaultDate
+	// });
 }

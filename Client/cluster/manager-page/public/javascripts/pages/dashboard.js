@@ -1,7 +1,8 @@
 import * as Utils from "../util/utils.js"
+import * as API from "../util/api.js"
 import { setCookie, deleteCookie } from "../util/cookie.js"
 import { set_current_datetime } from "../util/config-field-datetime.js"
-import { prepare_cluster_infor, setup_cluster_booking, set_worker_chart } from "../util/cluster-component.js"
+import { prepare_booker_infor, prepare_cluster_infor, setup_cluster_booking, set_worker_chart } from "../util/cluster-component.js"
 
 
 
@@ -10,6 +11,7 @@ $(document).ready(async () => {
 	setup_cluster_booking();
 	await prepare_cluster_infor();
 	set_worker_chart();
+	await prepare_booker_infor();
 
 	
 

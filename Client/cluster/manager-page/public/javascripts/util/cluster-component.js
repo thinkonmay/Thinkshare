@@ -38,10 +38,10 @@ export function setup_cluster_booking() {
 
     $('#AddBooking').click(async () => {
         let startTime = convert_date(timeStampFrom)
-        let endTime = convert_date(timeStampTo)
+        // let endTime = convert_date(timeStampTo)
+        let endTime = new Date((new Date(startTime)).getTime() + 900000).toISOString() // plus 15 mins
         console.log(startTime)
         console.log(endTime)
-        console.log(bookUser)
         if (startTime == endTime) {
             Swal.fire('Fail!', 'startTime and endTime must have the difference', 'error')
         } else if (startTime > endTime) {
@@ -81,4 +81,9 @@ export async function prepare_cluster_infor() {
 			data.at(i).register,
 			state)
 	}
+}
+
+export async function prepare_booker_infor() {
+    // let BookerInfor = await (await API.getExistingRole()).json()
+    // To do
 }
