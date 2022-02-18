@@ -127,7 +127,6 @@ prepare_setting()
 
 
 	if (CheckDevice.isElectron()) {
-		$('#downloadApp').css("display","none")
 		$('#remoteApp2').removeAttr("disabled")
 		$('#videoCodec3').removeAttr("disabled")
 	}
