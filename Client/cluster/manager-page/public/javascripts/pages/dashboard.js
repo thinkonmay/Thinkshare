@@ -15,7 +15,7 @@ async function
 	var name = ClusterInfor["name"];
 	var owner = ClusterInfor["owner"];
 
-	document.getElementById("ClusterName").innerHTML = name;
+	document.getElementById("ClusterName").innerHTML = `Welcome to your cluster <b>${name}</b> dashboard`;
 	document.getElementById("OwnerName").innerHTML = owner["fullName"];
 
 	for (let i = 0; i < data.length; i++) {

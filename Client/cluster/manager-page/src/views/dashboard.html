@@ -44,23 +44,17 @@
           <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
             <h1 class="welcome-text">Hi, <span id="OwnerName" class="text-black fw-bold">
                 Owner
-              </span></h1>
-            <h3 class="welcome-sub-text">Welcome to your cluster <h3 id="ClusterName"></h3> dashboard</h3>
-          </li>
+              </span> 
+          <p id="ClusterName">Welcome to your cluster dashboard</p>
+
+            </h1>
+        </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item d-none d-lg-block">
-            <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
-              <span class="input-group-addon input-group-prepend border-right">
-                <span class="icon-calendar input-group-text calendar-icon"></span>
-              </span>
-              <input type="text" class="form-control">
-            </div>
-          </li>
           <li class="nav-item">
           </li>
           <li class="nav-item dropdown d-none d-lg-block user-dropdown">
-            <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false" style="padding-right: 10px;">
               <img class="img-xs rounded-circle" id="dashboardSrcImg" alt="Profile image" src="images/default_user.png">
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
@@ -113,11 +107,11 @@
       </nav>
       <!-- partial -->
       <div class="main-panel">
-        <div class="content-wrapper">
+        <div class="content-wrapper" style="overflow: hidden; min-height: 990px; padding: 0 0 0 0 !important">
           <div class="row">
             <div class="col-sm-12">
               <div class="home-tab">
-                <div class="tab-content tab-content-basic">
+                <div class="tab-content tab-content-basic" style="padding: 0 0 0 0 !important">
                   <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
                     <div class="row">
                       <div class="row flex-grow">
@@ -379,4 +373,3 @@
 </body>
 
 </html>
-1
