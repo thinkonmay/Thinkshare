@@ -1,4 +1,5 @@
 import { getCookie, setCookie } from "./cookie.js"
+import { convertDate } from "../util/date-time-convert.js"
 import * as Utils from "../util/utils.js"
 
 var host;
@@ -32,6 +33,9 @@ const setup = async () => {
 		return;
 
 	host = await ((await fetch('API.js')).text())
+	if(host.length == 0)
+		throw new Error("Failt to get API infor");
+
 
 	Login = `https://${host}/Account/Login`
 	Register = `https://${host}/Account/Register`
@@ -64,11 +68,19 @@ const setup = async () => {
 export const Dashboard = "/dashboard"
 
 
+/**
+ * 
+ * @param {string} token 
+ * @returns {string} userhub connection string
+ */
 export const getUserHub = async (token) => {
 	await setup();
 	return `wss://${host}/Hub/User?token=${token}`
 }
 
+/**
+ * @returns {Headers}
+ */
 export const genHeaders = () => {
 	const token = getCookie("token")
 	return Object.assign(
@@ -83,15 +95,41 @@ export const genHeaders = () => {
 	)
 }
 
-async function CheckError(response) {
+/**
+ * @param {Response} response 
+ * @returns 
+ */
+async function CheckLoginError(loginResponse) {
+	var clone = loginResponse.clone();
+	const response = await clone.json()
 
+	if (response.errors == null) {
+		Utils.newSwal.fire({
+			title: "Successfully!",
+			text: "Redirecting to the dashboard",
+			icon: "success"
+		})
+	} else {
+		Utils.responseError(response.errors[0].code, 
+							response.errors[0].description, 
+							"error")
+	}
+}
+
+/**
+ * 
+ * @param {Response} response 
+ * @returns 
+ */
+async function CheckError(response) {
 	if (response.status == 200)
 		return;
+
 	if (response.status == 401) {
 		var clone_body = await (response.clone()).text();
 		Utils.newSwal.fire({
 			title: 'Unauthorize',
-			text: 'This process will logout your account',
+			text: 'Try login to your account again',
 			icon: "error"
 		}).then((result) => {
 			if (result.isConfirmed) {
@@ -115,12 +153,22 @@ async function CheckError(response) {
 			icon: "error"
 		})
 	}
+	else if (response.status == 500) {
+		var clone_body = await (response.clone()).text();
+		Utils.newSwal.fire({
+			title: 'Our server error �� ��',
+			text: 'Punish our developer please',
+			icon: "error"
+		})
+	}
 	else {
 		Utils.responseErrorHandler(response)
 	}
-
 }
 
+/**
+ * @param {string} error 
+ */
 export const logUI = async error => {
 	await setup();
 	await fetch(LogUI, {
@@ -133,6 +181,20 @@ export const logUI = async error => {
 	})
 }
 
+
+
+
+
+
+
+
+
+
+/**
+ * 
+ * @param {LoginModel} body 
+ * @returns 
+ */
 export const login = async body => {
 	await setup();
 	var res = await fetch(Login, {
@@ -143,10 +205,36 @@ export const login = async body => {
 			password: body.password
 		})
 	})
-	CheckError(res)
+	CheckError(res);
+	CheckLoginError(res);
 	return res;
 }
 
+/**
+ * 
+ * @param {AuthenticationRequest} body 
+ * @returns 
+ */
+export const tokenExchange = async body => {
+	await setup();
+	var res = await fetch(Token, {
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({
+			token: body.token,
+			Validator: body.Validator
+		})
+	})
+	CheckError(res);
+	CheckLoginError(res);
+	return res;
+}
+
+/**
+ * 
+ * @param {UpdatePasswordModel} body 
+ * @returns 
+ */
 export const updatePassword = async body => {
 	await setup();
 	var res = await fetch(Password, {
@@ -157,12 +245,22 @@ export const updatePassword = async body => {
 			New: body.New
 		})
 	})
-	CheckError(res)
+	CheckError(res);
+	CheckLoginError(res);
 	return res;
 }
 
+/**
+ * 
+ * autofill job and convert birthday 
+ * @param {RegisterModel} body 
+ * @returns {Promise<AuthResponse>}
+ */
 export const register = async body => {
 	await setup();
+	body.dob = convertDate(body.dob)
+	body.jobs = body.jobs == null ? "nosetJobs" : body.jobs
+
 	var res = await fetch(Register, {
 		method: "POST",
 		headers: genHeaders(),
@@ -176,14 +274,20 @@ export const register = async body => {
 			phoneNumber: body.phonenumber
 		})
 	})
-	CheckError(res)
+
+	CheckError(res);
+	CheckLoginError(res);
 	return res;
 }
 
 
 
 
-
+/**
+ * 
+ * @param {string} des 
+ * @returns {Promise<IdentityResult>}
+ */
 export const managerRegister = async des => {
 	await setup();
 	var res = await fetch(`${Manager}?Description=${des}`, {
@@ -197,10 +301,10 @@ export const managerRegister = async des => {
 
 /**
  * 
- * @param {*} name 
- * @param {*} password 
- * @param {*} region 
- * @returns 
+ * @param {string} name 
+ * @param {string} password 
+ * @param {string} region 
+ * @returns {Promise<GlobalCluster>}
  */
 export const requestCluster = async (name, password, region) => {
 	await setup();
@@ -212,6 +316,11 @@ export const requestCluster = async (name, password, region) => {
 	CheckError(res)
 	return res;
 }
+
+/**
+ * 
+ * @returns {Promise<List<Name,URL>>}
+ */
 export const getClusters = async () => {
 	await setup();
 	var res = await fetch(Clusters, {
@@ -235,19 +344,6 @@ export const getClusters = async () => {
 
 
 
-export const tokenExchange = async body => {
-	await setup();
-	var res = await fetch(Token, {
-		method: "POST",
-		headers: genHeaders(),
-		body: JSON.stringify({
-			token: body.token,
-			Validator: body.Validator
-		})
-	})
-	CheckError(res)
-	return res;
-}
 
 
 

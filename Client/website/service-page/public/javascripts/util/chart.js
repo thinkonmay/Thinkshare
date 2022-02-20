@@ -1,20 +1,19 @@
 import * as API from "./api.js"
 
-let sessionInfor;
-let datasets = [];
+/**
+ * 
+ */
 export async function setDataForChart() {
-	
-	try {
-		sessionInfor = await (await API.getSession()).json()
-	} catch (error) {
-		await setDataForChart();
-	}
+	var sessionInfor = await (await API.getSession()).json()
+	var datasets = [];
+
 	for (let i = 0; i < 7; i++) {
 		datasets[i] = 0;
 	}
 	for (let i = 0; i < sessionInfor.length; i++) {
 		datasets[sessionInfor[i].dayofWeek] = sessionInfor[i].sessionTime;
 	}
+
 	var date = new Date();
 	var day = date.getDay();
 	let countDay = 0;

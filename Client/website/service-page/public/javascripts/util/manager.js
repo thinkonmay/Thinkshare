@@ -9,6 +9,7 @@ async function checkManager() { return "true" === (await (await API.getRoles()).
 
 export async function
 clusterFormGen() {
+    var form = document.getElementById("ClusterForm");
 	var isManager = await checkManager();
 	if (isManager === true) {
 		API.getClusters().then(async data => {
@@ -35,7 +36,6 @@ clusterFormGen() {
             });
         })
 
-        var form = document.getElementById("ClusterForm");
         form.innerHTML =
             `
 		<label class="col-sm-3 col-form-label">

@@ -8,7 +8,6 @@ export async function connectToClientHub() {
 	Websocket.addEventListener('message', onClientHubEvent);
 	Websocket.addEventListener('error', onWebsocketClose);
 	Websocket.addEventListener('close', onWebsocketClose);
-
 }
 
 function onClientHubEvent(event) {

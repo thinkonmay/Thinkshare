@@ -160,7 +160,7 @@ export async function updateSetting(display) {
 }
 
 
-export function 
+export async function 
 prepare_user_setting()
 {
     $("#usernameCtrler").attr("placeholder", body.userName)
