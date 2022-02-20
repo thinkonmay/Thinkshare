@@ -5,7 +5,6 @@ import * as Utils from "../util/utils.js"
 import { isElectron } from "../util/checkdevice.js"
 const HOUR5 = 5 * 60 * 60 * 1000;
 
-let authorizeElectron = isElectron();
 
 function serializeArrToObject(serializeArr) {
     const obj = {}
@@ -46,7 +45,6 @@ function register(body) {
 }
 
 export async function GoogleLogin() {
-    authorizeElectron =  fromElectron
     var myParams = {
         'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
         'cookiepolicy': 'none',
@@ -85,7 +83,7 @@ const googleLoginUser = async (userForm) => {
             var response = await (await API.tokenExchange(userForm)).json();
             if(response.errors == null)
             {
-                if (authorizeElectron ==  true) {
+                if (isElectron() ==  true) {
                     window.location.href = `https://service.thinkmay.net/copy-token?=${response.token}`
                 } else {
                     setCookie("token", response.token, HOUR5)
@@ -101,9 +99,6 @@ function onFailure() {
     alert("Login Error an unexpected error occurred please try logging in again")
 }
 
-function openLinkInIE(url) {
-    window.location.replace(url, "_blank");
-}
 
 $(document).ready(() => {
     let access_token = window.location.href
@@ -121,8 +116,6 @@ $(document).ready(() => {
             $('#formLogin').attr('style', 'display: none')
             $('#formRegister').attr('style', 'display: none')
             $('#authorizeForm ').removeAttr('style')
-            // openLinkInIE("https://service.thinkmay.net/token-auth")
-            /// create box to set token id
         } else
             GoogleLogin();
     })

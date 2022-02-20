@@ -98,11 +98,15 @@ async function CheckLoginError(loginResponse) {
 			text: "Redirecting to the dashboard",
 			icon: "success"
 		})
-	} else {
-		Utils.responseError(response.errors[0].code, 
-							response.errors[0].description, 
+		return;
+	} 
+	
+	response.errors.forEach(element => 
+	{
+		Utils.responseError(element.code, 
+							element.description, 
 							"error")
-	}
+	});
 }
 
 /**
@@ -334,22 +338,23 @@ export const getClusters = async () => {
 
 
 
+/**
+ * 
+ * @returns {Dictionary<int,string>}
+ */
 export const fetchSlave = async () => {
 	await setup();
-	try {
-		var res = await fetch(FetchSlave, {
-			method: "GET",
-			headers: genHeaders()
-		})
-		CheckError(res)
-	} catch (err) {
-		const [, lineno, colno] = e.stack.match(/(\d+):(\d+)/);
-		var errors = `${e.message} ${e.stack} Line: ${lineno} Column: ${colno}}`
-		logUI(errors)
-	}
+	var res = await fetch(FetchSlave, {
+		method: "GET",
+		headers: genHeaders()
+	})
+	await CheckError(res);
 	return res;
 }
 
+/**
+ * @returns {Dictionary<int,string>}
+ */
 export const fetchSession = async () => {
 	await setup();
 	var res = await fetch(FetchSession, {
@@ -359,6 +364,12 @@ export const fetchSession = async () => {
 	CheckError(res)
 	return res;
 }
+
+/**
+ * 
+ * @param {int} workerID 
+ * @returns {Promise<WorkerNode>}
+ */
 export const fetchInfor = async (workerID) => {
 	await setup();
 	var response = await fetch(`${FetchInfor}?WorkerID=${workerID}`, {
@@ -368,6 +379,10 @@ export const fetchInfor = async (workerID) => {
 	return response;
 }
 
+/**
+ * 
+ * @returns {Promise<Dictionary<int,string>>}
+ */
 export const getSession = async () => {
 	await setup();
 	var response = await fetch(Session, {
@@ -394,9 +409,14 @@ export const getSession = async () => {
 
 
 
-export const terminateSession = async SlaveID => {
+/**
+ * 
+ * @param {int} SlaveID 
+ * @returns 
+ */
+export const terminateSession = async (SlaveID) => {
 	await setup();
-	var response = await fetch(TerminateSession + "?SlaveID=" + SlaveID, {
+	var response = await fetch(`${TerminateSession}?SlaveID=${SlaveID}`, {
 		method: "DELETE",
 		headers: genHeaders()
 	})
@@ -404,9 +424,14 @@ export const terminateSession = async SlaveID => {
 	return response;
 }
 
+/**
+ * 
+ * @param {int} SlaveID 
+ * @returns 
+ */
 export const disconnectSession = async SlaveID => {
 	await setup();
-	var response = await fetch(DisconnectSession + "?SlaveID=" + SlaveID, {
+	var response = await fetch(`${DisconnectSession}?SlaveID=${SlaveID}`, {
 		method: "POST",
 		headers: genHeaders()
 	})
@@ -414,9 +439,14 @@ export const disconnectSession = async SlaveID => {
 	return response;
 }
 
+/**
+ * 
+ * @param {int} SlaveID 
+ * @returns 
+ */
 export const reconnectSession = async (SlaveID) => {
 	await setup();
-	var response = await fetch(ReconnectSession + "?SlaveID=" + SlaveID, {
+	var response = await fetch(`${ReconnectSession}?SlaveID=${SlaveID}`, {
 		method: "POST",
 		headers: genHeaders()
 	})
@@ -425,38 +455,20 @@ export const reconnectSession = async (SlaveID) => {
 }
 
 
+/**
+ * 
+ * @param {int} SlaveID 
+ * @returns 
+ */
 export const initializeSession = async (SlaveID) => {
 	await setup();
-	var response = await fetch(InitializeSession + "?SlaveID=" + SlaveID, {
+	var response = await fetch(`${InitializeSession}?SlaveID=${SlaveID}`, {
 		method: "POST",
 		headers: genHeaders()
 	})
 	CheckError(response);
 	return response;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -464,102 +476,80 @@ export const initializeSession = async (SlaveID) => {
 
 /**
  * 
- * @returns 
+ * @returns { Promise<UserInforModel> } 
  */
 export const getInfor = async () => {
 	await setup();
-	try {
+	var response = await fetch(Infor, {
+		method: "GET",
+		headers: genHeaders()
+	})
 
-		var response = await fetch(Infor, {
-			method: "GET",
-			headers: genHeaders()
-		})
+	CheckError(response);
+	return response;
+}
 
-		CheckError(response);
-		return response;
-	} catch (err) {
+/**
+ * @returns { Promise<AuthenticationResponse> }
+ */
+export const getRoles = async () => {
+	await setup();
+	var response = await fetch(Roles, {
+		method: "GET",
+		headers: genHeaders()
+	});
+	await CheckError(response)
+	return response;
+}
 
-	}
 
+
+/**
+ * 
+ * @param {Promise<UserInforModel>} body 
+ * @returns 
+ */
+export const setInfor = async (body) => {
+	await setup();
+	var response = await fetch(Infor, 
+	{
+		method: "POST",
+		headers: genHeaders(),
+		body: JSON.stringify({ body })
+	})
+	await CheckError(response);
+	return response;
 }
 
 /**
  * 
+ * @param {Promise<UserSetting>} body 
  * @returns 
  */
-export const getRoles = async () => {
+export const setSetting = async (body) => {
 	await setup();
-	return fetch(Roles, {
-		method: "GET",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			Utils.newSwal.fire({
-				title: 'error',
-				text: error.response,
-				icon: "error"
-			})
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
-
-export const getSetting = async () => {
-	await setup();
-	return fetch(Setting + "/Get", {
-		method: "GET",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			Utils.newSwal.fire({
-				title: 'error',
-				text: error.response,
-				icon: "error"
-			})
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-
-export const setInfor = async (body) => {
-	await setup();
-	return fetch(Infor, {
+	var response = await fetch(`${Setting}/Set`, 
+	{
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({ body })
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
+	});
+	await CheckError(response);
+	return response;
 }
 
-export const setSetting = async (body) => {
+
+
+/**
+ * @returns {Promise<UserSetting>}
+ */
+export const getSetting = async () => {
 	await setup();
-	return fetch(Setting + "/Set", {
-		method: "POST",
-		headers: genHeaders(),
-		body: JSON.stringify({
-			device: body.device,
-			engine: body.engine,
-			audioCodec: body.audioCodec,
-			videoCodec: body.videoCodec,
-			mode: body.mode,
-			screenWidth: body.screenWidth,
-			screenHeight: body.screenHeight
-		})
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
+	var response = await fetch(`${Setting}/Get`, 
+	{
+		method: "GET",
+		headers: genHeaders()
+	});
+	await CheckError(response);
+	return response;
 }
-
-

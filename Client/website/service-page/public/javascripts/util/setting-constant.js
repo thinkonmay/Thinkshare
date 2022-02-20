@@ -150,13 +150,7 @@ export function DecodeResolution(display) {
 
 
 export async function updateSetting(display) {
-    API.setSetting(display)
-        .then(async data => {
-            if (data.status == 200) {} else {
-                Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
-                throw new Error('Update Setting Failed');
-            }
-        })
+    await API.setSetting(display);
 }
 
 
@@ -253,70 +247,33 @@ prepare_user_setting()
         await updateSetting(display);
     })
 
-    $('#submitChangePasswordCtrler').click(() => {
+    $('#submitChangePasswordCtrler').click(async () => {
         Utils.newSwal.fire({
             title: "Updating",
             text: "Wait a minute",
-            didOpen: () => {
-                API.updatePassword(updatePassword)
-                    .then(async data => {
-                        const response = await data.json()
-                        if (response.status == 200) {
-                            if (response.errors == null) {
-                                Utils.newSwal.fire({
-                                    title: "Success!",
-                                    text: "User information has been updated successfully",
-                                    icon: "success",
-                                })
-                            } else {
-                                Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
-                                throw new Error(error);
-                            }
-                        } else {
-                            Utils.responseError("Error!", "The change has failed, check your information and try again.", "error")
-                        }
-                    })
-                    .catch(status ? Utils.fetchErrorHandler : "")
+            didOpen: async () => {
+                await API.updatePassword(updatePassword)
+                Utils.newSwal.fire({
+                    title: "Success!",
+                    text: "User information has been updated successfully",
+                    icon: "success",
+                })
             }
         })
     });
 
-    $('#submitChangeInfoCtrler').click(() => {
+    $('#submitChangeInfoCtrler').click(async () => {
         Utils.newSwal.fire({
             title: "Updating",
             text: "Wait a minute",
-            didOpen: () => {
-                console.log(body)
-                API.setInfor(body)
-                    .then(async data => {
-                        const response = await data
-                        if (response.status == 200) {
-                            if (response.errors == null) {
-                            body = await (await API.getInfor()).json();
-                                Utils.newSwal.fire({
-                                    title: "Success!",
-                                    text: "User information has been updated successfully",
-                                    icon: "success",
-                                })
-                            } else {
-                                Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
-                                throw new Error(error);
-                            }
-                        }
-                        else {
-                            Utils.responseError("Error!", "The change has failed, check your information and try again.", "error")
-                        }
-                    })
-                    .catch(status ? Utils.fetchErrorHandler : "")
+            didOpen: async () => {
+                await API.setInfor(body)
+                Utils.newSwal.fire({
+                    title: "Success!",
+                    text: "User information has been updated successfully",
+                    icon: "success",
+                })
             }
-        })
-    });
-
-    $('#submitDisplayCtrler').click(() => {
-        Utils.newSwal.fire({
-            title: "Đang đăng kí",
-            text: "Vui lòng chờ . . .",
-            didOpen: () => {}
         })
     });
 

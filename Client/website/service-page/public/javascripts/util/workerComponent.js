@@ -115,11 +115,12 @@ function
                 didOpen: async () => {
                     try {
                         Swal.showLoading()
-                        await RemotePage.setupDevice();
-                        let setting = await (await API.getSetting()).json();
-                        let token = await (await API.reconnectSession(slaveID)).json();
-                        if (setting == "" || setting == null) throw new Error('Get Setting is null')
-                        if (token == "" || token == null) throw new Error('Get token session is null')
+                        var setting = await RemotePage.setupDevice();
+                        let token =   await (await API.reconnectSession(slaveID)).json();
+
+                        if (setting.length == 0 || token.length == 0)
+                            throw new Error('Get Setting is null')
+
                         await RemotePage.getRemotePage(token.token, setting.engine)
                         Utils.newSwal.fire({
                             title: "Success",

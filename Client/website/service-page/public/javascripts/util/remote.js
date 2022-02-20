@@ -6,7 +6,11 @@ import { Codec, CoreEngine, DeviceType } from "./setting-constant.js"
 import * as Utils from "./utils.js"
 
 
-////////////// setting
+
+/**
+ * 
+ * @returns {UserSetting}
+ */
 export async function setupDevice() {
     var body = await (await getSetting()).json();
     body.device = isElectron() ? DeviceType("WINDOW_APP") : DeviceType("WEB_APP");
@@ -18,6 +22,7 @@ export async function setupDevice() {
         body.videoCodec = Codec("H264");
 
     await setSetting(body);
+    return body
 }
 
 
