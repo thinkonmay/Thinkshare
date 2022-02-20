@@ -203,49 +203,6 @@ prepare_user_setting()
 
 
 
-    $('[name="resolutionOptions"]').click(async function() {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        switch (value) {
-            case "FullHD":
-                display.screenWidth = 1920;
-                display.screenHeight = 1080;
-                break;
-            case "2K":
-                display.screenWidth = 2560;
-                display.screenHeight = 1440;
-                break;
-            case "4K":
-                display.screenWidth = 3840;
-                display.screenHeight = 2160;
-                break;
-        }
-        await updateSetting(display);
-    });
-    $('[name="bitrate"]').click(async function() {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        display.mode = QoEMode(value);
-        await updateSetting(display);
-    });
-    $('[name="audioOptions"]').click(async function() {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        display.audioCodec = Codec(value)
-        await updateSetting(display);
-    });
-    $('[name="videoOptions"]').click(async function() {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        display.videoCodec = Codec(value);
-        await updateSetting(display);
-    });
-    $('[name="optionsRemoteCore"]').click(async function() {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        display.engine = CoreEngine(value);
-        await updateSetting(display);
-    })
 
     $('#submitChangePasswordCtrler').click(async () => {
         Utils.newSwal.fire({
