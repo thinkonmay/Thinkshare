@@ -10,6 +10,8 @@ var updatePassword =
 
 
 var body = await (await API.getInfor()).json();
+if (body == null || body == "") throw new Error(error);
+
 
 export function Codec(key) {
     switch (key) {
@@ -152,6 +154,7 @@ export async function updateSetting(display) {
         .then(async data => {
             if (data.status == 200) {} else {
                 Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
+                throw new Error('Update Setting Failed');
             }
         })
 }
@@ -255,20 +258,25 @@ prepare_user_setting()
             title: "Updating",
             text: "Wait a minute",
             didOpen: () => {
-                console.log(body)
                 API.updatePassword(updatePassword)
                     .then(async data => {
-                        if (data.status == 200) {
-                            Utils.newSwal.fire({
-                                title: "Success!",
-                                text: "User information has been updated successfully",
-                                icon: "success",
-                            })
+                        const response = await data.json()
+                        if (response.status == 200) {
+                            if (response.errors == null) {
+                                Utils.newSwal.fire({
+                                    title: "Success!",
+                                    text: "User information has been updated successfully",
+                                    icon: "success",
+                                })
+                            } else {
+                                Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
+                                throw new Error(error);
+                            }
                         } else {
                             Utils.responseError("Error!", "The change has failed, check your information and try again.", "error")
                         }
                     })
-                    .catch()
+                    .catch(status ? Utils.fetchErrorHandler : "")
             }
         })
     });
@@ -281,14 +289,21 @@ prepare_user_setting()
                 console.log(body)
                 API.setInfor(body)
                     .then(async data => {
-                        if (data.status == 200) {
+                        const response = await data
+                        if (response.status == 200) {
+                            if (response.errors == null) {
                             body = await (await API.getInfor()).json();
-                            Utils.newSwal.fire({
-                                title: "Success!",
-                                text: "User information has been updated successfully",
-                                icon: "success",
-                            })
-                        } else {
+                                Utils.newSwal.fire({
+                                    title: "Success!",
+                                    text: "User information has been updated successfully",
+                                    icon: "success",
+                                })
+                            } else {
+                                Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
+                                throw new Error(error);
+                            }
+                        }
+                        else {
                             Utils.responseError("Error!", "The change has failed, check your information and try again.", "error")
                         }
                     })
