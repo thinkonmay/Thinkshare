@@ -13,6 +13,7 @@ namespace SharedHost.Logging
         void Information(string information);
         void Error(string message, Exception exception);
         void Warning(string message);
+        void UI(UILogModel model);
         void Worker (GenericLogModel model);
         void Cluster(GenericLogModel model);
         void Cluster(ErrorLogModel model,string serverity);
@@ -31,6 +32,8 @@ namespace SharedHost.Logging
         const string WarningIndex = "warning";
 
         const string ErrorIndex = "error";
+
+        const string UIIndex = "ui";
 
         const string FatalIndex = "fatal";
 
@@ -58,6 +61,10 @@ namespace SharedHost.Logging
                     {
                         var result = await _client.ExecuteAsync(new RestRequest(ErrorIndex,Method.PUT));
                     }
+                    if( (await _client.ExecuteAsync(new RestRequest(UIIndex,Method.GET))).StatusCode == HttpStatusCode.NotFound) 
+                    {
+                        var result = await _client.ExecuteAsync(new RestRequest(UIIndex,Method.PUT));
+                    }
                     if( (await _client.ExecuteAsync(new RestRequest(InforIndex,Method.GET))).StatusCode == HttpStatusCode.NotFound)
                     {
                         var result = await _client.ExecuteAsync(new RestRequest(InforIndex,Method.PUT));
@@ -73,6 +80,10 @@ namespace SharedHost.Logging
                     if( (await _client.ExecuteAsync(new RestRequest(WorkerIndex,Method.GET))).StatusCode == HttpStatusCode.NotFound)
                     {
                         var result = await _client.ExecuteAsync(new RestRequest(WorkerIndex,Method.PUT));
+                    }
+                    if( (await _client.ExecuteAsync(new RestRequest(FatalIndex,Method.GET))).StatusCode == HttpStatusCode.NotFound)
+                    {
+                        var result = await _client.ExecuteAsync(new RestRequest(FatalIndex,Method.PUT));
                     }
                     ElasticSearch = true;
                 }
@@ -217,6 +228,23 @@ namespace SharedHost.Logging
 
 
 
+        public void UI(UILogModel model)
+        {
+            if (ElasticSearch)
+            {
+                Task.Run(async () => 
+                {
+                    await _client.ExecuteAsync(new RestRequest($"{UIIndex}/_doc",Method.POST)
+                        .AddJsonBody(
+                            model
+                        ));
+                });
+            }
+            else
+            {
+                Console.WriteLine($"Cluster log : {model.Error}");
+            }
+        }
 
 
         public void Cluster(GenericLogModel model)
