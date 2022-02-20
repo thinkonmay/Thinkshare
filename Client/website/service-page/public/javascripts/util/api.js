@@ -112,6 +112,7 @@ async function CheckLoginError(loginResponse) {
 							"error")
 	});
 
+	throw Error ("Fail to login");
 }
 
 /**

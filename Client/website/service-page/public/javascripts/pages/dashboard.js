@@ -9,6 +9,7 @@ import { prepare_download_button} from "../util/appVersion.js"
 import { prepare_tutorial_popup } from "../util/popup.js"
 import { logUI } from "../util/api.js"
 import { newSwal } from "../util/utils.js"
+import { Logout } from "../util/api.js"
 
 
 
@@ -24,5 +25,5 @@ $(document).ready(async () => {
 	prepare_user_infor()				.then().catch(error => { logUI(error.stack)});
 	prepare_setting()					.then().catch(error => { logUI(error.stack)});
 	connectToClientHub()				.then().catch(error => { logUI(error.stack)});
-	$('#logout').click(() => { API.Logout(); })
+	$('#logout').click(() => { Logout(); })
 })

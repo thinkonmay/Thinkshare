@@ -19,10 +19,14 @@ function login(body) {
         didOpen: async () => {
             Swal.showLoading()
             var response = await (await API.login(body)).json();
-            if (response.token != null && response.errors == null) {
-                    setCookie("token", response.token, HOUR5);
-                    setTimeout(() => { window.location.href = "/dashboard" }, 2000)
-            }
+            setCookie("token", response.token, HOUR5);
+            Utils.newSwal.fire({
+                title: "Successfully!",
+                text: "Redirecting to the dashboard",
+                icon: "success",
+            })
+
+            setTimeout(() => { window.location.href = "/dashboard" }, 2000)
         }
     })
 }
@@ -34,17 +38,14 @@ function register(body) {
         didOpen: async () => {
             Swal.showLoading();
             var response = await (await API.register(body)).json();
-            if (response.token != null && response.errors == null) {
-                Utils.newSwal.fire({
-                    title: "Successfully!",
-                    text: "Redirecting to the dashboard",
-                    icon: "success",
-                    didOpen: () => {
-                        setCookie("token", response.token, HOUR5);
-                        setTimeout(() => { window.location.href = "/dashboard" }, 2000)
-                    }
-                })
-            }
+            setCookie("token", response.token, HOUR5);
+            Utils.newSwal.fire({
+                title: "Successfully!",
+                text: "Redirecting to the dashboard",
+                icon: "success",
+            })
+
+            setTimeout(() => { window.location.href = "/dashboard" }, 2000)
         }
     })
 }
