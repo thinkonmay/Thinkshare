@@ -9,7 +9,7 @@ import * as Utils from "./utils.js"
 
 /**
  * 
- * @returns {UserSetting}
+ * @returns {Promise<UserSetting>}
  */
 export async function setupDevice() {
     var body = await (await getSetting()).json();

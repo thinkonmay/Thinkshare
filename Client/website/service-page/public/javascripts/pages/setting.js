@@ -12,14 +12,5 @@ $(document).ready(async () => {
 	await prepare_user_setting();
 	await prepare_setting();
 
-	$('#logout').click(() => {
-		setCookie("logout", "true")
-		setCookie("token", null, 1)
-		try {
-			gapi.auth.signOut();
-			window.location = "/login"
-		} catch {
-			window.location = "/login"
-		}
-	})
+	$('#logout').click(() => { API.Logout(); })
 })

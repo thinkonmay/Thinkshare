@@ -7,47 +7,37 @@ import { prepare_booker_infor, prepare_cluster_infor, setup_cluster_booking, set
 
 
 $(document).ready(async () => {
-	set_current_datetime();
-	setup_cluster_booking();
+	await set_current_datetime();
+	await setup_cluster_booking();
 	await prepare_cluster_infor();
-	set_worker_chart();
+	await set_worker_chart();
 	await prepare_booker_infor();
 
-	
+	$('#DeleteCluster').click(() => { DeleteCluster(); });
+	$('#logout').click(() => { API.Logout(); })
+})
 
-	$('#DeleteCluster').click(() => {
-		Utils.newSwal.fire({
-			title: 'Are you sure?',
-			text: "You won't be able to revert this!",
-			icon: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: 'Yes, delete it!'
-		}).then(async (result) => {
-			if (result.isConfirmed) {
-				var res = await API.UnRegister();
+function DeleteCluster()
+{
+	Utils.newSwal.fire({
+		title: 'Are you sure?',
+		text: "You won't be able to revert this!",
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+		confirmButtonText: 'Yes, delete it!'
+	}).then(async (result) => {
+		if (result.isConfirmed) {
+			var res = await API.UnRegister();
 
-				if (res.ok)
-					Swal.fire('Success!', 'Cluster deleted.', 'success')
-				else
-					Swal.fire('Fail!', 'Cluster deletion failed.', 'error')
-			}
-		})
-	});
-
-	$('#logout').click(() => {
-		setCookie("logout", "true")
-		setCookie("token", null, 1)
-		deleteCookie("token", "/", document.domain)
-		try {
-			gapi.auth.signOut();
-			window.location = "/login"
-		} catch {
-			window.location = "/login"
+			if (res.ok)
+				Swal.fire('Success!', 'Cluster deleted.', 'success')
+			else
+				Swal.fire('Fail!', 'Cluster deletion failed.', 'error')
 		}
 	})
-})
+}
 
 
 function append(id, html) { $(`#${id}`).append(html) }

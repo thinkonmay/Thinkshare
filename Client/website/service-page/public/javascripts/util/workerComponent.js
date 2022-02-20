@@ -56,24 +56,13 @@ function
                 text: "Wait a minute . . .",
                 didOpen: async () => {
                     Swal.showLoading()
-                    let response = await API.disconnectSession(slaveID)
-
-                    if (response.ok) {
-                        Utils.newSwal.fire({
-                            title: "Success",
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
-                    else {
-                        Utils.newSwal.fire({
-                            title: "Failed",
-                            icon: "error",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
+                    await API.disconnectSession(slaveID)
+                    Utils.newSwal.fire({
+                        title: "Success",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                 }
             })
         });
@@ -85,23 +74,13 @@ function
                 text: "Wait a minute . . .",
                 didOpen: async () => {
                     Swal.showLoading()
-                    var response = await API.terminateSession(slaveID)
-                    if (response.ok) {
-                        Utils.newSwal.fire({
-                            title: "Success",
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
-                    else {
-                        Utils.newSwal.fire({
-                            title: "Failed",
-                            icon: "error",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
+                    await API.terminateSession(slaveID)
+                    Utils.newSwal.fire({
+                        title: "Success",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                 }
             })
         });
@@ -113,31 +92,16 @@ function
                 title: "Processing",
                 text: "Wait a minute . . .",
                 didOpen: async () => {
-                    try {
-                        Swal.showLoading()
-                        var setting = await RemotePage.setupDevice();
-                        let token =   await (await API.reconnectSession(slaveID)).json();
-
-                        if (setting.length == 0 || token.length == 0)
-                            throw new Error('Get Setting is null')
-
-                        await RemotePage.getRemotePage(token.token, setting.engine)
-                        Utils.newSwal.fire({
-                            title: "Success",
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
-                    catch (error) {
-                        Utils.newSwal.fire({
-                            title: error,
-                            icon: "error",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                        API.logUI(error.stack)
-                    }
+                    Swal.showLoading()
+                    var setting = await RemotePage.setupDevice();
+                    let token =   await (await API.reconnectSession(slaveID)).json();
+                    await RemotePage.getRemotePage(token.token, setting.engine)
+                    Utils.newSwal.fire({
+                        title: "Success",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                 }
             })
         });
@@ -148,23 +112,13 @@ function
                 text: "Wait a minute . . .",
                 didOpen: async () => {
                     Swal.showLoading()
-                    var response = await API.terminateSession(slaveID)
-                    if (response.ok) {
-                        Utils.newSwal.fire({
-                            title: "Success",
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
-                    else {
-                        Utils.newSwal.fire({
-                            title: "Failed",
-                            icon: "error",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
+                    await API.terminateSession(slaveID)
+                    Utils.newSwal.fire({
+                        title: "Success",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                 }
             })
         });
@@ -176,31 +130,16 @@ function
                 title: "Processing",
                 text: "Wait a minute . . .",
                 didOpen: async () => {
-                    try {
-                        Swal.showLoading()
-                        await RemotePage.setupDevice();
-                        let setting = await (await API.getSetting()).json();
-                        let token = await (await API.initializeSession(slaveID)).json();
-                        if (setting == "" || setting == null) throw new Error('Get Setting is null')
-                        if (token == "" || token == null) throw new Error('Get token session is null')
-                        await RemotePage.getRemotePage(token.token, setting.engine)
-
-                        Utils.newSwal.fire({
-                            title: "Success",
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                    }
-                    catch (error) {
-                        Utils.newSwal.fire({
-                            title: error,
-                            icon: "error",
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                        API.logUI(error.stack)
-                    }
+                    Swal.showLoading()
+                    var setting = await RemotePage.setupDevice();
+                    let token =   await (await API.initializeSession(slaveID)).json();
+                    await RemotePage.getRemotePage(token.token, setting.engine)
+                    Utils.newSwal.fire({
+                        title: "Success",
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                 }
             })
         });

@@ -62,6 +62,16 @@ const setup = async () => {
 // local api
 export const Dashboard = "/dashboard"
 
+export const Logout = () => {
+	setCookie("logout", "true")
+	setCookie("token", null, 1)
+	try {
+		gapi.auth.signOut();
+		window.location = "/login"
+	} catch {
+		window.location = "/login"
+	}
+}
 
 /**
  * 
@@ -92,14 +102,8 @@ async function CheckLoginError(loginResponse) {
 	var clone = loginResponse.clone();
 	const response = await clone.json()
 
-	if (response.errors == null) {
-		Utils.newSwal.fire({
-			title: "Successfully!",
-			text: "Redirecting to the dashboard",
-			icon: "success"
-		})
+	if (response.token != null && response.errors == null) 
 		return;
-	} 
 	
 	response.errors.forEach(element => 
 	{
@@ -107,6 +111,7 @@ async function CheckLoginError(loginResponse) {
 							element.description, 
 							"error")
 	});
+
 }
 
 /**
@@ -124,36 +129,25 @@ async function CheckError(response) {
 			title: 'Unauthorize',
 			text: 'Try login to your account again',
 			icon: "error"
-		}).then((result) => {
-			if (result.isConfirmed) {
-				setCookie("logout", "true")
-				setCookie("token", null, 1)
-				try {
-					gapi.auth.signOut();
-					window.location = "/login"
-				} catch {
-					window.location = "/login"
-				}
-			}
-		})
-		throw new Error('Unauthorize')
-	}
-	else if (response.status == 400) {
+		}).then((result) => { 
+			if (result.isConfirmed) 
+				Logout();  
+			})
+	} else if (response.status == 400) {
 		Utils.newSwal.fire({
 			title: 'error',
 			text: clone_body,
-			icon: "error"
-		})
-	}
-	else if (response.status == 500) {
+			icon: "error" })
+		throw new Error('Bad request')
+	} else if (response.status == 500) {
 		Utils.newSwal.fire({
 			title: " Our server error 😭😭😭 ",
 			text: 'Punish our developer please',
-			icon: "error"
-		})
-	}
-	else {
+			icon: "error" })
+		throw new Error('Server error')
+	} else {
 		Utils.responseErrorHandler(response)
+		throw new Error('Unknown error')
 	}
 }
 

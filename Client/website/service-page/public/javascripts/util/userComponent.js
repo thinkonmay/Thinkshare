@@ -39,14 +39,5 @@ export async function
  * 
  */
 export function prepare_logout() {
-	$('#logout').click(() => {
-		setCookie("logout", "true")
-		setCookie("token", null, 1)
-		try {
-			gapi.auth.signOut();
-			window.location = "/login"
-		} catch {
-			window.location = "/login"
-		}
-	})
+	$('#logout').click(() => { API.Logout(); })
 }

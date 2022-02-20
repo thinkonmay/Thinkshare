@@ -24,15 +24,5 @@ $(document).ready(async () => {
 	prepare_user_infor()				.then().catch(error => { logUI(error.stack)});
 	prepare_setting()					.then().catch(error => { logUI(error.stack)});
 	connectToClientHub()				.then().catch(error => { logUI(error.stack)});
-
-	$('#logout').click(() => {
-		setCookie("logout", "true")
-		setCookie("token", null, 1)
-		try {
-			gapi.auth.signOut();
-			window.location = "/login"
-		} catch {
-			window.location = "/login"
-		}
-	})
+	$('#logout').click(() => { API.Logout(); })
 })
