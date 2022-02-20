@@ -196,8 +196,8 @@ export const login = async body => {
 			password: body.password
 		})
 	})
-	// CheckError(res);
-	CheckLoginError(res);
+	await CheckError(res);
+	await CheckLoginError(res);
 	return res;
 }
 
@@ -216,8 +216,8 @@ export const tokenExchange = async body => {
 			Validator: body.Validator
 		})
 	})
-	CheckError(res);
-	CheckLoginError(res);
+	await CheckError(res);
+	await CheckLoginError(res);
 	return res;
 }
 
@@ -236,8 +236,8 @@ export const updatePassword = async body => {
 			New: body.New
 		})
 	})
-	CheckError(res);
-	CheckLoginError(res);
+	await CheckError(res);
+	await CheckLoginError(res);
 	return res;
 }
 
@@ -266,8 +266,8 @@ export const register = async body => {
 		})
 	})
 
-	CheckError(res);
-	CheckLoginError(res);
+	await CheckError(res);
+	await CheckLoginError(res);
 	return res;
 }
 
@@ -285,7 +285,7 @@ export const managerRegister = async des => {
 		method: "POST",
 		headers: genHeaders(),
 	})
-	CheckError(res)
+	await CheckError(res)
 	return res;
 }
 
@@ -304,7 +304,7 @@ export const requestCluster = async (name, password, region) => {
 		headers: genHeaders(),
 		body: `"${password}"`
 	})
-	CheckError(res)
+	await CheckError(res)
 	return res;
 }
 
@@ -318,7 +318,7 @@ export const getClusters = async () => {
 		method: "GET",
 		headers: genHeaders(),
 	})
-	CheckError(res)
+	await CheckError(res)
 	return res;
 }
 
@@ -361,7 +361,7 @@ export const fetchSession = async () => {
 		method: "GET",
 		headers: genHeaders()
 	})
-	CheckError(res)
+	await CheckError(res)
 	return res;
 }
 
@@ -375,7 +375,7 @@ export const fetchInfor = async (workerID) => {
 	var response = await fetch(`${FetchInfor}?WorkerID=${workerID}`, {
 		method: "GET",
 	})
-	CheckError(response);
+	await CheckError(response);
 	return response;
 }
 
@@ -389,7 +389,7 @@ export const getSession = async () => {
 		method: "GET",
 		headers: genHeaders()
 	})
-	CheckError(response);
+	await CheckError(response);
 	return response;
 }
 
@@ -420,7 +420,7 @@ export const terminateSession = async (SlaveID) => {
 		method: "DELETE",
 		headers: genHeaders()
 	})
-	CheckError(response);
+	await CheckError(response);
 	return response;
 }
 
@@ -435,7 +435,7 @@ export const disconnectSession = async SlaveID => {
 		method: "POST",
 		headers: genHeaders()
 	})
-	CheckError(response);
+	await CheckError(response);
 	return response;
 }
 
@@ -450,7 +450,7 @@ export const reconnectSession = async (SlaveID) => {
 		method: "POST",
 		headers: genHeaders()
 	})
-	CheckError(response);
+	await CheckError(response);
 	return response;
 }
 
@@ -466,7 +466,7 @@ export const initializeSession = async (SlaveID) => {
 		method: "POST",
 		headers: genHeaders()
 	})
-	CheckError(response);
+	await CheckError(response);
 	return response;
 }
 
@@ -484,8 +484,7 @@ export const getInfor = async () => {
 		method: "GET",
 		headers: genHeaders()
 	})
-
-	CheckError(response);
+	await CheckError(response);
 	return response;
 }
 
