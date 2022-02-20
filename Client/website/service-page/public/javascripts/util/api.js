@@ -462,19 +462,12 @@ export const initializeSession = async (SlaveID) => {
  */
 export const getInfor = async () => {
 	await setup();
-	try {
-
-		var response = await fetch(Infor, {
-			method: "GET",
-			headers: genHeaders()
-		})
-
-		CheckError(response);
-		return response;
-	} catch (err) {
-
-	}
-
+	var response = await fetch(Infor, {
+		method: "GET",
+		headers: genHeaders()
+	})
+	CheckError(response);
+	return response;
 }
 
 /**
@@ -483,59 +476,39 @@ export const getInfor = async () => {
  */
 export const getRoles = async () => {
 	await setup();
-	return fetch(Roles, {
+	var response = await fetch(Roles, {
 		method: "GET",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			Utils.newSwal.fire({
-				title: 'error',
-				text: error.response,
-				icon: "error"
-			})
-		} else {
-			return Promise.reject(error);
-		}
 	})
+	CheckError(response);
+	return response;
 }
 
 
 export const getSetting = async () => {
 	await setup();
-	return fetch(Setting + "/Get", {
+	var response = await fetch(Setting + "/Get", {
 		method: "GET",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			Utils.newSwal.fire({
-				title: 'error',
-				text: error.response,
-				icon: "error"
-			})
-		} else {
-			return Promise.reject(error);
-		}
 	})
+	CheckError(response);
+	return response;
 }
 
 export const setInfor = async (body) => {
 	await setup();
-	return fetch(Infor, {
+	var response = await fetch(Infor, {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({ body })
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
+	CheckError(response);
+	return response;
 }
 
 export const setSetting = async (body) => {
 	await setup();
-	return fetch(Setting + "/Set", {
+	var response = await fetch(Setting + "/Set", {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({
@@ -547,13 +520,9 @@ export const setSetting = async (body) => {
 			screenWidth: body.screenWidth,
 			screenHeight: body.screenHeight
 		})
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(API.Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
+	CheckError(response);
+	return response;
 }
 
 
