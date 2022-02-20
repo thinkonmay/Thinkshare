@@ -26,11 +26,9 @@ namespace DbSchema.CachedState
         Task SetUserSetting(int SettingID, UserSetting defaultSetting);
         Task<UserSetting> GetUserSetting(int WorkerID);
 
-        Task SetSessionSetting(int SessionID, UserSetting defaultSetting, SystemConfig config, WorkerNode cluster);
         Task<SessionClient> GetClientSessionSetting(SessionAccession accession);
         Task<SessionWorker> GetWorkerSessionSetting(SessionAccession accession);
         Task<string?> GetWorkerState(int WorkerID);
-        Task<ParsecLoginResponse> GetParsecCred(SessionAccession accession);
     }
 
 
@@ -148,75 +146,63 @@ namespace DbSchema.CachedState
 
 
 
-        public async Task SetSessionSetting(int SessionID, 
-                                            UserSetting defaultSetting, 
-                                            SystemConfig config, 
-                                            WorkerNode worker)
+        public async Task<SessionClient> GetClientSessionSetting(SessionAccession accession)
         {
-            var cluster = _db.Clusters.Where(x => !x.Unregister.HasValue && x.WorkerNode.Contains(worker)).First();
+            var worker = _db.Devices.Find(accession.WorkerID);
+            var cluster = _db.Clusters.Where(x => !x.Unregister.HasValue && 
+                                                   x.WorkerNode.Contains(worker)).First();
+
+            var setting = await GetUserSetting(accession.ClientID);
             
             if(cluster == null)
                 throw new Exception("Fail to get worker setting");
 
-            var sessionWorker = new SessionWorker
-            {
-                signallingurl = config.SignallingWs,
-                turn = "turn://" + cluster.instance.TurnUser+ ":" + cluster.instance.TurnPassword+ "@" + cluster.instance.IPAdress+ ":3478",
-
-                clientdevice = defaultSetting.device,
-                clientengine = defaultSetting.engine,
-
-                screenheight = defaultSetting.screenHeight,
-                screenwidth = defaultSetting.screenWidth,
-
-                audiocodec = defaultSetting.audioCodec,
-                videocodec = defaultSetting.videoCodec,
-
-                mode = defaultSetting.mode,
-                stuns = config.STUNlist,
-            };
             var sessionClient = new SessionClient
             {
-                signallingurl = config.SignallingWs,
-                turn = "turn://" + cluster.instance.TurnUser + ":" + cluster.instance.TurnPassword + "@" + cluster.instance.IPAdress + ":3478",
+                stuns =         _config.STUNlist,
+                signallingurl = _config.SignallingWs,
 
-                turnip =  "turn:"+cluster.instance.IPAdress+ ":3478",
-                turnuser = cluster.instance.TurnUser,
-                turnpassword = cluster.instance.TurnPassword,
+                turn =  $"turn://{cluster.instance.TurnUser}:{cluster.instance.TurnPassword}@{cluster.instance.IPAdress}:3478",
+                turnip =  $"turn:{cluster.instance.IPAdress}:3478",
+                turnuser =        cluster.instance.TurnUser,
+                turnpassword =    cluster.instance.TurnPassword,
 
-                audiocodec = defaultSetting.audioCodec,
-                videocodec = defaultSetting.videoCodec,
-
-                stuns = config.STUNlist,
+                audiocodec = setting.audioCodec,
+                videocodec = setting.videoCodec,
             };
 
-            _log.Information("setting up session setting for session id "+ SessionID.ToString());
-            _log.Information("Client session "+ JsonConvert.SerializeObject(sessionClient));
-            _log.Information("Worker session "+ JsonConvert.SerializeObject(sessionWorker));
-
-            await _cache.SetRecordAsync<SessionClient>(SessionID.ToString() + "_CLIENT_MODULE", sessionClient, null,null);
-            await _cache.SetRecordAsync<SessionWorker>(SessionID.ToString() + "_CORE_MODULE", sessionWorker, null,null);
-        }
-
-        public async Task<SessionClient> GetClientSessionSetting(SessionAccession accession)
-        {
-            var result = await _cache.GetRecordAsync<SessionClient>(accession.ID.ToString() + "_CLIENT_MODULE");
-            _log.Information("Got client session in cache :"+ JsonConvert.SerializeObject(result));
-            return result;
+            _log.Information("Got client session in cache :"+ JsonConvert.SerializeObject(sessionClient));
+            return sessionClient;
         }
 
         public async Task<SessionWorker> GetWorkerSessionSetting(SessionAccession accession)
         {
-            var result = await _cache.GetRecordAsync<SessionWorker>(accession.ID.ToString() + "_CORE_MODULE");
-            _log.Information("Got worker session in cache :"+ JsonConvert.SerializeObject(result));
-            return result;
-        }
+            var worker = _db.Devices.Find(accession.WorkerID);
+            var cluster = _db.Clusters.Where(x => !x.Unregister.HasValue && 
+                                                   x.WorkerNode.Contains(worker)).First();
+            var setting = await GetUserSetting(accession.ClientID);
 
+            if(cluster == null)
+                throw new Exception("Invalid worker");
 
-        public async Task<ParsecLoginResponse> GetParsecCred(SessionAccession accession)
-        {
-            var result = await _cache.GetRecordAsync<SessionWorker>(accession.ID.ToString() + "_CORE_MODULE");
-            return result.parsec;
+            var sessionWorker = new SessionWorker
+            {
+                stuns =         _config.STUNlist,
+                signallingurl = _config.SignallingWs,
+
+                turn = $"turn://{cluster.instance.TurnUser}:{cluster.instance.TurnPassword}@{cluster.instance.IPAdress}:3478",
+
+                clientdevice =          setting.device,
+                clientengine =          setting.engine,
+                screenheight =          setting.screenHeight,
+                screenwidth =           setting.screenWidth,
+                audiocodec =            setting.audioCodec,
+                videocodec =            setting.videoCodec,
+                mode =                  setting.mode,
+            };
+
+            _log.Information("Got worker session in cache :"+ JsonConvert.SerializeObject(sessionWorker));
+            return sessionWorker;
         }
     }
 }

@@ -43,3 +43,5 @@ spec:
             cpu: "300m"
         ports:
         - containerPort: 80
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1a

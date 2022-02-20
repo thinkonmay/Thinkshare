@@ -29,9 +29,6 @@ namespace SharedHost.Models.Session
 
         [Required]
         public Codec videocodec { get; set; }
-
-        [Required]
-        public ParsecLoginResponse parsec{ get; set; }
     }
 
     public class SessionWorker
@@ -65,8 +62,5 @@ namespace SharedHost.Models.Session
 
         [Required]
         public CoreEngine clientengine { get; set; }
-
-        [Required]
-        public ParsecLoginResponse parsec{ get; set; }
     }
 }

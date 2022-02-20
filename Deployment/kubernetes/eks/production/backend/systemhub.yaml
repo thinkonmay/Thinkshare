@@ -13,15 +13,16 @@ spec:
    app: systemhub
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: systemhub
   namespace: backend
 spec:
+  serviceName: systemhub
+  replicas: 1
   selector:
     matchLabels:
       app: systemhub
-  replicas: 1
   strategy:
     type: Recreate
   template:
@@ -31,14 +32,16 @@ spec:
     spec:
       containers:
       - name: systemhub
-        image: pigeatgarlic/systemhub:2022-02-13
+        image: pigeatgarlic/systemhub:2022-02-17
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "1000Mi"
+            memory: "2Gi"
             cpu: "700m"
           limits:
-            memory: "1500Mi"
+            memory: "3Gi"
             cpu: "1000m"
         ports:
         - containerPort: 80
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1a

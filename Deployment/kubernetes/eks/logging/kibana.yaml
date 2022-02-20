@@ -36,13 +36,15 @@ spec:
         image: docker.elastic.co/kibana/kibana:7.2.0
         resources:
           limits:
-            cpu: 1000m
-            memory: 1500Mi
+            cpu: 500m
+            memory: 500Mi
           requests:
-            cpu: 700m
-            memory: 1000Mi 
+            cpu: 300m
+            memory: 300Mi 
         env:
           - name: ELASTICSEARCH_URL
             value: http://elasticsearch:9200
         ports:
         - containerPort: 5601
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1a

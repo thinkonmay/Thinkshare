@@ -26,3 +26,5 @@ spec:
           limits:
             memory: "700Mi"
             cpu: "700m"
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1a

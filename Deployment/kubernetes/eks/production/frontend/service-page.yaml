@@ -31,15 +31,17 @@ spec:
     spec:
       containers:
       - name: service-page
-        image: pigeatgarlic/service-page:2022-02-13
+        image: pigeatgarlic/service-page:2022-02-17
 
         imagePullPolicy: Always
         resources:
           requests:
             memory: "500Mi"
-            cpu: "300m"
+            cpu: "500m"
           limits:
-            memory: "1Gi"
+            memory: "700Mi"
             cpu: "700m"
         ports:
         - containerPort: 80
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1a

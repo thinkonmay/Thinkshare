@@ -31,14 +31,16 @@ spec:
     spec:
       containers:
       - name: conductor
-        image: pigeatgarlic/conductor:2022-02-13
+        image: pigeatgarlic/conductor:2022-02-17
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "500Mi"
+            memory: "300Mi"
             cpu: "300m"
           limits:
-            memory: "700Mi"
+            memory: "500Mi"
             cpu: "500m"
         ports:
         - containerPort: 80
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1a
