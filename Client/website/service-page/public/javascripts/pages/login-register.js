@@ -19,10 +19,9 @@ function login(body) {
         didOpen: async () => {
             Swal.showLoading()
             var response = await (await API.login(body)).json();
-            if(response.token == null || response.errors == null)
-            {
-                setCookie("token", response.token, HOUR5);
-                setTimeout(() => { window.location.href = "/dashboard" }, 2000)
+            if (response.token != null && response.errors == null) {
+                    setCookie("token", response.token, HOUR5);
+                    setTimeout(() => { window.location.href = "/dashboard" }, 2000)
             }
         }
     })
@@ -35,10 +34,16 @@ function register(body) {
         didOpen: async () => {
             Swal.showLoading();
             var response = await (await API.register(body)).json();
-            if(response.token == null || response.errors == null)
-            {
-                setCookie("token", response.token, HOUR5);
-                setTimeout(() => { window.location.href = "/dashboard" }, 2000)
+            if (response.token != null && response.errors == null) {
+                Utils.newSwal.fire({
+                    title: "Successfully!",
+                    text: "Redirecting to the dashboard",
+                    icon: "success",
+                    didOpen: () => {
+                        setCookie("token", response.token, HOUR5);
+                        setTimeout(() => { window.location.href = "/dashboard" }, 2000)
+                    }
+                })
             }
         }
     })
@@ -81,9 +86,8 @@ const googleLoginUser = async (userForm) => {
         text: "Wait a minute . . .",
         didOpen: async () => {
             var response = await (await API.tokenExchange(userForm)).json();
-            if(response.errors == null)
-            {
-                if (isElectron() ==  true) {
+            if (response.errors == null) {
+                if (authorizeElectron == true) {
                     window.location.href = `https://service.thinkmay.net/copy-token?=${response.token}`
                 } else {
                     setCookie("token", response.token, HOUR5)
@@ -103,7 +107,7 @@ function onFailure() {
 $(document).ready(() => {
     let access_token = window.location.href
     if (String(access_token).length > 50) {
-        setCookie('token', access_token.slice(access_token.slice(access_token.indexOf('=')+1)), HOUR5)
+        setCookie('token', access_token.slice(access_token.slice(access_token.indexOf('=') + 1)), HOUR5)
         window.location.replace(API.Dashboard)
     }
 
@@ -120,30 +124,29 @@ $(document).ready(() => {
             GoogleLogin();
     })
 
-    $('#authorize').click(() =>{
+    $('#authorize').click(() => {
         let token = $('#accessToken').val()
         setCookie('token', token, HOUR5)
         window.location.replace(API.Dashboard)
     })
 
     $('#login').click(() => {
-        $("form").validate(window.login ? Validates.login : Validates.register)
+        $("form").validate(Validates.login)
         $("form").submit(event => {
             event.preventDefault()
             if ($("form").valid()) {
                 const body = serializeArrToObject($("form").serializeArray())
-                if (window.login) login(body)
-                else if (window.register) register(body)
+                login(body)
             }
         })
     })
     $('#register').click(() => {
+        $("form").validate(Validates.register)
         $("form").submit(event => {
             event.preventDefault()
             if ($("form").valid()) {
                 const body = serializeArrToObject($("form").serializeArray())
-                if (window.login) login(body)
-                else if (window.register) register(body)
+                register(body)
             }
         })
     })
@@ -158,9 +161,15 @@ $(document).ready(() => {
             $submit.attr("disabled", "")
         }
     }
+    $("form").keypress(function(e) {
+        //Enter key
+        if (e.which == 13) {
+          return false;
+        }
+      });      
+      
     $("form :input").keyup(handler)
     $("form :input").change(handler)
-
     $("#dateOfBirth").focus(function () {
         $(this).attr("type", "date")
     })
