@@ -41,4 +41,3 @@ spec:
             cpu: "1000m"
         ports:
         - containerPort: 80
-      nodeSelector:
