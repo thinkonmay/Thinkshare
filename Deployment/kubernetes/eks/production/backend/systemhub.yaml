@@ -23,8 +23,6 @@ spec:
   selector:
     matchLabels:
       app: systemhub
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -36,10 +34,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "2Gi"
+            memory: "1Gi"
             cpu: "700m"
           limits:
-            memory: "3Gi"
+            memory: "1500mi"
             cpu: "1000m"
         ports:
         - containerPort: 80
