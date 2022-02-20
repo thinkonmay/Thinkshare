@@ -3,6 +3,7 @@ import * as API from "./api.js"
 let sessionInfor;
 let datasets = [];
 export async function setDataForChart() {
+	
 	try {
 		sessionInfor = await (await API.getSession()).json()
 	} catch (error) {

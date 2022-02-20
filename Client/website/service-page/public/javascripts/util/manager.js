@@ -8,11 +8,12 @@ async function checkManager() { return "true" === (await (await API.getRoles()).
 
 
 export async function
-	clusterFormGen() {
+clusterFormGen() {
 	var isManager = await checkManager();
 	if (isManager === true) {
 		API.getClusters().then(async data => {
 			var body = await data.json()
+            //if (body == null) throw new Error('Cluster null');
 			if (body.length == 0)
 				document.getElementById('clusterBoard').innerHTML = `<h4>You don't have any cluster 😞</h4>`
 			else

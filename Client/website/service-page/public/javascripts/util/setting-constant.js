@@ -10,6 +10,8 @@ var updatePassword =
 
 
 var body = await (await API.getInfor()).json();
+if (body == null || body == "") throw new Error(error);
+
 
 export function Codec(key) {
     switch (key) {
@@ -152,6 +154,7 @@ export async function updateSetting(display) {
         .then(async data => {
             if (data.status == 200) {} else {
                 Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
+                throw new Error('Update Setting Failed');
             }
         })
 }
@@ -267,12 +270,13 @@ prepare_user_setting()
                                 })
                             } else {
                                 Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
+                                throw new Error(error);
                             }
                         } else {
                             Utils.responseError("Error!", "The change has failed, check your information and try again.", "error")
                         }
                     })
-                    .catch()
+                    .catch(status ? Utils.fetchErrorHandler : "")
             }
         })
     });
@@ -296,6 +300,7 @@ prepare_user_setting()
                                 })
                             } else {
                                 Utils.responseError(response.errors[0].code, response.errors[0].description, "error")
+                                throw new Error(error);
                             }
                         }
                         else {
