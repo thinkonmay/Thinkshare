@@ -102,7 +102,7 @@ async function CheckLoginError(loginResponse) {
 	var clone = loginResponse.clone();
 	const response = await clone.json()
 
-	if (response.token != null && response.errors == null) 
+	if (response.errors == null) 
 		return;
 	
 	response.errors.forEach(element => 
