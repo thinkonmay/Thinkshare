@@ -31,14 +31,16 @@ spec:
     spec:
       containers:
       - name: landing-page
-        image: pigeatgarlic/landing-page:2022-02-13
+        image: pigeatgarlic/landing-page:2022-02-17
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "500Mi"
-            cpu: "200m"
-          limits:
-            memory: "700Mi"
+            memory: "300Mi"
             cpu: "300m"
+          limits:
+            memory: "500Mi"
+            cpu: "500m"
         ports:
         - containerPort: 80
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1a

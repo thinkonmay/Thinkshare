@@ -76,8 +76,8 @@ spec:
             value: disable
         resources:
           limits:
-            cpu: 200m
-            memory: 200Mi
+            cpu: 150m
+            memory: 150Mi
           requests:
             cpu: 100m
             memory: 100Mi

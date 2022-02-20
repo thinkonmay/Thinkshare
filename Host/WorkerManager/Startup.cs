@@ -35,7 +35,6 @@ namespace WorkerManager
             });
 
             var REDIS_IP =  Environment.GetEnvironmentVariable("REDIS_IP");
-
             if(REDIS_IP == null)
             {
                 Console.WriteLine("Using default connection string");
@@ -44,11 +43,11 @@ namespace WorkerManager
 
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = REDIS_IP+":6379";
+                options.Configuration = $"{REDIS_IP}:6379";
                 options.InstanceName = "Cluster";
             });
 
-            services.AddControllers();            
+            services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -57,11 +56,6 @@ namespace WorkerManager
                     Version =
                     "v1"
                 });
-
-                var xmlFilePath = Path.Combine(AppContext.BaseDirectory,
-                $"{Assembly.GetExecutingAssembly().GetName().Name}.xml");
-
-                c.IncludeXmlComments(xmlFilePath);
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {

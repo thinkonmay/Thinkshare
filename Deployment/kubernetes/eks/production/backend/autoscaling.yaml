@@ -31,15 +31,15 @@ spec:
     spec:
       containers:
       - name: autoscaling
-        image: pigeatgarlic/autoscaling:2022-02-13
+        image: pigeatgarlic/autoscaling:2022-02-17
         imagePullPolicy: Always
         resources:
           requests:
             memory: "500Mi"
-            cpu: "300m"
+            cpu: "500m"
           limits:
             memory: "700Mi"
-            cpu: "500m"
+            cpu: "700m"
         ports:
         - containerPort: 80
 
@@ -61,5 +61,7 @@ spec:
         secret: 
           secretName: coturn-ssh
           defaultMode: 256
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1a
 
 

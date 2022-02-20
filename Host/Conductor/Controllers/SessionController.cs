@@ -103,9 +103,6 @@ namespace Conductor.Controllers
             var workerToken = JsonConvert.DeserializeObject<AuthenticationRequest>((new RestClient()).Post(workerTokenRequest).Content);
 
             /*create session from client device capability*/
-            var userSetting = await _cache.GetUserSetting(UserID);
-            await _cache.SetSessionSetting(sess.ID,userSetting,_config, worker);
-
             _log.Information("Remote session between user "+UserID.ToString()+" and worker "+SlaveID+" reconnected");
             _Cluster.SessionInitialize(SlaveID, workerToken.token);
             return (await _Cluster.WaitForDesiredState(SlaveID,WorkerState.OnSession)) ? Ok(clientToken) : BadRequest();
@@ -240,25 +237,6 @@ namespace Conductor.Controllers
             {
                 return BadRequest();
             }
-        }
-
-        [HttpPost("Setting")]
-        public async Task<IActionResult> SetSetting(string token, 
-                                                    [FromBody] UserSetting setting)
-        {
-
-            var request = new RestRequest(_config.SessionTokenValidator)
-                .AddQueryParameter("token", token);
-            request.Method = Method.POST;
-
-            var result = await (new RestClient()).ExecuteAsync(request);
-            if (result.StatusCode != HttpStatusCode.OK)
-                return BadRequest("Token is invalid");
-
-            var accession = JsonConvert.DeserializeObject<SessionAccession>(result.Content);
-            var worker = _db.Devices.Find(accession.WorkerID);
-            await _cache.SetSessionSetting(accession.ID,setting,_config, worker);
-            return Ok();
         }
     }
 }

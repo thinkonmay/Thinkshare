@@ -71,7 +71,8 @@ export async function
 
         $('[id="submitClusterCtrler"]').click(async () => {
             var name = $('#clusterNameCtrler').val();
-            var region = $('#regionCtrler').val();
+            // var region = $('#regionCtrler').val();
+            var region = 'Singapore' // Cause ssh don't connect to another region then we set hard variable region
             var password = $('#passwordCtrler').val();
 
 

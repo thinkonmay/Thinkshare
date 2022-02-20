@@ -57,11 +57,11 @@ spec:
           mountPath: /var/lib/postgresql/data
         resources:
           requests:
-            memory: "1000Mi"
-            cpu: "700m"
-          limits:
-            memory: "1500Mi"
+            memory: "2Gi"
             cpu: "1000m"
+          limits:
+            memory: "3Gi"
+            cpu: "1500m"
       volumes:
       - name: data
         awsElasticBlockStore:        

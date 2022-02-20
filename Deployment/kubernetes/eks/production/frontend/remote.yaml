@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: remote
-        image: pigeatgarlic/remote:2022-02-13
+        image: pigeatgarlic/remote:2022-02-17
         imagePullPolicy: Always
         resources:
           requests:
@@ -43,3 +43,5 @@ spec:
             cpu: "300m"
         ports:
         - containerPort: 80
+      nodeSelector:
+        topology.kubernetes.io/zone: ap-southeast-1a
