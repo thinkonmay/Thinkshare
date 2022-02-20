@@ -17,19 +17,11 @@ using Microsoft.Extensions.Options;
 
 namespace AutoScaling.Controllers
 {
-    /// <summary>
-    /// Routes used by user to fetch information about the system
-    /// </summary>
     [ApiController]
     [Route("/Parsec")]
     [Produces("application/json")]
     public class ParsecController : Controller
     {
-        public ParsecController()
-        {
-        }
-
-
         [HttpGet]
         public async Task<IActionResult> setupParsec()
         {
