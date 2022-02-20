@@ -317,7 +317,7 @@ namespace Authenticator.Controllers
 
         [User]
         [HttpPost("Password/Update")]
-        public async Task<IActionResult> UserGetRoles([FromBody] UpdatePasswordModel model)
+        public async Task<AuthResponse> UserGetRoles([FromBody] UpdatePasswordModel model)
         {
             IdentityResult result;
             var UserID = HttpContext.Items["UserID"];
@@ -329,7 +329,7 @@ namespace Authenticator.Controllers
             else
                 result = await _userManager.AddPasswordAsync(account,model.New);
 
-            return Ok(result);
+            return result.Succeeded ? AuthResponse.GenerateSuccessful(null,null,null) : AuthResponse.GenerateFailure(account.UserName,result.Errors);
         }
     }
 }
