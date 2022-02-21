@@ -47,10 +47,10 @@ export function setup_cluster_booking() {
             Swal.fire('Fail!', 'startTime must be low to endTime', 'error')
         }
         else {
-            // var res = await API.createNewRole(null, null, bookUser)
-            // if (res.ok)
+            var res = await API.createNewRole(null, null, bookUser)
+            if (res.ok)
                 Swal.fire('Success!', `Booking success from ${startTime} to ${endTime} for user "${bookUser}".`, 'success')
-            // else
+            else
                 Swal.fire('Fail!', 'Booking failed. Please check and try again.', 'error')
         }
 
