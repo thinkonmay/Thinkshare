@@ -72,12 +72,13 @@ namespace Authenticator.Controllers
                     return AuthResponse.GenerateFailure(model.UserName, error);
                 }
             }
-            var ret =  new List<IdentityError> ();
-            ret.Add(new IdentityError{
-                Code = "Models Error",
-                Description = "Invalid Login Models" 
-            });
-            return AuthResponse.GenerateFailure(model.UserName, ret);
+
+            return AuthResponse.GenerateFailure(model.UserName, 
+                new IdentityError
+                {
+                   Code = "Models Error",
+                   Description = "Invalid Register Models"
+                });
         }
 
 
@@ -135,20 +136,19 @@ namespace Authenticator.Controllers
                 }
             }
 
-            var ret =  new List<IdentityError>
-            {
-                new IdentityError{
+            return AuthResponse.GenerateFailure(model.Email, 
+                new IdentityError
+                {
                    Code = "Models Error",
                    Description = "Invalid Register Models"
-            }};
-            return AuthResponse.GenerateFailure(model.Email, ret);
+                });
         }
 
 
 
         [HttpPost]
         [Route("ExchangeToken")]
-        public async Task<IActionResult> Request(AuthenticationRequest request)
+        public async Task<AuthResponse> Request(AuthenticationRequest request)
         {
 
             try
@@ -185,17 +185,15 @@ namespace Authenticator.Controllers
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
                 string token = await _tokenGenerator.GenerateUserJwt(user);
-                var resp = new AuthenticationRequest
-                {
-                    token = token,
-                    Validator = "authenticator"
-                };
-                return Ok(resp);
+                return AuthResponse.GenerateSuccessful(user.UserName,token,DateTime.Now.AddDays(30));
             }
             catch (Exception ex)
             {
                 _log.Error("Error oauth login",ex);
-                return BadRequest();
+                return AuthResponse.GenerateFailure("Unknown",new IdentityError{
+                    Code = ex.Message,
+                    Description  = "Unknown error"
+                });
             }
         }
 
@@ -319,7 +317,7 @@ namespace Authenticator.Controllers
 
         [User]
         [HttpPost("Password/Update")]
-        public async Task<IActionResult> UserGetRoles([FromBody] UpdatePasswordModel model)
+        public async Task<AuthResponse> UserGetRoles([FromBody] UpdatePasswordModel model)
         {
             IdentityResult result;
             var UserID = HttpContext.Items["UserID"];
@@ -331,7 +329,7 @@ namespace Authenticator.Controllers
             else
                 result = await _userManager.AddPasswordAsync(account,model.New);
 
-            return Ok(result);
+            return result.Succeeded ? AuthResponse.GenerateSuccessful(null,null,null) : AuthResponse.GenerateFailure(account.UserName,result.Errors);
         }
     }
 }

@@ -44,23 +44,17 @@
           <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
             <h1 class="welcome-text">Hi, <span id="OwnerName" class="text-black fw-bold">
                 Owner
-            </span></h1>
-            <h3 class="welcome-sub-text">Welcome to your cluster <h3 id="ClusterName"></h3> dashboard</h3>
-          </li>
+              </span> 
+          <p id="ClusterName">Welcome to your cluster dashboard</p>
+
+            </h1>
+        </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item d-none d-lg-block">
-            <div id="datepicker-popup" class="input-group date datepicker navbar-date-picker">
-              <span class="input-group-addon input-group-prepend border-right">
-                <span class="icon-calendar input-group-text calendar-icon"></span>
-              </span>
-              <input type="text" class="form-control">
-            </div>
-          </li>
           <li class="nav-item">
           </li>
           <li class="nav-item dropdown d-none d-lg-block user-dropdown">
-            <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false" style="padding-right: 10px;">
               <img class="img-xs rounded-circle" id="dashboardSrcImg" alt="Profile image" src="images/default_user.png">
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
@@ -113,11 +107,11 @@
       </nav>
       <!-- partial -->
       <div class="main-panel">
-        <div class="content-wrapper">
+        <div class="content-wrapper" style="overflow: hidden; min-height: 990px; padding: 0 0 0 0 !important">
           <div class="row">
             <div class="col-sm-12">
               <div class="home-tab">
-                <div class="tab-content tab-content-basic">
+                <div class="tab-content tab-content-basic" style="padding: 0 0 0 0 !important">
                   <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
                     <div class="row">
                       <div class="row flex-grow">
@@ -143,7 +137,63 @@
                           </div>
                         </div>
                       </div>
-
+                      <div class="row flex-grow">
+                        <div class="col-12 grid-margin stretch-card">
+                          <div class="card card-rounded">
+                            <div class="card-body">
+                              <div class="d-sm-flex justify-content-between align-items-start">
+                                <div>
+                                  <h4 class="card-title card-title-dash">Booking Access</h4>
+                                </div>
+                                <!-- <div>
+                                  <button class="btn btn-primary btn-lg text-white mb-0 me-0" type="button"><i class="mdi mdi-account-plus"></i>Add new member</button>
+                                </div> -->
+                              </div>
+                              <div class="table-responsive  mt-1">
+                                <table class="table select-table">
+                                  <thead>
+                                    <tr>
+                                      <th>Booking User</th>
+                                      <th>Company</th>
+                                      <th>Progress</th>
+                                      <th>Status</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>
+                                        <div class="d-flex ">
+                                          <img src="images/faces/face1.jpg" alt="">
+                                          <div>
+                                            <h6>Brandon Washington</h6>
+                                            <p>Head admin</p>
+                                          </div>
+                                        </div>
+                                      </td>
+                                      <td>
+                                        <h6>Company name 1</h6>
+                                        <p>company type</p>
+                                      </td>
+                                      <td>
+                                        <div>
+                                          <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                            <p class="text-success">79%</p>
+                                            <p>85/162</p>
+                                          </div>
+                                          <div class="progress progress-md">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 85%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                          </div>
+                                        </div>
+                                      </td>
+                                      <td><div class="badge badge-opacity-warning">In progress</div></td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                       <div id="popup1" class="overlay" style="overflow-y: scroll;">
                         <div class="popup">
                           <a class="close" href="#">&times;</a>
@@ -159,32 +209,33 @@
                                             role="button"><br><span>Role</span></label></li>
                                       </ul>
                                       <div class="content" style="overflow: hidden;">
-                                          <div class="d-sm-flex justify-content-between align-items-start">
-                                            <div>
-                                              <h4 class="card-title card-title-dash">Cluster booking calendar
-                                              </h4>
-                                            </div>
+                                        <div class="d-sm-flex justify-content-between align-items-start">
+                                          <div>
+                                            <h4 class="card-title card-title-dash">Cluster booking calendar
+                                            </h4>
                                           </div>
-                                          <label for="meeting-time">Choose a time frame</label>
+                                        </div>
+                                        <label for="meeting-time">Choose a time frame</label>
+<!-- 
+                                        <input type="datetime-local" id="stamp-time-from" name="meeting-time"
+                                          min="2018-06-07T00:00" max="2021-06-14T00:00"> -->
+                                        <!-- <input type="datetime-local" id="stamp-time-to" name="meeting-time"
+                                          min="2018-06-07T00:00" max="2021-06-14T00:00"> -->
+                                        <input type="string" id="bookUser" placeholder="username">
+                                        <button class="btn btn-primary btn-lg text-white mb-0 me-0" type="button"
+                                          id="AddBooking">Book</button>
 
-                                          <input type="datetime-local" id="stamp-time-from" name="meeting-time"
-                                            value="2021-06-12T19:30" min="2018-06-07T00:00" max="2021-06-14T00:00">
-                                          <input type="datetime-local" id="stamp-time-to" name="meeting-time"
-                                            value="2021-06-12T19:30" min="2018-06-07T00:00" max="2021-06-14T00:00">
-                                          <input type="string" id="bookUser">
-                                          <button class="btn btn-primary btn-lg text-white mb-0 me-0" type="button" id="AddBooking">Book</button>
-
-                                          <table class="table select-table">
-                                            <thead>
-                                              <tr>
-                                                <th>Id</th>
-                                                <th>Start</th>
-                                                <th>End</th>
-                                                <th>UserName</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody id="WorkerNode-Log"></tbody>
-                                          </table>
+                                        <!-- <table class="table select-table">
+                                          <thead>
+                                            <tr>
+                                              <th>Id</th>
+                                              <th>Start</th>
+                                              <th>End</th>
+                                              <th>UserName</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody id="WorkerNode-Log"></tbody>
+                                        </table> -->
                                       </div>
                                     </div>
                                   </div>
@@ -195,7 +246,7 @@
                         </div>
                       </div>
 
-<!-- 
+                      <!-- 
                       <div id="popup2" class="overlay">
                         <div class="popup">
                           <a class="close" href="#">&times;</a>
@@ -287,7 +338,7 @@
                         </div>
                       </div> -->
 
-<!-- 
+                      <!-- 
                       <div id="popup4" class="overlay">
                         <div class="popup">
                           <a class="close" href="#">&times;</a>
@@ -333,6 +384,7 @@
               </div>
             </div>
           </div>
+          
           <footer class="footer">
             <div class="d-sm-flex justify-content-center justify-content-sm-between">
               <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
@@ -373,9 +425,8 @@
   <!-- Custom js for this page-->
   <script src="../../js/Chart.roundedBarCharts.js"></script>
   <!-- End custom js for this page-->
-	<script src="vendors/sweetalert2/sweetalert.min.js"></script>
+  <script src="vendors/sweetalert2/sweetalert.min.js"></script>
   <script type="module" src="../../javascripts/pages/dashboard.js"></script>
 </body>
 
 </html>
-1

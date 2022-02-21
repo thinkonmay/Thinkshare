@@ -29,7 +29,6 @@ RUN dotnet publish "MetricCollector.csproj" -c Release -o /app/publish
 
 
 
-ENV FATAL=https://host.thinkmay.net/Log/Fatal
 
 # production and elopment image both base on base image
 FROM base AS final

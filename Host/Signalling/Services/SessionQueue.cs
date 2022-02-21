@@ -113,10 +113,8 @@ namespace Signalling.Services
         {
             var bytes = Encoding.UTF8.GetBytes(msg);
             var buffer = new ArraySegment<byte>(bytes);
-            try
-            {
-                await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-            } catch { _log.Information("Fail to send websocket to client"); }
+            try { await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None); } 
+            catch { _log.Information("Fail to send websocket to client"); }
         }
 
 

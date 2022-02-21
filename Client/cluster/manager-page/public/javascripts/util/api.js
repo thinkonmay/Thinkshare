@@ -14,6 +14,17 @@ host += ":5000"
 
 const Login = "/login"
 
+export const Logout = () => {
+	setCookie("logout", "true")
+	setCookie("token", null, 1)
+	try {
+		gapi.auth.signOut();
+		window.location = "/login"
+	} catch {
+		window.location = "/login"
+	}
+}
+
 // owner api
 const LoginRoute = 				`${host}/Owner/Login`
 const GetInforClusterRoute = 	`${host}/Owner/Cluster/Infor`

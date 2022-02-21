@@ -38,9 +38,8 @@ namespace Conductor.Controllers
         [HttpGet("Get")]
         public async Task<IActionResult> GetDefaultSetting()
         {
-            var UserID = HttpContext.Items["UserID"];
-            var result = await _cache.GetUserSetting(Int32.Parse((string)UserID));
-            _log.Information("User setting received with value:"+ JsonConvert.SerializeObject(result));
+            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
+            var result = await _cache.GetUserSetting(UserID);
             return Ok(result);
         }
 
@@ -50,9 +49,16 @@ namespace Conductor.Controllers
         [HttpPost("Set")]
         public async Task<IActionResult> SetDefaultSetting([FromBody] UserSetting body)
         {
-            var UserID = HttpContext.Items["UserID"];
-            _log.Information("Set new setting: "+ JsonConvert.SerializeObject(body));
-            await _cache.SetUserSetting(Int32.Parse((string)UserID), body);
+            if (!ModelState.IsValid)
+                return BadRequest("Wrong setting model");
+
+            var UserID = Int32.Parse(HttpContext.Items["UserID"].ToString());
+
+            var old = await _cache.GetUserSetting(UserID);
+            var newSetting = UserSetting.Validate(old,body);
+
+            _log.Information($"Set new setting: {JsonConvert.SerializeObject(newSetting)}");
+            await _cache.SetUserSetting(UserID, newSetting);
             return Ok();
         }
     }

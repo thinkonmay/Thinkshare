@@ -1,8 +1,8 @@
 import { getCookie, setCookie } from "./cookie.js"
 
-export async function
+export function
 prepare_tutorial_popup()
-{
+{  
     if (getCookie("show-tutorial") == "true") {
         $('#checkboxTutorial').attr("checked", true)
     }

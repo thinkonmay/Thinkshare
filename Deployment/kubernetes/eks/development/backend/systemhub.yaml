@@ -13,12 +13,11 @@ spec:
    app: systemhub
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: systemhub
-  namespace: backend
+  namespace: development 
 spec:
-  serviceName: systemhub
   replicas: 1
   selector:
     matchLabels:

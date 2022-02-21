@@ -57,7 +57,7 @@ namespace Conductor.Controllers
                 UserID = account.Id,
                 ClusterID = ClusterID,
                 Start = request.Start.HasValue ? request.Start : DateTime.Now,
-                Endtime = request.Endtime.HasValue ? request.Endtime : DateTime.Now.AddMonths(1),
+                Endtime = request.Endtime.HasValue ? request.Endtime : DateTime.Now.AddMinutes(15),
                 Description = request.Description
             };
 

@@ -54,5 +54,11 @@ namespace MetricCollector.Controllers
             _log.Worker(session);
             return Ok();
         }
+        [HttpPost("UI")]
+        public async Task<IActionResult> UI([FromBody] UILogModel session)
+        {
+            _log.UI(session);
+            return Ok();
+        }
     }
 }

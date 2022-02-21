@@ -2,6 +2,13 @@ using System;
 
 namespace SharedHost.Models.Logging
 {
+    public class UILogModel
+    {
+        public string Error{get;set;}
+
+        public DateTime timestamp {get;set;}
+    }
+
     public class GenericLogModel
     {
         public string Log {get;set;}
