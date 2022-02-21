@@ -12,7 +12,7 @@ export async function
 		throw new Error('Get Userinfor Failed');
 
 	$("#fullName").html(userinfor.fullName)
-	$("#WelcomeUsername").html(userinfor.fullName);
+	$("#WelcomeUsername").html(userinfor.userName);
 }
 
 /**
