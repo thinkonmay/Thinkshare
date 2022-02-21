@@ -73,11 +73,10 @@ namespace SharedHost.Models.Device
             List<Codec> allowedVideoCodec  = new List<Codec> { Codec.CODEC_H264, Codec.CODEC_H265 };
             List<Codec> allowedAudioCodec  = new List<Codec> { Codec.OPUS_ENC };
 
-            if(setting.engine > CoreEngine.MAX_ENGINE)
+            if(setting.engine < CoreEngine.MAX_ENGINE)
                 result.engine = setting.engine;
-            if(setting.mode   > QoEMode.MAX_MODE)
+            if(setting.mode   < QoEMode.MAX_MODE)
                 result.mode   = setting.mode;
-
             if(allowedDevice.Contains(setting.device))
                 result.device = setting.device;
             if(allowedAudioCodec.Contains(setting.audioCodec))
