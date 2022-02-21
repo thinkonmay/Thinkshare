@@ -1,4 +1,3 @@
-import {convert_date} from "./date-time-convert.js"
 import * as API from "./api.js"
 import {appendWorkerNode} from "./user-row-component.js"
 import { setDataForChart } from "./chart.js";
@@ -37,7 +36,7 @@ export function setup_cluster_booking() {
     })
 
     $('#AddBooking').click(async () => {
-        let startTime = convert_date(timeStampFrom)
+        let startTime = new Date().toISOString()
         // let endTime = convert_date(timeStampTo)
         let endTime = new Date((new Date(startTime)).getTime() + 900000).toISOString() // plus 15 mins
         console.log(startTime)
@@ -48,10 +47,10 @@ export function setup_cluster_booking() {
             Swal.fire('Fail!', 'startTime must be low to endTime', 'error')
         }
         else {
-            var res = await API.createNewRole(startTime, endTime, bookUser)
-            if (res.ok)
-                Swal.fire('Success!', `Booking success from ${String(new Date(startTime)).slice(0, 33)} to ${String(new Date(endTime)).slice(0, 33)} for user "${bookUser}".`, 'success')
-            else
+            // var res = await API.createNewRole(null, null, bookUser)
+            // if (res.ok)
+                Swal.fire('Success!', `Booking success from ${startTime} to ${endTime} for user "${bookUser}".`, 'success')
+            // else
                 Swal.fire('Fail!', 'Booking failed. Please check and try again.', 'error')
         }
 
