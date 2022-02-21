@@ -509,7 +509,7 @@ export const setInfor = async (body) => {
 	{
 		method: "POST",
 		headers: genHeaders(),
-		body: JSON.stringify({ body })
+		body: JSON.stringify(body)
 	})
 	await CheckError(response);
 	return response;
@@ -526,7 +526,7 @@ export const setSetting = async (body) => {
 	{
 		method: "POST",
 		headers: genHeaders(),
-		body: JSON.stringify({ body })
+		body: JSON.stringify(body)
 	});
 	await CheckError(response);
 	return response;

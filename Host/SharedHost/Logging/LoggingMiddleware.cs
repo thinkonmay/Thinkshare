@@ -39,7 +39,7 @@ namespace SharedHost.Logging
                 ip = context.Request.HttpContext.Features.Get<IHttpConnectionFeature>().RemoteIpAddress.ToString();
             }
 
-            _log.Information($"[REQUEST] [IP] {ip} [PATH] {Path} [METHOD] {Method}");
+            _log.Warning($"[REQUEST] [IP] {ip} [PATH] {Path} [METHOD] {Method}");
 
 
             try

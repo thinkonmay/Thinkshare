@@ -145,7 +145,7 @@ namespace SharedHost.Logging
             {
                 Task.Run(async () => 
                 {
-                    await _client.ExecuteAsync(new RestRequest($"{InforIndex}/_doc",Method.POST)
+                    await _client.ExecuteAsync(new RestRequest($"{WarningIndex}/_doc",Method.POST)
                         .AddJsonBody(new GenericLogModel{
                             timestamp = DateTime.Now,
                             Source = podName,
