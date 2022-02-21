@@ -167,6 +167,18 @@ export const createNewRole = (start,end,user) => {
 		}
 	})
 }
+export const createNewInstanceRole = (user) => {
+	return fetch(`${SetupRoleRoute}?UserName=${user}`, {
+		method: "POST",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
 
 export const deleteRole = () => {
 	return fetch(SetupRoleRoute, {
