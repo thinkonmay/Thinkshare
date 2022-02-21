@@ -13,7 +13,7 @@ spec:
    app: systemhub
 ---
 apiVersion: apps/v1
-kind: Deployment 
+kind: Deployment
 metadata:
   name: systemhub
   namespace: backend
@@ -22,8 +22,6 @@ spec:
   selector:
     matchLabels:
       app: systemhub
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -35,12 +33,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "2Gi"
+            memory: "1000Mi"
             cpu: "700m"
           limits:
-            memory: "3Gi"
+            memory: "1500Mi"
             cpu: "1000m"
         ports:
         - containerPort: 80
-      nodeSelector:
-        topology.kubernetes.io/zone: ap-southeast-1a
