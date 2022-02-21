@@ -38,6 +38,7 @@ ENV POSTGRES_DATABASE=cluster_manager
 ENV POSTGRES_IP="192.168.1.12"
 ENV AUTO_START="true"
 
+ENV FATAL=https://host.thinkmay.net/Log/Fatal
 
 WORKDIR /app
 COPY --from=publish /app/publish .
