@@ -57,8 +57,8 @@ namespace Conductor.Controllers
             {
                 UserID = account.Id,
                 ClusterID = ClusterID,
-                Start = request.Start.HasValue,
-                Endtime = request.Endtime.HasValue,
+                Start = request.Start,
+                Endtime = request.Endtime,
                 Description = request.Description
             };
 
