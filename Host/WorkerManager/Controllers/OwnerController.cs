@@ -157,6 +157,25 @@ namespace WorkerManager.Controllers
 
 
 
+        [Owner]
+        [HttpPost("Cluster/Role/Instance")]
+        public async Task<IActionResult> AddRole(string UserName, 
+                                                 int minutes)
+        {
+            var cluster = await _cache.GetClusterInfor();
+            var request = new RestRequest($"https://{_config.Domain}{_config.ClusterRole}", Method.POST)
+                .AddHeader("Authorization",cluster.ClusterToken)
+                .AddJsonBody(new ClusterRoleRequest
+                {
+                    Start = DateTime.Now,
+                    Endtime = DateTime.Now.AddMinutes(minutes),
+                    User = UserName,
+                    Description = $"Created by cluster owner, {minutes} minutes limitation"
+                });
+
+            var result = await _client.ExecuteAsync(request);
+            return (result.StatusCode == HttpStatusCode.OK) ? Ok() : BadRequest(result.Content);
+        }
 
 
         [Owner]
@@ -177,7 +196,7 @@ namespace WorkerManager.Controllers
                 });
 
             var result = await _client.ExecuteAsync(request);
-            return (result.StatusCode == HttpStatusCode.OK) ? Ok() : BadRequest();
+            return (result.StatusCode == HttpStatusCode.OK) ? Ok() : BadRequest(result.Content);
         }
 
         [Owner]

@@ -49,6 +49,7 @@ namespace Conductor.Controllers
         {
             var ClusterID = Int32.Parse(HttpContext.Items["ClusterID"].ToString());
             var account = _db.Users.Where(x => x.UserName == request.User).First();
+
             if(account == null)
                 return BadRequest("Cannot find this account");
 
@@ -56,8 +57,8 @@ namespace Conductor.Controllers
             {
                 UserID = account.Id,
                 ClusterID = ClusterID,
-                Start = request.Start.HasValue ? request.Start : DateTime.Now,
-                Endtime = request.Endtime.HasValue ? request.Endtime : DateTime.Now.AddMinutes(15),
+                Start = request.Start.HasValue,
+                Endtime = request.Endtime.HasValue,
                 Description = request.Description
             };
 
