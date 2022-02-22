@@ -48,14 +48,14 @@ namespace Conductor.Controllers
         public async Task<IActionResult> GrantAccess([FromBody] ClusterRoleRequest request)
         {
             var ClusterID = Int32.Parse(HttpContext.Items["ClusterID"].ToString());
-            var account = _db.Users.Where(x => x.UserName == request.User).First();
+            var account = _db.Users.Where(x => x.UserName == request.User);
 
-            if(account == null)
+            if(!account.Any())
                 return BadRequest("Cannot find this account");
 
             var role = new ClusterRole 
             {
-                UserID = account.Id,
+                UserID = account.First().Id,
                 ClusterID = ClusterID,
                 Start = request.Start,
                 Endtime = request.Endtime,
@@ -88,7 +88,7 @@ namespace Conductor.Controllers
         {
             var ClusterID = Int32.Parse(HttpContext.Items["ClusterID"].ToString());
             var roles = _db.Roles.Where(x => (x.ClusterID == ClusterID) &&
-                                             (DateTime.Now < x.Endtime));
+                                             (DateTime.Now < x.Endtime)).ToList();
             return Ok(roles);
         }
     }

@@ -37,16 +37,20 @@ namespace WorkerManager.Controllers
 
         private IPortProxy _port;
 
+        private ILog _log;
+
         public OwnerController( ILocalStateStore cache,
                                 IConductorSocket socket,
                                 IWorkerNodePool workerPool,
                                 IPortProxy port,
+                                ILog log,
                                 IClusterInfor infor,
                                 IOptions<ClusterConfig> config)
         {
             _cache = cache;
             _infor = infor;
             _port = port;
+            _log = log;
             _conductor = socket;
             _workerNodePool = workerPool;
             _config = config.Value;
@@ -158,44 +162,41 @@ namespace WorkerManager.Controllers
 
 
         [Owner]
-        [HttpPost("Cluster/Role/Instant")]
+        [HttpPost("Cluster/Role/Temporary")]
         public async Task<IActionResult> AddRole(string UserName, 
                                                  int minutes)
         {
             var cluster = await _cache.GetClusterInfor();
-            var request = new RestRequest($"https://{_config.Domain}{_config.ClusterRole}", Method.POST)
+            var request = new RestRequest(
+                $"https://{_config.Domain}{_config.ClusterRole}", Method.POST)
                 .AddHeader("Authorization",cluster.ClusterToken)
                 .AddJsonBody(new ClusterRoleRequest
                 {
                     Start = DateTime.Now,
                     Endtime = DateTime.Now.AddMinutes(minutes),
                     User = UserName,
-                    Description = $"Created by cluster owner, {minutes} minutes limitation"
+                    Description = $"Temporary role: {minutes} minutes"
                 });
 
             var result = await _client.ExecuteAsync(request);
+            _log.Information($"Add user access return code {result.StatusCode}");
             return (result.StatusCode == HttpStatusCode.OK) ? Ok() : BadRequest(result.Content);
         }
 
 
         [Owner]
         [HttpPost("Cluster/Role")]
-        public async Task<IActionResult> AddRole(DateTime? Start,
-                                                 DateTime? End,
-                                                 string UserName)
+        public async Task<IActionResult> AddRole([FromBody] ClusterRoleRequest body)
         {
             var cluster = await _cache.GetClusterInfor();
-            var request = new RestRequest($"https://{_config.Domain}{_config.ClusterRole}", Method.POST)
+            body.Description = "Created by cluster owner";
+            var request = new RestRequest(
+                $"https://{_config.Domain}{_config.ClusterRole}", Method.POST)
                 .AddHeader("Authorization",cluster.ClusterToken)
-                .AddJsonBody(new ClusterRoleRequest
-                {
-                    Start = Start,
-                    Endtime = End,
-                    User = UserName,
-                    Description = "Created by cluster owner"
-                });
+                .AddJsonBody(body);
 
             var result = await _client.ExecuteAsync(request);
+            _log.Information($"Add user access return code {result.StatusCode}");
             return (result.StatusCode == HttpStatusCode.OK) ? Ok() : BadRequest(result.Content);
         }
 
@@ -209,7 +210,8 @@ namespace WorkerManager.Controllers
                 .AddHeader("Authorization",cluster.ClusterToken);
 
             var result = await _client.ExecuteAsync(request);
-            return result.StatusCode == HttpStatusCode.OK ? Ok() : BadRequest();
+            _log.Information($"Delete user access return code {result.StatusCode}");
+            return result.StatusCode == HttpStatusCode.OK ? Ok() : BadRequest(result.Content);
         }
 
         [Owner]
@@ -221,7 +223,8 @@ namespace WorkerManager.Controllers
                 .AddHeader("Authorization",cluster.ClusterToken);
 
             var result = await _client.ExecuteAsync(request);
-            return Ok(JsonConvert.DeserializeObject<List<ClusterRole>>(result.Content));
+            var roles = JsonConvert.DeserializeObject<List<ClusterRole>>(result.Content);
+            return Ok(roles);
         }
     }
 }

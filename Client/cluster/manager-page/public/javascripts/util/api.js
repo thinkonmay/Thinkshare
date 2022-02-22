@@ -1,4 +1,6 @@
+import { prepare_booker_infor } from "./cluster-component.js"
 import { getCookie } from "./cookie.js"
+import * as Utils from "./utils.js"
 
 let host = "";
 let currentURL = document.URL
@@ -10,9 +12,6 @@ for (let i = 0; i < currentURL.length; i++) {
 	host += currentURL[i];
 }
 host += ":5000"
-
-
-const Login = "/login"
 
 export const Logout = () => {
 	setCookie("logout", "true")
@@ -32,11 +31,48 @@ const IsRegisteredRoute = 		`${host}/Owner/Cluster/isRegistered`
 const UnRegisteredRoute = 		`${host}/Owner/Cluster/Unregister`
 const GetWorkerStateRoute = 	`${host}/Owner/Worker/State`
 const SetupRoleRoute = 			`${host}/Owner/Cluster/Role`
+const SetupInstantRoleRoute = 	`${host}/Owner/Cluster/Role/Temporary`
 
 
+/**
+ * 
+ * @param {Response} response 
+ * @returns 
+ */
+async function CheckError(response) {
+	if (response.status == 200)
+		return;
+
+	var clone_body = await (response.clone()).text();
+	if (response.status == 401) {
+		Utils.newSwal.fire({
+			title: 'Unauthorize',
+			text: 'Try login to your account again',
+			icon: "error"
+		}).then((result) => { 
+			if (result.isConfirmed) 
+				Logout();  
+			})
+	} else if (response.status == 400) {
+		Utils.newSwal.fire({
+			title: 'error',
+			text: clone_body,
+			icon: "error" })
+		throw new Error('Bad request')
+	} else if (response.status == 500) {
+		Utils.newSwal.fire({
+			title: " Our server error 😭😭😭 ",
+			text: 'Punish our developer please',
+			icon: "error" })
+		throw new Error('Server error')
+	} else {
+		Utils.responseErrorHandler(response)
+		throw new Error('Unknown error')
+	}
+}
 
 
-export const genHeaders = () => {
+const genHeaders = () => {
 	const token = getCookie("token")
 	return Object.assign({
 			"Content-Type": "application/json"
@@ -49,8 +85,9 @@ export const genHeaders = () => {
 
 
 
-export const login = body => {
-	return fetch(LoginRoute, {
+export async function login ( body ) 
+{
+	var res = await fetch(LoginRoute, {
 		method: "POST",
 		headers: genHeaders(),
 		body: JSON.stringify({
@@ -58,61 +95,51 @@ export const login = body => {
 			password: body.password
 		})
 	})
+	await CheckError(res);
+	return res;
 }
 
-export const getInforClusterRoute = () => {
-	return fetch(GetInforClusterRoute, {
+export async function getInforClusterRoute () 
+{
+	var res = await fetch(GetInforClusterRoute, {
 		method: "GET",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
+	await CheckError(res);
+	return res;
 }
 
 
-export const getWorkerStateRoute = () => {
-	return fetch(GetWorkerStateRoute, {
+export async function getWorkerStateRoute () 
+{
+	var res = await fetch(GetWorkerStateRoute, {
 		method: "GET",
 		headers: genHeaders(),
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
+	await CheckError(res);
+	return res;
 }
 
 
 
-export const UnRegister = () => {
-	return fetch(UnRegisteredRoute, {
+export async function UnRegister () 
+{
+	var res = await fetch(UnRegisteredRoute, {
 		method: "DELETE",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
+	await CheckError(res);
+	return res;
 }
 
-export const isRegistered = () => {
-	return fetch(IsRegisteredRoute, {
+export async function isRegistered () 
+{
+	var res = await fetch(IsRegisteredRoute, {
 		method: "POST",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
+	await CheckError(res);
+	return res;
 }
 
 
@@ -130,65 +157,54 @@ export const isRegistered = () => {
 
 
 
-export const getExistingRole = () => {
-	return fetch(SetupRoleRoute, {
+export async function getExistingRole () 
+{
+	var res = await fetch(SetupRoleRoute, {
 		method: "GET",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
+	await CheckError(res);
+	return res;
 }
 
-export const createPermanentNewRole = (user) => {
-	return fetch(`${SetupRoleRoute}?UserName=${user}`, {
+export async function createNewRole (start,end,user) 
+{
+	var res = await fetch(`${SetupRoleRoute}`, {
 		method: "POST",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(Login)
-		} else {
-			return Promise.reject(error);
-		}
+		headers: genHeaders(),
+		/**
+		 * ClusterRoleRequest
+		 */
+		body: JSON.stringify({
+			Start: start,
+			Endtime: end,
+			Description: "Created by cluster owner",
+			User: user
+		})
 	})
-}
-export const createNewRole = (start,end,user) => {
-	return fetch(`${SetupRoleRoute}?Start=${start}&End=${end}&UserName=${user}`, {
-		method: "POST",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
-}
-export const createNewInstanceRole = (user) => {
-	return fetch(`${SetupRoleRoute}?UserName=${user}`, {
-		method: "POST",
-		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(Login)
-		} else {
-			return Promise.reject(error);
-		}
-	})
+	await CheckError(res);
+	await prepare_booker_infor();
+	return res;
 }
 
-export const deleteRole = () => {
-	return fetch(SetupRoleRoute, {
+export async function createNewInstantRole (user,minutes) 
+{
+	var res = await fetch(`${SetupInstantRoleRoute}?UserName=${user}&minutes=${minutes}`, {
+		method: "POST",
+		headers: genHeaders()
+	})
+	await CheckError(res);
+	await prepare_booker_infor();
+	return res;
+}
+
+export async function deleteRole (ID) 
+{
+	var res = await fetch(`${SetupRoleRoute}?RoleID=${ID}`, {
 		method: "DELETE",
 		headers: genHeaders()
-	}, function (error) {
-		if (401 == error.response.status) {
-			window.location.replace(Login)
-		} else {
-			return Promise.reject(error);
-		}
 	})
+	await CheckError(res);
+	await prepare_booker_infor();
+	return res;
 }
