@@ -18,7 +18,7 @@ import { append } from "./utils.js";
  * @param {String} queue 
  */
 export async function
-    createSlave(workerID, workerState, queue) {
+createWorkerBlock(workerID, workerState, queue) {
     try {
         var slave = await (await API.fetchInfor(workerID)).json();
         var worker = document.getElementById(`${queue}${workerID}`);
@@ -52,7 +52,7 @@ export async function
 
         setState(workerState, slave.id, queue);
     } catch (error) {
-
+        await API.logUI(error.stack);
     }
 }
 

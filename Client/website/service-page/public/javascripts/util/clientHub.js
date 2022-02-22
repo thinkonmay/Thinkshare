@@ -4,8 +4,7 @@
  * ? - In Case Websocket Close => reload page
  * ? - Websocket will receive signal of session (connect, disconnect, terminate, reconnect, newDeviceAvailable, newDeviceObtained)
 */
-
-import { createSlave } from "./workerComponent.js";
+import { createWorkerBlock } from "./workerComponent.js";
 import { getCookie } from "./cookie.js";
 import * as API from "./api.js"
 
@@ -17,44 +16,36 @@ export async function connectToClientHub() {
 	Websocket.addEventListener('close', onWebsocketClose);
 }
 
-function onClientHubEvent(event) {
-	try {
-		if (event.data === "ping") {
-			console.log("ping host successful")
-			return;
-		}
-		var message_json = JSON.parse(event.data);
-	} catch (e) {
-		console.log("Error parsing incoming JSON: " + event.data);
+async function onClientHubEvent(event) {
+	if (event.data === "ping") 
 		return;
+
+	var message = JSON.parse(event.data);
+	var WorkerID = parseInt(message.Message)
+
+	var queue = null;
+	var WorkerState = null;
+	if (message.EventName === "ReportSessionDisconnected") {
+		WorkerState = "OFF_REMOTE";
+		queue = "sessionInUse";
+	}
+	if (message.EventName === "ReportSessionOn") {
+		WorkerState = "ON_SESSION";
+		queue = "sessionInUse";
+	}
+	if (message.EventName === "ReportSessionTerminated") {
+		queue = "sessionInUse";
 	}
 
-	if (message_json.EventName === "ReportSessionDisconnected") {
-		var workerID = parseInt(message_json.Message)
-
-		createSlave(workerID, "OFF_REMOTE", "slavesInUses");
+	if (message.EventName === "ReportNewSlaveAvailable") {
+		WorkerState = "DEVICE_OPEN";
+		queue = "availableWorkers";
 	}
-	if (message_json.EventName === "ReportSessionOn") {
-		var workerID = parseInt(message_json.Message)
-
-		createSlave(workerID, "ON_SESSION", "slavesInUses")
-	}
-	if (message_json.EventName === "ReportSessionTerminated") {
-		var workerID = parseInt(message_json.Message)
-
-		createSlave(workerID, null, "slavesInUses");
+	if (message.EventName === "ReportSlaveObtained") {
+		queue = "availableWorkers";
 	}
 
-	if (message_json.EventName === "ReportNewSlaveAvailable") {
-		var workerID = parseInt(message_json.Message)
-
-		createSlave(workerID, "DEVICE_OPEN", "availableSlaves")
-	}
-	if (message_json.EventName === "ReportSlaveObtained") {
-		var workerID = parseInt(message_json.Message)
-
-		createSlave(workerID, null, "availableSlaves");
-	}
+	await createWorkerBlock(WorkerID,WorkerState,queue);
 }
 
 function onWebsocketOpen() {
@@ -62,8 +53,5 @@ function onWebsocketOpen() {
 }
 
 function onWebsocketClose() {
-	(new Promise(resolve => setTimeout(resolve, 5000)))
-		.then(() => {
-			location.reload();
-		});
+	(new Promise(resolve => setTimeout(resolve, 5000))).then(() => { location.reload(); });
 };

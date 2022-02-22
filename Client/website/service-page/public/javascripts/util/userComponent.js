@@ -4,7 +4,7 @@
  * ? - Get Device and Session and show
  */
 import * as API from "./api.js"
-import { createSlave } from "./workerComponent.js";
+import { createWorkerBlock } from "./workerComponent.js";
 
 /**
  * TODO:Fill #fullName and #WelcomeUsername
@@ -23,19 +23,19 @@ export async function
  * 	TODO: generate device UI
  */
 export async function
-	prepare_worker_dashboard() {
-	API.fetchSession().then(async sessionsData => {
-		API.fetchSlave().then(async slavesData => {
-			var sessions = await sessionsData.json()
-			var slaves = await slavesData.json()
-			if (sessions == null || sessions == "")
-				for (var worker in sessions) {
-					createSlave(worker, sessions[worker], "slavesInUses");
-				}
-			for (var worker in slaves) {
-				createSlave(worker, slaves[worker], "availableSlaves");
-			}
-		})
+prepare_worker_dashboard() {
+	API.fetchWorker().then(async response => {
+		var workers = await response.json()
+		for (var worker in workers) {
+			await createWorkerBlock(worker, workers[worker], "availableWorkers");
+		}
+	})
+	
+	API.fetchSession().then(async response => {
+		var sessions = await response.json()
+		for (var worker in sessions) {
+			await createWorkerBlock(worker, sessions[worker], "sessionInUse");
+		}
 	})
 }
 
