@@ -14,6 +14,17 @@ host += ":5000"
 
 const Login = "/login"
 
+export const Logout = () => {
+	setCookie("logout", "true")
+	setCookie("token", null, 1)
+	try {
+		gapi.auth.signOut();
+		window.location = "/login"
+	} catch {
+		window.location = "/login"
+	}
+}
+
 // owner api
 const LoginRoute = 				`${host}/Owner/Login`
 const GetInforClusterRoute = 	`${host}/Owner/Cluster/Infor`
@@ -146,6 +157,18 @@ export const createPermanentNewRole = (user) => {
 }
 export const createNewRole = (start,end,user) => {
 	return fetch(`${SetupRoleRoute}?Start=${start}&End=${end}&UserName=${user}`, {
+		method: "POST",
+		headers: genHeaders()
+	}, function (error) {
+		if (401 == error.response.status) {
+			window.location.replace(Login)
+		} else {
+			return Promise.reject(error);
+		}
+	})
+}
+export const createNewInstanceRole = (user) => {
+	return fetch(`${SetupRoleRoute}?UserName=${user}`, {
 		method: "POST",
 		headers: genHeaders()
 	}, function (error) {

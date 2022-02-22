@@ -10,6 +10,8 @@ var updatePassword =
 
 
 var body = await (await API.getInfor()).json();
+if (body == null || body == "") throw new Error(error);
+
 
 export function Codec(key) {
     switch (key) {
@@ -148,16 +150,11 @@ export function DecodeResolution(display) {
 
 
 export async function updateSetting(display) {
-    API.setSetting(display)
-        .then(async data => {
-            if (data.status == 200) {} else {
-                Utils.responseError("Lỗi!", "Thay đổi không thành công, vui lòng kiểm tra lại thông tin", "error")
-            }
-        })
+    await API.setSetting(display);
 }
 
 
-export function 
+export async function 
 prepare_user_setting()
 {
     $("#usernameCtrler").attr("placeholder", body.userName)
@@ -206,102 +203,34 @@ prepare_user_setting()
 
 
 
-    $('[name="resolutionOptions"]').click(async function() {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        switch (value) {
-            case "FullHD":
-                display.screenWidth = 1920;
-                display.screenHeight = 1080;
-                break;
-            case "2K":
-                display.screenWidth = 2560;
-                display.screenHeight = 1440;
-                break;
-            case "4K":
-                display.screenWidth = 3840;
-                display.screenHeight = 2160;
-                break;
-        }
-        await updateSetting(display);
-    });
-    $('[name="bitrate"]').click(async function() {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        display.mode = QoEMode(value);
-        await updateSetting(display);
-    });
-    $('[name="audioOptions"]').click(async function() {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        display.audioCodec = Codec(value)
-        await updateSetting(display);
-    });
-    $('[name="videoOptions"]').click(async function() {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        display.videoCodec = Codec(value);
-        await updateSetting(display);
-    });
-    $('[name="optionsRemoteCore"]').click(async function() {
-        var display = await (await API.getSetting()).json();
-        var value = $(this).find("input").val();
-        display.engine = CoreEngine(value);
-        await updateSetting(display);
-    })
 
-    $('#submitChangePasswordCtrler').click(() => {
+    $('#submitChangePasswordCtrler').click(async () => {
         Utils.newSwal.fire({
             title: "Updating",
             text: "Wait a minute",
-            didOpen: () => {
-                console.log(body)
-                API.updatePassword(updatePassword)
-                    .then(async data => {
-                        if (data.status == 200) {
-                            Utils.newSwal.fire({
-                                title: "Success!",
-                                text: "User information has been updated successfully",
-                                icon: "success",
-                            })
-                        } else {
-                            Utils.responseError("Error!", "The change has failed, check your information and try again.", "error")
-                        }
-                    })
-                    .catch()
+            didOpen: async () => {
+                await API.updatePassword(updatePassword)
+                Utils.newSwal.fire({
+                    title: "Success!",
+                    text: "User information has been updated successfully",
+                    icon: "success",
+                })
             }
         })
     });
 
-    $('#submitChangeInfoCtrler').click(() => {
+    $('#submitChangeInfoCtrler').click(async () => {
         Utils.newSwal.fire({
             title: "Updating",
             text: "Wait a minute",
-            didOpen: () => {
-                console.log(body)
-                API.setInfor(body)
-                    .then(async data => {
-                        if (data.status == 200) {
-                            body = await (await API.getInfor()).json();
-                            Utils.newSwal.fire({
-                                title: "Success!",
-                                text: "User information has been updated successfully",
-                                icon: "success",
-                            })
-                        } else {
-                            Utils.responseError("Error!", "The change has failed, check your information and try again.", "error")
-                        }
-                    })
-                    .catch(status ? Utils.fetchErrorHandler : "")
+            didOpen: async () => {
+                await API.setInfor(body)
+                Utils.newSwal.fire({
+                    title: "Success!",
+                    text: "User information has been updated successfully",
+                    icon: "success",
+                })
             }
-        })
-    });
-
-    $('#submitDisplayCtrler').click(() => {
-        Utils.newSwal.fire({
-            title: "Đang đăng kí",
-            text: "Vui lòng chờ . . .",
-            didOpen: () => {}
         })
     });
 

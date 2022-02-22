@@ -32,5 +32,15 @@ namespace SharedHost.Models.Auth
                 UserName = username
             };
         }
+        public static AuthResponse GenerateFailure(string username, IdentityError errcode)
+        {
+            var err = new List<IdentityError>();
+            err.Add(errcode);
+            return new AuthResponse()
+            {
+                Errors = err,
+                UserName = username
+            };
+        }
     }
 }
