@@ -1,12 +1,28 @@
+/**
+ * * In this component, I will:
+ * TODO: Solve Problem about Cluster
+ * ? + CheckManager
+ * ? + Generate Cluster Form
+ * ? + Handle Cluster Register
+ * ? + Handle Manager Register
+*/
+
 import * as API from "./api.js"
 import * as Utils from "./utils.js"
 import { managerRegister, requestCluster } from "./api.js"
 
-
+/**
+ * * Check Manager
+ * @returns true if role of user is manager
+ */
 async function checkManager() { return "true" === (await (await API.getRoles()).json()).isManager; }
 
 
-
+/**
+ * * In this funciton, I will
+ * ? - Generate Cluster Form and Handle Cluster Register if is Manager
+ * ? - Generate Register Form and Handle Manager Register if is Manager
+ */
 export async function
 clusterFormGen() {
     var form = document.getElementById("ClusterForm");
@@ -101,6 +117,11 @@ function device (element)
     return result;
 }
 
+/**
+ * * In this function, I will:
+ * ? get value of name, region, password for request Cluster
+ * ? Response status with swal.fire
+ */
 function handleClusterRegister()
 {
     $('[id="submitClusterCtrler"]').click(async () => {
@@ -139,7 +160,10 @@ function handleClusterRegister()
     });
 }
 
-
+/**
+ * * In this function, I will:
+ * ? - When submit Cluster was click, the response will get from managerRegister(value of description)
+ */
 function handleManagerRegister()
 {
     $('[id="submitClusterCtrler"]').click(() => {

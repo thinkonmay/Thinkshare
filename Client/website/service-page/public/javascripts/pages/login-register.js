@@ -1,3 +1,6 @@
+/**
+ * TODO: Handle all method login/ register
+ */
 import * as API from "../util/api.js"
 import * as Validates from "../validates/index.js"
 import { getCookie, setCookie } from "../util/cookie.js"
@@ -5,13 +8,21 @@ import * as Utils from "../util/utils.js"
 import { isElectron } from "../util/checkdevice.js"
 const HOUR5 = 5 * 60 * 60 * 1000;
 
-
+/**
+ * * Get Value from tag_name
+ * @param {Array} serializeArr 
+ * @returns obj of tag_name and value => item
+ */
 function serializeArrToObject(serializeArr) {
     const obj = {}
     serializeArr.map(item => (obj[item.name] = item.value))
     return obj
 }
 
+/**
+ * TODO: Login with default form
+ * @param {LoginModel} body 
+ */
 function login(body) {
     Utils.newSwal.fire({
         title: "Đang đăng nhập",
@@ -31,6 +42,10 @@ function login(body) {
     })
 }
 
+/**
+ * TODO: Register with default form
+ * @param {RegisterModel} body 
+ */
 function register(body) {
     Utils.newSwal.fire({
         title: "Đang đăng kí",
@@ -50,6 +65,9 @@ function register(body) {
     })
 }
 
+/**
+ * Implement Button Login google with gapi
+ */
 export async function GoogleLogin() {
     var myParams = {
         'clientid': '610452128706-mplpl7mhld1u05p510rk9dino8phcjb8.apps.googleusercontent.com',
@@ -61,6 +79,10 @@ export async function GoogleLogin() {
     await gapi.auth.signIn(myParams)
 }
 
+/**
+ * TODO: The callBack Function will receive response from Google API when Execute Login
+ * @param {AuthResult} result 
+ */
 function loginCallback(result) {
     console.log(result)
     if (result['status']['signed_in']) {
@@ -81,6 +103,10 @@ function loginCallback(result) {
     }
 }
 
+/**
+ * TODO: Handle Login with Google (from Website and Electron)
+ * @param {Object} userForm 
+ */
 const googleLoginUser = async (userForm) => {
     Utils.newSwal.fire({
         title: "Signing",
@@ -99,13 +125,18 @@ const googleLoginUser = async (userForm) => {
     })
 }
 
-// Sign-in failure callback
+/**
+ *  TODO: Handle  Login with Google failure callback
+ */
 function onFailure() {
     alert("Login Error an unexpected error occurred please try logging in again")
 }
 
 
 $(document).ready(() => {
+    /**
+     * Setup Auto authorize with url have token (for Electron Login with Google)
+     */
     let access_token = window.location.href
     if (String(access_token).length > 50) {
         setCookie('token', access_token.slice(access_token.slice(access_token.indexOf('=') + 1)), HOUR5)
@@ -162,6 +193,9 @@ $(document).ready(() => {
             $submit.attr("disabled", "")
         }
     }
+    /**
+     * TODO: Disable when Button 'Enter' is press -> Login, Register pass authorize
+     */
     $("form").keypress(function(e) {
         //Enter key
         if (e.which == 13) {

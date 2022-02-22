@@ -1,3 +1,8 @@
+/**
+ * * In this component, I will:
+ * TODO: Handle Setting, Register Manager Popup in Dashboard, Handle Tutorial Tab
+ */
+
 import * as API from "./api.js"
 import * as Setting from "./setting-constant.js"
 import * as CheckDevice from "./checkdevice.js"
@@ -5,6 +10,9 @@ import * as CheckDevice from "./checkdevice.js"
 export async function
 prepare_setting()
 {
+	/**
+	 * TODO: Get Data from database to fill form
+	 */
 	var body = await (await API.getSetting()).json()
 	$(`[value=${Setting.DecodeCoreEngine(parseInt(body.engine))}]`).attr('checked', true);
 	$(`[value=${Setting.DecodeCodec(parseInt(body.audioCodec))}]`).attr('checked', true);
@@ -13,6 +21,9 @@ prepare_setting()
 	$(`[value=${Setting.DecodeQoeMode(parseInt(body.mode))}]`).attr('checked', true);
 	$(`[value=${Setting.DecodeResolution(body)}]`).attr('checked', true);
 
+	/**
+	 * TODO: Download App Link generater
+	 */
 	$('[name="download-app"]').click(function () {
 		let value;
 		fetch('https://api.github.com/repos/thinkonmay/Thinkremote/releases?page=1&per_page=100/assets/')
@@ -27,9 +38,9 @@ prepare_setting()
 	})
 
 
-
-	$('#showTutorial').click(function () {
-	})
+	/**
+	 * TODO: Show Setting and Register Manager
+	 */
 	$('#showSettings').click(function () {
 		window.location = '/dashboard#settings-modal'
 	})
@@ -41,8 +52,10 @@ prepare_setting()
 
 
 
-
-	// Remote Core
+	/**
+	 * TODO: Handle get and fill setting config
+	 */
+	// !Remote Core
 	$('[name="remote"]').click(async function () {
 		var display = await (await API.getSetting()).json();
 		var value = $(this).val();
@@ -50,7 +63,7 @@ prepare_setting()
 		await Setting.updateSetting(display);
 	})
 
-	// Remote control bitrate
+	// !Remote control bitrate
 	$('[name="bitrate"]').click(async function () {
 		var display = await (await API.getSetting()).json();
 		var value = $(this).val();
@@ -59,7 +72,7 @@ prepare_setting()
 	});
 
 
-	// Resolution
+	// !Resolution
 	$('[name="res"]').click(async function () {
 		var display = await (await API.getSetting()).json();
 		var value = $(this).attr("value");
@@ -81,7 +94,7 @@ prepare_setting()
 
 	})
 
-	// VideoCodec
+	// !VideoCodec
 	$('[name="video"]').click(async function () {
 		var display = await (await API.getSetting()).json();
 		var value = $(this).val();
@@ -89,7 +102,7 @@ prepare_setting()
 		await Setting.updateSetting(display);
 	});
 
-	// Remote control bitrate
+	// !Remote control bitrate
 	$('[name="bitrate"]').click(async function () {
 		var display = await (await API.getSetting()).json();
 		var value = $(this).val();
@@ -97,7 +110,7 @@ prepare_setting()
 		await Setting.updateSetting(display);
 	});
 
-	// AudioCodec
+	// !AudioCodec
 	$('[name="audio"]').click(async function () {
 		var display = await (await API.getSetting()).json();
 		var value = $(this).val();
@@ -105,6 +118,9 @@ prepare_setting()
 		await Setting.updateSetting(display);
 	});
 
+	/**
+	 * TODO: Handle tab in tutorial App
+	 */
 	$(".next-tab").click(() => {
 		let value = null;
 		if ($('#NativeApp').attr('checked') == 'checked') {
@@ -127,7 +143,9 @@ prepare_setting()
 
 
 
-
+    /**
+     * TODO: If device is Electron => allow to choose option only available on Electron
+     */
 	if (CheckDevice.isElectron()) {
 		$('#remoteApp2').removeAttr("disabled")
 		$('#videoCodec3').removeAttr("disabled")

@@ -1,7 +1,10 @@
 import * as API from "./api.js"
 
 /**
- * 
+ * * In this component, I will:
+ * ? - getSession Infor from API => Response is dayOfWeek and sessionTime in list 
+ * ? - using 'for' to attach value 
+ * ? - setup label to fill with data (sessionInfor above)
  */
 export async function setDataForChart() {
 	var sessionInfor = await (await API.getSession()).json()

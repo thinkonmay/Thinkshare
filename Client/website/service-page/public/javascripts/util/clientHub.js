@@ -1,3 +1,10 @@
+/**
+ * * In this componet, I will:
+ * ? - Setup connect to ClientHub (open, message, error, close)
+ * ? - In Case Websocket Close => reload page
+ * ? - Websocket will receive signal of session (connect, disconnect, terminate, reconnect, newDeviceAvailable, newDeviceObtained)
+*/
+
 import { createSlave } from "./workerComponent.js";
 import { getCookie } from "./cookie.js";
 import * as API from "./api.js"

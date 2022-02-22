@@ -1,7 +1,9 @@
-// This module for check type of device user
+/**
+ * * In this component, I will:
+ * ? - Check type of device user
+ */
 
-
-// Check windows application
+//* Check windows application
 export function isElectron() {
 	// Renderer process
 	if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
@@ -21,7 +23,7 @@ export function isElectron() {
 	return false;
 }
 
-// Check MacOS
+//* Check MacOS
 export function isMacintosh(){
     return navigator.platform.indexOf('Mac') > -1;
 }

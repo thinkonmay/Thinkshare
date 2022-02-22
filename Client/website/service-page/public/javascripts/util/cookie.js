@@ -1,3 +1,10 @@
+/**
+ * 
+ * @param {String} cname 
+ * * GetCookie from cname
+ * ? Decode document.cookie to read
+ * @returns {String} data 
+ */
 export function getCookie(cname) {
 	let name = cname + "="
 	let decodedCookie = decodeURIComponent(document.cookie)
@@ -14,6 +21,14 @@ export function getCookie(cname) {
 	return ""
 }
 
+/**
+ * * SetCookie with Name, Value, Expire Time
+ * ? Set expire date and converted
+ * ? saving in document.cookie
+ * @param {String} name 
+ * @param {String} value 
+ * @param {Number} milis 
+ */
 export function setCookie(name, value, milis) {
 	var expires = ""
 	if (milis) {
@@ -23,6 +38,12 @@ export function setCookie(name, value, milis) {
 	document.cookie = name + "=" + (btoa(value) || "") + expires + "; path=/"
 }
 
+/**
+ * * Delete Cookie with Name, Path, Domain
+ * @param {String} name 
+ * @param {String} path 
+ * @param {String} domain 
+ */
 export function deleteCookie(name, path, domain) {
     if (getCookie(name)) document.cookie = name + '=' +
         ((path) ? ';path=' + path : '') +

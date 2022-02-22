@@ -1,3 +1,8 @@
+/**
+ * * In this function, I will:
+ * TODO: Handle show/ hide tutorial 
+ * ? - Using cookie for save state 'don't show tutorial again'
+ */
 import { getCookie, setCookie } from "./cookie.js"
 
 export function

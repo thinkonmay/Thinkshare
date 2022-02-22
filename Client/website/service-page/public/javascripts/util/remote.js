@@ -1,14 +1,13 @@
 import { setSetting, getSetting } from "./api.js"
-import { reconnectSession } from "./api.js"
-import { initializeSession } from "./api.js"
 import { isElectron } from "./checkdevice.js"
 import { Codec, CoreEngine, DeviceType } from "./setting-constant.js"
-import * as Utils from "./utils.js"
 
 
 
 /**
- * 
+ * * In this function, I will:
+ * ? - get Setting config
+ * ? - checking current Device for setup engine to connect 
  * @returns {Promise<UserSetting>}
  */
 export async function setupDevice() {
@@ -26,7 +25,14 @@ export async function setupDevice() {
 }
 
 
-
+/**
+ * * In this function, I will:
+ * ? - Checking engine connect: 
+ * ? + GSTREAMER => Execute command to open ThinkRemote
+ * ? + Chrome: Set up environment, width, height => Execute window.open environment/Remote with token, and configuration
+ * @param {String} token 
+ * @param {String} engine 
+ */
 export async function getRemotePage (token, engine) 
 {
     if (engine == CoreEngine('GSTREAMER')) {

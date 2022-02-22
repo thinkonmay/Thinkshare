@@ -1,9 +1,13 @@
+/**
+ * * In this function, I will: 
+ * ? - Handle about userInfor 
+ * ? - Get Device and Session and show
+ */
 import * as API from "./api.js"
-import { setCookie } from "./cookie.js";
 import { createSlave } from "./workerComponent.js";
 
 /**
- * 
+ * TODO:Fill #fullName and #WelcomeUsername
  */
 export async function
 	prepare_user_infor() {
@@ -16,7 +20,7 @@ export async function
 }
 
 /**
- * 
+ * 	TODO: generate device UI
  */
 export async function
 	prepare_worker_dashboard() {
@@ -36,7 +40,7 @@ export async function
 }
 
 /**
- * 
+ * TODO: Execute Logout
  */
 export function prepare_logout() {
 	$('#logout').click(() => { API.Logout(); })

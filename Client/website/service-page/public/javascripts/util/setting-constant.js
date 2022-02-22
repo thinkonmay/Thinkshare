@@ -1,18 +1,22 @@
+/**
+ * * In this component, I will:
+ * ? - Encode, Decode option config to session initialize
+ * ? - Update userInfor, password, change language
+ */
+
 import * as API from "../util/api.js"
 import * as Utils from "../util/utils.js"
 import * as CheckDevice from "../util/checkdevice.js"
 
-var updatePassword =
-{
-    Old: "",
-    New: ""
-};
-
-
+var updatePassword = {Old: "", New: ""};
 var body = await (await API.getInfor()).json();
 if (body == null || body == "") throw new Error(error);
 
-
+/**
+ * TODO: Encode, Decode option config to session initialize
+ * @param {TypeOfConfig} key 
+ * @returns key after converted
+ */
 export function Codec(key) {
     switch (key) {
 
@@ -157,6 +161,9 @@ export async function updateSetting(display) {
 export async function 
 prepare_user_setting()
 {
+    /**
+     * TODO: Get Value from Database to fill tag
+     */
     $("#usernameCtrler").attr("placeholder", body.userName)
     $("#fullnameCtrler").attr("placeholder", body.fullName)
     $("#jobsCtrler").attr("placeholder", body.jobs)
@@ -164,6 +171,10 @@ prepare_user_setting()
     $("#genderCtrler").val(body.gender)
     $("#dobCtrler").val((body.dateOfBirth).substring(0, 10))
 
+
+    /**
+     * TODO: Receive state change to save value in body
+     */
     $("#usernameCtrler").on("change", function() {
         body.username = this.value;
     });
@@ -203,7 +214,9 @@ prepare_user_setting()
 
 
 
-
+    /**
+     * TODO: Update Passowrd, with google login, the older password is null
+     */
     $('#submitChangePasswordCtrler').click(async () => {
         Utils.newSwal.fire({
             title: "Updating",
@@ -219,6 +232,9 @@ prepare_user_setting()
         })
     });
 
+    /**
+     *  TODO: Submit change Infor with Body = {username, fullname, jobs, phonenumber, gender, dob, password}
+     */
     $('#submitChangeInfoCtrler').click(async () => {
         Utils.newSwal.fire({
             title: "Updating",
@@ -234,7 +250,9 @@ prepare_user_setting()
         })
     });
 
-
+    /**
+     * TODO: If device is Electron => allow to choose option only available on Electron
+     */
     if (CheckDevice.isElectron()) {
         $('#optionsVideo3').removeAttr('disabled');
         $('#remoteCtrler2').removeAttr('disabled');
