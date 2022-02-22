@@ -43,6 +43,13 @@ spec:
             name: conductor
             port:
               number: 80
+      - path: /RBAC/*
+        pathType: Prefix
+        backend:
+          service:
+            name: conductor
+            port:
+              number: 80
 
 
 
