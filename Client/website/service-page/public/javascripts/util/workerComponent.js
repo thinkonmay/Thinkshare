@@ -3,8 +3,14 @@ import * as Utils from "./utils.js"
 import * as RemotePage from "./remote.js"
 import { append } from "./utils.js";
 
+/**
+ * 
+ * @param {int} workerID 
+ * @param {string} workerState 
+ * @param {string} queue 
+ */
 export async function
-    createSlave(workerID, workerState, queue) {
+createSlave(workerID, workerState, queue) {
     try {
         var slave = await (await API.fetchInfor(workerID)).json();
         var worker = document.getElementById(`${queue}${workerID}`);

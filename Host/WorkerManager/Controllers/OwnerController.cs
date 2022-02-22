@@ -158,7 +158,7 @@ namespace WorkerManager.Controllers
 
 
         [Owner]
-        [HttpPost("Cluster/Role/Instance")]
+        [HttpPost("Cluster/Role/Instant")]
         public async Task<IActionResult> AddRole(string UserName, 
                                                  int minutes)
         {

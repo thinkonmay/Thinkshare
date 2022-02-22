@@ -1,1 +1,1 @@
-development.thinkmay.net
+host.thinkmay.net
