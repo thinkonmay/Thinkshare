@@ -1,6 +1,6 @@
 import * as API from "./api.js"
 import { setCookie } from "./cookie.js";
-import { createSlave } from "./workerComponent.js";
+import { createWorkerBlock } from "./workerComponent.js";
 
 /**
  * 
@@ -23,14 +23,14 @@ prepare_worker_dashboard() {
 	API.fetchWorker().then(async response => {
 		var workers = await response.json()
 		for (var worker in workers) {
-			await createSlave(worker, slaves[worker], "availableSlaves");
+			await createWorkerBlock(worker, workers[worker], "availableWorkers");
 		}
 	})
 	
 	API.fetchSession().then(async response => {
 		var sessions = await response.json()
 		for (var worker in sessions) {
-			await createSlave(worker, sessions[worker], "slavesInUses");
+			await createWorkerBlock(worker, sessions[worker], "sessionInUse");
 		}
 	})
 }
