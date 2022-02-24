@@ -47,4 +47,3 @@ spec:
         ports:
         - containerPort: 5601
       nodeSelector:
-        topology.kubernetes.io/zone: ap-southeast-1a
