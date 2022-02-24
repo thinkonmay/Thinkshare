@@ -46,4 +46,3 @@ spec:
             value: http://elasticsearch:9200
         ports:
         - containerPort: 5601
-      nodeSelector:
