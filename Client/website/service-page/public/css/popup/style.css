@@ -23,9 +23,9 @@
   font-size: 14px;
   line-height: 2;
   height: 50px;
+  width: 150px;
   transition: all 200ms linear;
   border-radius: 4px;
-  width: 150px;
   letter-spacing: 1px;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
@@ -55,9 +55,9 @@
   font-size: 14px;
   line-height: 2;
   height: 50px;
+  width: 150px;
   transition: all 200ms linear;
   border-radius: 4px;
-  width: 204px;
   letter-spacing: 1px;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
@@ -87,9 +87,9 @@
   font-size: 14px;
   line-height: 2;
   height: 50px;
+  width: 150px;
   transition: all 200ms linear;
   border-radius: 4px;
-  width: 156px;
   letter-spacing: 1px;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
@@ -120,9 +120,9 @@
   font-size: 14px;
   line-height: 2;
   height: 50px;
+  width: 150px;
   transition: all 200ms linear;
   border-radius: 4px;
-  width: 156px;
   letter-spacing: 1px;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
@@ -442,32 +442,9 @@
 
 
 
-.modal-wrap {
-  position: relative;
-  display: block;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  border-radius: 4px;
-  overflow: hidden;
-  padding-bottom: 20px;
-  background-color: #fff;
-    -ms-flex-item-align: center;
-    align-self: center;
-    box-shadow: 0 12px 25px 0 rgba(199,175,189,.25);
-  opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 250ms 250ms ease, transform 300ms 250ms ease;
-}
-.modal-wrap img {
-  display: block;
-  height: auto;
-}
-.modal-wrap p {
-  padding: 20px 30px 0 30px;
-}
+
+
+
 .modal-btn:checked ~ .modal1 .modal-wrap{
   opacity: 1;
   transform: scale(1);
@@ -490,21 +467,8 @@
 }
 
 
-.logo {
-	position: absolute;
-	top: 25px;
-	left: 25px;
-	display: block;
-	z-index: 1000;
-	transition: all 250ms linear;
-}
-.logo img {
-	height: 26px;
-	width: auto;
-	display: block;
-  	filter: brightness(10%);
-	transition: filter 250ms 700ms linear;
-}
+
+
 .modal-btn:checked ~ .logo img {
   	filter: brightness(100%);
 	transition: all 250ms linear;
@@ -522,6 +486,48 @@ transition: all 250ms linear;
 transition: all 250ms linear;
 }
 
+
+.modal-wrap img {
+  display: block;
+  height: auto;
+}
+.modal-wrap p {
+  padding: 20px 30px 0 30px;
+}
+.logo {
+	position: absolute;
+	top: 25px;
+	left: 25px;
+	display: block;
+	z-index: 1000;
+	transition: all 250ms linear;
+}
+.logo img {
+	height: 26px;
+	width: auto;
+	display: block;
+  	filter: brightness(10%);
+	transition: filter 250ms 700ms linear;
+}
+.modal-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  overflow: hidden;
+  padding-bottom: 20px;
+  background-color: #fff;
+    -ms-flex-item-align: center;
+    align-self: center;
+    box-shadow: 0 12px 25px 0 rgba(199,175,189,.25);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 250ms 250ms ease, transform 300ms 250ms ease;
+}
 
 
 @media screen and (max-width: 500px) {

@@ -15,14 +15,14 @@ prepare_host_ui()
         run_remote_localhost();
     });
     $('#agentProduction').click(() => {
-        run_agent_production(userToken,cluster);
+        run_agent_production();
     });
 }
 
 function
-run_agent_production(userToken,cluster)
+run_agent_production()
 {
-    window.location.assign(`agent://token=${userToken}&&cluster=${cluster}/`);
+    window.location.assign(`agent://agent/`);
 }
 
 function
