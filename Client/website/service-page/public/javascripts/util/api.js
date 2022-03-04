@@ -337,7 +337,7 @@ export const getClusters = async () => {
  * 
  * @returns {Dictionary<int,string>}
  */
-export const fetchSlave = async () => {
+export const fetchWorker = async () => {
 	await setup();
 	var res = await fetch(FetchSlave, {
 		method: "GET",

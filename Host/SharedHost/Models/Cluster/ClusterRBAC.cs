@@ -22,14 +22,12 @@ namespace SharedHost.Models.Cluster
 
         public int ClusterID {get;set;}
 
-        [JsonIgnore]
         [ForeignKey("ClusterID")]
         public virtual GlobalCluster? Cluster {get;set;}
 
         [Required]
         public int UserID {get;set;}
 
-        [JsonIgnore]
         [ForeignKey("UserID")]
         public virtual UserAccount User { get; set; }
     }

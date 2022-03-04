@@ -1,10 +1,24 @@
+/**
+ * * In this component, I will:
+ * TODO: Hanlde workerNode
+ * ? - Create WorkerNode
+ * ? - Set State WorkerNode
+ * ? - Handle Button with State of WorkerNode
+ */
+
 import * as API from "./api.js"
 import * as Utils from "./utils.js"
 import * as RemotePage from "./remote.js"
 import { append } from "./utils.js";
 
+/**
+ * TODO: Generate UI of WorkerNode with parameter provider
+ * @param {int} workerID 
+ * @param {String} workerState 
+ * @param {String} queue 
+ */
 export async function
-    createSlave(workerID, workerState, queue) {
+createWorkerBlock(workerID, workerState, queue) {
     try {
         var slave = await (await API.fetchInfor(workerID)).json();
         var worker = document.getElementById(`${queue}${workerID}`);
@@ -38,11 +52,16 @@ export async function
 
         setState(workerState, slave.id, queue);
     } catch (error) {
-
+        await API.logUI(error.stack);
     }
 }
 
-
+/**
+ * TODO: SetState of WorkerNode
+ * @param {String} serviceState 
+ * @param {int} slaveID 
+ * @param {String} queue 
+ */
 function
     setState(serviceState, slaveID, queue) {
     var button = document.getElementById(`${queue}button${slaveID}`);
@@ -146,6 +165,12 @@ function
     }
 }
 
+/**
+ * TODO: Generate UI for Button Session
+ * @param {String} state 
+ * @param {int} slaveId 
+ * @returns HTML btn of state
+ */
 function
     slaveState(state, slaveId) {
     const nl = '<div class="w-100"></div>'

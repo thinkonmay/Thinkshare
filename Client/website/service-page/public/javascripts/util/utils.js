@@ -1,3 +1,7 @@
+/**
+ * * In this component, I will:
+ * ? - Create newSwal and create module popup response
+ */
 // alert message from https://sweetalert2.github.io/#icons
 
 export const newSwal = Swal.mixin({
@@ -6,6 +10,12 @@ export const newSwal = Swal.mixin({
 	allowEscapeKey: false
 })
 
+/**
+ * 
+ * @param {String} title 
+ * @param {String} msg 
+ * @param {String} icon 
+ */
 export function responseError(title, msg, icon) {
 	newSwal.fire({
 		title: title,
@@ -14,6 +24,10 @@ export function responseError(title, msg, icon) {
 	})
 }
 
+/**
+ * 
+ * @param {Response} response 
+ */
 export function responseErrorHandler(response) {
 	const keys = Object.keys(response.errors)
 	const errors = keys.map(key => response.errors[key])
@@ -25,6 +39,10 @@ export function responseErrorHandler(response) {
 	})
 }
 
+/**
+ * 
+ * @param {String} error 
+ */
 export function fetchErrorHandler(error) {
 	newSwal.fire({
 		title: "Error!",
@@ -33,4 +51,9 @@ export function fetchErrorHandler(error) {
 	})
 }
 
+/**
+ * 
+ * @param {String} id 
+ * @param {String} html 
+ */
 export function append(id, html) { $(`#${id}`).append(html) }

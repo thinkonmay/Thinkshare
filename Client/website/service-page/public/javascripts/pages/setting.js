@@ -1,4 +1,8 @@
-import { setCookie, } from "../util/cookie.js"
+/**
+ * * In this function, I will:
+ * ? - Implement loading button when start
+ * ? - Implement setting userInfor and setting remote
+ */
 import { prepare_setting } from "../util/setting.js"
 import { prepare_user_setting } from "../util/setting-constant.js"
 

@@ -1,1 +1,1 @@
-rmtdev.thinkmay.net
+remote.thinkmay.net
