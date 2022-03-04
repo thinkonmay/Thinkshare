@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: metric-collector
-        image: pigeatgarlic/metric-collector:2022-02-21
+        image: pigeatgarlic/metric-collector:2022-03-04
         imagePullPolicy: Always
         resources:
           requests:
