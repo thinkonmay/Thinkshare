@@ -11,6 +11,7 @@ import { prepare_user_setting } from "../util/setting-constant.js"
 import { prepare_download_button} from "../util/appVersion.js"
 import { logUI } from "../util/api.js"
 import { Logout } from "../util/api.js"
+import { prepare_host_ui } from "../util/setup-worker.js"
 
 
 
@@ -25,6 +26,7 @@ $(document).ready(async () => {
 	clusterFormGen()					.then().catch(error => { logUI(error.stack)});
 	prepare_user_infor()				.then().catch(error => { logUI(error.stack)});
 	prepare_setting()					.then().catch(error => { logUI(error.stack)});
+	prepare_host_ui()					.then().catch(error => { logUI(error.stack)});
 	connectToClientHub()				.then().catch(error => { logUI(error.stack)});
 	$('#logout').click(() => { Logout(); })
 })

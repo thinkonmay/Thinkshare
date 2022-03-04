@@ -26,7 +26,8 @@ async function checkManager() { return "true" === (await (await API.getRoles()).
 export async function
 clusterFormGen() {
     var form = document.getElementById("ClusterForm");
-    var board = document.getElementById('clusterBoard')
+    var board = document.getElementById('clusterBoard');
+    var agent = document.getElementById('clusterHost');
 	var isManager = await checkManager();
 
 	if (isManager === true) 
@@ -35,16 +36,19 @@ clusterFormGen() {
         form.innerHTML = clusterRegisterForm;
 
         if (body.length == 0)
+        {
             board.innerHTML = empty;
+            agent.innerHTML = '';
+        }
         else
             body.forEach(element => { board.innerHTML += device(element); });
 
         handleClusterRegister();
     }
     else {
+        agent.innerHTML = '';
         board.innerHTML = empty;
         form.innerHTML = managerRegisterForm;
-
         handleManagerRegister();
     }
 }

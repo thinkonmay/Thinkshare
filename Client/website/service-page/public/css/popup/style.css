@@ -111,6 +111,48 @@
   background-color: #f4f5f7;
   color: #000000;
 }
+
+.modal-btn4:checked + label,
+.modal-btn4:not(:checked) + label{
+  position: relative;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 2;
+  height: 50px;
+  transition: all 200ms linear;
+  border-radius: 4px;
+  width: 156px;
+  letter-spacing: 1px;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  -ms-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  -ms-justify-content: center;
+  justify-content: center;
+  -ms-flex-pack: center;
+  text-align: center;
+    -ms-flex-item-align: center;
+    align-self: center;
+  border: none;
+  cursor: pointer;
+  background-color: #f4f5f7;
+  color: #000000;
+}
+
+
+
+
+
+
+
+
+
 .modal-btn:not(:checked) + label:hover{
   color: #ffffff;
 }
@@ -135,6 +177,17 @@
 	margin-left: 10px;
 	font-size: 18px;
 }
+.modal-btn4:not(:checked) + label:hover{
+  color: #ffffff;
+}
+.modal-btn4:checked + label .uil,
+.modal-btn4:not(:checked) + label .uil{
+	margin-left: 10px;
+	font-size: 18px;
+}
+
+
+
 .modal-btn:checked + label:after,
 .modal-btn:not(:checked) + label:after{
   position: fixed;
@@ -204,6 +257,33 @@
   pointer-events: none;
   transform: translateY(20px);
 }
+
+.modal-btn4:checked + label:after,
+.modal-btn4:not(:checked) + label:after{
+  position: fixed;
+  top: 125px;
+  right: 30px;
+  z-index: 110;
+  width: 40px;
+  border-radius: 3px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  font-size: 24px;
+  background-color: #ffffff;
+  color: #ca5353;
+  font-family: 'unicons';
+  font-weight: 900;
+  content: '× '; 
+  box-shadow: 0 12px 25px 0 rgba(16,39,112,.25);
+  transition: all 200ms linear;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+}
+
+
+
 .modal-btn:checked + label:hover:after,
 .modal-btn:not(:checked) + label:hover:after{
   color: #ffffff;
@@ -216,6 +296,11 @@
 .modal-btn3:not(:checked) + label:hover:after{
   color: #ffffff;
 }
+.modal-btn4:checked + label:hover:after,
+.modal-btn4:not(:checked) + label:hover:after{
+  color: #ffffff;
+}
+
 .modal-btn:checked + label:after{
   transition: opacity 300ms 300ms ease, transform 300ms 300ms ease, background-color 250ms linear, color 250ms linear;
   opacity: 1;
@@ -234,6 +319,16 @@
   pointer-events: auto;
   transform: translateY(0);
 }
+.modal-btn4:checked + label:after{
+  transition: opacity 300ms 300ms ease, transform 300ms 300ms ease, background-color 250ms linear, color 250ms linear;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+
+
+
 .modal1{
   position: fixed;
   display: block;
@@ -297,6 +392,33 @@
   opacity: 0;
   transition: opacity 250ms 700ms ease;
 }
+.modal4{
+  position: fixed;
+  display: block;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin: 0 auto;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  overflow-x: hidden;
+  background-color: rgba(31,32,41,.75);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 250ms 700ms ease;
+}
+
+
+
+
+
+
 .modal-btn:checked ~ .modal1{
   pointer-events: auto;
   opacity: 1;
@@ -312,6 +434,14 @@
   opacity: 1;
   transition: all 300ms ease-in-out;
 }
+.modal-btn4:checked ~ .modal4{
+  pointer-events: auto;
+  opacity: 1;
+  transition: all 300ms ease-in-out;
+}
+
+
+
 .modal-wrap {
   position: relative;
   display: block;
@@ -353,6 +483,11 @@
   transform: scale(1);
   transition: opacity 250ms 500ms ease, transform 350ms 500ms ease;
 }
+.modal-btn4:checked ~ .modal4 .modal-wrap{
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 250ms 500ms ease, transform 350ms 500ms ease;
+}
 
 
 .logo {
@@ -379,6 +514,10 @@
 transition: all 250ms linear;
 }
 .modal-btn3:checked ~ .logo img {
+  filter: brightness(100%);
+transition: all 250ms linear;
+}
+.modal-btn4:checked ~ .logo img {
   filter: brightness(100%);
 transition: all 250ms linear;
 }
