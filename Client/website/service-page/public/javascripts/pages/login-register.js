@@ -114,7 +114,8 @@ const googleLoginUser = async (userForm) => {
         didOpen: async () => {
             var response = await (await API.tokenExchange(userForm)).json();
             if (response.errors == null) {
-                if (isElectron() == true) {
+                var str = window.location.pathname;
+                if (str == '/token-auth') {
                     window.location.href = `https://service.thinkmay.net/copy-token?=${response.token}`
                 } else {
                     setCookie("token", response.token, HOUR5)
