@@ -22,7 +22,5 @@ namespace SharedHost.Models.Device
 
         [Required]
         public string? User { get; set; }
-
-        public string? AgentUrl {get;set;}
     }
 }

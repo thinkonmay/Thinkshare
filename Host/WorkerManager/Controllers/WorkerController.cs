@@ -34,14 +34,18 @@ namespace WorkerManager.Controllers
 
         private readonly ILog _log;
 
+        private readonly IWorkerNodePool _pool;
+
         public WorkerController( ITokenGenerator token,
                                 ILocalStateStore cache,
                                 IClusterInfor infor,
+                                IWorkerNodePool pool,
                                 ILog log,
                                 IPortProxy port,
                                 IOptions<ClusterConfig> config)
         {
             _log = log;
+            _pool = pool;
             _cache = cache;
             _infor = infor;
             _config = config.Value;
@@ -86,7 +90,7 @@ namespace WorkerManager.Controllers
                     await _cache.CacheWorkerInfor(node);
                     await _cache.SetWorkerState(node.ID, WorkerState.Open);
                     var Token = await _tokenGenerator.GenerateWorkerToken(node);
-                    _log.Information($"Successfully register worker node on computer {model.Name} at url {model.AgentUrl}");
+                    _log.Information($"Successfully register worker node on computer {model.Name}");
                     return Ok(AuthResponse.GenerateSuccessful(null,Token,null));
                 }
                 else
@@ -98,12 +102,27 @@ namespace WorkerManager.Controllers
             else
             {
                 var node = cachednode.First();
-                node.model.AgentUrl = model.AgentUrl;
                 await _cache.CacheWorkerInfor(node);
                 var result = await _tokenGenerator.GenerateWorkerToken(cachednode.First());
-                _log.Information($"Successfully worker node on computer {model.Name} at url {model.AgentUrl}");
+                _log.Information($"Successfully worker node on computer {model.Name}");
                 return Ok(AuthResponse.GenerateSuccessful(null,result,null));
             }
+        }
+
+        [Worker]
+        [Route("hub")]
+        [HttpGet]
+        public async Task<IActionResult> Handle()
+        {
+            var context = ControllerContext.HttpContext;
+            if (!context.WebSockets.IsWebSocketRequest)
+                return BadRequest();
+
+            var workerID = Int32.Parse((string)HttpContext.Items["WorkerID"]);
+            var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+
+            await _pool.HandleWorkerConnection(workerID, webSocket);
+            return Ok();
         }
 
         [Worker]

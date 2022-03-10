@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using WorkerManager.Models;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Net.WebSockets;
+using System.IO;
+
 
 namespace WorkerManager.Services
 {
@@ -16,19 +20,20 @@ namespace WorkerManager.Services
 
         private Task _stateStyncing;
         
-        private Task _systemHeartBeat;
-
         private Task _workerShell;
 
         private bool isRunning;
 
         private readonly ILog _log;
 
+        private ConcurrentDictionary<int,WebSocket> _pool;
+
         public WorkerNodePool(ILocalStateStore cache,
                               ILog log)
         {
             _log = log;
             _cache = cache;
+            _pool = new ConcurrentDictionary<int,WebSocket>();
             isRunning = false;
         }
 
@@ -38,8 +43,7 @@ namespace WorkerManager.Services
                 return false;
 
             isRunning = true;
-            _systemHeartBeat =  Task.Run(() => SystemHeartBeat());
-            // _workerShell =      Task.Run(() => GetWorkerMetric()); // TODO
+            _workerShell =      Task.Run(() => GetWorkerMetric()); 
             return true;
         }
 
@@ -50,45 +54,57 @@ namespace WorkerManager.Services
 
             isRunning = false;
             _workerShell.Wait();
-            _systemHeartBeat.Wait();
             return true;
         }
 
-
-        public async Task SystemHeartBeat()
+        private async Task<WebSocketReceiveResult> ReceiveMessage(WebSocket ws, Stream memoryStream)
         {
-            while(isRunning)
+            var readBuffer = new ArraySegment<byte>(new byte[4 * 1024]);
+            WebSocketReceiveResult result;
+            do
             {
-                try
+                result = await ws.ReceiveAsync(readBuffer, CancellationToken.None);
+                await memoryStream.WriteAsync(readBuffer.Array, readBuffer.Offset, result.Count, CancellationToken.None);
+            } while (!result.EndOfMessage);
+            return result;
+        }
+
+
+
+        public async Task HandleWorkerConnection(int ID, WebSocket ws)
+        {
+            await _cache.SetWorkerState(ID,WorkerState.Open);
+            _pool.TryAdd(ID,ws);
+            try
+            {
+                do
                 {
-                    var updated = new Dictionary<int,string>();
-                    var workers = await _cache.GetClusterState();
-                    foreach (var keyValue in workers)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        var worker = await _cache.GetWorkerInfor(keyValue.Key);
-                        var success = await worker.PingWorker();
-                        worker.agentFailedPing = success ? 0 : (worker.agentFailedPing + 1);
-                        _log.Worker($"Ping failed {worker.agentFailedPing} time", keyValue.Key.ToString());
-                        await _cache.CacheWorkerInfor(worker);
-                        bool failMultipletime = (worker.agentFailedPing > 3);
-                        bool currentlyDisconnected = (keyValue.Value == WorkerState.Disconnected);
-
-
-                        var currentState = await _cache.GetWorkerState(keyValue.Key);
-                        if(success)
-                            updated[keyValue.Key] = currentlyDisconnected ? WorkerState.Open         : currentState;
-                        else
-                            updated[keyValue.Key] = failMultipletime      ? WorkerState.Disconnected : currentState;
-                        await _cache.SetWorkerState(keyValue.Key,updated[keyValue.Key]);
+                        var message = ReceiveMessage(ws, memoryStream).Result;
                     }
-                    _log.Information(JsonConvert.SerializeObject(updated));
-                }
-                catch (Exception ex)
-                {
-                    _log.Error("ping worker failed",ex);
-                }
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                } while (ws.State == WebSocketState.Open);
+                await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
             }
+            catch (Exception ex)
+            {
+                _log.Information("Connection closed");
+            }
+            _pool.TryRemove(ID,out var rm);
+            await _cache.SetWorkerState(ID,WorkerState.Disconnected);
+        }
+
+        public async Task SendRequest(int ID, string URL, string Data)
+        {
+            _pool.TryGetValue(ID,out var ws);
+            var msg = JsonConvert.SerializeObject(new
+            {
+                URL = URL,
+                Data = Data,
+            });
+            var bytes = System.Text.Encoding.UTF8.GetBytes(msg);
+            var buffer = new ArraySegment<byte>(bytes);
+            await ws.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
         }
 
         async Task GetWorkerMetric()
@@ -104,9 +120,7 @@ namespace WorkerManager.Services
 
                     foreach (var model in models)
                     {
-                        var infor = await _cache.GetWorkerInfor(worker.Key);
-                        var res = await infor.Execute(model.Script);
-                        _log.Worker(res.Content,infor.ID.ToString(),model.ID.ToString());
+                        await this.SendRequest(worker.Key,"/Script",model.Script);
                     }
                 }
                 Thread.Sleep(TimeSpan.FromSeconds(60));

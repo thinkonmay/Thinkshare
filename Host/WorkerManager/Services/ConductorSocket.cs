@@ -35,16 +35,20 @@ namespace WorkerManager.Services
 
         private readonly ILog _log;
 
+        private readonly IWorkerNodePool _pool;
+
         private bool Started;
 
 
         public ConductorSocket(IOptions<ClusterConfig> cluster, 
                                ITokenGenerator generator,
+                               IWorkerNodePool pool,
                                ILog log,
                                ILocalStateStore cache)
         {
             _generator = generator;
             _cache = cache;
+            _pool = pool;
             _log = log;
             _config = cluster.Value;
             _scriptmodel = new RestClient();
@@ -309,49 +313,30 @@ namespace WorkerManager.Services
 
         public async Task Initialize(int ID, string remoteToken)
         {
-            var worker = await _cache.GetWorkerInfor(ID);
-            var workerToken = await _generator.GenerateWorkerToken(worker);
-
             var state = await _cache.GetWorkerState(ID);
             if(state != WorkerState.Open)
                 return;
-            if (await worker.SessionInitialize(workerToken))
-            {
-                await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
-                _log.Information("initialize session done");
-                await _cache.SetWorkerRemoteToken(ID,remoteToken);
-            }
-            else 
-            {
-                await _cache.SetWorkerState(worker.ID, WorkerState.OffRemote);
-                _log.Information("Fail to initialize session");
-                await _cache.SetWorkerRemoteToken(ID,remoteToken);
-            }
+
+            await _pool.SendRequest(ID,"/Initialize",null);
+            await _cache.SetWorkerState(ID, WorkerState.OnSession);
+            await _cache.SetWorkerRemoteToken(ID,remoteToken);
+            _log.Information("Initialize session success");
         }
 
 
 
         public async Task Terminate(int GlobalID)
         {
-            var worker = await _cache.GetWorkerInfor(GlobalID);
-            var workerToken = await _generator.GenerateWorkerToken(worker);
             var state = await _cache.GetWorkerState(GlobalID);
-
             if(state != WorkerState.OnSession && 
                state != WorkerState.OffRemote)
                return;
 
-            if(await worker.SessionTerminate(workerToken))
-            {
-                await _cache.SetWorkerState(worker.ID, WorkerState.Open);
-                _log.Information("Terminate session success");
+            await _pool.SendRequest(GlobalID,"/Terminate",null);
 
-                await _cache.SetWorkerRemoteToken(GlobalID,"none");
-            }
-            else
-            {
-                _log.Information("Fail to terminate session");
-            }
+            await _cache.SetWorkerState(GlobalID, WorkerState.Open);
+            await _cache.SetWorkerRemoteToken(GlobalID,"none");
+            _log.Information("Terminate session success");
         }
 
 
@@ -364,27 +349,22 @@ namespace WorkerManager.Services
             if(state != WorkerState.OnSession)
                 return;
 
-            if (await worker.SessionDisconnect(workerToken))
-            {
-                await _cache.SetWorkerState(worker.ID,WorkerState.OffRemote);
-                _log.Information($"Disconnect worker {GlobalID.ToString()}");
-            }
+            await _pool.SendRequest(GlobalID,"/Terminate",null);
+
+            await _cache.SetWorkerState(worker.ID,WorkerState.OffRemote);
+            _log.Information($"Disconnect session");
         }
 
         public async Task Reconnect(int GlobalID)
         {
-            var worker = await _cache.GetWorkerInfor(GlobalID);
-            var workerToken = await _generator.GenerateWorkerToken(worker);
-
             var state = await _cache.GetWorkerState(GlobalID);
             if(state != WorkerState.OffRemote)
                 return;
 
-            if (await worker.SessionReconnect(workerToken))
-            {
-                await _cache.SetWorkerState(worker.ID, WorkerState.OnSession);
-                _log.Information($"Reconnect worker {GlobalID.ToString()}");
-            }
+            await _pool.SendRequest(GlobalID,"/Initialize",null);
+
+            await _cache.SetWorkerState(GlobalID, WorkerState.OnSession);
+            _log.Information($"Reconnect session");
         }
     }
 }
